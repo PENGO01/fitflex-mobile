@@ -93,6 +93,65 @@ class EventsTicketOptions {
   }
 }
 
+/// `results` of the options (events S6 spec §8.3): which parts of runs,
+/// results, medals and rewards the server switched on. Every part is off
+/// until the server says otherwise, so an older server changes nothing.
+class EventsResultsOptions {
+  const EventsResultsOptions({
+    this.enabled = false,
+    this.runs = false,
+    this.public = false,
+    this.rewards = false,
+    this.medalArt = false,
+  });
+
+  /// `EVENTS_RESULTS`: the My result page.
+  final bool enabled;
+
+  /// `EVENTS_RUNS`: Start run for this event / Add a recorded run.
+  final bool runs;
+
+  /// `EVENTS_RESULTS_PUBLIC`: the signed-in results board.
+  final bool public;
+
+  /// `EVENTS_REWARDS`: medals, achievements and the rewards wallet.
+  final bool rewards;
+
+  /// `EVENTS_MEDAL_ART`: organizer artwork (the app still falls back to the
+  /// built-in design whatever this says).
+  final bool medalArt;
+
+  bool get any => enabled || rewards;
+
+  static EventsResultsOptions fromJson(Object? json) {
+    if (json is! Map) return const EventsResultsOptions();
+    return EventsResultsOptions(
+      enabled: json['enabled'] == true,
+      runs: json['runs'] == true,
+      public: json['public'] == true,
+      rewards: json['rewards'] == true,
+      medalArt: json['medalArt'] == true,
+    );
+  }
+}
+
+/// `runs` of the options: the wording numbers only; the server checks.
+class EventsRunsOptions {
+  const EventsRunsOptions({this.toleranceBps = 200, this.maxDaysAfter = 7});
+
+  final int toleranceBps;
+  final int maxDaysAfter;
+
+  static EventsRunsOptions fromJson(Object? json) {
+    if (json is! Map) return const EventsRunsOptions();
+    int n(Object? v, int d) => v is num ? v.toInt() : d;
+    return EventsRunsOptions(
+      toleranceBps: n(json['toleranceBps'], 200),
+      maxDaysAfter: n(json['maxDaysAfter'], 7),
+    );
+  }
+}
+
 class EventsOptions {
   const EventsOptions({
     this.discovery = false,
@@ -113,6 +172,8 @@ class EventsOptions {
     this.refundDays = 5,
     this.hold = const EventsHoldOptions(),
     this.tickets = const EventsTicketOptions(),
+    this.results = const EventsResultsOptions(),
+    this.runs = const EventsRunsOptions(),
   });
 
   /// Everything off: the probe failed or the module is off.
@@ -156,6 +217,11 @@ class EventsOptions {
   final EventsHoldOptions hold;
   final EventsTicketOptions tickets;
 
+  // ── Runs, results, medals and rewards (S6 spec §8.3) ──
+
+  final EventsResultsOptions results;
+  final EventsRunsOptions runs;
+
   /// Whether a payment can be started in the app at all (`manual` or
   /// `provider`). `none` keeps the S3 "payment isn't open yet" slot.
   bool get paymentsOn => payment == 'manual' || payment == 'provider';
@@ -180,6 +246,8 @@ class EventsOptions {
       refundDays: intOf(json['refundDays'], 5),
       hold: EventsHoldOptions.fromJson(json['hold']),
       tickets: EventsTicketOptions.fromJson(json['tickets']),
+      results: EventsResultsOptions.fromJson(json['results']),
+      runs: EventsRunsOptions.fromJson(json['runs']),
       currency: (json['currency']?.toString() ?? '').isEmpty
           ? 'TZS'
           : json['currency'].toString(),

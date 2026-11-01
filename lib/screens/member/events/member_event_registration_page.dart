@@ -17,6 +17,7 @@ import '../../../shared/formatters.dart';
 import '../../../shared/i18n.dart';
 import 'event_cancel_reason_dialog.dart';
 import 'events_registration_gate.dart';
+import 'results/event_result_entry.dart';
 import 'pay/event_payment_cards.dart';
 
 /// `/member/events/registrations/:registrationId` (events S3 spec §5.9, S4
@@ -343,6 +344,15 @@ class _MemberEventRegistrationPageState
       // ── ticket (S4 spec §5.6) ─────────────────────────────────────────
       FFSectionTitle(context.tr('events.reg.ticket')),
       _ticketCard(context, r),
+      // Events S6: your result and your run (draws nothing while off).
+      EventResultEntry(
+        registrationId: r.id,
+        event: e,
+        options: _options,
+        confirmed: r.status == EventRegistrationStatus.confirmed,
+        isParticipant:
+            r.isSelf || r.relation == 'self' || r.relation == 'claimed',
+      ),
       for (final rf in (r.refunds.isNotEmpty ? r.refunds : _orderRefunds))
         EventRefundCard(refund: rf, options: _options, utcOffsetMinutes: off),
       // ── participant ───────────────────────────────────────────────────

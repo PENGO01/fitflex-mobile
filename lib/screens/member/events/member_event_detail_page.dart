@@ -488,6 +488,22 @@ class _MemberEventDetailPageState extends State<MemberEventDetailPage> {
           onToggle: () => setState(() => _aboutExpanded = !_aboutExpanded),
         ),
       ],
+      // ── Results (events S6 §10.1): only once the organizer published and
+      // the server has the signed-in board on ─────────────────────────────
+      if (options.results.public && d.hasPublishedResults) ...[
+        const SizedBox(height: FFTokens.spacingMd),
+        FFActionTile(
+          key: const Key('event-results'),
+          icon: Icons.format_list_numbered,
+          title: context.tr('events.board.title'),
+          subtitle: context.tr(
+            d.resultsStage == 'official'
+                ? 'events.board.banner.official'
+                : 'events.board.banner.provisional',
+          ),
+          onTap: () => context.push(AppRoutes.memberEventResultsPath(d.id)),
+        ),
+      ],
       // ── Organizer ─────────────────────────────────────────────────────
       FFSectionTitle(context.tr('events.detail.organizer')),
       Row(

@@ -16,6 +16,7 @@ import '../../../../shared/events/events_options.dart';
 import '../../../../shared/formatters.dart';
 import '../../../../shared/i18n.dart';
 import '../events_registration_gate.dart';
+import '../results/event_result_entry.dart';
 
 /// Two columns from here (Flutter web desktop; spec §9.1).
 const double _wideAt = 840;
@@ -814,6 +815,14 @@ class _MemberEventTicketPageState extends State<MemberEventTicketPage>
               .replaceFirst('{name}', t.firstName),
         ),
       ],
+      // Events S6: your result and your run (draws nothing while off).
+      EventResultEntry(
+        registrationId: widget.registrationId,
+        event: t.event,
+        options: _options,
+        confirmed: t.isActive,
+        isParticipant: t.relation != 'purchased',
+      ),
       const SizedBox(height: FFTokens.spacingMd),
       FFButton(
         key: const Key('ticket-rotate'),

@@ -3568,6 +3568,208 @@ class ApiClient {
             as Map,
       );
 
+  // ── Events S6: runs, results, medals, rewards ────────────────────────────
+  // docs/design/events-s6-runs-results-medals-rewards.md §8.3. Every route
+  // 404s `feature_disabled` while its flag is off; the writes carry an
+  // Idempotency-Key (or, for the run, the `clientRef` in the body).
+
+  static String _reg(String id) => Uri.encodeComponent(id);
+
+  /// The member's result for one registration (§8.3).
+  Future<Map<String, dynamic>> getMyEventResult(String registrationId) async =>
+      Map<String, dynamic>.from(
+        await _request(
+              'GET',
+              '/me/event-registrations/${_reg(registrationId)}/result',
+            )
+            as Map,
+      );
+
+  /// My own results across events, newest first: `{items, nextCursor}`.
+  Future<Map<String, dynamic>> listMyEventResults({String? cursor}) async =>
+      Map<String, dynamic>.from(
+        await _request(
+              'GET',
+              _withQuery('/me/event-results', {
+                if (cursor != null && cursor.isNotEmpty) 'cursor': cursor,
+              }),
+            )
+            as Map,
+      );
+
+  /// Records the finished run and adds it to the event in one step. The same
+  /// [body] with the same `clientRef` returns the first answer.
+  Future<Map<String, dynamic>> recordEventRun(
+    String registrationId,
+    Map<String, dynamic> body,
+  ) async => Map<String, dynamic>.from(
+    await _request(
+          'POST',
+          '/me/event-registrations/${_reg(registrationId)}/runs',
+          body: body,
+        )
+        as Map,
+  );
+
+  /// Adds a run the member already recorded in FitFlex.
+  Future<Map<String, dynamic>> linkEventRun(
+    String registrationId,
+    String activityId, {
+    required String idempotencyKey,
+  }) async => Map<String, dynamic>.from(
+    await _request(
+          'POST',
+          '/me/event-registrations/${_reg(registrationId)}/run-links',
+          extraHeaders: {'Idempotency-Key': idempotencyKey},
+          body: {'activityId': activityId},
+        )
+        as Map,
+  );
+
+  Future<Map<String, dynamic>> listEventRunLinks(String registrationId) async =>
+      Map<String, dynamic>.from(
+        await _request(
+              'GET',
+              '/me/event-registrations/${_reg(registrationId)}/run-links',
+            )
+            as Map,
+      );
+
+  Future<void> unlinkEventRun(
+    String registrationId,
+    String linkId,
+  ) async => await _request(
+    'DELETE',
+    '/me/event-registrations/${_reg(registrationId)}/run-links/${_reg(linkId)}',
+  );
+
+  /// `standard` | `bib_only` | `hidden`.
+  Future<Map<String, dynamic>> setEventResultsVisibility(
+    String registrationId,
+    String visibility,
+  ) async => Map<String, dynamic>.from(
+    await _request(
+          'PUT',
+          '/me/event-registrations/${_reg(registrationId)}/results-visibility',
+          body: {'visibility': visibility},
+        )
+        as Map,
+  );
+
+  Future<Map<String, dynamic>> raiseEventResultDispute(
+    String registrationId, {
+    required String reasonCode,
+    String? note,
+    required String idempotencyKey,
+  }) async => Map<String, dynamic>.from(
+    await _request(
+          'POST',
+          '/me/event-registrations/${_reg(registrationId)}/result/disputes',
+          extraHeaders: {'Idempotency-Key': idempotencyKey},
+          body: {
+            'reasonCode': reasonCode,
+            if ((note ?? '').trim().isNotEmpty) 'note': note!.trim(),
+          },
+        )
+        as Map,
+  );
+
+  Future<void> withdrawEventResultDispute(
+    String registrationId,
+    String disputeId,
+  ) async => await _request(
+    'DELETE',
+    '/me/event-registrations/${_reg(registrationId)}/result/disputes/${_reg(disputeId)}',
+  );
+
+  /// The signed-in results board (§8.3).
+  Future<Map<String, dynamic>> eventResultsBoard(
+    String eventId, {
+    String? categoryId,
+    String? q,
+    String? cursor,
+    int limit = 50,
+  }) async => Map<String, dynamic>.from(
+    await _request(
+          'GET',
+          _withQuery('/events/${_reg(eventId)}/results', {
+            if ((categoryId ?? '').isNotEmpty) 'categoryId': categoryId!,
+            if ((q ?? '').trim().isNotEmpty) 'q': q!.trim(),
+            if ((cursor ?? '').isNotEmpty) 'cursor': cursor!,
+            'limit': '$limit',
+          }),
+        )
+        as Map,
+  );
+
+  /// Medals, achievements and removed ones.
+  Future<Map<String, dynamic>> myEventAchievements() async =>
+      Map<String, dynamic>.from(
+        await _request('GET', '/me/achievements') as Map,
+      );
+
+  Future<Map<String, dynamic>> myEventRewardLedger({String? cursor}) async =>
+      Map<String, dynamic>.from(
+        await _request(
+              'GET',
+              _withQuery('/me/reward-ledger', {
+                if (cursor != null && cursor.isNotEmpty) 'cursor': cursor,
+              }),
+            )
+            as Map,
+      );
+
+  /// The rewards wallet.
+  Future<Map<String, dynamic>> myEventRewards() async =>
+      Map<String, dynamic>.from(
+        await _request('GET', '/me/event-rewards') as Map,
+      );
+
+  /// Claims one unit of a reward. [idempotencyKey] makes a retry safe.
+  Future<Map<String, dynamic>> claimEventReward(
+    String definitionId, {
+    required String idempotencyKey,
+  }) async => Map<String, dynamic>.from(
+    await _request(
+          'POST',
+          '/me/reward-redemptions',
+          extraHeaders: {'Idempotency-Key': idempotencyKey},
+          body: {'rewardDefinitionId': definitionId},
+        )
+        as Map,
+  );
+
+  Future<Map<String, dynamic>> getEventRewardRedemption(String id) async =>
+      Map<String, dynamic>.from(
+        await _request('GET', '/me/reward-redemptions/${_reg(id)}') as Map,
+      );
+
+  /// Organizer medal artwork as WebP bytes. The route needs the member's
+  /// sign-in, so the picture is fetched here (never as a remote URL) and
+  /// drawn from memory. 404 means "taken down or not yours": use the
+  /// built-in design.
+  Future<Uint8List> eventMedalArtFile(
+    String artId, {
+    String variant = 'm256',
+  }) async {
+    final uri = Uri.parse(
+      '$baseUrl/events/medal-art/${_reg(artId)}/file'
+      '?variant=${Uri.encodeQueryComponent(variant)}',
+    );
+    final res = await http
+        .get(
+          uri,
+          headers: {
+            'x-fitflex-client': kIdentityV2Client,
+            if (_token != null) 'authorization': 'Bearer $_token',
+          },
+        )
+        .timeout(const Duration(seconds: 30));
+    if (res.statusCode >= 200 && res.statusCode < 300) return res.bodyBytes;
+    if (res.statusCode == 401 && onUnauthorized != null) onUnauthorized!();
+    throw ApiException(res.statusCode, _decodeErrorBody(res.body));
+  }
+
   static String _withQuery(String path, Map<String, String> query) =>
       query.isEmpty ? path : '$path?${Uri(queryParameters: query).query}';
 

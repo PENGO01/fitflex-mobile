@@ -37,6 +37,12 @@ import 'screens/member/events/member_event_detail_page.dart';
 import 'screens/member/events/cancel/member_event_cancel_page.dart';
 import 'screens/member/events/member_event_order_page.dart';
 import 'screens/member/events/pay/member_event_payment_page.dart';
+import 'screens/member/events/results/event_results_board_page.dart';
+import 'screens/member/events/results/event_run_links_page.dart';
+import 'screens/member/events/results/member_event_result_page.dart';
+import 'screens/member/events/results/member_event_results_list_page.dart';
+import 'screens/member/events/results/member_medals_page.dart';
+import 'screens/member/events/results/member_reward_wallet_page.dart';
 import 'screens/member/events/tickets/member_event_ticket_page.dart';
 import 'screens/member/events/member_event_orders_page.dart';
 import 'screens/member/events/member_event_registration_page.dart';
@@ -241,6 +247,17 @@ abstract class AppRoutes {
       '/member/events/registrations/:registrationId/cancel';
   static const memberEventTeam = '/member/events/teams/:teamId';
 
+  /// Events S6 (spec §10.1): result, runs, board, medals, rewards. The
+  /// static segments (`results`, `medals`, `rewards`) sit before `:eventId`.
+  static const memberEventResult =
+      '/member/events/registrations/:registrationId/result';
+  static const memberEventRuns =
+      '/member/events/registrations/:registrationId/runs';
+  static const memberEventResults = '/member/events/:eventId/results';
+  static const memberEventMyResults = '/member/events/results';
+  static const memberEventMedals = '/member/events/medals';
+  static const memberEventRewards = '/member/events/rewards';
+
   /// The claim-link page (`/event-claim/#<token>`); the token is kept on
   /// the device, never in the location. Sits beside [friendInvite].
   static const eventClaim = '/event-claim';
@@ -267,6 +284,12 @@ abstract class AppRoutes {
   }) =>
       '/member/events/registrations/${Uri.encodeComponent(registrationId)}/cancel'
       '${orderId == null || orderId.isEmpty ? '' : '?order=${Uri.encodeQueryComponent(orderId)}'}';
+  static String memberEventResultPath(String registrationId) =>
+      '/member/events/registrations/${Uri.encodeComponent(registrationId)}/result';
+  static String memberEventRunsPath(String registrationId) =>
+      '/member/events/registrations/${Uri.encodeComponent(registrationId)}/runs';
+  static String memberEventResultsPath(String eventId) =>
+      '/member/events/${Uri.encodeComponent(eventId)}/results';
   static String memberEventClaimPath(String id) =>
       '/member/events/claim/${Uri.encodeComponent(id)}';
   static String memberEventTeamPath(String id) =>
@@ -1373,7 +1396,10 @@ GoRouter buildRouter(AuthState auth) {
               GoRoute(
                 path: 'run',
                 name: 'memberRecordRun',
-                builder: (context, state) => const MemberRecordRunPage(),
+                builder: (context, state) => MemberRecordRunPage(
+                  eventRegistrationId:
+                      state.uri.queryParameters['registration'],
+                ),
               ),
               GoRoute(
                 path: 'runs/:activityId',
@@ -1486,6 +1512,23 @@ GoRouter buildRouter(AuthState auth) {
                     ),
                   ],
                 ),
+                // Events S6 (spec §10.1): static segments before :eventId.
+                GoRoute(
+                  path: 'results',
+                  name: 'memberEventMyResults',
+                  builder: (context, state) =>
+                      const MemberEventResultsListPage(),
+                ),
+                GoRoute(
+                  path: 'medals',
+                  name: 'memberEventMedals',
+                  builder: (context, state) => const MemberMedalsPage(),
+                ),
+                GoRoute(
+                  path: 'rewards',
+                  name: 'memberEventRewards',
+                  builder: (context, state) => const MemberRewardWalletPage(),
+                ),
                 // The ticket wallet is a segment of the same page.
                 GoRoute(
                   path: 'tickets',
@@ -1510,6 +1553,20 @@ GoRouter buildRouter(AuthState auth) {
                       path: 'ticket',
                       name: 'memberEventTicket',
                       builder: (context, state) => MemberEventTicketPage(
+                        registrationId: state.pathParameters['registrationId']!,
+                      ),
+                    ),
+                    GoRoute(
+                      path: 'result',
+                      name: 'memberEventResult',
+                      builder: (context, state) => MemberEventResultPage(
+                        registrationId: state.pathParameters['registrationId']!,
+                      ),
+                    ),
+                    GoRoute(
+                      path: 'runs',
+                      name: 'memberEventRuns',
+                      builder: (context, state) => EventRunLinksPage(
                         registrationId: state.pathParameters['registrationId']!,
                       ),
                     ),
@@ -1563,6 +1620,13 @@ GoRouter buildRouter(AuthState auth) {
                     eventId: state.pathParameters['eventId']!,
                   ),
                   routes: [
+                    GoRoute(
+                      path: 'results',
+                      name: 'memberEventResults',
+                      builder: (context, state) => EventResultsBoardPage(
+                        eventId: state.pathParameters['eventId']!,
+                      ),
+                    ),
                     GoRoute(
                       path: 'register',
                       name: 'memberEventRegister',

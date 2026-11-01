@@ -70,6 +70,47 @@ class RunRecorder extends ChangeNotifier {
   bool _restored = false;
   int _unsaved = 0;
 
+  // Events S6 (spec §10.2): the registration this run is recorded for and
+  // the `clientRef` made when it began. Kept with the run on the phone so a
+  // save that failed offline is retried with the same reference and the
+  // server returns the first answer instead of adding the run twice.
+  String? _eventRegistrationId;
+  String? _clientRef;
+
+  /// The registration this run is for, or null for a plain run.
+  String? get eventRegistrationId => _eventRegistrationId;
+
+  /// The reference sent with the event run (null for a plain run).
+  String? get clientRef => _clientRef;
+
+  /// Ties the run being recorded to an event registration. Call before
+  /// [start]; the reference is made once and survives a restart of the app.
+  /// Returns false (and changes nothing) when a run for another registration
+  /// is already under way.
+  bool bindEvent(String registrationId, {String Function()? makeRef}) {
+    if (_eventRegistrationId == registrationId && _clientRef != null) {
+      return true;
+    }
+    if (_state != RunState.idle || hasFix) return false;
+    _eventRegistrationId = registrationId;
+    _clientRef = (makeRef ?? _newClientRef)();
+    return true;
+  }
+
+  /// Stops tying the run to an event (the run itself stays).
+  Future<void> unbindEvent() async {
+    _eventRegistrationId = null;
+    _clientRef = null;
+    if (_state != RunState.idle) await _persist();
+  }
+
+  static int _refSeq = 0;
+  static String _newClientRef() {
+    final t = DateTime.now().microsecondsSinceEpoch.toRadixString(36);
+    final n = (++_refSeq).toRadixString(36);
+    return 'run-$t-$n-${identityHashCode(Object()).toRadixString(36)}';
+  }
+
   bool get supported => gps.isSupported;
   RunState get state => _state;
   RunMetrics get metrics => _metrics;
@@ -105,6 +146,12 @@ class RunRecorder extends ChangeNotifier {
             [for (final p in (seg as List)) ?TrackPoint.fromWire(p)],
         ]);
       _banked = Duration(seconds: (json['elapsed'] as num?)?.toInt() ?? 0);
+      final reg = json['eventRegistrationId']?.toString() ?? '';
+      final ref = json['clientRef']?.toString() ?? '';
+      if (reg.isNotEmpty && ref.length >= 8) {
+        _eventRegistrationId = reg;
+        _clientRef = ref;
+      }
       if (!hasFix) return;
       _metrics = trackMetrics(cleanTrack(_segments));
       _state = RunState.paused;
@@ -198,7 +245,7 @@ class RunRecorder extends ChangeNotifier {
     Map<String, dynamic>? shareWith,
     bool shareChosen = false,
   }) async {
-    final res = await api.recordRun({
+    final body = {
       // Left out, the member's default audience applies.
       if (shareChosen) 'shareWith': shareWith,
       'type': 'running',
@@ -206,12 +253,35 @@ class RunRecorder extends ChangeNotifier {
         for (final seg in _segments) [for (final p in seg) p.toWire()],
       ],
       if (notes != null && notes.trim().isNotEmpty) 'notes': notes.trim(),
-    });
+    };
+    final reg = _eventRegistrationId;
+    final ref = _clientRef;
+    final res = reg != null && ref != null
+        ? await api.recordEventRun(reg, {...body, 'clientRef': ref})
+        : await api.recordRun(body);
     final activity = Activity.fromJson(
       Map<String, dynamic>.from(res['activity'] as Map),
     );
     await discard();
     return activity;
+  }
+
+  /// Saves the run without adding it to the event (a refused link, or the
+  /// member's choice): the plain run route, same run, no `clientRef`.
+  Future<Activity> saveWithoutEvent(
+    ApiClient api, {
+    String? notes,
+    Map<String, dynamic>? shareWith,
+    bool shareChosen = false,
+  }) async {
+    _eventRegistrationId = null;
+    _clientRef = null;
+    return save(
+      api,
+      notes: notes,
+      shareWith: shareWith,
+      shareChosen: shareChosen,
+    );
   }
 
   Future<void> discard() async {
@@ -221,6 +291,8 @@ class RunRecorder extends ChangeNotifier {
     _banked = Duration.zero;
     _state = RunState.idle;
     _restored = false;
+    _eventRegistrationId = null;
+    _clientRef = null;
     await store.write(_key, '');
     notifyListeners();
   }
@@ -245,6 +317,10 @@ class RunRecorder extends ChangeNotifier {
           for (final seg in _segments) [for (final p in seg) p.toWire()],
         ],
         'elapsed': elapsed.inSeconds,
+        if (_eventRegistrationId != null && _clientRef != null) ...{
+          'eventRegistrationId': _eventRegistrationId,
+          'clientRef': _clientRef,
+        },
       }),
     );
   }

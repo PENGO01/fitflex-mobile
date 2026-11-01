@@ -146,6 +146,14 @@ String memberLinkFor({required String deepLink, required String type}) =>
         'event_kit_collected' ||
         'event_bib_assigned' => 'eventTicket',
         'event_place_cancelled_by_purchaser' => 'eventRegistrations',
+        // Events S6 (spec §11): results, corrections, rejections and
+        // disputes open the result; medals and rewards open their screens.
+        'event_result_published' ||
+        'event_result_corrected' ||
+        'event_result_rejected' ||
+        'event_dispute_update' => 'eventResult',
+        'event_medal_awarded' || 'event_medal_revoked' => 'eventMedals',
+        'event_reward_earned' || 'event_reward_reversed' => 'eventRewards',
         _ => '',
       };
 
@@ -234,6 +242,13 @@ String? memberRouteFor({
       '/member/events/registrations/$registrationId/ticket',
     'eventTicket' => '/member/events/tickets',
     'eventRegistrations' => '/member/events/orders?tab=registrations',
+    'eventResult'
+        when registrationId != null && _safeId.hasMatch(registrationId) =>
+      '/member/events/registrations/$registrationId/result',
+    // Without an id the member's own results list is the nearest screen.
+    'eventResult' => '/member/events/results',
+    'eventMedals' => '/member/events/medals',
+    'eventRewards' => '/member/events/rewards',
     _ => null,
   };
 }

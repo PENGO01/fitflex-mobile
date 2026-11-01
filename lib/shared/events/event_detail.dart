@@ -314,6 +314,7 @@ class EventDetail {
     this.shareUrl,
     this.publishedAt,
     this.version,
+    this.resultsStage = 'none',
   });
 
   final EventSummary summary;
@@ -338,6 +339,14 @@ class EventDetail {
   final String? shareUrl;
   final DateTime? publishedAt;
   final int? version;
+
+  /// Events S6 (spec §8.3): `results.stage` of the event, `none` |
+  /// `provisional` | `official`. The "Results" button shows when it is not
+  /// `none` and the server has the public board on.
+  final String resultsStage;
+
+  bool get hasPublishedResults =>
+      resultsStage == 'provisional' || resultsStage == 'official';
 
   String get id => summary.id;
   String get title => summary.title;
@@ -364,6 +373,7 @@ class EventDetail {
     shareUrl: shareUrl,
     publishedAt: publishedAt,
     version: version,
+    resultsStage: resultsStage,
   );
 
   static EventDetail fromJson(Map<String, dynamic> json) => EventDetail(
@@ -407,6 +417,9 @@ class EventDetail {
     shareUrl: _blankToNull(json['shareUrl']),
     publishedAt: parseInstant(json['publishedAt']),
     version: json['version'] is num ? (json['version'] as num).toInt() : null,
+    resultsStage: json['results'] is Map
+        ? ((json['results'] as Map)['stage']?.toString() ?? 'none')
+        : 'none',
   );
 }
 

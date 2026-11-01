@@ -430,6 +430,27 @@ class _EventsDiscoveryViewState extends State<EventsDiscoveryView> {
                 selected: count > 0,
                 onSelected: _openSheet,
               ),
+              if (options.results.enabled) ...[
+                const SizedBox(width: FFTokens.spacingSm),
+                FFFilterChip(
+                  key: const Key('events-chip-results'),
+                  label: context.tr('events.result.entry.myResults'),
+                  icon: Icons.emoji_events_outlined,
+                  selected: false,
+                  onSelected: () =>
+                      context.push(AppRoutes.memberEventMyResults),
+                ),
+              ],
+              if (options.results.rewards) ...[
+                const SizedBox(width: FFTokens.spacingSm),
+                FFFilterChip(
+                  key: const Key('events-chip-medals'),
+                  label: context.tr('events.rewards.entry'),
+                  icon: Icons.military_tech_outlined,
+                  selected: false,
+                  onSelected: () => context.push(AppRoutes.memberEventMedals),
+                ),
+              ],
               if (options.registration && _hasMine) ...[
                 const SizedBox(width: FFTokens.spacingSm),
                 FFFilterChip(

@@ -266,10 +266,14 @@ class RunSplits extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: FFTokens.spacingSm),
-                  Text(
-                    '${formatPace(s)} /km',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: s == fastest ? FontWeight.w700 : null,
+                  Flexible(
+                    flex: 2,
+                    child: Text(
+                      '${formatPace(s)} /km',
+                      textAlign: TextAlign.end,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: s == fastest ? FontWeight.w700 : null,
+                      ),
                     ),
                   ),
                 ],

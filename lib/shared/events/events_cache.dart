@@ -19,6 +19,57 @@ class EventsCache {
   static DateTime? _listAt;
   static final Map<String, (DateTime, Map<String, dynamic>)> _details = {};
 
+  /// Callbacks run by [clearAll] (other in-memory copies, e.g. medal
+  /// pictures).
+  static final List<void Function()> clearHooks = [];
+
+  /// How long a saved results, medals or wallet copy stays usable (security
+  /// review M7). Older copies read as missing.
+  static const Duration mineMaxAge = Duration(hours: 24);
+
+  /// Clock for the age rule (tests).
+  static DateTime Function() clock = DateTime.now;
+
+  /// Sign-out (security review M7): everything this module saved on the
+  /// phone, in memory and in SharedPreferences, so the next person on the
+  /// phone sees nothing of this member's results, medals or rewards.
+  static Future<void> clearAll() async {
+    reset();
+    for (final h in List.of(clearHooks)) {
+      try {
+        h();
+      } catch (_) {}
+    }
+    final p = await _prefs();
+    if (p == null) return;
+    try {
+      for (final k in p.getKeys().toList()) {
+        if (k.startsWith('events.cache.') ||
+            k.startsWith('events.result.asked.')) {
+          await p.remove(k);
+        }
+      }
+    } catch (_) {}
+  }
+
+  /// [getMine], but a copy older than [mineMaxAge] is dropped and reads as
+  /// missing.
+  static Future<(DateTime, Map<String, dynamic>)?> getFreshMine(
+    String kind,
+  ) async {
+    final hit = await getMine(kind);
+    if (hit == null) return null;
+    if (clock().difference(hit.$1) > mineMaxAge) {
+      _mine.remove(kind);
+      final p = await _prefs();
+      try {
+        await p?.remove('$minePrefix$kind');
+      } catch (_) {}
+      return null;
+    }
+    return hit;
+  }
+
   /// Forget everything (tests).
   static void reset() {
     _list = null;

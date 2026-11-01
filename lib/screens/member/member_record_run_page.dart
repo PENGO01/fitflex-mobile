@@ -3,6 +3,9 @@ import 'package:go_router/go_router.dart';
 
 import '../../app_scope.dart';
 import '../../router.dart';
+import '../../shared/api_client.dart';
+import '../../shared/api_error_message.dart';
+import '../../shared/events/event_result.dart';
 import '../../shared/activity/gps_source.dart';
 import '../../shared/activity/run_metrics.dart';
 import '../../shared/activity/run_recorder.dart';
@@ -17,7 +20,12 @@ import 'widgets/share_picker.dart';
 /// Record a run with GPS: Start, Pause/Resume, Finish, then save or discard.
 /// Everything is measured automatically; the route is private.
 class MemberRecordRunPage extends StatefulWidget {
-  const MemberRecordRunPage({super.key});
+  const MemberRecordRunPage({super.key, this.eventRegistrationId});
+
+  /// Events S6 (spec §10.2): record this run for an event registration. The
+  /// run is saved first; adding it to the event can be refused, and the
+  /// member is told why and can keep the run without it.
+  final String? eventRegistrationId;
 
   @override
   State<MemberRecordRunPage> createState() => _MemberRecordRunPageState();
@@ -28,6 +36,39 @@ class _MemberRecordRunPageState extends State<MemberRecordRunPage> {
   final _notes = TextEditingController();
   ShareWith? _share;
   bool _shareChosen = false;
+
+  // Events S6: the event this run is for (title from the result route).
+  String? _eventTitle;
+  String? _eventRefusal;
+  bool _eventBound = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final reg = widget.eventRegistrationId;
+    final r = AppScope.of(context).runRecorder;
+    if (!_eventBound && reg != null && reg.isNotEmpty && r != null) {
+      _eventBound = true;
+      // A run already under way for another registration stays as it is.
+      final ok = r.bindEvent(reg);
+      if (ok) _loadEventTitle(reg);
+    }
+  }
+
+  Future<void> _loadEventTitle(String reg) async {
+    try {
+      final json = await AppScope.of(context).api.getMyEventResult(reg);
+      if (!mounted) return;
+      setState(
+        () => _eventTitle = MemberEventResult.fromJson(
+          json,
+          registrationId: reg,
+        ).eventTitle,
+      );
+    } catch (_) {
+      // The chip falls back to "this event".
+    }
+  }
 
   @override
   void dispose() {
@@ -57,32 +98,67 @@ class _MemberRecordRunPageState extends State<MemberRecordRunPage> {
     if (ok == true) await r.finish();
   }
 
-  Future<void> _save(RunRecorder r) async {
+  Future<void> _save(RunRecorder r, {bool withoutEvent = false}) async {
     final scope = AppScope.of(context);
     final shell = context.findAncestorStateOfType<MemberShellState>();
     final messenger = ScaffoldMessenger.of(context);
     final messengerSnack = FFSnack.of(context);
     final saved = context.tr('run.savedToast');
     final tr = FFLocaleScope.of(context).t;
-    setState(() => _saving = true);
+    final locale = FFLocaleScope.of(context);
+    final reg = r.eventRegistrationId;
+    final forEvent = reg != null && !withoutEvent;
+    setState(() {
+      _saving = true;
+      _eventRefusal = null;
+    });
     try {
-      await r.save(
-        scope.api,
-        notes: _notes.text,
-        shareWith: _share?.toJson(),
-        shareChosen: _shareChosen,
-      );
+      if (withoutEvent) {
+        await r.saveWithoutEvent(
+          scope.api,
+          notes: _notes.text,
+          shareWith: _share?.toJson(),
+          shareChosen: _shareChosen,
+        );
+      } else {
+        await r.save(
+          scope.api,
+          notes: _notes.text,
+          shareWith: _share?.toJson(),
+          shareChosen: _shareChosen,
+        );
+      }
       // The run is saved by now: a refresh that fails must not say it wasn't.
       try {
         await shell?.refreshAfterWorkout();
       } catch (_) {}
       messengerSnack.success(saved);
-      if (mounted) context.go(AppRoutes.memberActivity);
+      if (mounted) {
+        context.go(
+          forEvent
+              ? AppRoutes.memberEventResultPath(reg)
+              : AppRoutes.memberActivity,
+        );
+      }
     } catch (e) {
+      // A refusal to add the run to the event (outside the time, too short,
+      // already added…) is explained in words; the run is still on the phone
+      // and "Keep the run without adding it to the event" saves it.
+      if (forEvent && e is ApiException && e.status >= 400 && e.status < 500) {
+        final known = _eventRunRefusals.contains(e.code);
+        if (known) {
+          if (mounted) setState(() => _eventRefusal = errorMessage(locale, e));
+          return;
+        }
+      }
       messenger.showSnackBar(
         SnackBar(
           key: const Key('run-save-failed'),
-          content: Text(tr(runSaveFailureKey(e))),
+          content: Text(
+            forEvent && isNetworkError(e)
+                ? tr('events.run.offlinePending')
+                : tr(runSaveFailureKey(e)),
+          ),
           duration: const Duration(seconds: 6),
         ),
       );
@@ -141,6 +217,26 @@ class _MemberRecordRunPageState extends State<MemberRecordRunPage> {
                     message: context.tr('run.restoredBody'),
                   ),
                 ),
+              if (r.eventRegistrationId != null)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: FFTokens.spacingMd),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: FFBadge(
+                      key: const Key('run-event-chip'),
+                      label: context
+                          .tr('events.run.recordingFor')
+                          .replaceFirst(
+                            '{event}',
+                            (_eventTitle ?? '').isEmpty
+                                ? context.tr('events.run.thisEvent')
+                                : _eventTitle!,
+                          ),
+                      tone: FFBadgeTone.brand,
+                      wrap: true,
+                    ),
+                  ),
+                ),
               if (r.access != null && r.access != GpsAccess.granted)
                 _AccessAlert(recorder: r),
               RunMap(
@@ -192,6 +288,22 @@ class _MemberRecordRunPageState extends State<MemberRecordRunPage> {
                   context.tr('run.privateNote'),
                   style: theme.textTheme.bodySmall,
                 ),
+                if (_eventRefusal != null) ...[
+                  const SizedBox(height: FFTokens.spacingSm),
+                  FFAlert(
+                    key: const Key('run-event-refused'),
+                    tone: FFAlertTone.warning,
+                    message: _eventRefusal!,
+                  ),
+                  FFButton(
+                    key: const Key('run-keep-without-event'),
+                    label: context.tr('events.run.keep'),
+                    variant: FFButtonVariant.secondary,
+                    onPressed: _saving
+                        ? null
+                        : () => _save(r, withoutEvent: true),
+                  ),
+                ],
                 const SizedBox(height: FFTokens.spacingMd),
                 Row(
                   children: [
@@ -199,6 +311,7 @@ class _MemberRecordRunPageState extends State<MemberRecordRunPage> {
                       child: FFButton(
                         key: const Key('run-discard'),
                         label: context.tr('run.discard'),
+                        maxLines: 3,
                         onPressed: _saving ? null : () => _discard(r),
                         variant: FFButtonVariant.secondary,
                       ),
@@ -207,7 +320,12 @@ class _MemberRecordRunPageState extends State<MemberRecordRunPage> {
                     Expanded(
                       child: FFButton(
                         key: const Key('run-save'),
-                        label: context.tr('run.save'),
+                        label: context.tr(
+                          r.eventRegistrationId != null
+                              ? 'events.run.save'
+                              : 'run.save',
+                        ),
+                        maxLines: 3,
                         onPressed: _saving ? null : () => _save(r),
                       ),
                     ),
@@ -274,6 +392,19 @@ class _MemberRecordRunPageState extends State<MemberRecordRunPage> {
     );
   }
 }
+
+/// Refusals of "add this run to the event" that the member can read and act
+/// on (spec §5.2). Anything else is the general save failure.
+const _eventRunRefusals = {
+  'run_outside_window',
+  'distance_too_short',
+  'activity_not_recorded_in_app',
+  'activity_already_linked',
+  'run_already_linked',
+  'event_not_open_for_results',
+  'registration_not_found',
+  'feature_disabled',
+};
 
 class _Controls extends StatelessWidget {
   const _Controls({

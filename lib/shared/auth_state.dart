@@ -7,6 +7,7 @@ import 'firebase_auth_service.dart';
 import 'held_nav_extras.dart';
 import 'events/event_claim_link.dart';
 import 'events/event_ticket.dart' show EventTicketCache;
+import 'events/events_cache.dart' show EventsCache;
 import 'partner_details.dart';
 import 'pending_friend_invite.dart';
 import 'pending_org_invite.dart';
@@ -542,6 +543,8 @@ class AuthState extends ChangeNotifier {
       await PendingEventClaim.clear();
       // Event tickets saved for offline use are this member's alone.
       await EventTicketCache.clearAll();
+      // And so are results, medals, rewards and the event lists (M7).
+      await EventsCache.clearAll();
     }
     // Partner date of birth: the session copy and the device-side prompt
     // counts are not the next person's (security review L1/L2).
