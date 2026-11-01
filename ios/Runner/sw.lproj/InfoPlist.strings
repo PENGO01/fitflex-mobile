@@ -1,8 +1,8 @@
 /* iOS permission prompts (Swahili). Draft: needs native review. */
 
-"NSLocationWhenInUseUsageDescription" = "FitFlex hutumia mahali ulipo kukuonyesha gym zilizo karibu nawe, kurekodi mbio zako, kuweka gym yako kwenye ramani na, ukichagua, kukadiria eneo lako kwa ajili ya duka. Mahali hasa ulipo hapatumiki kwa duka.";
-"NSLocationAlwaysUsageDescription" = "FitFlex hutumia mahali ulipo chinichini tu unaporekodi mbio.";
+"NSLocationWhenInUseUsageDescription" = "FitFlex hutumia mahali ulipo kukuonyesha gym zilizo karibu nawe na njia za kufika huko, kuweka gym yako kwenye ramani na, ukichagua, kukadiria eneo lako kwa ajili ya duka na kupata gym za kuchukulia bidhaa zilizo karibu nawe.";
 "NSMotionUsageDescription" = "FitFlex huhesabu hatua zako kufuatilia malengo na changamoto za shughuli zako.";
-"NSContactsUsageDescription" = "FitFlex husoma mwasiliani unayemchagua ili umpate na umualike. Orodha yako ya mawasiliano haipakiwi.";
-"NSCameraUsageDescription" = "FitFlex inahitaji kamera kuchanganua misimbo ya QR ya wanachama na kupiga picha za gym.";
-"NSPhotoLibraryUsageDescription" = "FitFlex inahitaji kufikia picha zako ili kupakia picha za gym.";
+"NSContactsUsageDescription" = "FitFlex hufungua mawasiliano yako ili uchague rafiki na umtafute kwenye FitFlex. Namba au barua pepe unayochagua ndiyo pekee inayotafutwa. Orodha yako ya mawasiliano haipakiwi.";
+"NSCameraUsageDescription" = "FitFlex hutumia kamera yako kuchanganua misimbo ya QR ya kuingia gym na kupiga picha unazochagua kuongeza, kama picha za wasifu, gym na uthibitisho.";
+"NSPhotoLibraryUsageDescription" = "FitFlex hufungua picha zako ili uchague za kupakia, kama picha za wasifu, gym, bidhaa na nyaraka za uthibitisho.";
+"NSPhotoLibraryAddUsageDescription" = "FitFlex huhifadhi picha kwenye maktaba yako ya picha pale tu unapochagua, kama kadi ya matokeo ya tukio lako.";

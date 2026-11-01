@@ -10,7 +10,7 @@
 		<string>sw</string>
 	</array>
 	<key>CFBundleDisplayName</key>
-	<string>Fitflexmobile</string>
+	<string>FitFlex</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -18,7 +18,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>fitflexmobile</string>
+	<string>FitFlex</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -27,6 +27,8 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
@@ -52,18 +54,18 @@
 	<true/>
 	<!-- Location permissions -->
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>FitFlex uses your location to show gyms near you, record your runs, place your gym on the map and, if you choose, find your approximate area for the shop. Your exact location isn&apos;t used for the shop.</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>FitFlex uses your location in the background only while you record a run.</string>
+	<string>FitFlex uses your location to show gyms near you and directions to them, place your gym on the map and, if you choose, find your approximate area for the shop and the pickup gyms closest to you.</string>
 	<!-- Camera permission -->
 	<key>NSMotionUsageDescription</key>
 	<string>FitFlex counts your steps to track your activity goals and challenges.</string>
 	<key>NSContactsUsageDescription</key>
-	<string>FitFlex reads the contact you choose so you can find them and invite them. Your address book is not uploaded.</string>
+	<string>FitFlex opens your contacts so you can pick a friend and find them on FitFlex. Only the number or email you choose is searched. Your address book is not uploaded.</string>
 	<key>NSCameraUsageDescription</key>
-	<string>FitFlex needs camera access to scan member QR codes and take gym photos.</string>
+	<string>FitFlex uses your camera to scan QR codes for check-in and to take photos you choose to add, such as profile, gym and verification photos.</string>
 	<!-- Photo library permission -->
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>FitFlex needs photo library access to upload gym images.</string>
+	<string>FitFlex opens your photo library so you can choose pictures to upload, such as profile, gym and product photos and verification documents.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>FitFlex saves a picture to your photo library only when you choose to, such as your event result card.</string>
 </dict>
 </plist>

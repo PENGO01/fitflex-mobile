@@ -11,6 +11,7 @@ import '../../shared/widgets/profile_form_page.dart';
 import '../language_screen.dart';
 import 'owner_shell.dart';
 import 'widgets/checkin_alerts_switch.dart';
+import '../../shared/widgets/delete_account.dart';
 import '../../shared/widgets/persona_switcher.dart';
 import '../../shared/widgets/invitations.dart';
 import '../../shared/widgets/verify_identifier.dart';
@@ -212,6 +213,8 @@ class _OwnerProfilePageState extends State<OwnerProfilePage> {
               style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
             ),
           ),
+          const SizedBox(height: FFTokens.spacingXs),
+          const DeleteAccountButton(),
         ],
       ),
     );

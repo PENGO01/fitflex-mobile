@@ -19,6 +19,7 @@ import 'widgets/home_hero.dart';
 import 'widgets/membership_card.dart';
 import 'widgets/pass_state.dart';
 import 'member_edit_profile_page.dart';
+import '../../shared/widgets/delete_account.dart';
 import '../../shared/widgets/persona_switcher.dart';
 import '../../shared/widgets/invitations.dart';
 import '../../shared/widgets/verify_identifier.dart';
@@ -401,6 +402,8 @@ class _MemberProfileTabState extends State<MemberProfileTab> {
         style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
       ),
     ),
+    const SizedBox(height: FFTokens.spacingXs),
+    const DeleteAccountButton(),
   ];
 
   /// PHOTO_HERO_UI (spec §21): avatar and name on a compact hero under the
