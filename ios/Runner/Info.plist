@@ -55,6 +55,9 @@
 	<!-- Location permissions -->
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>FitFlex uses your location to show gyms near you and directions to them, place your gym on the map and, if you choose, find your approximate area for the shop and the pickup gyms closest to you.</string>
+	<!-- Never requested: geolocator links the Always API, so App Store Connect requires this key (ITMS-90683). -->
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>FitFlex uses your location only while you are using the app, to show gyms near you and directions to them, and to place your gym on the map. It does not track your location in the background.</string>
 	<!-- Camera permission -->
 	<key>NSMotionUsageDescription</key>
 	<string>FitFlex counts your steps to track your activity goals and challenges.</string>

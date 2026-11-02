@@ -21,15 +21,24 @@ void main() {
   });
 
   test('no background location: iPhone has no run recording', () {
-    // Both come back together if GeolocatorGpsSource is enabled on iOS.
+    // UIBackgroundModes comes in if GeolocatorGpsSource is enabled on iOS.
     final gps = File(
       'lib/shared/activity/providers/geolocator_gps_source.dart',
     ).readAsStringSync();
     expect(gps, contains('defaultTargetPlatform == TargetPlatform.android'));
-    expect(plist, isNot(contains('NSLocationAlways')));
     expect(plist, isNot(contains('UIBackgroundModes')));
-    expect(en, isNot(contains('NSLocationAlways')));
-    expect(sw, isNot(contains('NSLocationAlways')));
+  });
+
+  test('the Always purpose text is there and says the truth', () {
+    // App Store Connect refuses the build without it (ITMS-90683): geolocator
+    // links the Always API, though the app never asks for it.
+    const key = 'NSLocationAlwaysAndWhenInUseUsageDescription';
+    expect(plist, contains(key));
+    for (final text in [plist, en]) {
+      expect(text, contains('does not track your location in the background'));
+    }
+    expect(sw, contains('$key" = "'));
+    expect(sw, contains('chinichini'));
   });
 
   test('the location prompt does not promise runs on iPhone', () {
