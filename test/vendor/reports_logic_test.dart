@@ -8,6 +8,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:fitflexmobile/screens/vendor/reports/report_export.dart';
 import 'package:fitflexmobile/screens/vendor/reports/report_models.dart';
 import 'package:fitflexmobile/screens/vendor/reports/report_period.dart';
+import 'package:fitflexmobile/screens/vendor/reports/report_widgets.dart'
+    show labelStep, reportMoney;
 import 'package:fitflexmobile/screens/vendor/reports/report_section_page.dart'
     show periodFromLink, reportSectionLink;
 import 'package:fitflexmobile/screens/vendor/stock/stock_options.dart';
@@ -437,6 +439,63 @@ void main() {
         ).queryFor(ReportSection.products)['q']!.length,
         80,
       );
+    });
+  });
+
+  group('UAT fixes', () {
+    test('D6/D11: money keeps sign, currency and number together', () {
+      expect(reportMoney(39000), 'TSh\u00a039,000');
+      expect(reportMoney(-39000), '−TSh\u00a039,000');
+      expect(reportMoney(0), 'TSh\u00a00');
+      expect(reportMoney(-39000), isNot(contains(' ')));
+      expect(reportMoney(-39000), isNot(contains('-')));
+    });
+
+    test('D11/D12: percent always one decimal, same minus', () {
+      expect(formatPct(25), '25.0%');
+      expect(formatPct(27.04), '27.0%');
+      expect(formatPct(-5), '−5.0%');
+    });
+
+    test('D5: chart labels thinned so whole labels fit', () {
+      // 29 days at a 327px chart (375 phone minus padding): every 3rd day.
+      expect(labelStep(bars: 29, width: 279, groupBy: ReportGroupBy.day), 3);
+      expect(labelStep(bars: 7, width: 279, groupBy: ReportGroupBy.day), 1);
+      // Week labels ("12 Oct") need more room.
+      expect(labelStep(bars: 5, width: 279, groupBy: ReportGroupBy.week), 1);
+      expect(labelStep(bars: 26, width: 279, groupBy: ReportGroupBy.week), 5);
+      // Larger text, fewer labels.
+      expect(
+        labelStep(
+          bars: 29,
+          width: 279,
+          groupBy: ReportGroupBy.day,
+          textScale: 2,
+        ),
+        5,
+      );
+      expect(labelStep(bars: 1, width: 279, groupBy: ReportGroupBy.day), 1);
+    });
+
+    test('D10: every counted string has an English singular', () {
+      for (final k in const [
+        'salesN',
+        'itemsN',
+        'unitsN',
+        'ordersN',
+        'countTimes',
+        'voided',
+        'pendingSync',
+        'profit.uncosted',
+        'stock.costUnknown',
+      ]) {
+        final one = FFLocale.textOf('en', 'vendor.reports.${k}One');
+        expect(one, isNotNull, reason: k);
+        expect(FFLocale.textOf('sw', 'vendor.reports.${k}One'), isNotNull);
+        expect(one, isNot(FFLocale.textOf('en', 'vendor.reports.$k')));
+      }
+      expect(FFLocale.textOf('en', 'vendor.reports.salesNOne'), '{n} sale');
+      expect(FFLocale.textOf('en', 'vendor.reports.countTimesOne'), '{n} time');
     });
   });
 

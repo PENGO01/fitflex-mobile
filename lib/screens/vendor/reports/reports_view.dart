@@ -22,6 +22,10 @@ import 'report_section_page.dart' show reportSectionLink;
 import 'report_sections.dart';
 import 'report_widgets.dart';
 
+extension on String {
+  String ifEmpty(String other) => isEmpty ? other : this;
+}
+
 class VendorReportsView extends StatefulWidget {
   const VendorReportsView({
     super.key,
@@ -60,6 +64,13 @@ class VendorReportsViewState extends State<VendorReportsView> {
   int _seq = 0;
   bool _started = false;
   ({ReportPeriod period, Map<String, dynamic>? data})? _previous;
+  final _periodFocus = FocusNode(debugLabel: 'reports-period');
+
+  @override
+  void dispose() {
+    _periodFocus.dispose();
+    super.dispose();
+  }
 
   @override
   void didChangeDependencies() {
@@ -148,10 +159,8 @@ class VendorReportsViewState extends State<VendorReportsView> {
       'd': reportMoney(-numAt(sales, 'discountTzs')),
       'r': reportMoney(-numAt(sales, 'refundTzs')),
     });
-    final countLine = fillIn(t('vendor.reports.countLine'), {
-      'n': count,
-      'u': numAt(sales, 'itemsSold'),
-    });
+    final countLine =
+        '${reportPlural(context, 'vendor.reports.salesN', count)} · ${reportPlural(context, 'vendor.reports.itemsN', numAt(sales, 'itemsSold'))}';
     return ReportCard(
       key: const Key('reports-card-sales'),
       title: t('vendor.reports.view.sales'),
@@ -201,10 +210,12 @@ class VendorReportsViewState extends State<VendorReportsView> {
           Text(countLine, style: Theme.of(context).textTheme.bodySmall),
           if (numAt(voided, 'count') > 0)
             Text(
-              fillIn(t('vendor.reports.voided'), {
-                'n': numAt(voided, 'count'),
-                'amount': reportMoney(numAt(voided, 'totalTzs')),
-              }),
+              reportPlural(
+                context,
+                'vendor.reports.voided',
+                numAt(voided, 'count'),
+                {'amount': reportMoney(numAt(voided, 'totalTzs'))},
+              ),
               style: Theme.of(context).textTheme.bodySmall,
             ),
         ],
@@ -235,7 +246,7 @@ class VendorReportsViewState extends State<VendorReportsView> {
             ReportRow(
               label:
                   '${productWords(context, p)} · '
-                  '${fillIn(t('vendor.reports.unitsN'), {'n': numAt(p, 'unitsSold')})}',
+                  '${reportPlural(context, 'vendor.reports.unitsN', numAt(p, 'unitsSold'))}',
               value: reportMoney(numAt(p, 'netRevenueTzs')),
             ),
           Text(slow, style: Theme.of(context).textTheme.bodySmall),
@@ -280,7 +291,11 @@ class VendorReportsViewState extends State<VendorReportsView> {
           ),
           if (unknown != null && unknown > 0)
             Text(
-              fillIn(t('vendor.reports.stock.costUnknown'), {'n': unknown}),
+              reportPlural(
+                context,
+                'vendor.reports.stock.costUnknown',
+                unknown,
+              ),
               style: Theme.of(context).textTheme.bodySmall,
             ),
         ],
@@ -291,15 +306,17 @@ class VendorReportsViewState extends State<VendorReportsView> {
   Widget _profitCard(Map<String, dynamic> profit) {
     final t = context.tr;
     final uncosted = mapAt(profit, 'uncosted');
-    final value = reportMoney(numAt(profit, 'profitTzs'));
+    final value = profitWords(context, profit);
     final margin = formatPct(maybeNum(profit, 'marginPct'));
     final uncostedText =
         uncosted != null &&
             (numAt(uncosted, 'qty') > 0 || numAt(uncosted, 'revenueTzs') > 0)
-        ? fillIn(t('vendor.reports.profit.uncosted'), {
-            'n': numAt(uncosted, 'qty'),
-            'amount': reportMoney(numAt(uncosted, 'revenueTzs')),
-          })
+        ? reportPlural(
+            context,
+            'vendor.reports.profit.uncosted',
+            numAt(uncosted, 'qty'),
+            {'amount': reportMoney(numAt(uncosted, 'revenueTzs'))},
+          )
         : null;
     return ReportCard(
       key: const Key('reports-card-profit'),
@@ -383,13 +400,21 @@ class VendorReportsViewState extends State<VendorReportsView> {
     return ReportCard(
       key: const Key('reports-card-methods'),
       title: t('vendor.reports.view.methods'),
+      // Each group read under its own name, the shop's money apart from the
+      // app's (UAT D14): "Collected by you: Cash after change TSh 120,000,
+      // M-Pesa TSh 80,000. Paid through FitFlex: M-Pesa TSh 150,000".
       semanticSummary: [
-        for (final r in listAt(methods, 'byYou'))
-          '${t(methodKey(r['method']?.toString(), byYou: true))} '
-              '${reportMoney(numAt(r, 'amountTzs'))}',
-        for (final r in listAt(methods, 'viaFitFlex'))
-          '${t(methodKey(r['paymentMethod']?.toString()))} '
-              '${reportMoney(numAt(r, 'amountTzs'))}',
+        for (final g in [
+          ('vendor.reports.methods.byYou', 'byYou', 'method', true),
+          (
+            'vendor.reports.methods.viaFitFlex',
+            'viaFitFlex',
+            'paymentMethod',
+            false,
+          ),
+        ])
+          '${t(g.$1)}: ${[for (final r in listAt(methods, g.$2).take(3)) '${t(methodKey(r[g.$3]?.toString(), byYou: g.$4))} '
+                '${reportMoney(numAt(r, 'amountTzs'))}'].join(', ').ifEmpty(t('vendor.reports.methods.none'))}',
       ].join('. '),
       onTap: () => _open(ReportSection.methods),
       child: MethodsReportBody(data: methods, limit: 3),
@@ -406,21 +431,23 @@ class VendorReportsViewState extends State<VendorReportsView> {
     final customers = mapAt(d, 'customers');
     final lang = reportLang(context);
     return [
-      if (_empty)
-        FFEmptyState(
-          key: const Key('reports-empty'),
-          icon: Icons.bar_chart_outlined,
-          title: fillIn(context.tr('vendor.reports.empty'), {
-            'period': periodInWords(_period.from, _period.to, lang),
-          }),
-          action: FFButton(
-            key: const Key('reports-try-period'),
-            label: context.tr('vendor.reports.tryPeriod'),
-            variant: FFButtonVariant.secondary,
-            onPressed: () => Scrollable.maybeOf(context)?.position.animateTo(
-              0,
-              duration: const Duration(milliseconds: 200),
-              curve: Curves.easeOut,
+      if (neverSold(d))
+        ReportFirstUse(access: a)
+      else if (_empty)
+        // Its own node: never read as part of the Stock value card (D14).
+        Semantics(
+          container: true,
+          child: FFEmptyState(
+            key: const Key('reports-empty'),
+            icon: Icons.bar_chart_outlined,
+            title: fillIn(context.tr('vendor.reports.empty'), {
+              'period': periodInWords(_period.from, _period.to, lang),
+            }),
+            action: FFButton(
+              key: const Key('reports-try-period'),
+              label: context.tr('vendor.reports.tryPeriod'),
+              variant: FFButtonVariant.secondary,
+              onPressed: () => focusPeriod(context, _periodFocus),
             ),
           ),
         )
@@ -430,7 +457,7 @@ class VendorReportsViewState extends State<VendorReportsView> {
       ],
       // Stock value is not period-based: it shows on an empty period too.
       if (a.stock && stock != null) _stockCard(stock),
-      if (!_empty) ...[
+      if (!_empty && !neverSold(d)) ...[
         if (a.cost && profit != null) _profitCard(profit),
         if (a.payouts && payouts != null) _payoutsCard(payouts),
         if (a.customers && customers != null) _customersCard(customers),
@@ -472,10 +499,14 @@ class VendorReportsViewState extends State<VendorReportsView> {
       content = Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          // Each card its own node (UAT D14).
           for (final c in _cards())
-            Padding(
-              padding: const EdgeInsets.only(bottom: FFTokens.spacingMd),
-              child: c,
+            Semantics(
+              container: true,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: FFTokens.spacingMd),
+                child: c,
+              ),
             ),
         ],
       );
@@ -488,6 +519,7 @@ class VendorReportsViewState extends State<VendorReportsView> {
           period: _period,
           now: widget.now,
           serverError: _rangeError,
+          periodFocus: _periodFocus,
           onPeriod: (p) => _change(() => _period = p),
           channel: _showChannels ? _channel : null,
           onChannel: (c) {
@@ -506,9 +538,11 @@ class VendorReportsViewState extends State<VendorReportsView> {
           const SizedBox(height: FFTokens.spacingSm),
           FFAlert(
             key: const Key('reports-pending-sync'),
-            message: fillIn(t('vendor.reports.pendingSync'), {
-              'n': widget.pendingSales,
-            }),
+            message: reportPlural(
+              context,
+              'vendor.reports.pendingSync',
+              widget.pendingSales,
+            ),
             tone: FFAlertTone.warning,
           ),
         ],

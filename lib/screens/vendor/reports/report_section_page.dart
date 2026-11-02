@@ -107,6 +107,7 @@ class _ReportSectionPageState extends State<ReportSectionPage> {
   ({ReportPeriod period, Map<String, dynamic>? data, ReportGroupBy? groupBy})?
   _previous;
   final _scroll = ScrollController();
+  final _periodFocus = FocusNode(debugLabel: 'reports-period');
 
   // Products (§6).
   String _sort = 'revenue';
@@ -132,6 +133,7 @@ class _ReportSectionPageState extends State<ReportSectionPage> {
   @override
   void dispose() {
     _scroll.dispose();
+    _periodFocus.dispose();
     super.dispose();
   }
 
@@ -361,6 +363,11 @@ class _ReportSectionPageState extends State<ReportSectionPage> {
       );
     }
     if (data == null) return const ReportLoading();
+    // Never sold (`hasEverSold: false`): first use, not "no sales in …".
+    // Stock value is about what is on the shelf, so it still shows.
+    if (neverSold(data) && _section != ReportSection.stock) {
+      return ReportFirstUse(access: _access ?? ReportAccess.none);
+    }
     if (_empty) {
       final lang = reportLang(context);
       return FFEmptyState(
@@ -376,13 +383,16 @@ class _ReportSectionPageState extends State<ReportSectionPage> {
                 key: const Key('reports-try-period'),
                 label: t('vendor.reports.tryPeriod'),
                 variant: FFButtonVariant.secondary,
-                onPressed: () => _scroll.hasClients
-                    ? _scroll.animateTo(
-                        0,
-                        duration: const Duration(milliseconds: 200),
-                        curve: Curves.easeOut,
-                      )
-                    : null,
+                onPressed: () {
+                  if (_scroll.hasClients) {
+                    _scroll.animateTo(
+                      0,
+                      duration: const Duration(milliseconds: 200),
+                      curve: Curves.easeOut,
+                    );
+                  }
+                  _periodFocus.requestFocus();
+                },
               )
             : null,
       );
@@ -551,6 +561,7 @@ class _ReportSectionPageState extends State<ReportSectionPage> {
                   if (_section.usesPeriod)
                     ReportControls(
                       period: _period,
+                      periodFocus: _periodFocus,
                       now: widget.now,
                       onPeriod: _setPeriod,
                       serverError: _rangeError,

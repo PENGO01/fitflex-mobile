@@ -23,11 +23,18 @@ class ActivityBarChart extends StatefulWidget {
     required this.data,
     this.height = 140,
     this.formatValue,
+    this.wideLabels = false,
   });
 
   final List<BarDatum> data;
   final double height;
   final String Function(num value)? formatValue;
+
+  /// Each label is centred under its bar and may be wider than the bar, so
+  /// it is never clipped ("12 Oct" under a thin bar). The caller leaves
+  /// labels empty to thin them out so they do not overlap (vendor reports,
+  /// UAT D5). Off: one clipped label per bar, as before.
+  final bool wideLabels;
 
   @override
   State<ActivityBarChart> createState() => _ActivityBarChartState();
@@ -117,26 +124,72 @@ class _ActivityBarChartState extends State<ActivityBarChart> {
         Divider(height: 1, color: theme.colorScheme.outlineVariant),
         const SizedBox(height: FFTokens.spacingXs),
         ExcludeSemantics(
-          child: Row(
-            children: [
-              for (var i = 0; i < data.length; i++)
-                Expanded(
-                  child: Text(
-                    data[i].label,
-                    textAlign: TextAlign.center,
-                    maxLines: 1,
-                    overflow: TextOverflow.clip,
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: i == selected
-                          ? theme.colorScheme.onSurface
-                          : theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
+          child: widget.wideLabels
+              ? _wideLabels(context, selected)
+              : Row(
+                  children: [
+                    for (var i = 0; i < data.length; i++)
+                      Expanded(
+                        child: Text(
+                          data[i].label,
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          overflow: TextOverflow.clip,
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: i == selected
+                                ? theme.colorScheme.onSurface
+                                : theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
-            ],
-          ),
         ),
       ],
+    );
+  }
+
+  /// Labels centred on their bars, as wide as they need (up to 4 bars).
+  Widget _wideLabels(BuildContext context, int selected) {
+    final theme = Theme.of(context);
+    final data = widget.data;
+    return LayoutBuilder(
+      builder: (context, box) {
+        final slot = box.maxWidth / data.length;
+        final labelWidth = (slot * 4).clamp(slot, box.maxWidth).toDouble();
+        TextStyle? style(int i) => theme.textTheme.labelSmall?.copyWith(
+          color: i == selected
+              ? theme.colorScheme.onSurface
+              : theme.colorScheme.onSurfaceVariant,
+        );
+        return Stack(
+          clipBehavior: Clip.none,
+          children: [
+            // Gives the row its height.
+            Opacity(opacity: 0, child: Text('0', style: style(0))),
+            for (var i = 0; i < data.length; i++)
+              if (data[i].label.isNotEmpty)
+                Positioned(
+                  left: (slot * (i + 0.5) - labelWidth / 2)
+                      .clamp(0.0, box.maxWidth - labelWidth)
+                      .toDouble(),
+                  width: labelWidth,
+                  child: Text(
+                    data[i].label,
+                    key: Key('bar-label-$i'),
+                    textAlign: slot * (i + 0.5) < labelWidth / 2
+                        ? TextAlign.left
+                        : slot * (i + 0.5) > box.maxWidth - labelWidth / 2
+                        ? TextAlign.right
+                        : TextAlign.center,
+                    maxLines: 1,
+                    softWrap: false,
+                    style: style(i),
+                  ),
+                ),
+          ],
+        );
+      },
     );
   }
 }

@@ -5539,6 +5539,23 @@ class FFLocale extends ChangeNotifier {
       'merch.preview.light': 'Light',
       'merch.preview.dark': 'Dark',
       // Vendor tools · S6: reports and CSV / PDF downloads (fitflex-functions#275).
+      'vendor.reports.itemsN': '{n} items',
+      'vendor.reports.itemsNOne': '{n} item',
+      'vendor.reports.salesNOne': '{n} sale',
+      'vendor.reports.unitsNOne': '{n} unit',
+      'vendor.reports.ordersNOne': '{n} order',
+      'vendor.reports.countTimesOne': '{n} time',
+      'vendor.reports.voidedOne': 'Voided (not counted): {n} sale · {amount}',
+      'vendor.reports.pendingSyncOne':
+          '{n} sale on this phone is waiting to sync and is not in these figures.',
+      'vendor.reports.profit.uncostedOne':
+          'Sold without a cost price: {n} item · {amount}. Not in profit.',
+      'vendor.reports.stock.costUnknownOne':
+          '{n} product in stock has no cost price, so it is not in the cost value.',
+      'vendor.reports.emptyFirst':
+          'Your reports fill up as you sell in the app or record shop sales.',
+      'vendor.reports.recordSale': 'Record a sale',
+      'vendor.reports.addProducts': 'Add products',
       'vendor.reports.pdfUnavailable':
           'The PDF can\'t be made right now. Try again later, or download a CSV.',
       'vendor.reports.rateLimited':
@@ -5595,7 +5612,6 @@ class FFLocale extends ChangeNotifier {
       'vendor.reports.salesCount': 'Sales',
       'vendor.reports.itemsSold': 'Items sold',
       'vendor.reports.grossLine': 'Gross {g} · Discounts {d} · Refunds {r}',
-      'vendor.reports.countLine': '{n} sales · {u} items',
       'vendor.reports.salesN': '{n} sales',
       'vendor.reports.unitsN': '{n} units',
       'vendor.reports.ordersN': '{n} orders',
@@ -13089,6 +13105,24 @@ class FFLocale extends ChangeNotifier {
       'merch.preview.light': 'Mwanga',
       'merch.preview.dark': 'Giza',
       // Vendor tools · S6: ripoti (rasimu: kwa ukaguzi wa mzungumzaji asilia; draft for native review).
+      'vendor.reports.itemsN': 'bidhaa {n}',
+      'vendor.reports.itemsNOne': 'bidhaa {n}',
+      'vendor.reports.salesNOne': 'Mauzo {n}',
+      'vendor.reports.unitsNOne': 'Idadi {n}',
+      'vendor.reports.ordersNOne': 'Oda {n}',
+      'vendor.reports.countTimesOne': 'Mara {n}',
+      'vendor.reports.voidedOne':
+          'Yamebatilishwa (hayahesabiwi): mauzo {n} · {amount}',
+      'vendor.reports.pendingSyncOne':
+          'Mauzo {n} kwenye simu hii yanasubiri kutumwa na hayamo kwenye takwimu hizi.',
+      'vendor.reports.profit.uncostedOne':
+          'Zimeuzwa bila bei ya kununua: bidhaa {n} · {amount}. Hazimo kwenye faida.',
+      'vendor.reports.stock.costUnknownOne':
+          'Bidhaa {n} iliyopo kwenye Stock haina bei ya kununua, kwa hiyo haimo kwenye thamani kwa bei ya kununua.',
+      'vendor.reports.emptyFirst':
+          'Ripoti zako zitajaa kadiri unavyouza kwenye app au kurekodi mauzo ya dukani.',
+      'vendor.reports.recordSale': 'Rekodi mauzo',
+      'vendor.reports.addProducts': 'Ongeza bidhaa',
       'vendor.reports.pdfUnavailable':
           'PDF haiwezi kutengenezwa kwa sasa. Jaribu tena baadaye au pakua CSV.',
       'vendor.reports.rateLimited':
@@ -13146,7 +13180,6 @@ class FFLocale extends ChangeNotifier {
       'vendor.reports.salesCount': 'Idadi ya mauzo',
       'vendor.reports.itemsSold': 'Bidhaa zilizouzwa',
       'vendor.reports.grossLine': 'Jumla {g} · Punguzo {d} · Marejesho {r}',
-      'vendor.reports.countLine': 'Mauzo {n} · bidhaa {u}',
       'vendor.reports.salesN': 'Mauzo {n}',
       'vendor.reports.unitsN': 'Idadi {n}',
       'vendor.reports.ordersN': 'Oda {n}',

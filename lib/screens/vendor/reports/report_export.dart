@@ -4,8 +4,9 @@
 // never holds more than the screen.
 //
 // Files go out the S5 way (DocumentActions): Android hands them to the
-// system share sheet; Flutter web downloads the CSV and opens the PDF in a
-// new tab (downloaded when the browser blocks the tab). Nothing is kept on
+// system share sheet; Flutter web downloads both the CSV and the PDF with
+// the server's file name (a blob and an anchor with download=; UAT D4: the
+// PDF no longer opens in a new tab). Nothing is kept on
 // the device. Tests replace DocumentActions; nothing here talks to a real
 // server.
 import 'package:flutter/material.dart';
@@ -196,7 +197,8 @@ class _ReportExportSheetState extends State<ReportExportSheet> {
       final mime = format == 'pdf' ? 'application/pdf' : 'text/csv';
       if (DocumentActions.isWeb()) {
         if (format == 'pdf') {
-          await DocumentActions.openPdf(out.bytes, name);
+          // A download with the server's file name, not a new tab (UAT D4).
+          await DocumentActions.download(out.bytes, name, mime);
         } else {
           await DocumentActions.download(out.bytes, name, mime);
         }

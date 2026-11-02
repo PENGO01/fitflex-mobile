@@ -2,18 +2,92 @@
 // card lists (phone) from the server's answer. The server computes every
 // figure; nothing here adds pages up or fills in a missing cost with 0.
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../shared/components/components.dart';
 import '../../../shared/design_tokens.dart';
 import '../../../shared/formatters.dart';
 import '../../../shared/i18n.dart';
-import '../stock/stock_options.dart' show fillIn, formatStock;
+import '../sales/sales_widgets.dart' show posRoute;
+import '../stock/stock_options.dart' show canVendor, fillIn, formatStock;
 import 'report_models.dart';
 import 'report_period.dart';
 import 'report_widgets.dart';
 
 /// Negative figures (discounts, refunds, commission) with a minus sign.
 String _minus(num v) => v == 0 ? reportMoney(0) : reportMoney(-v);
+
+/// The server says this vendor has never sold (`hasEverSold: false`, top
+/// level of every report answer). Absent or anything else: not first use.
+bool neverSold(Map? answer) => answer?['hasEverSold'] == false;
+
+/// The first-use state (spec §11, UAT D2): "Your reports fill up as you
+/// sell…" with Record a sale (walk-in sales on + `sales`) and Add products
+/// (`products`).
+class ReportFirstUse extends StatelessWidget {
+  const ReportFirstUse({super.key, required this.access});
+
+  final ReportAccess access;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.tr;
+    final actions = <Widget>[
+      if (access.walkIn && canVendor(context, 'sales'))
+        FFButton(
+          key: const Key('reports-first-record-sale'),
+          label: t('vendor.reports.recordSale'),
+          icon: Icons.point_of_sale_outlined,
+          onPressed: () => context.push(posRoute),
+        ),
+      if (canVendor(context, 'products'))
+        FFButton(
+          key: const Key('reports-first-add-products'),
+          label: t('vendor.reports.addProducts'),
+          icon: Icons.add,
+          variant: FFButtonVariant.secondary,
+          onPressed: () => context.go('/vendor/home?open=products'),
+        ),
+    ];
+    return Semantics(
+      container: true,
+      child: FFEmptyState(
+        key: const Key('reports-first-use'),
+        icon: Icons.bar_chart_outlined,
+        title: t('vendor.reports.emptyFirst'),
+        action: actions.isEmpty
+            ? null
+            : Wrap(
+                alignment: WrapAlignment.center,
+                spacing: FFTokens.spacingSm,
+                runSpacing: FFTokens.spacingSm,
+                children: actions,
+              ),
+      ),
+    );
+  }
+}
+
+/// Back to the period control: scrolled to the top and the selected
+/// period pill focused (UAT D14).
+void focusPeriod(BuildContext context, FocusNode node) {
+  final position = Scrollable.maybeOf(context)?.position;
+  position?.animateTo(
+    0,
+    duration: const Duration(milliseconds: 200),
+    curve: Curves.easeOut,
+  );
+  node.requestFocus();
+}
+
+/// A profit figure, or "— · No cost price" when the server sent null (no
+/// cost price): never "TSh 0" (UAT D1).
+String profitWords(BuildContext context, Map? m, [String key = 'profitTzs']) {
+  final v = maybeNum(m, key);
+  return v == null
+      ? '— · ${context.tr('vendor.reports.profit.noCostHeading')}'
+      : reportMoney(v);
+}
 
 /// An instant (ISO, UTC) as its EAT calendar day: "12 Oct 2026".
 String eatDateWords(Object? iso, String lang) {
@@ -157,10 +231,12 @@ class SalesReportBody extends StatelessWidget {
           const SizedBox(height: FFTokens.spacingSm),
           FFAlert(
             key: const Key('reports-voided'),
-            message: fillIn(t('vendor.reports.voided'), {
-              'n': numAt(voided, 'count'),
-              'amount': reportMoney(numAt(voided, 'totalTzs')),
-            }),
+            message: reportPlural(
+              context,
+              'vendor.reports.voided',
+              numAt(voided, 'count'),
+              {'amount': reportMoney(numAt(voided, 'totalTzs'))},
+            ),
           ),
         ],
         _gap,
@@ -214,9 +290,11 @@ class SalesReportBody extends StatelessWidget {
                       formatPct(
                         net == 0 ? 0 : numAt(c.$2, 'netTzs') * 100 / net,
                       ),
-                      fillIn(t('vendor.reports.salesN'), {
-                        'n': numAt(c.$2, 'count'),
-                      }),
+                      reportPlural(
+                        context,
+                        'vendor.reports.salesN',
+                        numAt(c.$2, 'count'),
+                      ),
                     ].join(' · '),
                   ),
               ],
@@ -256,10 +334,7 @@ class _SalesBucketCard extends StatelessWidget {
         'r': _minus(sum('refundTzs')),
       }),
       if (vat > 0) '${t('vendor.reports.vatIncluded')} ${reportMoney(vat)}',
-      fillIn(t('vendor.reports.countLine'), {
-        'n': sum('count'),
-        'u': sum('itemsSold'),
-      }),
+      '${reportPlural(context, 'vendor.reports.salesN', sum('count'))} · ${reportPlural(context, 'vendor.reports.itemsN', sum('itemsSold'))}',
     ];
     return Padding(
       padding: const EdgeInsets.only(bottom: FFTokens.spacingSm),
@@ -304,6 +379,14 @@ class ProductReportRow extends StatelessWidget {
     final theme = Theme.of(context);
     final stock = row['stock'];
     final profit = maybeNum(row, 'profitTzs');
+    // Profit is shown only to people who may see cost (the key is there).
+    // No cost price — profit null, or a cost the server marks missing or
+    // null — reads "—" with "No cost price", never "TSh 0" (UAT D1).
+    final showsProfit = row.containsKey('profitTzs');
+    final costUnknown =
+        profit == null ||
+        (row.containsKey('costTzs') && maybeNum(row, 'costTzs') == null) ||
+        (row.containsKey('marginPct') && maybeNum(row, 'marginPct') == null);
     final units = numAt(row, 'unitsSold');
     return Padding(
       padding: const EdgeInsets.only(bottom: FFTokens.spacingSm),
@@ -335,11 +418,13 @@ class ProductReportRow extends StatelessWidget {
                 label: t('vendor.reports.revenue'),
                 value: reportMoney(numAt(row, 'netRevenueTzs')),
               ),
-              if (profit != null)
+              if (showsProfit)
                 ReportRow(
                   key: const Key('reports-product-profit'),
                   label: t('vendor.reports.profit'),
-                  value: reportMoney(profit),
+                  value: costUnknown
+                      ? '— · ${t('vendor.reports.profit.noCostHeading')}'
+                      : reportMoney(profit),
                 ),
               ReportRow(
                 label: t('vendor.reports.lastSold'),
@@ -387,6 +472,12 @@ class StockReportBody extends StatelessWidget {
     final lang = reportLang(context);
     final totals = mapAt(data, 'totals') ?? const {};
     final atCost = maybeNum(totals, 'atCostTzs');
+    // Cost is visible to this person when the server sent any cost key; a
+    // row's missing or null cost is then "unknown", never 0.
+    final costVisible =
+        totals.containsKey('atCostTzs') ||
+        data.containsKey('costUnknown') ||
+        listAt(data, 'rows').any((r) => r.containsKey('costTzs'));
     final unknown = mapAt(data, 'costUnknown');
     final asOf = DateTime.tryParse(data['asOf']?.toString() ?? '');
     final rows = listAt(data, 'rows')
@@ -442,9 +533,11 @@ class StockReportBody extends StatelessWidget {
           const SizedBox(height: FFTokens.spacingSm),
           FFAlert(
             key: const Key('reports-stock-cost-unknown'),
-            message: fillIn(t('vendor.reports.stock.costUnknown'), {
-              'n': numAt(unknown, 'count'),
-            }),
+            message: reportPlural(
+              context,
+              'vendor.reports.stock.costUnknown',
+              numAt(unknown, 'count'),
+            ),
             tone: FFAlertTone.warning,
           ),
           if (onAddCost != null)
@@ -494,7 +587,7 @@ class StockReportBody extends StatelessWidget {
                       value: reportMoney(numAt(r, 'valueAtRetailTzs')),
                     ),
                     // Cost columns only when the server sent the keys.
-                    if (r.containsKey('costTzs'))
+                    if (costVisible)
                       maybeNum(r, 'costTzs') == null
                           ? Padding(
                               padding: const EdgeInsets.only(
@@ -552,7 +645,7 @@ class ProfitReportBody extends StatelessWidget {
             figures: [
               ReportFigure(
                 label: t('vendor.reports.profit'),
-                value: reportMoney(profit),
+                value: profitWords(context, totals),
                 sub: t('vendor.reports.profitHint'),
                 large: true,
               ),
@@ -582,10 +675,12 @@ class ProfitReportBody extends StatelessWidget {
           const SizedBox(height: FFTokens.spacingSm),
           FFAlert(
             key: const Key('reports-profit-uncosted'),
-            message: fillIn(t('vendor.reports.profit.uncosted'), {
-              'n': numAt(uncosted, 'qty'),
-              'amount': reportMoney(numAt(uncosted, 'revenueTzs')),
-            }),
+            message: reportPlural(
+              context,
+              'vendor.reports.profit.uncosted',
+              numAt(uncosted, 'qty'),
+              {'amount': reportMoney(numAt(uncosted, 'revenueTzs'))},
+            ),
             tone: FFAlertTone.warning,
           ),
         ],
@@ -626,7 +721,7 @@ class ProfitReportBody extends StatelessWidget {
                           parseDay(b['end']) ?? parseDay(b['start'])!,
                           g,
                         ),
-                        value: reportMoney(numAt(b, 'profitTzs')),
+                        value: profitWords(context, b),
                         strong: true,
                       ),
                       Text(
@@ -658,14 +753,16 @@ class ProfitReportBody extends StatelessWidget {
                     children: [
                       ReportRow(
                         label: productWords(context, p),
-                        value: reportMoney(numAt(p, 'profitTzs')),
+                        value: profitWords(context, p),
                         strong: true,
                       ),
                       Text(
                         [
-                          fillIn(t('vendor.reports.unitsN'), {
-                            'n': numAt(p, 'units'),
-                          }),
+                          reportPlural(
+                            context,
+                            'vendor.reports.unitsN',
+                            numAt(p, 'units'),
+                          ),
                           '${t('vendor.reports.netExVat')} ${reportMoney(numAt(p, 'netExVatTzs'))}',
                           '${t('vendor.reports.cogs')} ${_minus(numAt(p, 'costTzs'))}',
                           '${t('vendor.reports.margin')} ${formatPct(maybeNum(p, 'marginPct'))}',
@@ -688,7 +785,7 @@ class ProfitReportBody extends StatelessWidget {
                 child: ReportRow(
                   label:
                       '${productWords(context, p)} · '
-                      '${fillIn(t('vendor.reports.unitsN'), {'n': numAt(p, 'units')})}',
+                      '${reportPlural(context, 'vendor.reports.unitsN', numAt(p, 'units'))}',
                   value: reportMoney(numAt(p, 'revenueTzs')),
                 ),
               ),
@@ -723,7 +820,7 @@ class PayoutsReportBody extends StatelessWidget {
         label: t(labelKey),
         value:
             '${reportMoney(numAt(s, 'payoutTzs'))} · '
-            '${fillIn(t('vendor.reports.ordersN'), {'n': numAt(s, 'orders')})}',
+            '${reportPlural(context, 'vendor.reports.ordersN', numAt(s, 'orders'))}',
       );
     }
 
@@ -796,9 +893,11 @@ class PayoutsReportBody extends StatelessWidget {
                     ),
                     Text(
                       [
-                        fillIn(t('vendor.reports.ordersN'), {
-                          'n': numAt(w, 'orderCount'),
-                        }),
+                        reportPlural(
+                          context,
+                          'vendor.reports.ordersN',
+                          numAt(w, 'orderCount'),
+                        ),
                         '${t('vendor.reports.appSales')} ${reportMoney(numAt(w, 'grossTzs'))}',
                         '${t('vendor.reports.commission')} ${_minus(numAt(w, 'commissionTzs'))}',
                       ].join(' · '),
@@ -864,9 +963,11 @@ class CustomersReportBody extends StatelessWidget {
               ReportFigure(
                 label: t('vendor.reports.cust.creditSales'),
                 value: reportMoney(numAt(credit, 'totalTzs')),
-                sub: fillIn(t('vendor.reports.salesN'), {
-                  'n': numAt(credit, 'count'),
-                }),
+                sub: reportPlural(
+                  context,
+                  'vendor.reports.salesN',
+                  numAt(credit, 'count'),
+                ),
               ),
               ReportFigure(
                 label: t('vendor.reports.cust.collected'),
