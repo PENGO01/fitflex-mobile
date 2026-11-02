@@ -817,7 +817,10 @@ void main() {
       expect(q.containsKey('from'), isFalse);
       expect(q.containsKey('channel'), isFalse);
       await tapVisible(tester, find.byKey(const Key('reports-add-cost')));
-      expect(find.text('ROUTE-VENDOR-HOME open=products'), findsOneWidget);
+      expect(
+        textContaining('ROUTE-VENDOR-HOME open=products&filter=noCost'),
+        findsOneWidget,
+      );
     });
 
     apiTest('Stock value without cost keys: no cost words at all', (

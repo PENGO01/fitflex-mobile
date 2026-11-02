@@ -9,7 +9,7 @@ import '../../../shared/design_tokens.dart';
 import '../../../shared/formatters.dart';
 import '../../../shared/i18n.dart';
 import '../sales/sales_widgets.dart' show posRoute;
-import '../stock/stock_options.dart' show canVendor, fillIn, formatStock;
+import '../stock/stock_options.dart' show canVendor, fillIn;
 import 'report_models.dart';
 import 'report_period.dart';
 import 'report_widgets.dart';
@@ -80,14 +80,21 @@ void focusPeriod(BuildContext context, FocusNode node) {
   node.requestFocus();
 }
 
-/// A profit figure, or "— · No cost price" when the server sent null (no
-/// cost price): never "TSh 0" (UAT D1).
-String profitWords(BuildContext context, Map? m, [String key = 'profitTzs']) {
-  final v = maybeNum(m, key);
-  return v == null
+/// A profit figure. Only a null profit can mean "no cost price", and only
+/// when something was sold ([sold]): the server also sends null for a day or
+/// a product with no sales, which has nothing to explain and reads "—" (UAT
+/// D1, N3, N3b). A costed sale that nets to zero is a real "TSh 0".
+String profitWords(BuildContext context, Map? m, {required bool sold}) {
+  final v = maybeNum(m, 'profitTzs');
+  if (v != null) return reportMoney(v);
+  return sold
       ? '— · ${context.tr('vendor.reports.profit.noCostHeading')}'
-      : reportMoney(v);
+      : '—';
 }
+
+/// Sales in the `uncosted` block of a profit answer.
+bool hasUncosted(Map? uncosted) =>
+    numAt(uncosted, 'qty') != 0 || numAt(uncosted, 'revenueTzs') != 0;
 
 /// An instant (ISO, UTC) as its EAT calendar day: "12 Oct 2026".
 String eatDateWords(Object? iso, String lang) {
@@ -136,7 +143,7 @@ List<ReportBar> _bars(
   List<Map<String, dynamic>> buckets,
   ReportGroupBy g,
   String valueKey,
-  String Function(String when, num value) describe,
+  String Function(String when, Map<String, dynamic> bucket) describe,
 ) => [
   for (final b in buckets)
     if (parseDay(b['start']) != null)
@@ -144,6 +151,7 @@ List<ReportBar> _bars(
         start: parseDay(b['start'])!,
         end: parseDay(b['end']) ?? parseDay(b['start'])!,
         value: numAt(b, valueKey),
+        known: maybeNum(b, valueKey) != null,
         description: describe(
           bucketWords(
             context,
@@ -151,7 +159,7 @@ List<ReportBar> _bars(
             parseDay(b['end']) ?? parseDay(b['start'])!,
             g,
           ),
-          numAt(b, valueKey),
+          b,
         ),
       ),
 ];
@@ -251,9 +259,9 @@ class SalesReportBody extends StatelessWidget {
               buckets,
               g,
               'netTzs',
-              (when, v) => fillIn(t('vendor.reports.barNet'), {
+              (when, b) => fillIn(t('vendor.reports.barNet'), {
                 'when': when,
-                'amount': reportMoney(v),
+                'amount': reportMoney(numAt(b, 'netTzs')),
               }),
             ),
           ),
@@ -380,13 +388,7 @@ class ProductReportRow extends StatelessWidget {
     final stock = row['stock'];
     final profit = maybeNum(row, 'profitTzs');
     // Profit is shown only to people who may see cost (the key is there).
-    // No cost price — profit null, or a cost the server marks missing or
-    // null — reads "—" with "No cost price", never "TSh 0" (UAT D1).
     final showsProfit = row.containsKey('profitTzs');
-    final costUnknown =
-        profit == null ||
-        (row.containsKey('costTzs') && maybeNum(row, 'costTzs') == null) ||
-        (row.containsKey('marginPct') && maybeNum(row, 'marginPct') == null);
     final units = numAt(row, 'unitsSold');
     return Padding(
       padding: const EdgeInsets.only(bottom: FFTokens.spacingSm),
@@ -422,9 +424,18 @@ class ProductReportRow extends StatelessWidget {
                 ReportRow(
                   key: const Key('reports-product-profit'),
                   label: t('vendor.reports.profit'),
-                  value: costUnknown
-                      ? '— · ${t('vendor.reports.profit.noCostHeading')}'
-                      : reportMoney(profit),
+                  value: profitWords(
+                    context,
+                    row,
+                    sold: row['noSalesInPeriod'] != true,
+                  ),
+                ),
+              // A costed product that nets to zero: TSh 0 and margin "—".
+              if (showsProfit && profit != null)
+                ReportRow(
+                  key: const Key('reports-product-margin'),
+                  label: t('vendor.reports.margin'),
+                  value: formatPct(maybeNum(row, 'marginPct')),
                 ),
               ReportRow(
                 label: t('vendor.reports.lastSold'),
@@ -434,7 +445,7 @@ class ProductReportRow extends StatelessWidget {
               ),
               ReportRow(
                 label: t('vendor.reports.inStock'),
-                value: stock is num ? formatStock(stock) : '—',
+                value: stock is num ? reportCount(stock) : '—',
               ),
               const SizedBox(height: FFTokens.spacingXs),
               coverBadge(context, row),
@@ -576,7 +587,7 @@ class StockReportBody extends StatelessWidget {
                     ),
                     ReportRow(
                       label: t('vendor.reports.inStock'),
-                      value: formatStock(numAt(r, 'stock')),
+                      value: reportCount(numAt(r, 'stock')),
                     ),
                     ReportRow(
                       label: t('vendor.reports.sellingPrice'),
@@ -620,10 +631,18 @@ class StockReportBody extends StatelessWidget {
 // ── Profit (§8.2, canSeeCost only) ───────────────────────────────────────
 
 class ProfitReportBody extends StatelessWidget {
-  const ProfitReportBody({super.key, required this.data, required this.period});
+  const ProfitReportBody({
+    super.key,
+    required this.data,
+    required this.period,
+    this.onAddCost,
+  });
 
   final Map<String, dynamic> data;
   final ReportPeriod period;
+
+  /// "Add cost prices" (cost rights + `products`); null hides the link.
+  final VoidCallback? onAddCost;
 
   @override
   Widget build(BuildContext context) {
@@ -645,7 +664,11 @@ class ProfitReportBody extends StatelessWidget {
             figures: [
               ReportFigure(
                 label: t('vendor.reports.profit'),
-                value: profitWords(context, totals),
+                value: profitWords(
+                  context,
+                  totals,
+                  sold: hasUncosted(uncosted),
+                ),
                 sub: t('vendor.reports.profitHint'),
                 large: true,
               ),
@@ -669,9 +692,7 @@ class ProfitReportBody extends StatelessWidget {
           ),
         ),
         // Never merged with profit (§8.2): its own block.
-        if (uncosted != null &&
-            (numAt(uncosted, 'qty') > 0 ||
-                numAt(uncosted, 'revenueTzs') > 0)) ...[
+        if (hasUncosted(uncosted)) ...[
           const SizedBox(height: FFTokens.spacingSm),
           FFAlert(
             key: const Key('reports-profit-uncosted'),
@@ -683,26 +704,46 @@ class ProfitReportBody extends StatelessWidget {
             ),
             tone: FFAlertTone.warning,
           ),
+          if (onAddCost != null)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: FFButton(
+                key: const Key('reports-add-cost'),
+                label: t('vendor.reports.addCost'),
+                variant: FFButtonVariant.ghost,
+                onPressed: onAddCost,
+              ),
+            ),
         ],
-        _gap,
-        FFCard(
-          child: ReportChart(
-            figure: t('vendor.reports.profit'),
-            groupBy: g,
-            period: period,
-            total: profit,
-            bars: _bars(
-              context,
-              buckets,
-              g,
-              'profitTzs',
-              (when, v) => fillIn(t('vendor.reports.barProfit'), {
-                'when': when,
-                'amount': reportMoney(v),
+        // No day has a known profit: there is nothing to chart.
+        if (buckets.any((b) => maybeNum(b, 'profitTzs') != null)) ...[
+          _gap,
+          FFCard(
+            child: ReportChart(
+              figure: t('vendor.reports.profit'),
+              groupBy: g,
+              period: period,
+              total: profit,
+              bars: _bars(context, buckets, g, 'profitTzs', (when, b) {
+                final v = maybeNum(b, 'profitTzs');
+                if (v != null) {
+                  return fillIn(t('vendor.reports.barProfit'), {
+                    'when': when,
+                    'amount': reportMoney(v),
+                  });
+                }
+                return fillIn(
+                  t(
+                    numAt(b, 'uncostedRevenueTzs') != 0
+                        ? 'vendor.reports.barNoCost'
+                        : 'vendor.reports.barNoSales',
+                  ),
+                  {'when': when},
+                );
               }),
             ),
           ),
-        ),
+        ],
         _gap,
         FFSectionTitle(t('vendor.reports.profit.table')),
         for (final b in buckets)
@@ -721,7 +762,11 @@ class ProfitReportBody extends StatelessWidget {
                           parseDay(b['end']) ?? parseDay(b['start'])!,
                           g,
                         ),
-                        value: profitWords(context, b),
+                        value: profitWords(
+                          context,
+                          b,
+                          sold: numAt(b, 'uncostedRevenueTzs') != 0,
+                        ),
                         strong: true,
                       ),
                       Text(
@@ -753,7 +798,7 @@ class ProfitReportBody extends StatelessWidget {
                     children: [
                       ReportRow(
                         label: productWords(context, p),
-                        value: profitWords(context, p),
+                        value: profitWords(context, p, sold: true),
                         strong: true,
                       ),
                       Text(

@@ -411,12 +411,14 @@ class _ReportSectionPageState extends State<ReportSectionPage> {
           data: data,
           sort: _stockSort,
           onSort: (s) => setState(() => _stockSort = s),
-          onAddCost: canVendor(context, 'products')
-              ? () => context.go('/vendor/home?open=products')
-              : null,
+          onAddCost: _addCost,
         );
       case ReportSection.profit:
-        return ProfitReportBody(data: data, period: _period);
+        return ProfitReportBody(
+          data: data,
+          period: _period,
+          onAddCost: _addCost,
+        );
       case ReportSection.payouts:
         return PayoutsReportBody(
           data: data,
@@ -437,6 +439,18 @@ class _ReportSectionPageState extends State<ReportSectionPage> {
       case ReportSection.methods:
         return MethodsReportBody(data: data);
     }
+  }
+
+  /// "Add cost prices": the products with no cost price, only for people
+  /// who may see cost and work on products. Cost lives in the stock ledger,
+  /// so it needs that too (UAT D7).
+  VoidCallback? get _addCost {
+    final access = _access;
+    if (access == null || !access.cost || !access.stock) return null;
+    if (!canVendor(context, 'products')) return null;
+    return () => context.go(
+      '$noCostProductsRoute&at=${DateTime.now().millisecondsSinceEpoch}',
+    );
   }
 
   Widget _productsBody() {
