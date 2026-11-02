@@ -1,9 +1,12 @@
 import 'package:flutter/foundation.dart';
 
-/// Event-discovery analytics (spec §15). No client pipeline exists for these
-/// yet (the promotion tracker only records promoted cards), so each call is a
-/// named no-op that records to [debugSink] in tests. S7 connects them; the
-/// names and payloads are fixed here. No personal data in any payload.
+import 'events_analytics_transport.dart';
+
+/// Event-discovery analytics (spec §15). Each call records to [debugSink] in
+/// tests and hands the call to [EventsAnalyticsTransport], which sends it
+/// only while the server's `analytics.enabled` option is on (events S7 spec
+/// §5.4) and applies the allowlist there. The names and payloads are fixed
+/// here. No personal data in any payload.
 class EventsAnalytics {
   EventsAnalytics._();
 
@@ -13,6 +16,7 @@ class EventsAnalytics {
 
   static void _record(String name, Map<String, Object?> props) {
     debugSink?.add((name: name, props: props));
+    EventsAnalyticsTransport.instance.record(name, props);
   }
 
   static void listViewed({
@@ -118,4 +122,18 @@ class EventsAnalytics {
       _record('cancel_confirmed', {'scope': scope, 'mode': mode});
 
   static void invitationResent() => _record('invitation_resent', {});
+
+  // ── Events S7 (spec §5.3): waitlist and event-bound runs ───────────────
+
+  static void waitlistCtaViewed({required String eventId}) =>
+      _record('waitlist_cta_viewed', {'eventId': eventId});
+
+  static void waitlistJoinStarted({required String eventId}) =>
+      _record('waitlist_join_started', {'eventId': eventId});
+
+  static void waitlistOfferOpened({required String eventId}) =>
+      _record('waitlist_offer_opened', {'eventId': eventId});
+
+  static void runStarted({required String eventId}) =>
+      _record('run_started', {'eventId': eventId});
 }
