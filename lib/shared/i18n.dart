@@ -4886,6 +4886,8 @@ class FFLocale extends ChangeNotifier {
       'vendor.stock.low': 'Low stock',
       'vendor.stock.lowBadge': 'Low stock',
       'vendor.stock.lowFilter': 'Low stock ({n})',
+      'vendor.stock.noCostFilter': 'No cost price ({n})',
+      'vendor.stock.noCostEmpty': 'Every product has a cost price.',
       'vendor.stock.all': 'All products',
       'vendor.stock.lowEmpty': 'Nothing is low on stock.',
       'vendor.stock.lowVariants': '{n} variants low',
@@ -5623,6 +5625,8 @@ class FFLocale extends ChangeNotifier {
           'Too many days for a chart. See the table.',
       'vendor.reports.barNet': '{when}: net sales {amount}',
       'vendor.reports.barProfit': '{when}: profit {amount}',
+      'vendor.reports.barNoCost': '{when}: no cost price',
+      'vendor.reports.barNoSales': '{when}: no sales',
       'vendor.reports.sales.table': 'Sales by period',
       'vendor.reports.appNet': 'App net',
       'vendor.reports.shopNet': 'Shop net',
@@ -6609,99 +6613,59 @@ class FFLocale extends ChangeNotifier {
           'Kit collection scanning isn\'t live yet. Keep this code; the organizer will confirm where and when to collect your kit.',
       'events.ticket.scan.live': 'Show this code at the kit collection point.',
       // Events S5 kit/bib copy (docs/design/events-s5 §10.2).
-      'events.ticket.kit.title':
-          'Your kit',
-      'events.ticket.kit.not_ready':
-          'Kit not ready yet',
-      'events.ticket.kit.ready':
-          'Kit ready to collect',
-      'events.ticket.kit.collected':
-          'Kit collected',
-      'events.ticket.kit.collectedAt':
-          'Collected {date} at {point}',
-      'events.ticket.kit.collectedOn':
-          'Collected {date}',
-      'events.ticket.kit.noNeed':
-          'You don\'t need to show this code again.',
-      'events.ticket.kit.exception':
-          'Please ask the organizer about your kit.',
-      'events.ticket.kit.where':
-          'Where to collect',
-      'events.ticket.kit.when':
-          'Opening hours',
-      'events.ticket.kit.directions':
-          'Directions',
+      'events.ticket.kit.title': 'Your kit',
+      'events.ticket.kit.not_ready': 'Kit not ready yet',
+      'events.ticket.kit.ready': 'Kit ready to collect',
+      'events.ticket.kit.collected': 'Kit collected',
+      'events.ticket.kit.collectedAt': 'Collected {date} at {point}',
+      'events.ticket.kit.collectedOn': 'Collected {date}',
+      'events.ticket.kit.noNeed': 'You don\'t need to show this code again.',
+      'events.ticket.kit.exception': 'Please ask the organizer about your kit.',
+      'events.ticket.kit.where': 'Where to collect',
+      'events.ticket.kit.when': 'Opening hours',
+      'events.ticket.kit.directions': 'Directions',
       'events.ticket.kit.staleHint':
           'Kit status may have changed. Connect to refresh.',
-      'events.ticket.bib':
-          'Bib {number}',
-      'events.ticket.bib.a11y':
-          'Bib number {number}',
+      'events.ticket.bib': 'Bib {number}',
+      'events.ticket.bib.a11y': 'Bib number {number}',
       'events.ticket.bib.none':
           'Your bib number will appear here once the organizer assigns it.',
       // Events S6: runs, results, medals and rewards (docs/design/events-s6 §12.2).
-      'events.result.title':
-          'Your result',
-      'events.result.stage.provisional':
-          'Provisional',
-      'events.result.stage.official':
-          'Official',
-      'events.result.stage.corrected':
-          'Corrected',
-      'events.result.stage.underReview':
-          'Under review',
-      'events.result.stage.disqualified':
-          'Disqualified',
-      'events.result.stage.rejected':
-          'Not accepted',
-      'events.result.stage.none':
-          'Not published',
+      'events.result.title': 'Your result',
+      'events.result.stage.provisional': 'Provisional',
+      'events.result.stage.official': 'Official',
+      'events.result.stage.corrected': 'Corrected',
+      'events.result.stage.underReview': 'Under review',
+      'events.result.stage.disqualified': 'Disqualified',
+      'events.result.stage.rejected': 'Not accepted',
+      'events.result.stage.none': 'Not published',
       'events.result.line.none':
           'Results aren\'t published yet. We\'ll tell you when they are.',
-      'events.result.line.provisional':
-          'These times may still change.',
-      'events.result.line.official':
-          'Verified and published by the organizer.',
+      'events.result.line.provisional': 'These times may still change.',
+      'events.result.line.official': 'Verified and published by the organizer.',
       'events.result.line.corrected':
           'The organizer corrected this result on {date}.',
       'events.result.line.underReview':
           'The organizer is reviewing a question about this result.',
-      'events.result.line.dnf':
-          'No finish time was recorded.',
-      'events.result.line.dns':
-          'You didn\'t start this event.',
-      'events.result.line.dq':
-          'This result was disqualified.',
-      'events.result.line.rejected':
-          'This result wasn\'t accepted.',
+      'events.result.line.dnf': 'No finish time was recorded.',
+      'events.result.line.dns': 'You didn\'t start this event.',
+      'events.result.line.dq': 'This result was disqualified.',
+      'events.result.line.rejected': 'This result wasn\'t accepted.',
       'events.result.line.virtual':
           'Virtual run. The time is moving time recorded by FitFlex GPS.',
-      'events.result.source.timing_provider':
-          'Official timing',
-      'events.result.source.organizer_verified':
-          'Confirmed by organizer',
-      'events.result.source.fitflex_gps':
-          'Virtual run, GPS',
-      'events.result.source.manual_unverified':
-          'Self-reported, not verified',
-      'events.result.rank':
-          'Rank {rank} of {total} in {category}',
-      'events.result.pb':
-          'Personal best at this distance',
-      'events.result.bib':
-          'Bib {number}',
-      'events.result.time':
-          'Finish time',
-      'events.result.note':
-          'Note from the organizer',
-      'events.result.noneYet':
-          'No result yet',
-      'events.result.status.dnf':
-          'Did not finish',
-      'events.result.status.dns':
-          'Did not start',
-      'events.result.status.dq':
-          'Disqualified',
+      'events.result.source.timing_provider': 'Official timing',
+      'events.result.source.organizer_verified': 'Confirmed by organizer',
+      'events.result.source.fitflex_gps': 'Virtual run, GPS',
+      'events.result.source.manual_unverified': 'Self-reported, not verified',
+      'events.result.rank': 'Rank {rank} of {total} in {category}',
+      'events.result.pb': 'Personal best at this distance',
+      'events.result.bib': 'Bib {number}',
+      'events.result.time': 'Finish time',
+      'events.result.note': 'Note from the organizer',
+      'events.result.noneYet': 'No result yet',
+      'events.result.status.dnf': 'Did not finish',
+      'events.result.status.dns': 'Did not start',
+      'events.result.status.dq': 'Disqualified',
       'events.result.empty.noneForYou':
           'We have no result for you. If you finished, ask the organizer.',
       'events.result.empty.mine':
@@ -6710,110 +6674,68 @@ class FFLocale extends ChangeNotifier {
           'Results for this ticket are shown to the person it belongs to.',
       'events.result.cancelled':
           'Your place was cancelled, so no result is shown.',
-      'events.result.claimFirst':
-          'Claim this place first to see its result.',
-      'events.result.cached':
-          'Saved on this phone, updated {time}',
-      'events.result.entry.myResults':
-          'My results',
-      'events.result.reason.replaced_by_participant':
-          'you replaced the run',
-      'events.result.reason.wrong_category':
-          'it was in a different category',
-      'events.result.reason.other':
-          'the organizer gave another reason',
+      'events.result.claimFirst': 'Claim this place first to see its result.',
+      'events.result.cached': 'Saved on this phone, updated {time}',
+      'events.result.entry.myResults': 'My results',
+      'events.result.reason.replaced_by_participant': 'you replaced the run',
+      'events.result.reason.wrong_category': 'it was in a different category',
+      'events.result.reason.other': 'the organizer gave another reason',
       'events.result.dispute.ask':
           'Something looks wrong? Ask the organizer to review.',
-      'events.result.dispute.title':
-          'Ask about this result',
-      'events.result.dispute.reason.time_wrong':
-          'My time looks wrong',
-      'events.result.dispute.reason.not_my_result':
-          'This isn\'t my result',
-      'events.result.dispute.reason.wrong_category':
-          'Wrong category',
+      'events.result.dispute.title': 'Ask about this result',
+      'events.result.dispute.reason.time_wrong': 'My time looks wrong',
+      'events.result.dispute.reason.not_my_result': 'This isn\'t my result',
+      'events.result.dispute.reason.wrong_category': 'Wrong category',
       'events.result.dispute.reason.dq_challenge':
           'I disagree with the disqualification',
-      'events.result.dispute.reason.other':
-          'Something else',
-      'events.result.dispute.note':
-          'Tell the organizer more (optional)',
-      'events.result.dispute.send':
-          'Send question',
-      'events.result.dispute.open':
-          'Under review since {date}',
-      'events.result.dispute.closed':
-          'Answered on {date}: {outcome}',
-      'events.result.dispute.status.open':
-          'Open',
-      'events.result.dispute.status.upheld':
-          'Your question was accepted',
-      'events.result.dispute.status.rejected':
-          'No change was needed',
-      'events.result.dispute.status.withdrawn':
-          'You withdrew the question',
-      'events.result.dispute.window':
-          'You can ask until {date}.',
-      'events.result.dispute.closedWindow':
-          'The time to ask has passed.',
-      'events.result.dispute.withdraw':
-          'Withdraw question',
+      'events.result.dispute.reason.other': 'Something else',
+      'events.result.dispute.note': 'Tell the organizer more (optional)',
+      'events.result.dispute.send': 'Send question',
+      'events.result.dispute.open': 'Under review since {date}',
+      'events.result.dispute.closed': 'Answered on {date}: {outcome}',
+      'events.result.dispute.status.open': 'Open',
+      'events.result.dispute.status.upheld': 'Your question was accepted',
+      'events.result.dispute.status.rejected': 'No change was needed',
+      'events.result.dispute.status.withdrawn': 'You withdrew the question',
+      'events.result.dispute.window': 'You can ask until {date}.',
+      'events.result.dispute.closedWindow': 'The time to ask has passed.',
+      'events.result.dispute.withdraw': 'Withdraw question',
       'events.result.error.dispute_open':
           'You already have a question open for this result.',
-      'events.result.error.result_not_found':
-          'We couldn\'t find this result.',
+      'events.result.error.result_not_found': 'We couldn\'t find this result.',
       'events.result.error.visibility_not_allowed':
           'That choice isn\'t available for this result.',
-      'events.result.visibility.title':
-          'Who can see my name',
+      'events.result.visibility.title': 'Who can see my name',
       'events.result.visibility.standard':
           'Show my first name and last initial',
-      'events.result.visibility.bib_only':
-          'Show only my bib',
-      'events.result.visibility.hidden':
-          'Hide me from the results',
+      'events.result.visibility.bib_only': 'Show only my bib',
+      'events.result.visibility.hidden': 'Hide me from the results',
       'events.result.visibility.minor':
           'Results for under-18s show only the bib number.',
-      'events.result.visibility.ask':
-          'Show your name on the results?',
+      'events.result.visibility.ask': 'Show your name on the results?',
       'events.result.visibility.askBody':
           'Other FitFlex members can see the results list. You can change this any time.',
-      'events.result.visibility.save':
-          'Save',
-      'events.duration.spoken.hms':
-          '{h} hr {m} min {s} sec',
-      'events.duration.spoken.ms':
-          '{m} min {s} sec',
-      'events.run.start':
-          'Start run for this event',
-      'events.run.save':
-          'Save and add to event',
-      'events.run.keep':
-          'Keep the run without adding it to the event',
-      'events.run.add':
-          'Add a recorded run',
-      'events.run.addThis':
-          'Add this run',
-      'events.run.section':
-          'Your FitFlex run',
-      'events.run.card.title':
-          'FitFlex run',
-      'events.run.empty':
-          'No runs added yet',
+      'events.result.visibility.save': 'Save',
+      'events.duration.spoken.hms': '{h} hr {m} min {s} sec',
+      'events.duration.spoken.ms': '{m} min {s} sec',
+      'events.run.start': 'Start run for this event',
+      'events.run.save': 'Save and add to event',
+      'events.run.keep': 'Keep the run without adding it to the event',
+      'events.run.add': 'Add a recorded run',
+      'events.run.addThis': 'Add this run',
+      'events.run.section': 'Your FitFlex run',
+      'events.run.card.title': 'FitFlex run',
+      'events.run.empty': 'No runs added yet',
       'events.run.noneRecent':
           'No runs recorded in FitFlex in the last 7 days.',
       'events.run.listFailed':
           'We couldn\'t load your recent runs. Try again later.',
       'events.run.unsupported':
           'Recording runs isn\'t available on this device yet. If you recorded the run on another phone with this account, add it here.',
-      'events.run.state.available':
-          'Available',
-      'events.run.state.short':
-          'Doesn\'t reach {distance}',
-      'events.run.state.outside':
-          'Outside the event time',
-      'events.run.state.linked':
-          'Already added',
+      'events.run.state.available': 'Available',
+      'events.run.state.short': 'Doesn\'t reach {distance}',
+      'events.run.state.outside': 'Outside the event time',
+      'events.run.state.linked': 'Already added',
       'events.run.confirm.virtual':
           'The distance, time, pace and GPS quality checks of this run will be shared with the organizer of {event} to review. Your route is not shared.',
       'events.run.confirm.inPerson':
@@ -6822,26 +6744,17 @@ class FFLocale extends ChangeNotifier {
           'Recorded with FitFlex GPS. This is not the official race time.',
       'events.run.compare':
           'Official time is {diff} {slower} than your FitFlex run',
-      'events.run.slower':
-          'slower',
-      'events.run.faster':
-          'faster',
+      'events.run.slower': 'slower',
+      'events.run.faster': 'faster',
       'events.run.flag.fast':
           'Your run looks unusually fast. The organizer will check it.',
-      'events.run.waiting':
-          'Waiting for the organizer',
-      'events.run.remove':
-          'Remove from event',
-      'events.run.closed':
-          'Adding runs has closed.',
-      'events.run.cancelled':
-          'This event was cancelled.',
-      'events.run.opens':
-          'Adding runs opens {date}',
-      'events.run.recordingFor':
-          'Recording for {event}',
-      'events.run.thisEvent':
-          'this event',
+      'events.run.waiting': 'Waiting for the organizer',
+      'events.run.remove': 'Remove from event',
+      'events.run.closed': 'Adding runs has closed.',
+      'events.run.cancelled': 'This event was cancelled.',
+      'events.run.opens': 'Adding runs opens {date}',
+      'events.run.recordingFor': 'Recording for {event}',
+      'events.run.thisEvent': 'this event',
       'events.run.offlinePending':
           'You\'re offline. Your run is saved on this phone and will be added when you\'re connected.',
       'events.run.error.run_outside_window':
@@ -6856,210 +6769,127 @@ class FFLocale extends ChangeNotifier {
           'A run is already added for this place. Remove it first.',
       'events.run.error.event_not_open_for_results':
           'This event isn\'t open for results yet.',
-      'events.board.title':
-          'Results',
-      'events.board.banner.provisional':
-          'Provisional results',
-      'events.board.banner.official':
-          'Official results',
-      'events.board.search':
-          'Search by bib or name',
-      'events.board.you':
-          'You',
-      'events.board.runner':
-          'Runner {bib}',
+      'events.board.title': 'Results',
+      'events.board.banner.provisional': 'Provisional results',
+      'events.board.banner.official': 'Official results',
+      'events.board.search': 'Search by bib or name',
+      'events.board.you': 'You',
+      'events.board.runner': 'Runner {bib}',
       'events.board.names':
           'Names appear only for people who chose to show them.',
-      'events.board.empty':
-          'Results aren\'t published yet.',
-      'events.board.signin':
-          'Sign in to see the results.',
-      'events.board.rank.a11y':
-          'Rank {rank}',
-      'events.medals.title':
-          'Medals and achievements',
-      'events.medals.tab.medals':
-          'Medals',
-      'events.medals.tab.achievements':
-          'Achievements',
-      'events.medals.empty':
-          'No medals yet. Finish an event to earn one.',
-      'events.medals.why':
-          'Finished {category} in {time} · {stage}',
-      'events.medals.rule':
-          'Medals are awarded only for verified results.',
-      'events.medals.removed':
-          'Removed',
-      'events.medals.removedWhy':
-          'Removed because {reason}',
-      'events.medals.share':
-          'Share medal',
-      'events.medals.share.includeTime':
-          'Include my time',
-      'events.medals.designBy':
-          'Design by {organizer}',
-      'events.medals.report':
-          'Report this image',
-      'events.medals.report.sent':
-          'Thanks. FitFlex will look at it.',
-      'events.medals.alt':
-          '{medal}, {event}, {category}, awarded {date}',
-      'events.medals.tapHint':
-          'Double tap for details',
-      'events.achievement.progress':
-          '{done} of {total}',
-      'events.achievement.earnedOn':
-          'Earned {date}',
-      'events.achievements.empty':
-          'No achievements to show yet.',
+      'events.board.empty': 'Results aren\'t published yet.',
+      'events.board.signin': 'Sign in to see the results.',
+      'events.board.rank.a11y': 'Rank {rank}',
+      'events.medals.title': 'Medals and achievements',
+      'events.medals.tab.medals': 'Medals',
+      'events.medals.tab.achievements': 'Achievements',
+      'events.medals.empty': 'No medals yet. Finish an event to earn one.',
+      'events.medals.why': 'Finished {category} in {time} · {stage}',
+      'events.medals.rule': 'Medals are awarded only for verified results.',
+      'events.medals.removed': 'Removed',
+      'events.medals.removedWhy': 'Removed because {reason}',
+      'events.medals.share': 'Share medal',
+      'events.medals.share.includeTime': 'Include my time',
+      'events.medals.designBy': 'Design by {organizer}',
+      'events.medals.report': 'Report this image',
+      'events.medals.report.sent': 'Thanks. FitFlex will look at it.',
+      'events.medals.alt': '{medal}, {event}, {category}, awarded {date}',
+      'events.medals.tapHint': 'Double tap for details',
+      'events.achievement.progress': '{done} of {total}',
+      'events.achievement.earnedOn': 'Earned {date}',
+      'events.achievements.empty': 'No achievements to show yet.',
       'events.notice.medalArtTakenDown':
           'Your medal design for {event} was removed: {reason}.',
-      'events.reason.result_corrected':
-          'the result was corrected',
-      'events.reason.disqualified':
-          'you were disqualified',
-      'events.reason.registration_cancelled':
-          'your place was cancelled',
-      'events.reason.event_cancelled':
-          'the event was cancelled',
-      'events.reason.rule_changed_by_admin':
-          'FitFlex changed the rule',
-      'events.rewards.title':
-          'Rewards',
-      'events.rewards.entry':
-          'Medals and rewards',
-      'events.rewards.available':
-          'Available rewards',
-      'events.rewards.claimed':
-          'Claimed',
-      'events.rewards.claim':
-          'Claim',
-      'events.rewards.claim.confirm':
-          'Claim this reward?',
+      'events.reason.result_corrected': 'the result was corrected',
+      'events.reason.disqualified': 'you were disqualified',
+      'events.reason.registration_cancelled': 'your place was cancelled',
+      'events.reason.event_cancelled': 'the event was cancelled',
+      'events.reason.rule_changed_by_admin': 'FitFlex changed the rule',
+      'events.rewards.title': 'Rewards',
+      'events.rewards.entry': 'Medals and rewards',
+      'events.rewards.available': 'Available rewards',
+      'events.rewards.claimed': 'Claimed',
+      'events.rewards.claim': 'Claim',
+      'events.rewards.claim.confirm': 'Claim this reward?',
       'events.rewards.claim.bodyCertificate':
           'Claiming gives you a certificate you can show or share. This uses up one of this reward.',
       'events.rewards.claim.bodyPerk':
           'Claiming gives you a code to show to FitFlex staff. This uses up one of this reward.',
-      'events.rewards.claim.done':
-          'Claimed. Here it is.',
-      'events.rewards.terms':
-          'Terms',
-      'events.rewards.expires':
-          'Use before {date}',
-      'events.rewards.expiredOn':
-          'This reward expired on {date}',
-      'events.rewards.offline':
-          'You\'re offline, so you can\'t claim now.',
-      'events.rewards.status.reserved':
-          'Reserved',
-      'events.rewards.status.redeemed':
-          'Used',
-      'events.rewards.status.expired':
-          'Expired',
-      'events.rewards.status.cancelled':
-          'Cancelled',
-      'events.rewards.code':
-          'Your code',
-      'events.rewards.code.copy':
-          'Copy reward code',
-      'events.rewards.code.copied':
-          'Code copied',
+      'events.rewards.claim.done': 'Claimed. Here it is.',
+      'events.rewards.terms': 'Terms',
+      'events.rewards.expires': 'Use before {date}',
+      'events.rewards.expiredOn': 'This reward expired on {date}',
+      'events.rewards.offline': 'You\'re offline, so you can\'t claim now.',
+      'events.rewards.status.reserved': 'Reserved',
+      'events.rewards.status.redeemed': 'Used',
+      'events.rewards.status.expired': 'Expired',
+      'events.rewards.status.cancelled': 'Cancelled',
+      'events.rewards.code': 'Your code',
+      'events.rewards.code.copy': 'Copy reward code',
+      'events.rewards.code.copied': 'Code copied',
       'events.rewards.code.help':
           'Show this code to FitFlex staff. It works once.',
-      'events.rewards.certificate':
-          'Certificate of completion',
-      'events.rewards.history':
-          'History',
-      'events.rewards.entry.earn':
-          'Earned',
-      'events.rewards.entry.redeem':
-          'Claimed',
-      'events.rewards.entry.expire':
-          'Expired',
-      'events.rewards.entry.reverse':
-          'Removed',
-      'events.rewards.empty':
-          'No rewards yet. Finish an event to earn some.',
+      'events.rewards.certificate': 'Certificate of completion',
+      'events.rewards.history': 'History',
+      'events.rewards.entry.earn': 'Earned',
+      'events.rewards.entry.redeem': 'Claimed',
+      'events.rewards.entry.expire': 'Expired',
+      'events.rewards.entry.reverse': 'Removed',
+      'events.rewards.empty': 'No rewards yet. Finish an event to earn some.',
       'events.rewards.error.reward_unavailable':
           'This reward is no longer available.',
       'events.rewards.error.not_enough_units':
           'You have none of this reward left to claim.',
-      'inbox.open.eventResult':
-          'View result',
-      'inbox.open.eventMedals':
-          'View medals',
-      'inbox.open.eventRewards':
-          'View rewards',
-      'events.result.reason.not_a_valid_run':
-          'it was not a valid run',
-      'events.result.reason.data_error':
-          'of an error in the timing data',
-      'events.result.reason.duplicate':
-          'it was a duplicate entry',
-      'events.result.reason.timing_error':
-          'of a timing error',
-      'events.result.reason.wrong_bib':
-          'the bib number was wrong',
-      'events.result.reason.late_finish_data':
-          'late finish data arrived',
-      'events.result.reason.rule_violation':
-          'a rule of the event was broken',
-      'events.result.reason.course_cut':
-          'the course was cut',
+      'inbox.open.eventResult': 'View result',
+      'inbox.open.eventMedals': 'View medals',
+      'inbox.open.eventRewards': 'View rewards',
+      'events.result.reason.not_a_valid_run': 'it was not a valid run',
+      'events.result.reason.data_error': 'of an error in the timing data',
+      'events.result.reason.duplicate': 'it was a duplicate entry',
+      'events.result.reason.timing_error': 'of a timing error',
+      'events.result.reason.wrong_bib': 'the bib number was wrong',
+      'events.result.reason.late_finish_data': 'late finish data arrived',
+      'events.result.reason.rule_violation': 'a rule of the event was broken',
+      'events.result.reason.course_cut': 'the course was cut',
       'events.result.reason.equipment':
           'equipment that is not allowed was used',
       'events.result.reason.identity':
           'the runner\'s identity could not be confirmed',
       'events.result.reason.virtual_evidence':
           'the run evidence was not accepted',
-      'events.reason.source_revoked':
-          'the result it came from was removed',
+      'events.reason.source_revoked': 'the result it came from was removed',
       'events.result.line.dq.because':
           'This result was disqualified because {reason}.',
       'events.result.line.rejected.because':
           'This result wasn\'t accepted because {reason}.',
-      'events.medals.removedNoReason':
-          'Removed',
+      'events.medals.removedNoReason': 'Removed',
       'events.medals.alt.removed':
           '{medal}, {event}, {category}, removed {date}',
-      'events.medals.awardedOn':
-          'awarded {date}',
-      'events.medals.removedOn':
-          'removed {date}',
+      'events.medals.awardedOn': 'awarded {date}',
+      'events.medals.removedOn': 'removed {date}',
       'events.error.evidence_limit':
           'You have added the most runs allowed for this place.',
-      'events.error.link_locked':
-          'This run can no longer be changed.',
-      'events.error.linking_closed':
-          'Adding runs to this event has closed.',
+      'events.error.link_locked': 'This run can no longer be changed.',
+      'events.error.linking_closed': 'Adding runs to this event has closed.',
       'events.error.registration_not_confirmed':
           'This place is not confirmed yet.',
-      'events.error.result_exists':
-          'This place already has a result.',
-      'events.error.no_result':
-          'There is no result for this place yet.',
+      'events.error.result_exists': 'This place already has a result.',
+      'events.error.no_result': 'There is no result for this place yet.',
       'events.error.rewards_unavailable':
           'Rewards are not available right now. Try again later.',
-      'events.error.dispute_closed':
-          'This question has already been answered.',
-      'events.error.dispute_not_found':
-          'We couldn\'t find that question.',
+      'events.error.dispute_closed': 'This question has already been answered.',
+      'events.error.dispute_not_found': 'We couldn\'t find that question.',
       'events.error.request_in_progress':
           'Still working on your last request. Wait a moment and try again.',
-      'events.error.redemption_expired':
-          'This reward has expired.',
-      'events.error.activity_not_found':
-          'We couldn\'t find that run.',
-      'events.error.link_not_found':
-          'We couldn\'t find that added run.',
+      'events.error.redemption_expired': 'This reward has expired.',
+      'events.error.activity_not_found': 'We couldn\'t find that run.',
+      'events.error.link_not_found': 'We couldn\'t find that added run.',
       'events.error.organizer_owner':
           'Transfer or close your organizer account first.',
-      'ownerScan.eventTicket.title':
-          'This is an event ticket',
+      'ownerScan.eventTicket.title': 'This is an event ticket',
       'ownerScan.eventTicket.body':
           'Event tickets are scanned at Kit collection in the organizer portal, not here.',
-      'memberScan.eventTicket.title':
-          'This is an event ticket',
+      'memberScan.eventTicket.title': 'This is an event ticket',
       'memberScan.eventTicket.body':
           'Show it at the kit desk; it cannot be used to check in at a gym.',
       'events.ticket.cached': 'Saved on this phone · updated {time}',
@@ -7435,12 +7265,16 @@ class FFLocale extends ChangeNotifier {
       'shop.sale.endsInUnderMin': 'Sale ends in less than a minute',
       'shop.sale.endsOn': 'Sale ends {when}',
       'shop.sale.gone': 'This sale has ended',
-      'shop.home.saleEndedInCart': 'The sale on an item in your cart has ended. You\'ll pay the current price.',
-      'shop.home.saleEndedInCartMany': 'The sale on {n} items in your cart has ended. You\'ll pay the current prices.',
-      'shop.sale.endingSoonInCart': 'The sale on {name} ends in {m} min. Check out soon to keep the sale price.',
+      'shop.home.saleEndedInCart':
+          'The sale on an item in your cart has ended. You\'ll pay the current price.',
+      'shop.home.saleEndedInCartMany':
+          'The sale on {n} items in your cart has ended. You\'ll pay the current prices.',
+      'shop.sale.endingSoonInCart':
+          'The sale on {name} ends in {m} min. Check out soon to keep the sale price.',
       'shop.sale.cartLineEnded': 'Sale ended',
       'shop.priceChanged.title': 'Prices have changed',
-      'shop.priceChanged.body': 'Some prices changed after you added them to your cart. Check the new total before you continue.',
+      'shop.priceChanged.body':
+          'Some prices changed after you added them to your cart. Check the new total before you continue.',
       'shop.priceChanged.saleEnded': 'Sale ended',
       'shop.priceChanged.saleStarted': 'Sale started',
       'shop.priceChanged.changed': 'Price changed',
@@ -7457,10 +7291,12 @@ class FFLocale extends ChangeNotifier {
       'merch.sales.title': 'Flash sales',
       'merch.sales.propose': 'Propose a flash sale',
       'merch.sales.emptyTitle': 'No flash sales yet',
-      'merch.sales.emptyBody': 'Run a short sale on one of your products. FitFlex shows it with a countdown.',
+      'merch.sales.emptyBody':
+          'Run a short sale on one of your products. FitFlex shows it with a countdown.',
       'merch.sales.error': 'Flash sales didn\'t load',
       'merch.sales.offlineBody': 'Connect to see your flash sales.',
-      'merch.sales.tooManyOpen': 'You have too many flash sales waiting. Withdraw one or wait for a decision.',
+      'merch.sales.tooManyOpen':
+          'You have too many flash sales waiting. Withdraw one or wait for a decision.',
       'merch.sale.withdraw.title': 'Withdraw this flash sale?',
       'merch.sale.withdrawn': 'Flash sale withdrawn',
       'merch.endSale.title': 'End this sale now?',
@@ -7472,7 +7308,8 @@ class FFLocale extends ChangeNotifier {
       'merch.sale.a11yEnd': 'End sale on {product}',
       'merch.sale.a11ySubmit': 'Send sale on {product} for approval',
       'merch.sale.a11yCopy': 'Copy sale on {product} to a new one',
-      'merch.sale.cardA11y': '{product}. Sale price {sale}, was {old}, {pct} percent off',
+      'merch.sale.cardA11y':
+          '{product}. Sale price {sale}, was {old}, {pct} percent off',
       'merch.sale.endsCountdown': 'Ends in {h} h {m} min',
       'merch.sale.starts': 'Starts',
       'merch.sale.ends': 'Ends',
@@ -7483,40 +7320,57 @@ class FFLocale extends ChangeNotifier {
       'merch.sale.editTitle': 'Edit flash sale',
       'merch.sale.product': 'Product',
       'merch.sale.productRequired': 'Choose one of your products.',
-      'merch.sale.noProducts': 'You have no approved products to put on sale yet.',
-      'merch.sale.oos': 'This product is out of stock. The sale won\'t show until you add stock.',
-      'merch.sale.overlap': 'This product already has a flash sale from {start} to {end}.',
-      'merch.sale.overlapNoDates': 'This product already has a flash sale at that time.',
+      'merch.sale.noProducts':
+          'You have no approved products to put on sale yet.',
+      'merch.sale.oos':
+          'This product is out of stock. The sale won\'t show until you add stock.',
+      'merch.sale.overlap':
+          'This product already has a flash sale from {start} to {end}.',
+      'merch.sale.overlapNoDates':
+          'This product already has a flash sale at that time.',
       'merch.sale.regular': 'Regular price {price}',
       'merch.sale.currentDiscount': 'Your current discount price {price}',
       'merch.sale.price': 'Sale price (TSh)',
       'merch.sale.live': '{pct}% off · buyers save {saving}',
       'merch.sale.enterPrice': 'Enter a sale price.',
-      'merch.sale.min5': 'The sale price must be at least 5% below the regular price: {max} or less.',
-      'merch.sale.belowDiscount': 'The sale price must be lower than your current discount price of {discount}.',
+      'merch.sale.min5':
+          'The sale price must be at least 5% below the regular price: {max} or less.',
+      'merch.sale.belowDiscount':
+          'The sale price must be lower than your current discount price of {discount}.',
       'merch.sale.length': 'A flash sale runs for 1 hour to 7 days.',
-      'merch.sale.raised': 'You raised this product\'s price on {date}. A flash sale can start on {earliest} or later.',
+      'merch.sale.raised':
+          'You raised this product\'s price on {date}. A flash sale can start on {earliest} or later.',
       'merch.sale.startOn': 'Start on {date}',
       'merch.sale.checking': 'Checking the 14-day rule…',
-      'merch.sale.checkFailed': 'We couldn\'t check the 14-day rule just now. FitFlex checks it again when you send.',
-      'merch.sale.youPay': 'You pay for the discount. Your commission is worked out on the sale price.',
-      'merch.sale.rule14': 'A flash sale can\'t start within 14 days of a price rise. While it\'s scheduled or live, you can\'t change this product\'s price.',
-      'merch.sale.reviewNote': 'FitFlex reviews every sale. If it isn\'t reviewed within 14 days, or before it starts, it expires.',
+      'merch.sale.checkFailed':
+          'We couldn\'t check the 14-day rule just now. FitFlex checks it again when you send.',
+      'merch.sale.youPay':
+          'You pay for the discount. Your commission is worked out on the sale price.',
+      'merch.sale.rule14':
+          'A flash sale can\'t start within 14 days of a price rise. While it\'s scheduled or live, you can\'t change this product\'s price.',
+      'merch.sale.reviewNote':
+          'FitFlex reviews every sale. If it isn\'t reviewed within 14 days, or before it starts, it expires.',
       'merch.sale.start': 'Start a flash sale',
-      'merch.sale.notEligible': 'This product can\'t have a flash sale right now. Pick another one.',
+      'merch.sale.notEligible':
+          'This product can\'t have a flash sale right now. Pick another one.',
       'merch.sale.resend.title': 'Send this sale back for approval?',
-      'merch.sale.resend.body': 'It won\'t start until FitFlex approves it again.',
-      'vendor.priceLocked': 'Locked while your flash sale runs ({start}–{end}).',
+      'merch.sale.resend.body':
+          'It won\'t start until FitFlex approves it again.',
+      'vendor.priceLocked':
+          'Locked while your flash sale runs ({start}–{end}).',
       'vendor.viewSale': 'View sale',
       'inbox.open.merchSale': 'View flash sale',
       // Shop home Phase 2 S4: flash sales (vendor list and product price lock).
-      'merch.sale.openFull': '{open} of {max} open proposals. Withdraw one or wait for a decision before proposing another.',
+      'merch.sale.openFull':
+          '{open} of {max} open proposals. Withdraw one or wait for a decision before proposing another.',
       'merch.sale.line.youEnded': 'You ended this sale',
       'merch.sale.byFitflex': 'FitFlex created this sale on your product.',
-      'merch.sale.reject.priceNotCredible': 'The regular price doesn\'t look genuine',
+      'merch.sale.reject.priceNotCredible':
+          'The regular price doesn\'t look genuine',
       'merch.sale.reject.product': 'Problem with the product',
       'merch.sale.reject.timing': 'The dates don\'t work',
-      'vendor.priceLockedSave': 'This price is locked while a flash sale is scheduled or live. Other details can still be changed.',
+      'vendor.priceLockedSave':
+          'This price is locked while a flash sale is scheduled or live. Other details can still be changed.',
       // Shop home Phase 2 S4 review: sale-only wording (ofa agreement), countdown plurals, new product history rule.
       'shop.a11y.countdownHoursOnly': 'Sale ends in {h} hours',
       'shop.a11y.countdownOneHour': 'Sale ends in 1 hour',
@@ -7542,11 +7396,14 @@ class FFLocale extends ChangeNotifier {
       'merch.sale.sent': 'Sent for approval',
       'merch.sale.notSentOffline': 'No internet connection. It wasn\'t sent.',
       'merch.sale.resend.keep': 'Keep as is',
-      'merch.sale.suspended': 'Your account is suspended. Your flash sales are not shown in the shop.',
-      'merch.sale.historyShort': 'This product was listed on {date}. New products need 14 days in the shop before a flash sale: it can start on {earliest} or later.',
+      'merch.sale.suspended':
+          'Your account is suspended. Your flash sales are not shown in the shop.',
+      'merch.sale.historyShort':
+          'This product was listed on {date}. New products need 14 days in the shop before a flash sale: it can start on {earliest} or later.',
       'merch.sale.endConfirm': 'End now',
       // Shop home Phase 2 S4 revision 2: sale ended when the seller was suspended.
-      'merch.sale.line.endedSuspended': 'Ended because your account was suspended',
+      'merch.sale.line.endedSuspended':
+          'Ended because your account was suspended',
       // Shop Phase 2 S4 QA round 1.
       'merch.sale.needsInternet': 'Needs internet',
     },
@@ -12223,7 +12080,8 @@ class FFLocale extends ChangeNotifier {
       'vendor.areas.nudgeCheckAction': "Hakiki sasa",
       'vendor.target.a11yOption': '{group}, {option}',
       'shop.a11y.price': 'Bei {price}',
-      'shop.a11y.salePrice': 'Bei ya ofa {sale}, ilikuwa {old}, punguzo la asilimia {pct}',
+      'shop.a11y.salePrice':
+          'Bei ya ofa {sale}, ilikuwa {old}, punguzo la asilimia {pct}',
       'shop.a11y.rating': 'Alama {rating} kati ya 5 kutoka maoni {count}',
       'shop.a11y.ratingOne': 'Alama {rating} kati ya 5 kutoka maoni 1',
       'shop.a11y.addToCart': 'Ongeza {name} kwenye kikapu',
@@ -12446,6 +12304,9 @@ class FFLocale extends ChangeNotifier {
       'vendor.stock.low': 'Stock inakaribia kuisha',
       'vendor.stock.lowBadge': 'Stock chache',
       'vendor.stock.lowFilter': 'Stock chache ({n})',
+      // Swahili drafts for native review.
+      'vendor.stock.noCostFilter': 'Hakuna bei ya kununua ({n})',
+      'vendor.stock.noCostEmpty': 'Bidhaa zote zina bei ya kununua.',
       'vendor.stock.all': 'Bidhaa zote',
       'vendor.stock.lowEmpty': 'Hakuna bidhaa yenye Stock chache.',
       'vendor.stock.lowVariants': 'Machaguo {n} yana Stock chache',
@@ -13192,6 +13053,8 @@ class FFLocale extends ChangeNotifier {
           'Siku ni nyingi mno kwa chati. Angalia jedwali.',
       'vendor.reports.barNet': '{when}: mauzo baada ya makato {amount}',
       'vendor.reports.barProfit': '{when}: faida {amount}',
+      'vendor.reports.barNoCost': '{when}: hakuna bei ya kununua',
+      'vendor.reports.barNoSales': '{when}: hakuna mauzo',
       'vendor.reports.sales.table': 'Mauzo kwa kipindi',
       'vendor.reports.appNet': 'Mauzo ya app baada ya makato',
       'vendor.reports.shopNet': 'Mauzo ya dukani baada ya makato',
@@ -14191,53 +14054,33 @@ class FFLocale extends ChangeNotifier {
       'events.ticket.scan.live':
           'Onyesha msimbo huu mahali pa kuchukua vifaa vya mbio.',
       // TODO(sw-review): events S5 kit/bib copy (docs/design/events-s5 §10.2).
-      'events.ticket.kit.title':
-          'Vifaa vyako vya mbio',
-      'events.ticket.kit.not_ready':
-          'Vifaa vya mbio bado havijawa tayari',
-      'events.ticket.kit.ready':
-          'Vifaa vya mbio viko tayari kuchukuliwa',
-      'events.ticket.kit.collected':
-          'Vifaa vya mbio vimechukuliwa',
-      'events.ticket.kit.collectedAt':
-          'Vilichukuliwa {date} katika {point}',
-      'events.ticket.kit.collectedOn':
-          'Vilichukuliwa {date}',
-      'events.ticket.kit.noNeed':
-          'Huhitaji kuonyesha msimbo huu tena.',
+      'events.ticket.kit.title': 'Vifaa vyako vya mbio',
+      'events.ticket.kit.not_ready': 'Vifaa vya mbio bado havijawa tayari',
+      'events.ticket.kit.ready': 'Vifaa vya mbio viko tayari kuchukuliwa',
+      'events.ticket.kit.collected': 'Vifaa vya mbio vimechukuliwa',
+      'events.ticket.kit.collectedAt': 'Vilichukuliwa {date} katika {point}',
+      'events.ticket.kit.collectedOn': 'Vilichukuliwa {date}',
+      'events.ticket.kit.noNeed': 'Huhitaji kuonyesha msimbo huu tena.',
       'events.ticket.kit.exception':
           'Tafadhali muulize mwandaaji kuhusu vifaa vyako vya mbio.',
-      'events.ticket.kit.where':
-          'Mahali pa kuchukulia',
-      'events.ticket.kit.when':
-          'Saa za kufungua',
-      'events.ticket.kit.directions':
-          'Maelekezo ya njia',
+      'events.ticket.kit.where': 'Mahali pa kuchukulia',
+      'events.ticket.kit.when': 'Saa za kufungua',
+      'events.ticket.kit.directions': 'Maelekezo ya njia',
       'events.ticket.kit.staleHint':
           'Hali ya vifaa vya mbio inaweza kuwa imebadilika. Unganisha intaneti kusasisha.',
-      'events.ticket.bib':
-          'Namba ya mbio {number}',
-      'events.ticket.bib.a11y':
-          'Namba ya mbio {number}',
+      'events.ticket.bib': 'Namba ya mbio {number}',
+      'events.ticket.bib.a11y': 'Namba ya mbio {number}',
       'events.ticket.bib.none':
           'Namba yako ya mbio itaonekana hapa mwandaaji akikupa.',
       // TODO(sw-review): events S6 runs, results, medals and rewards (docs/design/events-s6 §12.2). Draft Swahili.
-      'events.result.title':
-          'Matokeo yako',
-      'events.result.stage.provisional':
-          'Ya awali',
-      'events.result.stage.official':
-          'Rasmi',
-      'events.result.stage.corrected':
-          'Yamesahihishwa',
-      'events.result.stage.underReview':
-          'Yanakaguliwa',
-      'events.result.stage.disqualified':
-          'Amefutiwa',
-      'events.result.stage.rejected':
-          'Haikukubaliwa',
-      'events.result.stage.none':
-          'Haijachapishwa',
+      'events.result.title': 'Matokeo yako',
+      'events.result.stage.provisional': 'Ya awali',
+      'events.result.stage.official': 'Rasmi',
+      'events.result.stage.corrected': 'Yamesahihishwa',
+      'events.result.stage.underReview': 'Yanakaguliwa',
+      'events.result.stage.disqualified': 'Amefutiwa',
+      'events.result.stage.rejected': 'Haikukubaliwa',
+      'events.result.stage.none': 'Haijachapishwa',
       'events.result.line.none':
           'Matokeo bado hayajachapishwa. Tutakujulisha yakitoka.',
       'events.result.line.provisional':
@@ -14248,44 +14091,29 @@ class FFLocale extends ChangeNotifier {
           'Mwandaaji alisahihisha matokeo haya tarehe {date}.',
       'events.result.line.underReview':
           'Mwandaaji anakagua swali kuhusu matokeo haya.',
-      'events.result.line.dnf':
-          'Hakuna muda wa kumaliza uliorekodiwa.',
-      'events.result.line.dns':
-          'Hukuanza tukio hili.',
+      'events.result.line.dnf': 'Hakuna muda wa kumaliza uliorekodiwa.',
+      'events.result.line.dns': 'Hukuanza tukio hili.',
       // TODO(sw-review): DQ / "futa" wording needs a native speaker
-      'events.result.line.dq':
-          'Matokeo haya yamefutwa.',
-      'events.result.line.rejected':
-          'Matokeo haya hayakukubaliwa.',
+      'events.result.line.dq': 'Matokeo haya yamefutwa.',
+      'events.result.line.rejected': 'Matokeo haya hayakukubaliwa.',
       'events.result.line.virtual':
           'Mbio pepe. Muda ni muda wa kukimbia uliorekodiwa na GPS ya FitFlex.',
-      'events.result.source.timing_provider':
-          'Muda rasmi wa mbio',
-      'events.result.source.organizer_verified':
-          'Imethibitishwa na mwandaaji',
-      'events.result.source.fitflex_gps':
-          'Mbio pepe, GPS',
+      'events.result.source.timing_provider': 'Muda rasmi wa mbio',
+      'events.result.source.organizer_verified': 'Imethibitishwa na mwandaaji',
+      'events.result.source.fitflex_gps': 'Mbio pepe, GPS',
       'events.result.source.manual_unverified':
           'Imeripotiwa na mshiriki, haijathibitishwa',
       // TODO(sw-review): "Nafasi" for rank collides with its role meaning (D22); alternative "Cheo"
       'events.result.rank':
           'Nafasi ya {rank} kati ya {total} kwenye {category}',
-      'events.result.pb':
-          'Muda wako bora kwa umbali huu',
-      'events.result.bib':
-          'Namba ya mbio {number}',
-      'events.result.time':
-          'Muda wa kumaliza',
-      'events.result.note':
-          'Ujumbe kutoka kwa mwandaaji',
-      'events.result.noneYet':
-          'Bado hakuna matokeo',
-      'events.result.status.dnf':
-          'Hakumaliza',
-      'events.result.status.dns':
-          'Hakuanza',
-      'events.result.status.dq':
-          'Amefutiwa',
+      'events.result.pb': 'Muda wako bora kwa umbali huu',
+      'events.result.bib': 'Namba ya mbio {number}',
+      'events.result.time': 'Muda wa kumaliza',
+      'events.result.note': 'Ujumbe kutoka kwa mwandaaji',
+      'events.result.noneYet': 'Bado hakuna matokeo',
+      'events.result.status.dnf': 'Hakumaliza',
+      'events.result.status.dns': 'Hakuanza',
+      'events.result.status.dq': 'Amefutiwa',
       'events.result.empty.noneForYou':
           'Hatuna matokeo yako. Ukimaliza, muulize mwandaaji.',
       'events.result.empty.mine':
@@ -14298,106 +14126,67 @@ class FFLocale extends ChangeNotifier {
           'Chukua tiketi hii kwanza ili uone matokeo yake.',
       'events.result.cached':
           'Imehifadhiwa kwenye simu hii, imesasishwa {time}',
-      'events.result.entry.myResults':
-          'Matokeo yangu',
-      'events.result.reason.replaced_by_participant':
-          'ulibadilisha mbio',
-      'events.result.reason.wrong_category':
-          'ilikuwa kwenye kundi tofauti',
-      'events.result.reason.other':
-          'mwandaaji alitoa sababu nyingine',
+      'events.result.entry.myResults': 'Matokeo yangu',
+      'events.result.reason.replaced_by_participant': 'ulibadilisha mbio',
+      'events.result.reason.wrong_category': 'ilikuwa kwenye kundi tofauti',
+      'events.result.reason.other': 'mwandaaji alitoa sababu nyingine',
       'events.result.dispute.ask':
           'Kuna kitu hakionekani sawa? Muombe mwandaaji akague.',
-      'events.result.dispute.title':
-          'Uliza kuhusu matokeo haya',
+      'events.result.dispute.title': 'Uliza kuhusu matokeo haya',
       'events.result.dispute.reason.time_wrong':
           'Muda wangu unaonekana si sahihi',
-      'events.result.dispute.reason.not_my_result':
-          'Haya si matokeo yangu',
-      'events.result.dispute.reason.wrong_category':
-          'Kundi si sahihi',
-      'events.result.dispute.reason.dq_challenge':
-          'Sikubaliani na kufutwa',
-      'events.result.dispute.reason.other':
-          'Jambo lingine',
-      'events.result.dispute.note':
-          'Mweleze mwandaaji zaidi (si lazima)',
-      'events.result.dispute.send':
-          'Tuma swali',
-      'events.result.dispute.open':
-          'Inakaguliwa tangu {date}',
-      'events.result.dispute.closed':
-          'Imejibiwa tarehe {date}: {outcome}',
-      'events.result.dispute.status.open':
-          'Wazi',
-      'events.result.dispute.status.upheld':
-          'Swali lako lilikubaliwa',
+      'events.result.dispute.reason.not_my_result': 'Haya si matokeo yangu',
+      'events.result.dispute.reason.wrong_category': 'Kundi si sahihi',
+      'events.result.dispute.reason.dq_challenge': 'Sikubaliani na kufutwa',
+      'events.result.dispute.reason.other': 'Jambo lingine',
+      'events.result.dispute.note': 'Mweleze mwandaaji zaidi (si lazima)',
+      'events.result.dispute.send': 'Tuma swali',
+      'events.result.dispute.open': 'Inakaguliwa tangu {date}',
+      'events.result.dispute.closed': 'Imejibiwa tarehe {date}: {outcome}',
+      'events.result.dispute.status.open': 'Wazi',
+      'events.result.dispute.status.upheld': 'Swali lako lilikubaliwa',
       'events.result.dispute.status.rejected':
           'Hakuna mabadiliko yaliyohitajika',
-      'events.result.dispute.status.withdrawn':
-          'Uliondoa swali',
-      'events.result.dispute.window':
-          'Unaweza kuuliza hadi {date}.',
-      'events.result.dispute.closedWindow':
-          'Muda wa kuuliza umeisha.',
-      'events.result.dispute.withdraw':
-          'Ondoa swali',
+      'events.result.dispute.status.withdrawn': 'Uliondoa swali',
+      'events.result.dispute.window': 'Unaweza kuuliza hadi {date}.',
+      'events.result.dispute.closedWindow': 'Muda wa kuuliza umeisha.',
+      'events.result.dispute.withdraw': 'Ondoa swali',
       'events.result.error.dispute_open':
           'Tayari una swali wazi kuhusu matokeo haya.',
-      'events.result.error.result_not_found':
-          'Hatukupata matokeo haya.',
+      'events.result.error.result_not_found': 'Hatukupata matokeo haya.',
       'events.result.error.visibility_not_allowed':
           'Chaguo hilo halipatikani kwa matokeo haya.',
-      'events.result.visibility.title':
-          'Nani anaweza kuona jina langu',
+      'events.result.visibility.title': 'Nani anaweza kuona jina langu',
       'events.result.visibility.standard':
           'Onyesha jina langu la kwanza na herufi ya jina la mwisho',
-      'events.result.visibility.bib_only':
-          'Onyesha namba yangu tu',
-      'events.result.visibility.hidden':
-          'Nifiche kwenye matokeo',
+      'events.result.visibility.bib_only': 'Onyesha namba yangu tu',
+      'events.result.visibility.hidden': 'Nifiche kwenye matokeo',
       'events.result.visibility.minor':
           'Matokeo ya walio chini ya miaka 18 yanaonyesha namba ya mbio tu.',
-      'events.result.visibility.ask':
-          'Onyesha jina lako kwenye matokeo?',
+      'events.result.visibility.ask': 'Onyesha jina lako kwenye matokeo?',
       'events.result.visibility.askBody':
           'Wanachama wengine wa FitFlex wanaweza kuona orodha ya matokeo. Unaweza kubadilisha wakati wowote.',
-      'events.result.visibility.save':
-          'Hifadhi',
-      'events.duration.spoken.hms':
-          'saa {h} dakika {m} sekunde {s}',
-      'events.duration.spoken.ms':
-          'dakika {m} sekunde {s}',
-      'events.run.start':
-          'Anza kukimbia kwa tukio hili',
-      'events.run.save':
-          'Hifadhi na uongeze kwenye tukio',
-      'events.run.keep':
-          'Hifadhi mbio bila kuziongeza kwenye tukio',
-      'events.run.add':
-          'Ongeza mbio zilizorekodiwa',
-      'events.run.addThis':
-          'Ongeza mbio hizi',
-      'events.run.section':
-          'Mbio zako za FitFlex',
-      'events.run.card.title':
-          'Mbio za FitFlex',
-      'events.run.empty':
-          'Hakuna mbio zilizoongezwa bado',
+      'events.result.visibility.save': 'Hifadhi',
+      'events.duration.spoken.hms': 'saa {h} dakika {m} sekunde {s}',
+      'events.duration.spoken.ms': 'dakika {m} sekunde {s}',
+      'events.run.start': 'Anza kukimbia kwa tukio hili',
+      'events.run.save': 'Hifadhi na uongeze kwenye tukio',
+      'events.run.keep': 'Hifadhi mbio bila kuziongeza kwenye tukio',
+      'events.run.add': 'Ongeza mbio zilizorekodiwa',
+      'events.run.addThis': 'Ongeza mbio hizi',
+      'events.run.section': 'Mbio zako za FitFlex',
+      'events.run.card.title': 'Mbio za FitFlex',
+      'events.run.empty': 'Hakuna mbio zilizoongezwa bado',
       'events.run.noneRecent':
           'Hakuna mbio zilizorekodiwa kwenye FitFlex katika siku 7 zilizopita.',
       'events.run.listFailed':
           'Hatukuweza kupakia mbio zako za hivi karibuni. Jaribu tena baadaye.',
       'events.run.unsupported':
           'Kurekodi mbio bado hakupatikani kwenye kifaa hiki. Ikiwa ulirekodi kwenye simu nyingine kwa akaunti hii, ziongeze hapa.',
-      'events.run.state.available':
-          'Inapatikana',
-      'events.run.state.short':
-          'Haifikii {distance}',
-      'events.run.state.outside':
-          'Nje ya muda wa tukio',
-      'events.run.state.linked':
-          'Tayari imeongezwa',
+      'events.run.state.available': 'Inapatikana',
+      'events.run.state.short': 'Haifikii {distance}',
+      'events.run.state.outside': 'Nje ya muda wa tukio',
+      'events.run.state.linked': 'Tayari imeongezwa',
       // TODO(sw-review): kushirikisha wording: native review and counsel review (exactly what the organizer sees: distance, time, pace and GPS quality checks, flags; never the route)
       'events.run.confirm.virtual':
           'Umbali, muda na ukaguzi wa kasi na ubora wa GPS wa mbio hizi vitashirikishwa na mwandaaji wa {event} ili azikague. Njia yako haishirikishwi.',
@@ -14408,26 +14197,17 @@ class FFLocale extends ChangeNotifier {
       // TODO(sw-review): sentence order with slower/faster needs a native speaker
       'events.run.compare':
           'Muda rasmi ni {diff} {slower} kuliko mbio zako za FitFlex',
-      'events.run.slower':
-          'polepole zaidi',
-      'events.run.faster':
-          'haraka zaidi',
+      'events.run.slower': 'polepole zaidi',
+      'events.run.faster': 'haraka zaidi',
       'events.run.flag.fast':
           'Mbio zako zinaonekana za kasi isivyo kawaida. Mwandaaji atazikagua.',
-      'events.run.waiting':
-          'Inasubiri mwandaaji',
-      'events.run.remove':
-          'Ondoa kwenye tukio',
-      'events.run.closed':
-          'Kuongeza mbio kumefungwa.',
-      'events.run.cancelled':
-          'Tukio hili lilighairiwa.',
-      'events.run.opens':
-          'Kuongeza mbio kunafunguliwa {date}',
-      'events.run.recordingFor':
-          'Unarekodi kwa {event}',
-      'events.run.thisEvent':
-          'tukio hili',
+      'events.run.waiting': 'Inasubiri mwandaaji',
+      'events.run.remove': 'Ondoa kwenye tukio',
+      'events.run.closed': 'Kuongeza mbio kumefungwa.',
+      'events.run.cancelled': 'Tukio hili lilighairiwa.',
+      'events.run.opens': 'Kuongeza mbio kunafunguliwa {date}',
+      'events.run.recordingFor': 'Unarekodi kwa {event}',
+      'events.run.thisEvent': 'tukio hili',
       'events.run.offlinePending':
           'Hakuna intaneti. Mbio zako zimehifadhiwa kwenye simu hii na zitaongezwa ukipata intaneti.',
       'events.run.error.run_outside_window':
@@ -14442,217 +14222,133 @@ class FFLocale extends ChangeNotifier {
           'Tayari kuna mbio zilizoongezwa kwa tiketi hii. Ziondoe kwanza.',
       'events.run.error.event_not_open_for_results':
           'Tukio hili bado halijafunguliwa kwa matokeo.',
-      'events.board.title':
-          'Matokeo',
-      'events.board.banner.provisional':
-          'Matokeo ya awali',
-      'events.board.banner.official':
-          'Matokeo rasmi',
-      'events.board.search':
-          'Tafuta kwa namba au jina',
-      'events.board.you':
-          'Wewe',
-      'events.board.runner':
-          'Mkimbiaji {bib}',
-      'events.board.names':
-          'Majina yanaonekana kwa walioamua kuyaonyesha tu.',
-      'events.board.empty':
-          'Matokeo bado hayajachapishwa.',
-      'events.board.signin':
-          'Ingia ili uone matokeo.',
+      'events.board.title': 'Matokeo',
+      'events.board.banner.provisional': 'Matokeo ya awali',
+      'events.board.banner.official': 'Matokeo rasmi',
+      'events.board.search': 'Tafuta kwa namba au jina',
+      'events.board.you': 'Wewe',
+      'events.board.runner': 'Mkimbiaji {bib}',
+      'events.board.names': 'Majina yanaonekana kwa walioamua kuyaonyesha tu.',
+      'events.board.empty': 'Matokeo bado hayajachapishwa.',
+      'events.board.signin': 'Ingia ili uone matokeo.',
       // TODO(sw-review): "Nafasi" for rank (see events.result.rank)
-      'events.board.rank.a11y':
-          'Nafasi ya {rank}',
-      'events.medals.title':
-          'Medali na mafanikio',
-      'events.medals.tab.medals':
-          'Medali',
-      'events.medals.tab.achievements':
-          'Mafanikio',
-      'events.medals.empty':
-          'Hakuna medali bado. Maliza tukio ili upate.',
-      'events.medals.why':
-          'Umemaliza {category} kwa {time} · {stage}',
-      'events.medals.rule':
-          'Medali hutolewa kwa matokeo yaliyothibitishwa tu.',
-      'events.medals.removed':
-          'Zimeondolewa',
-      'events.medals.removedWhy':
-          'Imeondolewa kwa sababu {reason}',
-      'events.medals.share':
-          'Shiriki medali',
-      'events.medals.share.includeTime':
-          'Jumuisha muda wangu',
-      'events.medals.designBy':
-          'Muundo wa {organizer}',
-      'events.medals.report':
-          'Ripoti picha hii',
-      'events.medals.report.sent':
-          'Asante. FitFlex italiangalia.',
-      'events.medals.alt':
-          '{medal}, {event}, {category}, imetolewa {date}',
-      'events.medals.tapHint':
-          'Gusa mara mbili kuona maelezo',
-      'events.achievement.progress':
-          '{done} kati ya {total}',
-      'events.achievement.earnedOn':
-          'Imepatikana {date}',
-      'events.achievements.empty':
-          'Hakuna mafanikio ya kuonyesha bado.',
+      'events.board.rank.a11y': 'Nafasi ya {rank}',
+      'events.medals.title': 'Medali na mafanikio',
+      'events.medals.tab.medals': 'Medali',
+      'events.medals.tab.achievements': 'Mafanikio',
+      'events.medals.empty': 'Hakuna medali bado. Maliza tukio ili upate.',
+      'events.medals.why': 'Umemaliza {category} kwa {time} · {stage}',
+      'events.medals.rule': 'Medali hutolewa kwa matokeo yaliyothibitishwa tu.',
+      'events.medals.removed': 'Zimeondolewa',
+      'events.medals.removedWhy': 'Imeondolewa kwa sababu {reason}',
+      'events.medals.share': 'Shiriki medali',
+      'events.medals.share.includeTime': 'Jumuisha muda wangu',
+      'events.medals.designBy': 'Muundo wa {organizer}',
+      'events.medals.report': 'Ripoti picha hii',
+      'events.medals.report.sent': 'Asante. FitFlex italiangalia.',
+      'events.medals.alt': '{medal}, {event}, {category}, imetolewa {date}',
+      'events.medals.tapHint': 'Gusa mara mbili kuona maelezo',
+      'events.achievement.progress': '{done} kati ya {total}',
+      'events.achievement.earnedOn': 'Imepatikana {date}',
+      'events.achievements.empty': 'Hakuna mafanikio ya kuonyesha bado.',
       'events.notice.medalArtTakenDown':
           'Muundo wako wa medali wa {event} uliondolewa: {reason}.',
-      'events.reason.result_corrected':
-          'matokeo yalisahihishwa',
-      'events.reason.disqualified':
-          'ulifutiwa matokeo',
-      'events.reason.registration_cancelled':
-          'tiketi yako ilighairiwa',
-      'events.reason.event_cancelled':
-          'tukio lilighairiwa',
-      'events.reason.rule_changed_by_admin':
-          'FitFlex ilibadilisha sharti',
-      'events.rewards.title':
-          'Zawadi',
-      'events.rewards.entry':
-          'Medali na zawadi',
-      'events.rewards.available':
-          'Zawadi zilizopo',
-      'events.rewards.claimed':
-          'Zilizodaiwa',
+      'events.reason.result_corrected': 'matokeo yalisahihishwa',
+      'events.reason.disqualified': 'ulifutiwa matokeo',
+      'events.reason.registration_cancelled': 'tiketi yako ilighairiwa',
+      'events.reason.event_cancelled': 'tukio lilighairiwa',
+      'events.reason.rule_changed_by_admin': 'FitFlex ilibadilisha sharti',
+      'events.rewards.title': 'Zawadi',
+      'events.rewards.entry': 'Medali na zawadi',
+      'events.rewards.available': 'Zawadi zilizopo',
+      'events.rewards.claimed': 'Zilizodaiwa',
       // TODO(sw-review): "Dai" as the claim verb needs a native speaker
-      'events.rewards.claim':
-          'Dai',
+      'events.rewards.claim': 'Dai',
       // TODO(sw-review): "Dai" as the claim verb needs a native speaker
-      'events.rewards.claim.confirm':
-          'Dai zawadi hii?',
+      'events.rewards.claim.confirm': 'Dai zawadi hii?',
       'events.rewards.claim.bodyCertificate':
           'Kudai kunakupa cheti unachoweza kuonyesha au kushiriki. Hii inatumia moja ya zawadi hii.',
       'events.rewards.claim.bodyPerk':
           'Kudai kunakupa msimbo wa kuonyesha kwa wafanyakazi wa FitFlex. Hii inatumia moja ya zawadi hii.',
-      'events.rewards.claim.done':
-          'Imedaiwa. Hii hapa.',
-      'events.rewards.terms':
-          'Masharti',
-      'events.rewards.expires':
-          'Tumia kabla ya {date}',
-      'events.rewards.expiredOn':
-          'Zawadi hii iliisha muda {date}',
-      'events.rewards.offline':
-          'Hakuna intaneti, kwa hiyo huwezi kudai sasa.',
-      'events.rewards.status.reserved':
-          'Inasubiri kutumika',
-      'events.rewards.status.redeemed':
-          'Imetumika',
-      'events.rewards.status.expired':
-          'Imeisha muda',
-      'events.rewards.status.cancelled':
-          'Imeghairiwa',
-      'events.rewards.code':
-          'Msimbo wako',
-      'events.rewards.code.copy':
-          'Nakili msimbo wa zawadi',
-      'events.rewards.code.copied':
-          'Msimbo umenakiliwa',
+      'events.rewards.claim.done': 'Imedaiwa. Hii hapa.',
+      'events.rewards.terms': 'Masharti',
+      'events.rewards.expires': 'Tumia kabla ya {date}',
+      'events.rewards.expiredOn': 'Zawadi hii iliisha muda {date}',
+      'events.rewards.offline': 'Hakuna intaneti, kwa hiyo huwezi kudai sasa.',
+      'events.rewards.status.reserved': 'Inasubiri kutumika',
+      'events.rewards.status.redeemed': 'Imetumika',
+      'events.rewards.status.expired': 'Imeisha muda',
+      'events.rewards.status.cancelled': 'Imeghairiwa',
+      'events.rewards.code': 'Msimbo wako',
+      'events.rewards.code.copy': 'Nakili msimbo wa zawadi',
+      'events.rewards.code.copied': 'Msimbo umenakiliwa',
       'events.rewards.code.help':
           'Onyesha msimbo huu kwa wafanyakazi wa FitFlex. Unatumika mara moja.',
-      'events.rewards.certificate':
-          'Cheti cha kumaliza',
-      'events.rewards.history':
-          'Historia',
-      'events.rewards.entry.earn':
-          'Imepatikana',
-      'events.rewards.entry.redeem':
-          'Imedaiwa',
-      'events.rewards.entry.expire':
-          'Imeisha muda',
-      'events.rewards.entry.reverse':
-          'Imeondolewa',
-      'events.rewards.empty':
-          'Hakuna zawadi bado. Maliza tukio ili upate.',
-      'events.rewards.error.reward_unavailable':
-          'Zawadi hii haipatikani tena.',
+      'events.rewards.certificate': 'Cheti cha kumaliza',
+      'events.rewards.history': 'Historia',
+      'events.rewards.entry.earn': 'Imepatikana',
+      'events.rewards.entry.redeem': 'Imedaiwa',
+      'events.rewards.entry.expire': 'Imeisha muda',
+      'events.rewards.entry.reverse': 'Imeondolewa',
+      'events.rewards.empty': 'Hakuna zawadi bado. Maliza tukio ili upate.',
+      'events.rewards.error.reward_unavailable': 'Zawadi hii haipatikani tena.',
       'events.rewards.error.not_enough_units':
           'Huna zawadi hii iliyobaki ya kudai.',
-      'inbox.open.eventResult':
-          'Ona matokeo',
-      'inbox.open.eventMedals':
-          'Ona medali',
-      'inbox.open.eventRewards':
-          'Ona zawadi',
-      'events.result.reason.not_a_valid_run':
-          'haikuwa mbio halali',
+      'inbox.open.eventResult': 'Ona matokeo',
+      'inbox.open.eventMedals': 'Ona medali',
+      'inbox.open.eventRewards': 'Ona zawadi',
+      'events.result.reason.not_a_valid_run': 'haikuwa mbio halali',
       'events.result.reason.data_error':
           'kulikuwa na hitilafu kwenye data ya muda',
-      'events.result.reason.duplicate':
-          'ilikuwa rekodi iliyojirudia',
-      'events.result.reason.timing_error':
-          'kulikuwa na hitilafu ya muda',
-      'events.result.reason.wrong_bib':
-          'namba ya mbio ilikuwa si sahihi',
+      'events.result.reason.duplicate': 'ilikuwa rekodi iliyojirudia',
+      'events.result.reason.timing_error': 'kulikuwa na hitilafu ya muda',
+      'events.result.reason.wrong_bib': 'namba ya mbio ilikuwa si sahihi',
       'events.result.reason.late_finish_data':
           'data ya kumaliza ilifika kwa kuchelewa',
       // TODO(sw-review): native review of the reason clause
-      'events.result.reason.rule_violation':
-          'sharti la tukio lilivunjwa',
+      'events.result.reason.rule_violation': 'sharti la tukio lilivunjwa',
       // TODO(sw-review): native review of the reason clause
-      'events.result.reason.course_cut':
-          'njia ilifupishwa',
-      'events.result.reason.equipment':
-          'vifaa visivyoruhusiwa vilitumika',
+      'events.result.reason.course_cut': 'njia ilifupishwa',
+      'events.result.reason.equipment': 'vifaa visivyoruhusiwa vilitumika',
       // TODO(sw-review): native review of the reason clause
       'events.result.reason.identity':
           'utambulisho wa mkimbiaji haukuweza kuthibitishwa',
-      'events.result.reason.virtual_evidence':
-          'ushahidi wa mbio haukukubaliwa',
-      'events.reason.source_revoked':
-          'matokeo yaliyoipa yaliondolewa',
+      'events.result.reason.virtual_evidence': 'ushahidi wa mbio haukukubaliwa',
+      'events.reason.source_revoked': 'matokeo yaliyoipa yaliondolewa',
       // TODO(sw-review): DQ / "futa" wording needs a native speaker
       'events.result.line.dq.because':
           'Matokeo haya yamefutwa kwa sababu {reason}.',
       'events.result.line.rejected.because':
           'Matokeo haya hayakukubaliwa kwa sababu {reason}.',
-      'events.medals.removedNoReason':
-          'Imeondolewa',
+      'events.medals.removedNoReason': 'Imeondolewa',
       'events.medals.alt.removed':
           '{medal}, {event}, {category}, imeondolewa {date}',
-      'events.medals.awardedOn':
-          'imetolewa {date}',
-      'events.medals.removedOn':
-          'imeondolewa {date}',
+      'events.medals.awardedOn': 'imetolewa {date}',
+      'events.medals.removedOn': 'imeondolewa {date}',
       'events.error.evidence_limit':
           'Umeongeza idadi ya juu ya mbio inayoruhusiwa kwa tiketi hii.',
-      'events.error.link_locked':
-          'Mbio hizi haziwezi kubadilishwa tena.',
+      'events.error.link_locked': 'Mbio hizi haziwezi kubadilishwa tena.',
       'events.error.linking_closed':
           'Kuongeza mbio kwenye tukio hili kumefungwa.',
       'events.error.registration_not_confirmed':
           'Tiketi hii bado haijathibitishwa.',
-      'events.error.result_exists':
-          'Tiketi hii tayari ina matokeo.',
-      'events.error.no_result':
-          'Bado hakuna matokeo ya tiketi hii.',
+      'events.error.result_exists': 'Tiketi hii tayari ina matokeo.',
+      'events.error.no_result': 'Bado hakuna matokeo ya tiketi hii.',
       'events.error.rewards_unavailable':
           'Zawadi hazipatikani kwa sasa. Jaribu tena baadaye.',
-      'events.error.dispute_closed':
-          'Swali hili tayari limejibiwa.',
-      'events.error.dispute_not_found':
-          'Hatukupata swali hilo.',
+      'events.error.dispute_closed': 'Swali hili tayari limejibiwa.',
+      'events.error.dispute_not_found': 'Hatukupata swali hilo.',
       'events.error.request_in_progress':
           'Bado tunashughulikia ombi lako la mwisho. Subiri kidogo kisha ujaribu tena.',
-      'events.error.redemption_expired':
-          'Zawadi hii imeisha muda.',
-      'events.error.activity_not_found':
-          'Hatukupata mbio hizo.',
-      'events.error.link_not_found':
-          'Hatukupata mbio hizo zilizoongezwa.',
+      'events.error.redemption_expired': 'Zawadi hii imeisha muda.',
+      'events.error.activity_not_found': 'Hatukupata mbio hizo.',
+      'events.error.link_not_found': 'Hatukupata mbio hizo zilizoongezwa.',
       'events.error.organizer_owner':
           'Hamisha au funga akaunti yako ya mwandaaji kwanza.',
-      'ownerScan.eventTicket.title':
-          'Hii ni tiketi ya tukio',
+      'ownerScan.eventTicket.title': 'Hii ni tiketi ya tukio',
       'ownerScan.eventTicket.body':
           'Tiketi za matukio huskaniwa kwenye Uchukuaji wa vifaa kwenye portal ya mwandaaji, si hapa.',
-      'memberScan.eventTicket.title':
-          'Hii ni tiketi ya tukio',
+      'memberScan.eventTicket.title': 'Hii ni tiketi ya tukio',
       'memberScan.eventTicket.body':
           'Ioneshe kwenye dawati la vifaa vya mbio; haiwezi kutumika kuingia gym.',
       'events.ticket.cached':
@@ -15034,12 +14730,16 @@ class FFLocale extends ChangeNotifier {
       'shop.sale.endsInUnderMin': 'Ofa inaisha kabla ya dakika moja',
       'shop.sale.endsOn': 'Ofa inaisha {when}',
       'shop.sale.gone': 'Ofa hii imeisha',
-      'shop.home.saleEndedInCart': 'Ofa ya bidhaa iliyo kwenye kikapu chako imeisha. Utalipa bei ya sasa.',
-      'shop.home.saleEndedInCartMany': 'Ofa za bidhaa {n} zilizo kwenye kikapu chako zimeisha. Utalipa bei za sasa.',
-      'shop.sale.endingSoonInCart': 'Ofa ya {name} inaisha baada ya dakika {m}. Kamilisha ununuzi mapema ili upate bei ya ofa.',
+      'shop.home.saleEndedInCart':
+          'Ofa ya bidhaa iliyo kwenye kikapu chako imeisha. Utalipa bei ya sasa.',
+      'shop.home.saleEndedInCartMany':
+          'Ofa za bidhaa {n} zilizo kwenye kikapu chako zimeisha. Utalipa bei za sasa.',
+      'shop.sale.endingSoonInCart':
+          'Ofa ya {name} inaisha baada ya dakika {m}. Kamilisha ununuzi mapema ili upate bei ya ofa.',
       'shop.sale.cartLineEnded': 'Ofa imeisha',
       'shop.priceChanged.title': 'Bei zimebadilika',
-      'shop.priceChanged.body': 'Baadhi ya bei zimebadilika baada ya kuziweka kwenye kikapu. Angalia jumla mpya kabla ya kuendelea.',
+      'shop.priceChanged.body':
+          'Baadhi ya bei zimebadilika baada ya kuziweka kwenye kikapu. Angalia jumla mpya kabla ya kuendelea.',
       'shop.priceChanged.saleEnded': 'Ofa imeisha',
       'shop.priceChanged.saleStarted': 'Ofa imeanza',
       'shop.priceChanged.changed': 'Bei imebadilika',
@@ -15049,17 +14749,21 @@ class FFLocale extends ChangeNotifier {
       'shop.priceChanged.back': 'Rudi kwenye kikapu',
       'shop.priceChanged.again': 'Bei zimebadilika tena',
       'shop.priceChanged.offline': 'Hakuna intaneti',
-      'shop.a11y.priceChangedRow': '{name}, ilikuwa {old}, sasa {new}, {reason}',
+      'shop.a11y.priceChangedRow':
+          '{name}, ilikuwa {old}, sasa {new}, {reason}',
       'shop.a11y.priceChangedTotal': 'Jumla ilikuwa {old}, jumla mpya {new}',
       'merch.tab.sales': 'Ofa za muda mfupi',
       'merch.tab.banners': 'Mabango',
       'merch.sales.title': 'Ofa za muda mfupi',
       'merch.sales.propose': 'Pendekeza ofa ya muda mfupi',
       'merch.sales.emptyTitle': 'Bado hakuna ofa za muda mfupi',
-      'merch.sales.emptyBody': 'Weka ofa fupi kwa bidhaa yako moja. FitFlex itaionyesha pamoja na muda unaohesabika.',
+      'merch.sales.emptyBody':
+          'Weka ofa fupi kwa bidhaa yako moja. FitFlex itaionyesha pamoja na muda unaohesabika.',
       'merch.sales.error': 'Ofa za muda mfupi hazikupakia',
-      'merch.sales.offlineBody': 'Unganisha intaneti uone ofa zako za muda mfupi.',
-      'merch.sales.tooManyOpen': 'Una ofa nyingi za muda mfupi zinazosubiri. Ondoa moja au subiri uamuzi.',
+      'merch.sales.offlineBody':
+          'Unganisha intaneti uone ofa zako za muda mfupi.',
+      'merch.sales.tooManyOpen':
+          'Una ofa nyingi za muda mfupi zinazosubiri. Ondoa moja au subiri uamuzi.',
       'merch.sale.withdraw.title': 'Uiondoe ofa hii ya muda mfupi?',
       'merch.sale.withdrawn': 'Ofa imeondolewa',
       'merch.endSale.title': 'Usitishe ofa hii sasa?',
@@ -15071,7 +14775,8 @@ class FFLocale extends ChangeNotifier {
       'merch.sale.a11yEnd': 'Sitisha ofa ya {product}',
       'merch.sale.a11ySubmit': 'Tuma ofa ya {product} kwa idhini',
       'merch.sale.a11yCopy': 'Nakili ofa ya {product} kuwa mpya',
-      'merch.sale.cardA11y': '{product}. Bei ya ofa {sale}, ilikuwa {old}, punguzo la asilimia {pct}',
+      'merch.sale.cardA11y':
+          '{product}. Bei ya ofa {sale}, ilikuwa {old}, punguzo la asilimia {pct}',
       'merch.sale.endsCountdown': 'Inaisha baada ya saa {h} dakika {m}',
       'merch.sale.starts': 'Inaanza',
       'merch.sale.ends': 'Inaisha',
@@ -15082,47 +14787,66 @@ class FFLocale extends ChangeNotifier {
       'merch.sale.editTitle': 'Hariri ofa ya muda mfupi',
       'merch.sale.product': 'Bidhaa',
       'merch.sale.productRequired': 'Chagua moja ya bidhaa zako.',
-      'merch.sale.noProducts': 'Bado huna bidhaa zilizoidhinishwa za kuwekea ofa.',
-      'merch.sale.oos': 'Bidhaa hii imeisha. Ofa haitaonekana hadi uongeze Stock.',
-      'merch.sale.overlap': 'Bidhaa hii tayari ina ofa ya muda mfupi kuanzia {start} hadi {end}.',
-      'merch.sale.overlapNoDates': 'Bidhaa hii tayari ina ofa ya muda mfupi wakati huo.',
+      'merch.sale.noProducts':
+          'Bado huna bidhaa zilizoidhinishwa za kuwekea ofa.',
+      'merch.sale.oos':
+          'Bidhaa hii imeisha. Ofa haitaonekana hadi uongeze Stock.',
+      'merch.sale.overlap':
+          'Bidhaa hii tayari ina ofa ya muda mfupi kuanzia {start} hadi {end}.',
+      'merch.sale.overlapNoDates':
+          'Bidhaa hii tayari ina ofa ya muda mfupi wakati huo.',
       'merch.sale.regular': 'Bei ya kawaida {price}',
       'merch.sale.currentDiscount': 'Bei yako ya punguzo ya sasa {price}',
       'merch.sale.price': 'Bei ya ofa (TSh)',
       'merch.sale.live': 'Punguzo la {pct}% · wanunuzi wanaokoa {saving}',
       'merch.sale.enterPrice': 'Weka bei ya ofa.',
-      'merch.sale.min5': 'Bei ya ofa iwe chini ya bei ya kawaida kwa angalau 5%: {max} au chini zaidi.',
-      'merch.sale.belowDiscount': 'Bei ya ofa iwe chini ya bei yako ya punguzo ya sasa, {discount}.',
+      'merch.sale.min5':
+          'Bei ya ofa iwe chini ya bei ya kawaida kwa angalau 5%: {max} au chini zaidi.',
+      'merch.sale.belowDiscount':
+          'Bei ya ofa iwe chini ya bei yako ya punguzo ya sasa, {discount}.',
       'merch.sale.length': 'Ofa ya muda mfupi hudumu saa 1 hadi siku 7.',
-      'merch.sale.raised': 'Uliongeza bei ya bidhaa hii tarehe {date}. Ofa ya muda mfupi inaweza kuanza {earliest} au baadaye.',
+      'merch.sale.raised':
+          'Uliongeza bei ya bidhaa hii tarehe {date}. Ofa ya muda mfupi inaweza kuanza {earliest} au baadaye.',
       'merch.sale.startOn': 'Anza {date}',
       'merch.sale.checking': 'Inakagua sheria ya siku 14…',
-      'merch.sale.checkFailed': 'Hatukuweza kukagua sheria ya siku 14 sasa hivi. FitFlex itaikagua tena utakapotuma.',
-      'merch.sale.youPay': 'Wewe unalipia punguzo. Kamisheni yako inahesabiwa kwa bei ya ofa.',
-      'merch.sale.rule14': 'Ofa ya muda mfupi haiwezi kuanza ndani ya siku 14 baada ya kuongeza bei. Ikiwa imepangwa au inaendelea, huwezi kubadilisha bei ya bidhaa hii.',
-      'merch.sale.reviewNote': 'FitFlex hukagua kila ofa. Isipokaguliwa ndani ya siku 14, au kabla ya kuanza, itaisha muda.',
+      'merch.sale.checkFailed':
+          'Hatukuweza kukagua sheria ya siku 14 sasa hivi. FitFlex itaikagua tena utakapotuma.',
+      'merch.sale.youPay':
+          'Wewe unalipia punguzo. Kamisheni yako inahesabiwa kwa bei ya ofa.',
+      'merch.sale.rule14':
+          'Ofa ya muda mfupi haiwezi kuanza ndani ya siku 14 baada ya kuongeza bei. Ikiwa imepangwa au inaendelea, huwezi kubadilisha bei ya bidhaa hii.',
+      'merch.sale.reviewNote':
+          'FitFlex hukagua kila ofa. Isipokaguliwa ndani ya siku 14, au kabla ya kuanza, itaisha muda.',
       'merch.sale.start': 'Anzisha ofa ya muda mfupi',
-      'merch.sale.notEligible': 'Bidhaa hii haiwezi kuwa na ofa ya muda mfupi kwa sasa. Chagua nyingine.',
+      'merch.sale.notEligible':
+          'Bidhaa hii haiwezi kuwa na ofa ya muda mfupi kwa sasa. Chagua nyingine.',
       'merch.sale.resend.title': 'Uitume ofa hii tena kwa idhini?',
       'merch.sale.resend.body': 'Haitaanza hadi FitFlex iidhinishe tena.',
-      'vendor.priceLocked': 'Imefungwa wakati ofa yako inaendelea ({start}–{end}).',
+      'vendor.priceLocked':
+          'Imefungwa wakati ofa yako inaendelea ({start}–{end}).',
       'vendor.viewSale': 'Tazama ofa',
       'inbox.open.merchSale': 'Tazama ofa ya muda mfupi',
       // Shop home Phase 2 S4: flash sales (vendor list and product price lock). [SW: native review]
-      'merch.sale.openFull': 'Mapendekezo {open} kati ya {max} yaliyo wazi. Ondoa moja au subiri uamuzi kabla ya kupendekeza mengine.',
+      'merch.sale.openFull':
+          'Mapendekezo {open} kati ya {max} yaliyo wazi. Ondoa moja au subiri uamuzi kabla ya kupendekeza mengine.',
       'merch.sale.line.youEnded': 'Uliisitisha ofa hii',
       'merch.sale.byFitflex': 'FitFlex imeweka ofa hii kwa bidhaa yako.',
-      'merch.sale.reject.priceNotCredible': 'Bei ya kawaida haionekani kuwa halisi',
+      'merch.sale.reject.priceNotCredible':
+          'Bei ya kawaida haionekani kuwa halisi',
       'merch.sale.reject.product': 'Tatizo la bidhaa',
       'merch.sale.reject.timing': 'Tarehe hazifai',
-      'vendor.priceLockedSave': 'Bei hii imefungwa wakati ofa ya muda mfupi imepangwa au inaendelea. Taarifa nyingine bado zinaweza kubadilishwa.',
+      'vendor.priceLockedSave':
+          'Bei hii imefungwa wakati ofa ya muda mfupi imepangwa au inaendelea. Taarifa nyingine bado zinaweza kubadilishwa.',
       // Shop home Phase 2 S4 review: sale-only wording (ofa agreement), countdown plurals, new product history rule. [SW: native review]
       'shop.a11y.countdownHoursOnly': 'Ofa inaisha baada ya saa {h}',
       'shop.a11y.countdownOneHour': 'Ofa inaisha baada ya saa 1',
       'shop.a11y.countdownOneMinute': 'Ofa inaisha baada ya dakika 1',
-      'shop.a11y.countdownOneHourMinutes': 'Ofa inaisha baada ya saa 1 na dakika {m}',
-      'shop.a11y.countdownHoursOneMinute': 'Ofa inaisha baada ya saa {h} na dakika 1',
-      'shop.a11y.countdownOneHourOneMinute': 'Ofa inaisha baada ya saa 1 na dakika 1',
+      'shop.a11y.countdownOneHourMinutes':
+          'Ofa inaisha baada ya saa 1 na dakika {m}',
+      'shop.a11y.countdownHoursOneMinute':
+          'Ofa inaisha baada ya saa {h} na dakika 1',
+      'shop.a11y.countdownOneHourOneMinute':
+          'Ofa inaisha baada ya saa 1 na dakika 1',
       'shop.sale.endsInHours': 'Ofa inaisha baada ya saa {h}',
       'merch.sale.status.draft': 'Haijatumwa',
       'merch.sale.group.live': 'Zinaendelea',
@@ -15134,18 +14858,22 @@ class FFLocale extends ChangeNotifier {
       'merch.sale.line.expires': 'Itaisha muda {date} isipokaguliwa',
       'merch.sale.line.notReviewed': 'Haikukaguliwa kwa wakati',
       'merch.sale.line.youWithdrew': 'Uliiondoa',
-      'merch.sale.line.endedByFitflex': 'Imesitishwa {date} na FitFlex: {reason}',
+      'merch.sale.line.endedByFitflex':
+          'Imesitishwa {date} na FitFlex: {reason}',
       'merch.sale.line.endedByFitflexNoReason': 'Imesitishwa {date} na FitFlex',
       'merch.sale.keep': 'Iache',
       'merch.sale.withdraw.body': 'Haitakaguliwa wala kuonyeshwa.',
       'merch.sale.sent': 'Imetumwa kwa idhini',
       'merch.sale.notSentOffline': 'Hakuna intaneti. Haijatumwa.',
       'merch.sale.resend.keep': 'Iache ilivyo',
-      'merch.sale.suspended': 'Akaunti yako imesimamishwa. Ofa zako za muda mfupi hazionyeshwi dukani.',
-      'merch.sale.historyShort': 'Bidhaa hii iliwekwa dukani tarehe {date}. Bidhaa mpya zinahitaji siku 14 dukani kabla ya ofa ya muda mfupi: inaweza kuanza {earliest} au baadaye.',
+      'merch.sale.suspended':
+          'Akaunti yako imesimamishwa. Ofa zako za muda mfupi hazionyeshwi dukani.',
+      'merch.sale.historyShort':
+          'Bidhaa hii iliwekwa dukani tarehe {date}. Bidhaa mpya zinahitaji siku 14 dukani kabla ya ofa ya muda mfupi: inaweza kuanza {earliest} au baadaye.',
       'merch.sale.endConfirm': 'Sitisha sasa',
       // Shop home Phase 2 S4 revision 2: sale ended when the seller was suspended. [SW: native review]
-      'merch.sale.line.endedSuspended': 'Imesitishwa kwa sababu akaunti yako ilisimamishwa',
+      'merch.sale.line.endedSuspended':
+          'Imesitishwa kwa sababu akaunti yako ilisimamishwa',
       // Shop Phase 2 S4 QA round 1. [SW: native review]
       'merch.sale.needsInternet': 'Inahitaji intaneti',
     },

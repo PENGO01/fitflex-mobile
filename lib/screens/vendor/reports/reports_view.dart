@@ -306,11 +306,9 @@ class VendorReportsViewState extends State<VendorReportsView> {
   Widget _profitCard(Map<String, dynamic> profit) {
     final t = context.tr;
     final uncosted = mapAt(profit, 'uncosted');
-    final value = profitWords(context, profit);
+    final value = profitWords(context, profit, sold: hasUncosted(uncosted));
     final margin = formatPct(maybeNum(profit, 'marginPct'));
-    final uncostedText =
-        uncosted != null &&
-            (numAt(uncosted, 'qty') > 0 || numAt(uncosted, 'revenueTzs') > 0)
+    final uncostedText = hasUncosted(uncosted)
         ? reportPlural(
             context,
             'vendor.reports.profit.uncosted',

@@ -79,7 +79,18 @@ void Function(Uri address) vendorHomeAddress = (address) {
 const double vendorHomeBandMaxHeight = 409;
 
 class VendorHomePage extends StatefulWidget {
-  const VendorHomePage({super.key, this.open, this.filter, this.view});
+  const VendorHomePage({
+    super.key,
+    this.open,
+    this.filter,
+    this.view,
+    this.openAt,
+  });
+
+  /// A new value asks again for [open] and [filter], even when they are
+  /// what the address already says: the person may have moved tab or
+  /// cleared the filter since ("Add cost prices" a second time).
+  final String? openAt;
 
   /// The section to show first — where a notification leads: `orders`,
   /// `enquiries`, `products`, `payments`, `sales`, `customers` or (S6)
@@ -91,6 +102,8 @@ class VendorHomePage extends StatefulWidget {
   final String? view;
 
   /// `low`: start the product list on the low-stock filter (stock ledger).
+  /// `noCost`: on the products with no cost price (people who may see cost
+  /// only; for anyone else it is ignored).
   final String? filter;
 
   @override
@@ -116,6 +129,7 @@ class _VendorHomePageState extends State<VendorHomePage> {
   VendorTools _tools = VendorTools.off;
   LowStockIndex _low = LowStockIndex.empty();
   late bool _lowOnly = widget.filter == 'low';
+  late bool _noCostOnly = widget.filter == 'noCost';
   // Vendor tools · S3: walk-in sales kept on this device (synced from here).
   SalesSession? _sales;
   // Vendor tools · S4: the Customers tab's segment.
@@ -479,12 +493,17 @@ class _VendorHomePageState extends State<VendorHomePage> {
   @override
   void didUpdateWidget(VendorHomePage old) {
     super.didUpdateWidget(old);
+    final again = widget.openAt != old.openAt;
     if (widget.open != old.open ||
+        again ||
         (widget.open == 'customers' && widget.view != old.view)) {
       _show(widget.open);
     }
-    if (widget.filter != old.filter) {
-      setState(() => _lowOnly = widget.filter == 'low');
+    if (widget.filter != old.filter || again) {
+      setState(() {
+        _lowOnly = widget.filter == 'low';
+        _noCostOnly = widget.filter == 'noCost';
+      });
     }
   }
 
@@ -1355,16 +1374,19 @@ class _VendorHomePageState extends State<VendorHomePage> {
       );
     }
     final ledger = _ledger;
-    final showFilter = ledger && (_low.count > 0 || _lowOnly);
-    final lowOnly = ledger && _lowOnly;
-    final products = lowOnly
+    final noCostOnly = _noCostFilter;
+    final lowOnly = ledger && _lowOnly && !noCostOnly;
+    final showFilter = ledger && (_low.count > 0 || lowOnly || noCostOnly);
+    final products = noCostOnly
+        ? _products.where(_lacksCost).toList()
+        : lowOnly
         ? _products.where((p) => _low.isLow(p['id']?.toString())).toList()
         : _products;
     final itemCount =
         lead.length +
         products.length +
         (showFilter ? 1 : 0) +
-        (lowOnly && products.isEmpty ? 1 : 0);
+        ((lowOnly || noCostOnly) && products.isEmpty ? 1 : 0);
     Widget item(BuildContext context, int index) {
       if (index < lead.length) return lead[index];
       index -= lead.length;
@@ -1374,12 +1396,14 @@ class _VendorHomePageState extends State<VendorHomePage> {
       }
       if (index >= products.length) {
         return FFEmptyState(
-          key: const Key('vendor-low-empty'),
-          title: context.tr('vendor.stock.lowEmpty'),
+          key: Key(noCostOnly ? 'vendor-no-cost-empty' : 'vendor-low-empty'),
+          title: context.tr(
+            noCostOnly ? 'vendor.stock.noCostEmpty' : 'vendor.stock.lowEmpty',
+          ),
           action: FFButton(
             label: context.tr('vendor.stock.all'),
             variant: FFButtonVariant.secondary,
-            onPressed: () => setState(() => _lowOnly = false),
+            onPressed: _clearProductFilters,
           ),
         );
       }
@@ -1550,20 +1574,53 @@ class _VendorHomePageState extends State<VendorHomePage> {
         FFPill(
           key: const Key('vendor-filter-all'),
           label: context.tr('vendor.stock.all'),
-          filled: !_lowOnly,
-          onTap: () => setState(() => _lowOnly = false),
+          filled: !_lowOnly && !_noCostFilter,
+          onTap: _clearProductFilters,
         ),
-        FFPill(
-          key: const Key('vendor-filter-low'),
-          label: fillIn(context.tr('vendor.stock.lowFilter'), {
-            'n': _low.count,
-          }),
-          filled: _lowOnly,
-          onTap: () => setState(() => _lowOnly = true),
-        ),
+        if (_low.count > 0 || _lowOnly)
+          FFPill(
+            key: const Key('vendor-filter-low'),
+            label: fillIn(context.tr('vendor.stock.lowFilter'), {
+              'n': _low.count,
+            }),
+            filled: _lowOnly && !_noCostFilter,
+            onTap: () => setState(() {
+              _lowOnly = true;
+              _noCostOnly = false;
+            }),
+          ),
+        // Reached from "Add cost prices" in Reports (UAT D7).
+        if (_noCostFilter)
+          FFPill(
+            key: const Key('vendor-filter-no-cost'),
+            label: fillIn(context.tr('vendor.stock.noCostFilter'), {
+              'n': _products.where(_lacksCost).length,
+            }),
+            filled: true,
+            onTap: () {},
+          ),
       ],
     ),
   );
+
+  /// The no-cost filter is on: never for people who may not see cost.
+  bool get _noCostFilter => _noCostOnly && _ledger && _tools.canSeeCost;
+
+  /// No cost price: on the product, or (with variants) on any variant even
+  /// after falling back to the product's, as the stock value report counts.
+  /// A row without the key says nothing, so it is not listed.
+  bool _lacksCost(Map<String, dynamic> product) {
+    if (!product.containsKey('costTzs')) return false;
+    final variants = (product['variants'] as List? ?? []).whereType<Map>();
+    return variants.isEmpty
+        ? product['costTzs'] == null
+        : variants.any((v) => v['effectiveCostTzs'] == null);
+  }
+
+  void _clearProductFilters() => setState(() {
+    _lowOnly = false;
+    _noCostOnly = false;
+  });
 
   Widget _ordersTab() {
     if (_orders.isEmpty) {
