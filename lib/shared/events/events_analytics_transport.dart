@@ -51,14 +51,17 @@ const Map<String, Map<String, Set<String>?>> _allowlist = {
     'places': {'1', '2-5', '6+'},
   },
   'payment_started': {
+    'eventId': null,
     'late': {'true', 'false'},
     'method': {'manual', 'mobile_money'},
   },
   'payment_submitted': {
+    'eventId': null,
     'late': {'true', 'false'},
     'method': {'manual', 'mobile_money'},
   },
   'payment_state_seen': {
+    'eventId': null,
     'state': {
       'pending',
       'confirmed',
@@ -69,9 +72,9 @@ const Map<String, Map<String, Set<String>?>> _allowlist = {
     },
     'method': {'manual', 'mobile_money'},
   },
-  'ticket_opened': {},
-  'ticket_rotated': {},
-  'invitation_resent': {},
+  'ticket_opened': {'eventId': null},
+  'ticket_rotated': {'eventId': null},
+  'invitation_resent': {'eventId': null},
   'cancel_preview_viewed': {
     'scope': {'place', 'order'},
     'mode': {'policy', 'none', 'full', 'other'},

@@ -159,6 +159,7 @@ class _MemberEventOrderPageState extends State<MemberEventOrderPage>
       EventsAnalytics.paymentStateSeen(
         orderId: next.order.id,
         state: state.wire,
+        eventId: next.order.eventId,
       );
     }
     if (before != null &&
@@ -290,7 +291,7 @@ class _MemberEventOrderPageState extends State<MemberEventOrderPage>
     try {
       await _api.resendEventClaimInvitation(d.order.id, registrationId: r.id);
       if (!mounted) return;
-      EventsAnalytics.invitationResent();
+      EventsAnalytics.invitationResent(eventId: d.order.eventId);
       setState(() => _busy = false);
       snack.success(sent);
       await _load(quiet: true);
