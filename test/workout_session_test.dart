@@ -79,9 +79,11 @@ void main() {
     await tester.pump();
     await tester.tap(find.byKey(const Key('workout-plan-save')));
     await tester.pumpAndSettle();
+    // The plan sheet dates the workout from the device clock, not `_now`.
+    final today = DateTime.now();
     final planned = await repo.list(
-      from: DateTime(2026, 9, 1),
-      to: DateTime(2026, 10, 30),
+      from: today.subtract(const Duration(days: 1)),
+      to: today.add(const Duration(days: 1)),
     );
     expect(planned.single.name, 'HIIT Express');
     expect(planned.single.status, WorkoutStatus.planned);
