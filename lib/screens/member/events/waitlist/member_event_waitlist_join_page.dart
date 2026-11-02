@@ -234,9 +234,33 @@ class _MemberEventWaitlistJoinPageState
       _self.hasVerifiedContact &&
       _problems().isEmpty;
 
-  String get _consentVersion => _consent.version.isNotEmpty
-      ? _consent.version
-      : _options.consentTextVersion;
+  String? _consentOverride;
+
+  String get _consentVersion =>
+      _consentOverride ??
+      (_consent.version.isNotEmpty
+          ? _consent.version
+          : _options.consentTextVersion);
+
+  /// Reads the member's waitlist; when a live entry for this ticket exists the
+  /// join already worked, so the success page shows. False otherwise (a real
+  /// ticket in the same race), and the refusal text shows.
+  Future<bool> _alreadyWaiting(EventDetail d, EventParticipantInput me) async {
+    try {
+      final page = WaitlistPage.fromJson(await _api.listEventWaitlist());
+      for (final e in page.items) {
+        if (e.eventId == d.id &&
+            e.status.live &&
+            (e.ticketTypeId.isEmpty || e.ticketTypeId == me.ticketTypeId)) {
+          if (!mounted) return true;
+          setState(() => _joined = e);
+          _focusHeading();
+          return true;
+        }
+      }
+    } catch (_) {}
+    return false;
+  }
 
   Future<void> _join() async {
     final d = _detail;
@@ -298,10 +322,22 @@ class _MemberEventWaitlistJoinPageState
           return;
         }
         if (e.code == 'consent_required') {
+          final current = e.body is Map
+              ? (e.body as Map)['current']?.toString()
+              : null;
           setState(() {
+            // The text moved on: the next join sends the current version.
+            if (current != null && current.isNotEmpty) {
+              _consentOverride = current;
+            }
             _accepted = false;
             _refusal = locale.t('events.review.accept');
           });
+          return;
+        }
+        if (e.code == 'already_registered' && await _alreadyWaiting(d, me)) {
+          // The server does not honour the idempotency key: a retry after an
+          // unknown outcome answers this. A live entry means it worked.
           return;
         }
         if (e.code == 'not_sold_out') {

@@ -69,43 +69,38 @@ void main() {
       expect(w['name'], 'checkout_quote_created');
       expect(w['props'], {
         'eventId': 'evt_1',
-        'places': '2-5',
+        'places': 3,
         'mode': 'self',
         'platform': 'ios',
       });
       final text = jsonEncode(w);
       for (final v in _sensitive.values) {
-        // placesCount 3 was bucketed; the raw sensitive values are gone.
+        // The sensitive values are gone (places is the small count 3).
         expect(text, isNot(contains('$v')));
       }
     });
 
-    test('buckets', () {
-      expect([0, 1, 2, 5].map(bucketFilters).toList(), ['0', '1', '2+', '2+']);
-      expect([0, 1, 5, 6, 20, 21].map(bucketResults).toList(), [
-        '0',
-        '1-5',
-        '1-5',
-        '6-20',
-        '6-20',
-        '21+',
-      ]);
-      expect([1, 2, 5, 6, 40].map(bucketPlaces).toList(), [
-        '1',
-        '2-5',
-        '2-5',
-        '6+',
-        '6+',
-      ]);
+    test('small counts go raw; the server buckets (contract C)', () {
       final w = analyticsWire('event_list_viewed', {
         'filtersActive': 3,
         'resultCount': 12,
       }, platform: 'web')!;
-      expect(w['props'], {
-        'filters': '2+',
-        'results': '6-20',
-        'platform': 'web',
-      });
+      expect(w['props'], {'filters': 3, 'results': 12, 'platform': 'web'});
+      final q = analyticsWire('checkout_quote_created', {
+        'placesCount': 0,
+      }, platform: 'web')!;
+      expect((q['props'] as Map)['places'], 0);
+      // A huge or negative or non-number count is capped or dropped.
+      final big = analyticsWire('event_list_viewed', {
+        'filtersActive': 5000000,
+        'resultCount': -2,
+      }, platform: 'web')!;
+      expect(big['props'], {'filters': maxRawCount, 'platform': 'web'});
+      final text = analyticsWire('event_list_viewed', {
+        'filtersActive': '2+',
+        'resultCount': '1-5',
+      }, platform: 'web')!;
+      expect(text['props'], {'platform': 'web'});
     });
 
     test('names the server writes itself are never sent', () {

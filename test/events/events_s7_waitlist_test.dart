@@ -12,6 +12,10 @@ import 'package:fitflexmobile/screens/member/events/register/self_profile.dart';
 import 'package:fitflexmobile/screens/member/events/waitlist/member_event_waitlist_join_page.dart';
 import 'package:fitflexmobile/screens/member/events/waitlist/member_event_waitlist_view.dart';
 import 'package:fitflexmobile/shared/components/components.dart';
+import 'dart:convert';
+
+import 'package:fitflexmobile/shared/api_client.dart';
+import 'package:fitflexmobile/shared/api_error_message.dart';
 import 'package:fitflexmobile/shared/events/event_detail.dart';
 import 'package:fitflexmobile/shared/events/event_order.dart';
 import 'package:fitflexmobile/shared/events/event_time.dart';
@@ -1060,6 +1064,383 @@ void main() {
         extraRoutes: _waitlistRoutes,
       );
       expect(find.byKey(const Key('order-waitlist-chip')), findsNothing);
+    });
+  });
+
+  group('fix round', () {
+    test('banned words: no ofa, foleni or nafasi-for-places in Swahili', () {
+      final banned = [
+        RegExp(r'\bofa\b'),
+        RegExp(r'foleni'),
+        RegExp(r'nafasi'),
+        RegExp(r'kuachwa'),
+      ];
+      final keys = [
+        for (final k in FFLocale.keysOf('sw'))
+          if (k.startsWith('events.waitlist.') ||
+              k.startsWith('inbox.open.eventWaitlist') ||
+              k == 'events.cta.soldOutHint' ||
+              k == 'events.privacy.analytics' ||
+              k == 'events.error.unpaid_places_limit')
+            k,
+      ];
+      expect(keys.length, greaterThan(60));
+      for (final k in keys) {
+        final sw = FFLocale.textOf('sw', k)!.toLowerCase();
+        for (final re in banned) {
+          expect(re.hasMatch(sw), isFalse, reason: '$k says: $sw');
+        }
+      }
+    });
+
+    test('the agreed Swahili lines', () {
+      String sw(String k) => FFLocale.textOf('sw', k)!;
+      expect(
+        sw('events.waitlist.error.already_ended'),
+        'Hii tayari imekwisha.',
+      );
+      expect(
+        sw('events.waitlist.error.entry_gone'),
+        'Hatukupata ingizo hili kwenye orodha.',
+      );
+      expect(
+        sw('events.waitlist.error.waitlist_active'),
+        'Tiketi hii ina orodha ya kusubiri. Jiunge na orodha badala yake.',
+      );
+      expect(
+        sw('events.waitlist.error.closed'),
+        'Orodha ya kusubiri imefungwa.',
+      );
+      expect(
+        sw('events.cta.soldOutHint'),
+        'Rudi baadaye kuona kama tiketi zimeachiliwa',
+      );
+      expect(
+        sw('events.waitlist.error.limit'),
+        'Umefikia idadi ya juu ya orodha za kusubiri zinazoruhusiwa.',
+      );
+      expect(
+        sw('events.waitlist.join.pickTicket'),
+        'Chagua tiketi iliyouzwa yote',
+      );
+    });
+
+    test('every waitlist code has words in both languages, none humanised', () {
+      for (final lang in ['en', 'sw']) {
+        final l = FFLocale()..set(Locale(lang));
+        final seen = <String>{};
+        for (final code in const [
+          'not_sold_out',
+          'already_registered',
+          'waitlist_full',
+          'waitlist_lapse_limit',
+          'waitlist_limit_reached',
+          'verification_required',
+          'waitlist_unavailable',
+          'waitlist_closed',
+          'waitlist_active',
+          'payment_pending',
+          'payments_unavailable',
+          'rate_limited',
+          'already_ended',
+          'entry_not_found',
+          'waitlist_entry_gone',
+          'not_blocked',
+          'consent_required',
+          'validation_failed',
+          'event_not_found',
+          'something_new_and_unknown',
+        ]) {
+          final text = waitlistErrorMessage(
+            l,
+            ApiException(409, {'error': code}),
+          );
+          expect(text, isNot(contains('_')), reason: '$lang $code: $text');
+          expect(text.toLowerCase(), isNot(contains('nafasi')), reason: code);
+          seen.add(text);
+        }
+        expect(seen.length, greaterThan(10));
+        // The reason inside waitlist_unavailable picks the line.
+        expect(
+          waitlistErrorMessage(
+            l,
+            ApiException(409, {
+              'error': 'waitlist_unavailable',
+              'reason': 'payments_unavailable',
+            }),
+          ),
+          l.t('events.pay.unavailable'),
+        );
+        expect(
+          waitlistErrorMessage(
+            l,
+            ApiException(409, {
+              'error': 'waitlist_unavailable',
+              'reason': 'waitlist_closed',
+            }),
+          ),
+          l.t('events.waitlist.error.closed'),
+        );
+      }
+    });
+
+    test('order creation: waitlist_active and unpaid_places_limit', () {
+      final en = FFLocale()..set(const Locale('en'));
+      final sw = FFLocale()..set(const Locale('sw'));
+      final active = ApiException(409, {
+        'error': 'waitlist_active',
+        'ticketTypeId': 'tt_early',
+      });
+      expect(
+        eventsErrorMessage(en, active),
+        'This ticket has a waitlist. Join the waitlist instead.',
+      );
+      expect(
+        eventsErrorMessage(sw, active),
+        'Tiketi hii ina orodha ya kusubiri. Jiunge na orodha badala yake.',
+      );
+      final limit = ApiException(409, {
+        'error': 'unpaid_places_limit',
+        'limit': 4,
+      });
+      expect(eventsErrorMessage(en, limit), contains('limit 4'));
+      expect(eventsErrorMessage(sw, limit), contains('kikomo 4'));
+      expect(eventsErrorMessage(en, limit), isNot(contains('_')));
+    });
+
+    apiTest('join: 409 already_registered after an unknown outcome reloads '
+        'and shows success', (tester, api) async {
+      api.on('GET /events/evt_1', soldOutDetail());
+      api.on('POST /me/event-orders/quote', quoteJson(valid: false));
+      api.fail('POST /me/events/evt_1/waitlist', 409, {
+        'error': 'already_registered',
+      });
+      api.on('GET /me/event-waitlist', listJson([entryJson(position: 2)]));
+      await pumpPage(
+        tester,
+        api,
+        MemberEventWaitlistJoinPage(
+          eventId: 'evt_1',
+          ticketTypeId: 'tt_early',
+          options: optsWl(),
+          selfProfile: _profile,
+          now: DateTime.utc(2027, 3, 10, 12),
+        ),
+        user: member,
+        size: const Size(375, 1600),
+        extraRoutes: _waitlistRoutes,
+        keepRequests: true,
+      );
+      await tapVisible(tester, find.byKey(const Key('waitlist-accept')));
+      await tapVisible(tester, find.byKey(const Key('waitlist-join')));
+      expect(api.sent('GET', '/me/event-waitlist'), isTrue);
+      expect(find.text("You're on the waitlist"), findsOneWidget);
+      expect(find.text('Your number on the list: 2'), findsOneWidget);
+    });
+
+    apiTest('join: already_registered with no live entry is a real refusal', (
+      tester,
+      api,
+    ) async {
+      api.on('GET /events/evt_1', soldOutDetail());
+      api.on('POST /me/event-orders/quote', quoteJson(valid: false));
+      api.fail('POST /me/events/evt_1/waitlist', 409, {
+        'error': 'already_registered',
+      });
+      api.on('GET /me/event-waitlist', listJson([]));
+      await pumpPage(
+        tester,
+        api,
+        MemberEventWaitlistJoinPage(
+          eventId: 'evt_1',
+          ticketTypeId: 'tt_early',
+          options: optsWl(),
+          selfProfile: _profile,
+        ),
+        user: member,
+        size: const Size(375, 1600),
+        extraRoutes: _waitlistRoutes,
+        keepRequests: true,
+      );
+      await tapVisible(tester, find.byKey(const Key('waitlist-accept')));
+      await tapVisible(tester, find.byKey(const Key('waitlist-join')));
+      expect(
+        find.text('You already have a ticket in this race.'),
+        findsOneWidget,
+      );
+      expect(find.byKey(const Key('waitlist-joined-title')), findsNothing);
+    });
+
+    apiTest('leave: 409 already_ended reloads and counts as done', (
+      tester,
+      api,
+    ) async {
+      var calls = 0;
+      api.onCall('GET /me/event-waitlist', (_) {
+        calls++;
+        return calls == 1
+            ? listJson([entryJson()])
+            : listJson([entryJson(status: 'left', position: null)]);
+      });
+      api.fail('DELETE /me/event-waitlist/wl_1', 409, {
+        'error': 'already_ended',
+      });
+      await pumpPage(
+        tester,
+        api,
+        MemberEventWaitlistPage(
+          options: optsWl(),
+          now: () => DateTime.utc(2027, 3, 10, 12),
+        ),
+        user: member,
+        size: const Size(375, 1400),
+        extraRoutes: _waitlistRoutes,
+        keepRequests: true,
+      );
+      await tapVisible(tester, find.byKey(const Key('waitlist-leave-wl_1')));
+      await tapVisible(
+        tester,
+        find.byKey(const Key('waitlist-leave-confirm-wl_1')),
+      );
+      expect(find.text('You left the list'), findsOneWidget);
+      expect(find.text('This has already ended.'), findsNothing);
+      expect(find.text('You left the waitlist.'), findsOneWidget);
+    });
+
+    apiTest('reconfirm: consent_required { current } retries once with it', (
+      tester,
+      api,
+    ) async {
+      api.on(
+        'GET /me/event-waitlist',
+        listJson([entryJson(blockedReason: 'reconsent')]),
+      );
+      var n = 0;
+      api.onCall('POST /me/event-waitlist/wl_1/reconfirm', (r) {
+        n++;
+        if (n == 1) {
+          return RawResponse(
+            422,
+            jsonEncode({
+              'error': 'consent_required',
+              'current': '2026-11-draft',
+            }),
+          );
+        }
+        return {'entry': entryJson()};
+      });
+      await pumpPage(
+        tester,
+        api,
+        MemberEventWaitlistPage(
+          options: optsWl(),
+          now: () => DateTime.utc(2027, 3, 10, 12),
+        ),
+        user: member,
+        size: const Size(375, 1400),
+        extraRoutes: _waitlistRoutes,
+        keepRequests: true,
+      );
+      await tapVisible(
+        tester,
+        find.byKey(const Key('waitlist-reconfirm-wl_1')),
+      );
+      await tapVisible(
+        tester,
+        find.byKey(const Key('waitlist-reconfirm-confirm-wl_1')),
+      );
+      final calls = api.where('POST', '/me/event-waitlist/wl_1/reconfirm');
+      expect(calls, hasLength(2));
+      expect(
+        ((calls[0].body as Map)['consent'] as Map)['textVersion'],
+        '2026-10-draft',
+      );
+      expect(
+        ((calls[1].body as Map)['consent'] as Map)['textVersion'],
+        '2026-11-draft',
+      );
+    });
+
+    apiTest(
+      'detail: a row id marks only that ticket; a missing id marks none',
+      (tester, api) async {
+        // Two joinable types; the member waits for tt_early only.
+        final d = soldOutDetail();
+        final cats = [
+          for (final c in d['categories'] as List)
+            {
+              ...(c as Map<String, dynamic>),
+              'ticketTypes': [
+                for (final t in c['ticketTypes'] as List)
+                  (t as Map)['id'] == 'tt_std'
+                      ? {
+                          ...t,
+                          'availability': 'sold_out',
+                          'waitlist': {'state': 'open'},
+                        }
+                      : t,
+              ],
+            },
+        ];
+        api.on('GET /events/evt_1', {...d, 'categories': cats});
+        api.on('GET /me/event-waitlist', listJson([entryJson()]));
+        await pumpPage(
+          tester,
+          api,
+          MemberEventDetailPage(eventId: 'evt_1', options: optsWl()),
+          user: member,
+          size: const Size(375, 3000),
+          extraRoutes: _waitlistRoutes,
+          keepRequests: true,
+        );
+        await tester.scrollUntilVisible(
+          find.byKey(const Key('event-ticket-tt_std')),
+          300,
+          scrollable: find.byType(Scrollable).first,
+        );
+        expect(find.byKey(const Key('event-ticket-tt_std')), findsOneWidget);
+        // The bar says the member waits; the other row is still a join row.
+        expect(_cta('On the waitlist'), findsOneWidget);
+      },
+    );
+
+    apiTest('the waitlist button wraps at 320 px and 1.3x, English and '
+        'Swahili', (tester, api) async {
+      var overflowFromButton = false;
+      final old = FlutterError.onError;
+      FlutterError.onError = (d) {
+        if (d.toString().contains('ff_button.dart')) overflowFromButton = true;
+      };
+      addTearDown(() => FlutterError.onError = old);
+      for (final lang in ['en', 'sw']) {
+        api.on('GET /events/evt_1', soldOutDetail());
+        api.on('GET /me/event-waitlist', listJson([]));
+        await pumpPage(
+          tester,
+          api,
+          MemberEventDetailPage(eventId: 'evt_1', options: optsWl()),
+          user: member,
+          lang: lang,
+          size: const Size(320, 640),
+          textScale: 1.3,
+          extraRoutes: _waitlistRoutes,
+          keepRequests: true,
+        );
+        expect(find.byKey(const Key('event-cta')), findsOneWidget);
+        // The "Updated / Report a problem" row far down the page already
+        // overflowed at 320 px and 1.3x before S7 (detail page, not this
+        // bar). Nothing inside the button may overflow.
+        expect(tester.takeException(), anyOf(isNull, isFlutterError));
+        expect(
+          overflowFromButton,
+          isFalse,
+          reason: '$lang: the CTA button overflowed',
+        );
+        final cta = tester.widget<FFButton>(find.byKey(const Key('event-cta')));
+        expect(cta.maxLines, 2, reason: 'long labels wrap, not ellipsise');
+        final box = tester.getSize(find.byKey(const Key('event-cta')));
+        expect(box.width, lessThanOrEqualTo(320));
+      }
     });
   });
 }

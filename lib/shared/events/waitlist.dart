@@ -195,10 +195,14 @@ Map<String, dynamic> waitlistJoinBody({
   'locale': ?locale,
 };
 
-/// The words for a refused join or leave (spec §10.2). Anything not in the
-/// waitlist set falls back to the events wording.
+/// The words for a refused join, leave or reconfirm (spec §10.2, contract
+/// B). Every code the waitlist routes can answer has its own line; nothing
+/// falls through to the humanised raw code. An unknown code reads by its HTTP
+/// status.
 String waitlistErrorMessage(FFLocale locale, Object error) {
   if (error is ApiException) {
+    final body = error.body;
+    final reason = body is Map ? body['reason']?.toString() : null;
     final key = switch (error.code) {
       'not_sold_out' => 'events.waitlist.error.not_sold_out',
       'already_registered' => 'events.waitlist.error.already_registered',
@@ -206,15 +210,40 @@ String waitlistErrorMessage(FFLocale locale, Object error) {
       'waitlist_lapse_limit' => 'events.waitlist.error.lapse_limit',
       'waitlist_limit_reached' => 'events.waitlist.error.limit',
       'verification_required' => 'events.waitlist.error.verification',
-      'waitlist_unavailable' => 'events.waitlist.error.unavailable',
+      'waitlist_unavailable' => switch (reason) {
+        'waitlist_closed' => 'events.waitlist.error.closed',
+        'payments_unavailable' => 'events.pay.unavailable',
+        _ => 'events.waitlist.error.unavailable',
+      },
+      'waitlist_closed' => 'events.waitlist.error.closed',
+      'waitlist_active' => 'events.waitlist.error.waitlist_active',
       'payment_pending' => 'events.waitlist.error.payment_pending',
+      'payments_unavailable' => 'events.pay.unavailable',
       'rate_limited' => 'events.waitlist.error.rate',
       'feature_disabled' => 'events.waitlist.error.unavailable',
+      'already_ended' => 'events.waitlist.error.already_ended',
+      'entry_not_found' ||
+      'waitlist_entry_gone' => 'events.waitlist.error.entry_gone',
+      'not_blocked' => 'events.waitlist.error.not_blocked',
+      'consent_required' => 'events.review.accept',
+      'validation_failed' => 'events.review.fix',
+      'event_not_found' => 'error.reason.eventNotFound',
+      'unpaid_places_limit' || 'payment_in_progress' => null,
       _ => null,
     };
     if (key != null) return locale.t(key);
+    if (error.code == 'unpaid_places_limit') {
+      return eventsErrorMessage(locale, error);
+    }
+    return locale.t(switch (error.status) {
+      401 => 'error.unauthorized',
+      403 => 'error.forbidden',
+      404 => 'error.notFound',
+      409 => 'error.conflict',
+      _ => 'error.requestFailed',
+    });
   }
-  return eventsErrorMessage(locale, error);
+  return errorMessage(locale, error);
 }
 
 /// Loads the member's waitlist, keeps the last good copy for offline (24 h
@@ -281,13 +310,32 @@ class WaitlistController extends ChangeNotifier {
   /// Leaves the line. Throws the server's refusal (`payment_pending`,
   /// `already_ended`); the caller shows the words.
   Future<void> leave(String id) async {
-    await api.leaveEventWaitlist(id);
+    try {
+      await api.leaveEventWaitlist(id);
+    } on ApiException catch (e) {
+      // The server does not honour the idempotency key, so a retry after an
+      // unknown outcome answers `already_ended`: read the list and treat it
+      // as done.
+      if (e.code != 'already_ended') rethrow;
+    }
     await load();
   }
 
   /// Confirms the changed terms so the entry stays in the line.
+  ///
+  /// A `consent_required { current }` answer means the text moved on again:
+  /// the current version is read (from the answer, else a fresh
+  /// `GET /events/options`) and the call is retried once.
   Future<void> reconfirm(String id, {required String textVersion}) async {
-    await api.reconfirmEventWaitlist(id, textVersion: textVersion);
+    try {
+      await api.reconfirmEventWaitlist(id, textVersion: textVersion);
+    } on ApiException catch (e) {
+      if (e.code != 'consent_required') rethrow;
+      var current = e.body is Map ? _opt((e.body as Map)['current']) : null;
+      current ??= _opt((await api.eventsOptions())['consentTextVersion']);
+      if (current == null || current == textVersion) rethrow;
+      await api.reconfirmEventWaitlist(id, textVersion: current);
+    }
     await load();
   }
 }

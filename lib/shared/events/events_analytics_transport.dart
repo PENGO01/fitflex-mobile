@@ -1,7 +1,7 @@
 // Events S7 (docs/design/events-s7-hardening-and-pilot.md §5.4): the one
 // transport behind `EventsAnalytics`. It only counts how the events screens
-// are used. Rules: an allowlist per event (anything else is dropped), counts
-// turned into buckets, no order or registration ids, no amounts, no names;
+// are used. Rules: an allowlist per event (anything else is dropped), small
+// counts sent raw (the server buckets), no order or registration ids, no amounts, no names;
 // at most 100 events held, in memory only; flushed every 30 seconds, at 10
 // queued and when the app is paused; one retry, then dropped; never sent
 // offline; never blocks a screen; payloads are never logged.
@@ -17,13 +17,14 @@ import 'events_cache.dart';
 typedef AnalyticsSender =
     Future<void> Function(List<Map<String, dynamic>> events);
 
+/// Marker for a small non-negative count, sent raw: the server buckets
+/// (s7-contract.md, C. Analytics).
+const Set<String> _small = {'#int'};
+
 /// What the transport may send for one event name: the closed value sets, or
 /// null for a free `eventId`.
 const Map<String, Map<String, Set<String>?>> _allowlist = {
-  'event_list_viewed': {
-    'filters': {'0', '1', '2+'},
-    'results': {'0', '1-5', '6-20', '21+'},
-  },
+  'event_list_viewed': {'filters': _small, 'results': _small},
   'event_detail_viewed': {
     'availability': {
       'open',
@@ -48,7 +49,7 @@ const Map<String, Map<String, Set<String>?>> _allowlist = {
   'checkout_quote_created': {
     'mode': {'self', 'others', 'group', 'team'},
     'eventId': null,
-    'places': {'1', '2-5', '6+'},
+    'places': _small,
   },
   'payment_started': {
     'eventId': null,
@@ -97,17 +98,9 @@ const Set<String> serverOnlyEvents = {
   'registration_claimed',
 };
 
-String bucketFilters(int n) => n <= 0 ? '0' : (n == 1 ? '1' : '2+');
-
-String bucketResults(int n) => n <= 0
-    ? '0'
-    : n <= 5
-    ? '1-5'
-    : n <= 20
-    ? '6-20'
-    : '21+';
-
-String bucketPlaces(int n) => n <= 1 ? '1' : (n <= 5 ? '2-5' : '6+');
+/// Largest count forwarded; anything bigger is capped, so a raw count never
+/// identifies anyone.
+const int maxRawCount = 1000;
 
 /// The wire form of one call, or null when it must not be sent (an unknown
 /// name, or one the server emits itself). Unknown keys and values outside the
@@ -121,13 +114,14 @@ Map<String, dynamic>? analyticsWire(
   final allowed = _allowlist[name];
   if (allowed == null) return null;
   final src = <String, Object?>{...raw};
-  // Raw counts become buckets; amounts and order ids are never read.
+  // Small counts go raw under the contract's names; amounts and order ids
+  // are never read.
   if (name == 'event_list_viewed') {
-    src['filters'] = bucketFilters((raw['filtersActive'] as int?) ?? 0);
-    src['results'] = bucketResults((raw['resultCount'] as int?) ?? 0);
+    src['filters'] = raw['filtersActive'];
+    src['results'] = raw['resultCount'];
   }
   if (name == 'checkout_quote_created') {
-    src['places'] = bucketPlaces((raw['placesCount'] as int?) ?? 1);
+    src['places'] = raw['placesCount'];
   }
   if (name == 'payment_started') {
     src['method'] = _method(raw['mode']);
@@ -148,7 +142,11 @@ Map<String, dynamic>? analyticsWire(
     final v = src[e.key];
     if (v == null) continue;
     final text = v.toString();
-    if (e.value == null) {
+    if (e.value == _small) {
+      if (v is int && v >= 0) {
+        props[e.key] = v > maxRawCount ? maxRawCount : v;
+      }
+    } else if (e.value == null) {
       // A free id: short and plain, nothing else.
       if (RegExp(r'^[A-Za-z0-9_-]{1,64}$').hasMatch(text)) {
         props[e.key] = text;

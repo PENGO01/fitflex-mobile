@@ -3580,8 +3580,11 @@ class ApiClient {
   // 404s `feature_disabled` while its flag (EVENTS_WAITLIST /
   // EVENTS_ANALYTICS) is off.
 
-  /// Joins the waitlist for a sold-out ticket type (§4.9). [idempotencyKey]
-  /// makes a retry return the same entry. 201 `{entry}`.
+  /// Joins the waitlist for a sold-out ticket type (§4.9). 201 `{entry}`.
+  /// The server does NOT honour the `Idempotency-Key` on the waitlist routes
+  /// (s7-contract.md, B). The header is still sent, but a retry after an
+  /// unknown outcome answers 409 `already_registered`: callers reload
+  /// `GET /me/event-waitlist` and treat a live entry as done.
   Future<Map<String, dynamic>> joinEventWaitlist(
     String eventId,
     Map<String, dynamic> body, {
@@ -3603,7 +3606,8 @@ class ApiClient {
       );
 
   /// Leaves the waitlist. 409 `payment_pending` while a manual payment waits
-  /// for confirmation; 409 `already_ended`.
+  /// for confirmation; 409 `already_ended` (also what a retry after an
+  /// unknown outcome answers, because the key is not honoured).
   Future<Map<String, dynamic>> leaveEventWaitlist(String id) async =>
       Map<String, dynamic>.from(
         await _request(

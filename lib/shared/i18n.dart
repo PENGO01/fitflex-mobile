@@ -6187,6 +6187,16 @@ class FFLocale extends ChangeNotifier {
           'Too many tries. Wait a little and try again.',
       'events.waitlist.offline':
           'No internet. You need a connection to join or leave.',
+      'events.waitlist.error.already_ended': 'This has already ended.',
+      'events.waitlist.error.entry_gone':
+          'We couldn\'t find this entry on the waitlist.',
+      'events.waitlist.error.not_blocked':
+          'There is nothing to review on this entry.',
+      'events.waitlist.error.waitlist_active':
+          'This ticket has a waitlist. Join the waitlist instead.',
+      'events.waitlist.error.closed': 'The waitlist is closed.',
+      'events.error.unpaid_places_limit':
+          'You already hold too many unpaid places (limit {limit}). Pay for or cancel an order first.',
       'events.waitlist.reconfirm.banner':
           'The terms changed. Review them to stay on the list.',
       'events.waitlist.reconfirm.button': 'Review terms',
@@ -13669,7 +13679,7 @@ class FFLocale extends ChangeNotifier {
       'events.cta.closes': 'Hufungwa {date}',
       'events.cta.closingSoon': 'Inafungwa karibuni · zimebaki siku {n}',
       'events.cta.soldOut': 'Zimeisha',
-      'events.cta.soldOutHint': 'Rudi kuangalia tiketi zitakazoachwa',
+      'events.cta.soldOutHint': 'Rudi baadaye kuona kama tiketi zimeachiliwa',
       // ── Events S7: waitlist (spec §10.2).
       // TODO(sw-review): Swahili drafts pending native review (D22).
       'events.waitlist.cta.join': 'Jiunge na orodha ya kusubiri',
@@ -13677,7 +13687,7 @@ class FFLocale extends ChangeNotifier {
           'Hakuna malipo sasa. Tutakuambia tiketi ikipatikana.',
       'events.waitlist.cta.joined': 'Uko kwenye orodha ya kusubiri',
       'events.waitlist.join.title': 'Jiunge na orodha ya kusubiri',
-      'events.waitlist.join.pickTicket': 'Chagua tiketi iliyoisha',
+      'events.waitlist.join.pickTicket': 'Chagua tiketi iliyouzwa yote',
       'events.waitlist.join.details': 'Taarifa zako',
       'events.waitlist.join.rules':
           'Kusubiri ni bure. Tiketi ikipatikana, tutakushikilia kwa saa {hours} nawe utalipa kama kawaida. Tiketi hutolewa kwa mpangilio wa waliojiunga.',
@@ -13729,7 +13739,7 @@ class FFLocale extends ChangeNotifier {
       'events.waitlist.error.lapse_limit':
           'Umeacha tiketi nyingi zilizoshikiliwa kwa tukio hili, kwa hivyo huwezi kujiunga tena.',
       'events.waitlist.error.limit':
-          'Uko kwenye idadi ya juu ya orodha zinazoruhusiwa.',
+          'Umefikia idadi ya juu ya orodha za kusubiri zinazoruhusiwa.',
       'events.waitlist.error.verification':
           'Thibitisha namba yako ya simu au barua pepe ili ujiunge.',
       'events.waitlist.error.unavailable':
@@ -13740,6 +13750,16 @@ class FFLocale extends ChangeNotifier {
           'Majaribio mengi mno. Subiri kidogo kisha jaribu tena.',
       'events.waitlist.offline':
           'Hakuna intaneti. Unahitaji intaneti ili ujiunge au uondoke.',
+      'events.waitlist.error.already_ended': 'Hii tayari imekwisha.',
+      'events.waitlist.error.entry_gone':
+          'Hatukupata ingizo hili kwenye orodha.',
+      'events.waitlist.error.not_blocked':
+          'Hakuna cha kupitia kwenye ingizo hili.',
+      'events.waitlist.error.waitlist_active':
+          'Tiketi hii ina orodha ya kusubiri. Jiunge na orodha badala yake.',
+      'events.waitlist.error.closed': 'Orodha ya kusubiri imefungwa.',
+      'events.error.unpaid_places_limit':
+          'Una tiketi nyingi ambazo hazijalipiwa (kikomo {limit}). Lipia au ghairi oda kwanza.',
       'events.waitlist.reconfirm.banner':
           'Vigezo vimebadilika. Vipitie ili uendelee kuwa kwenye orodha.',
       'events.waitlist.reconfirm.button': 'Pitia vigezo',

@@ -67,6 +67,10 @@ class _MemberEventDetailPageState extends State<MemberEventDetailPage> {
   /// Events S7: ticket types of this event the member is waiting for (live
   /// entries only), and whether the button was already counted.
   Set<String> _waitingTickets = const {};
+
+  /// A live entry whose row carries no ticket type (an older answer): the
+  /// bar says the member waits, but no row is marked.
+  bool _waitingUnknown = false;
   bool _waitlistCtaCounted = false;
   final _heading = FocusNode(debugLabel: 'event-heading');
 
@@ -165,12 +169,17 @@ class _MemberEventDetailPageState extends State<MemberEventDetailPage> {
     try {
       final page = WaitlistPage.fromJson(await _api.listEventWaitlist());
       if (!mounted) return;
-      setState(
-        () => _waitingTickets = {
-          for (final e in page.items)
-            if (e.eventId == d.id && e.status.live) e.ticketTypeId,
-        },
-      );
+      final mine = [
+        for (final e in page.items)
+          if (e.eventId == d.id && e.status.live) e,
+      ];
+      setState(() {
+        _waitingTickets = {
+          for (final e in mine)
+            if (e.ticketTypeId.isNotEmpty) e.ticketTypeId,
+        };
+        _waitingUnknown = mine.any((e) => e.ticketTypeId.isEmpty);
+      });
     } catch (_) {}
   }
 
@@ -1274,7 +1283,7 @@ class _MemberEventDetailPageState extends State<MemberEventDetailPage> {
               EventsAnalytics.waitlistCtaViewed(eventId: d.id);
             }
             hint = context.tr('events.waitlist.cta.hint');
-            if (_waitingTickets.isNotEmpty) {
+            if (_waitingTickets.isNotEmpty || _waitingUnknown) {
               label = context.tr('events.waitlist.cta.joined');
               secondary = true;
               icon = Icons.hourglass_top;
@@ -1341,6 +1350,9 @@ class _MemberEventDetailPageState extends State<MemberEventDetailPage> {
               label: label,
               fullWidth: true,
               icon: icon,
+              // Long Swahili labels wrap to a second line instead of
+              // overflowing on a 320 px phone at large text.
+              maxLines: 2,
               variant: secondary
                   ? FFButtonVariant.secondary
                   : FFButtonVariant.primary,
