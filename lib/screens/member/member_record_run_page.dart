@@ -6,6 +6,7 @@ import '../../router.dart';
 import '../../shared/api_client.dart';
 import '../../shared/api_error_message.dart';
 import '../../shared/events/event_result.dart';
+import '../../shared/events/events_analytics.dart';
 import '../../shared/activity/gps_source.dart';
 import '../../shared/activity/run_metrics.dart';
 import '../../shared/activity/run_recorder.dart';
@@ -39,6 +40,7 @@ class _MemberRecordRunPageState extends State<MemberRecordRunPage> {
 
   // Events S6: the event this run is for (title from the result route).
   String? _eventTitle;
+  String? _eventId;
   String? _eventRefusal;
   bool _eventBound = false;
 
@@ -59,12 +61,11 @@ class _MemberRecordRunPageState extends State<MemberRecordRunPage> {
     try {
       final json = await AppScope.of(context).api.getMyEventResult(reg);
       if (!mounted) return;
-      setState(
-        () => _eventTitle = MemberEventResult.fromJson(
-          json,
-          registrationId: reg,
-        ).eventTitle,
-      );
+      final result = MemberEventResult.fromJson(json, registrationId: reg);
+      setState(() {
+        _eventTitle = result.eventTitle;
+        _eventId = result.eventId;
+      });
     } catch (_) {
       // The chip falls back to "this event".
     }
@@ -83,6 +84,13 @@ class _MemberRecordRunPageState extends State<MemberRecordRunPage> {
       await r.resume(notificationTitle: title, notificationText: text);
     } else {
       await r.start(notificationTitle: title, notificationText: text);
+      // Events S7 (spec §5.3): a run bound to an event is counted once.
+      final eventId = _eventId;
+      if (eventId != null &&
+          eventId.isNotEmpty &&
+          r.eventRegistrationId != null) {
+        EventsAnalytics.runStarted(eventId: eventId);
+      }
     }
   }
 

@@ -12,12 +12,14 @@ import '../../../shared/events/event_order.dart';
 import '../../../shared/events/event_time.dart';
 import '../../../shared/events/events_cache.dart';
 import '../../../shared/events/events_options.dart';
+import '../../../shared/events/waitlist.dart';
 import '../../../shared/formatters.dart';
 import '../../../shared/i18n.dart';
 import 'event_status.dart';
 import 'events_registration_gate.dart';
 import 'pay/event_payment_cards.dart';
 import 'tickets/member_event_tickets_view.dart';
+import 'waitlist/member_event_waitlist_view.dart';
 
 /// Where "Not me" dismissals are remembered on this device (§5.8).
 const kDismissedClaimsKey = 'events.claim.dismissed';
@@ -49,6 +51,7 @@ class _MemberEventOrdersPageState extends State<MemberEventOrdersPage> {
   String _tab = '';
   EventTicketsController? _ticketsCtl;
   EventTicketsController get _tickets => _ticketsCtl!;
+  WaitlistController? _waitlistCtl;
   final _regs = _PagedList<EventRegistration>();
   final _orders = _PagedList<EventOrder>();
   List<ClaimPreview> _claimable = [];
@@ -60,6 +63,9 @@ class _MemberEventOrdersPageState extends State<MemberEventOrdersPage> {
   EventsOptions get _options => eventsOptionsOf(context, widget.options);
 
   bool get _qr => _options.tickets.qr;
+
+  /// Events S7: the Waitlist segment shows only while the server has it on.
+  bool get _waitlist => _options.waitlist.enabled;
 
   @override
   void initState() {
@@ -73,15 +79,21 @@ class _MemberEventOrdersPageState extends State<MemberEventOrdersPage> {
   void dispose() {
     _scroll.dispose();
     _ticketsCtl?.dispose();
+    _waitlistCtl?.dispose();
     super.dispose();
   }
 
   Future<void> _start() async {
     if (!mounted || !eventsRegistrationAllowed(context, _options)) return;
     _ticketsCtl = EventTicketsController(api: _api);
+    if (_waitlist) {
+      _waitlistCtl = WaitlistController(api: _api);
+      if (widget.initialTab == 'waitlist') _tab = 'waitlist';
+    }
     _started = true;
     await _loadDismissed();
     await Future.wait([
+      if (_waitlist) _waitlistCtl!.load(),
       _loadRegistrations(),
       _loadOrders(),
       if (_qr) _loadTickets(),
@@ -122,6 +134,8 @@ class _MemberEventOrdersPageState extends State<MemberEventOrdersPage> {
     if (_scroll.position.extentAfter < 300) {
       if (_tab == 'tickets') {
         _tickets.loadMore();
+      } else if (_tab == 'waitlist') {
+        return;
       } else if (_tab == 'registrations') {
         _loadRegistrations(more: true);
       } else {
@@ -291,7 +305,9 @@ class _MemberEventOrdersPageState extends State<MemberEventOrdersPage> {
       body: !_started
           ? const SizedBox.shrink()
           : RefreshIndicator(
-              onRefresh: () => _tab == 'tickets'
+              onRefresh: () => _tab == 'waitlist' && _waitlistCtl != null
+                  ? _waitlistCtl!.load()
+                  : _tab == 'tickets'
                   ? _tickets.load()
                   : _tab == 'registrations'
                   ? _loadRegistrations()
@@ -311,6 +327,8 @@ class _MemberEventOrdersPageState extends State<MemberEventOrdersPage> {
                         context.tr('events.mine.registrations'),
                       ),
                       ('orders', context.tr('events.mine.orders')),
+                      if (_waitlist)
+                        ('waitlist', context.tr('events.waitlist.list.title')),
                     ],
                     onChanged: (t) => setState(() => _tab = t),
                   ),
@@ -319,6 +337,12 @@ class _MemberEventOrdersPageState extends State<MemberEventOrdersPage> {
                     MemberEventTicketsView(
                       controller: _tickets,
                       now: widget.now,
+                    )
+                  else if (_tab == 'waitlist' && _waitlistCtl != null)
+                    MemberEventWaitlistView(
+                      controller: _waitlistCtl!,
+                      options: widget.options,
+                      now: widget.now == null ? null : () => widget.now!,
                     )
                   else if (_tab == 'registrations' || _tab == 'tickets')
                     ..._registrationsTab(context)

@@ -20,6 +20,7 @@ import '../../shared/auth_state.dart';
 import '../../shared/design_tokens.dart';
 import '../../shared/events/event_filter.dart';
 import '../../shared/events/event_summary.dart';
+import '../../shared/events/events_analytics_transport.dart';
 import '../../shared/events/events_options.dart';
 import '../../shared/events_flag.dart';
 import '../../shared/i18n.dart';
@@ -714,6 +715,12 @@ class MemberShellState extends State<MemberShell> with WidgetsBindingObserver {
         upcoming = [];
       }
     }
+    // Events S7 (spec §5.4): screen counts are sent only while the server
+    // says so; an older server has no block and the transport stays off.
+    EventsAnalyticsTransport.instance.configure(
+      enabled: options.analytics.enabled,
+      send: api.postEventsAnalytics,
+    );
     _data.update(
       (d) => d
         ..eventsOptions = options

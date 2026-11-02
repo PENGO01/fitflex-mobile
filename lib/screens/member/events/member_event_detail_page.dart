@@ -16,6 +16,7 @@ import '../../../shared/events/event_time.dart';
 import '../../../shared/events/events_analytics.dart';
 import '../../../shared/events/events_cache.dart';
 import '../../../shared/events/events_options.dart';
+import '../../../shared/events/waitlist.dart';
 import '../../../shared/formatters.dart';
 import '../../../shared/i18n.dart';
 import '../../../shared/photo_hero_flag.dart';
@@ -62,6 +63,15 @@ class _MemberEventDetailPageState extends State<MemberEventDetailPage> {
   bool _aboutExpanded = false;
   bool _termsExpanded = false;
   bool _refundExpanded = false;
+
+  /// Events S7: ticket types of this event the member is waiting for (live
+  /// entries only), and whether the button was already counted.
+  Set<String> _waitingTickets = const {};
+
+  /// A live entry whose row carries no ticket type (an older answer): the
+  /// bar says the member waits, but no row is marked.
+  bool _waitingUnknown = false;
+  bool _waitlistCtaCounted = false;
   final _heading = FocusNode(debugLabel: 'event-heading');
 
   ApiClient get _api => AppScope.of(context).api;
@@ -109,6 +119,7 @@ class _MemberEventDetailPageState extends State<MemberEventDetailPage> {
         eventId: detail.id,
         availability: detail.availability.wire,
       );
+      _loadWaitlistState(detail);
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) _heading.requestFocus();
       });
@@ -142,6 +153,45 @@ class _MemberEventDetailPageState extends State<MemberEventDetailPage> {
         _error = e;
       });
     }
+  }
+
+  // ── waitlist (events S7 spec §4.10) ────────────────────────────────────
+
+  bool _hasJoinable(EventDetail d) =>
+      _options.waitlist.enabled &&
+      _options.registration &&
+      d.categories.any((c) => c.ticketTypes.any((t) => t.canJoinWaitlist));
+
+  /// Which sold-out tickets the member already waits for; a failure leaves
+  /// the Join button (the server refuses a second entry).
+  Future<void> _loadWaitlistState(EventDetail d) async {
+    if (!_hasJoinable(d)) return;
+    try {
+      final page = WaitlistPage.fromJson(await _api.listEventWaitlist());
+      if (!mounted) return;
+      final mine = [
+        for (final e in page.items)
+          if (e.eventId == d.id && e.status.live) e,
+      ];
+      setState(() {
+        _waitingTickets = {
+          for (final e in mine)
+            if (e.ticketTypeId.isNotEmpty) e.ticketTypeId,
+        };
+        _waitingUnknown = mine.any((e) => e.ticketTypeId.isEmpty);
+      });
+    } catch (_) {}
+  }
+
+  void _joinWaitlist(EventDetail d, {String? ticketTypeId}) {
+    final joinable = [
+      for (final c in d.categories)
+        for (final t in c.ticketTypes)
+          if (t.canJoinWaitlist) t,
+    ];
+    final id =
+        ticketTypeId ?? (joinable.length == 1 ? joinable.single.id : null);
+    context.push(AppRoutes.memberEventWaitlistJoinPath(d.id, ticketTypeId: id));
   }
 
   // ── actions ─────────────────────────────────────────────────────────────
@@ -1093,10 +1143,13 @@ class _MemberEventDetailPageState extends State<MemberEventDetailPage> {
     final soldOut = t.availability == EventAvailability.soldOut;
     // S3 §5.1: an on-sale row opens the register page with this ticket
     // preselected; sold-out and closed rows stay plain text.
+    final waitlistRow =
+        _options.waitlist.enabled && _options.registration && t.canJoinWaitlist;
     final tappable =
         _options.registration &&
         (t.availability == EventAvailability.open ||
-            t.availability == EventAvailability.closingSoon);
+            t.availability == EventAvailability.closingSoon ||
+            waitlistRow);
     final muted = cs.onSurfaceVariant;
     final price = t.isFree
         ? context.tr('events.card.free')
@@ -1146,7 +1199,11 @@ class _MemberEventDetailPageState extends State<MemberEventDetailPage> {
       label: '${t.name}, $price, ${availabilityLabel(context, pillEvent)}',
       child: InkWell(
         key: Key('event-ticket-tap-${t.id}'),
-        onTap: () => _register(d, ticketTypeId: t.id),
+        onTap: waitlistRow
+            ? () => _waitingTickets.contains(t.id)
+                  ? context.push(AppRoutes.memberEventWaitlist)
+                  : _joinWaitlist(d, ticketTypeId: t.id)
+            : () => _register(d, ticketTypeId: t.id),
         borderRadius: BorderRadius.circular(FFTokens.radiusLg),
         child: ExcludeSemantics(
           child: ConstrainedBox(
@@ -1176,6 +1233,7 @@ class _MemberEventDetailPageState extends State<MemberEventDetailPage> {
     VoidCallback? onPressed;
     IconData? icon;
     var hidden = false;
+    var secondary = false;
 
     if (!options.registration) {
       label = context.tr('events.cta.register');
@@ -1218,8 +1276,27 @@ class _MemberEventDetailPageState extends State<MemberEventDetailPage> {
           hintColor = fuelTextColor(context);
           onPressed = () => _register(d);
         case EventAvailability.soldOut:
-          label = context.tr('events.cta.soldOut');
-          hint = context.tr('events.cta.soldOutHint');
+          if (_hasJoinable(d)) {
+            // Events S7 (spec §4.10): the sold-out bar offers the waitlist.
+            if (!_waitlistCtaCounted) {
+              _waitlistCtaCounted = true;
+              EventsAnalytics.waitlistCtaViewed(eventId: d.id);
+            }
+            hint = context.tr('events.waitlist.cta.hint');
+            if (_waitingTickets.isNotEmpty || _waitingUnknown) {
+              label = context.tr('events.waitlist.cta.joined');
+              secondary = true;
+              icon = Icons.hourglass_top;
+              onPressed = () => context.push(AppRoutes.memberEventWaitlist);
+              hint = null;
+            } else {
+              label = context.tr('events.waitlist.cta.join');
+              onPressed = () => _joinWaitlist(d);
+            }
+          } else {
+            label = context.tr('events.cta.soldOut');
+            hint = context.tr('events.cta.soldOutHint');
+          }
         case EventAvailability.closed:
           label = context.tr('events.cta.closed');
         case EventAvailability.notYetOpen:
@@ -1273,6 +1350,12 @@ class _MemberEventDetailPageState extends State<MemberEventDetailPage> {
               label: label,
               fullWidth: true,
               icon: icon,
+              // Long Swahili labels wrap to a second line instead of
+              // overflowing on a 320 px phone at large text.
+              maxLines: 2,
+              variant: secondary
+                  ? FFButtonVariant.secondary
+                  : FFButtonVariant.primary,
               onPressed: onPressed,
             ),
           ],

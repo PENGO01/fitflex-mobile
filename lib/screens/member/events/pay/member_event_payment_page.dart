@@ -150,6 +150,7 @@ class _MemberEventPaymentPageState extends State<MemberEventPaymentPage> {
           orderId: d.order.id,
           mode: mode,
           late: late,
+          eventId: d.order.eventId,
         );
       }
       setState(() => _phase = _Phase.form);
@@ -258,7 +259,11 @@ class _MemberEventPaymentPageState extends State<MemberEventPaymentPage> {
         ),
       );
       if (!mounted) return;
-      EventsAnalytics.paymentSubmitted(orderId: d.order.id, late: late);
+      EventsAnalytics.paymentSubmitted(
+        orderId: d.order.id,
+        late: late,
+        eventId: d.order.eventId,
+      );
       if (_mode == 'provider' && res.mode == 'provider') {
         setState(() => _busy = false);
         await _openMomo(res);

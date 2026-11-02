@@ -79,7 +79,12 @@ void main() {
     expect(find.byIcon(Icons.share), findsNothing);
     expect(find.textContaining('Share'), findsNothing);
     expect(EventsAnalytics.debugSink!.single.name, 'ticket_opened');
-    expect(EventsAnalytics.debugSink!.single.props.values, ['reg_1']);
+    // The registration id is only the page's; the server counts per event
+    // (S7 contract), and the transport drops the registration id.
+    expect(EventsAnalytics.debugSink!.single.props, {
+      'registrationId': 'reg_1',
+      'eventId': 'evt_1',
+    });
   });
 
   apiTest('the code is at least 240 dp on a phone, on white, dark ink', (

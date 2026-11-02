@@ -36,6 +36,17 @@ class MemberPrivacyPage extends StatelessWidget {
           title: context.tr('privacy.title'),
           description: context.tr('privacy.body'),
         ),
+        // Events S7 (spec §5.2): said where the member reads about their
+        // data, only while the server counts screen use.
+        if (MemberDataScope.of(context).eventsOptions.analytics.enabled)
+          Padding(
+            padding: const EdgeInsets.only(bottom: FFTokens.spacingMd),
+            child: Text(
+              context.tr('events.privacy.analytics'),
+              key: const Key('privacy-events-analytics'),
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ),
         FFActionTile(
           key: const Key('privacy-messages'),
           icon: Icons.mark_email_unread_outlined,

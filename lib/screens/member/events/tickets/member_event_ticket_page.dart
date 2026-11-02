@@ -104,7 +104,7 @@ class _MemberEventTicketPageState extends State<MemberEventTicketPage>
       final t = EventTicketPayload.fromJson(json);
       await EventTicketCache.put(id, json, eventStartsAt: t.event?.startsAt);
       if (!mounted) return;
-      EventsAnalytics.ticketOpened(registrationId: id);
+      EventsAnalytics.ticketOpened(registrationId: id, eventId: t.event?.id);
       setState(() {
         _ticket = t;
         _savedAt = null;
@@ -222,7 +222,7 @@ class _MemberEventTicketPageState extends State<MemberEventTicketPage>
         eventStartsAt: t.event?.startsAt,
       );
       if (!mounted) return;
-      EventsAnalytics.ticketRotated();
+      EventsAnalytics.ticketRotated(eventId: t.event?.id);
       setState(() {
         _ticket = t;
         _savedAt = null;
@@ -355,7 +355,7 @@ class _MemberEventTicketPageState extends State<MemberEventTicketPage>
     try {
       await _api.rotateEventTicket(widget.registrationId);
       if (!mounted) return;
-      EventsAnalytics.ticketRotated();
+      EventsAnalytics.ticketRotated(eventId: _ticket?.event?.id);
       setState(() => _busy = false);
       await _load();
     } on ApiException catch (e) {
