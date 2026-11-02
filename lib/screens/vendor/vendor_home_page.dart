@@ -2191,8 +2191,10 @@ class _VendorProductFormState extends State<VendorProductForm> {
   String? _saveError;
   String? _nameError;
   String? _priceError;
+  String? _discountError;
   final _nameKey = GlobalKey();
   final _priceKey = GlobalKey();
+  final _discountKey = GlobalKey();
   final _variantsKey = GlobalKey();
   bool _saving = false;
   String? _image;
@@ -2319,6 +2321,15 @@ class _VendorProductFormState extends State<VendorProductForm> {
       _submitLedger();
       return;
     }
+    final discountError = _checkDiscount(num.tryParse(_price.text.trim()));
+    if (discountError != null) {
+      setState(() {
+        _discountError = discountError;
+        _saveError = context.tr('vendor.form.fixErrors');
+      });
+      _bringIntoView(_discountKey);
+      return;
+    }
     final common = _common();
     if (common == null) return;
     Navigator.pop(context, {
@@ -2351,6 +2362,31 @@ class _VendorProductFormState extends State<VendorProductForm> {
             : row.storedStock ?? 0),
   );
 
+  /// Why the discount price can't be saved, or null when it can. It must be
+  /// below the price; the server ignores one that isn't, so the vendor would
+  /// see a discount buyers never get. Empty or 0 means no discount. A locked
+  /// price can't be edited here, so a stored discount never blocks the save.
+  String? _checkDiscount(num? price) {
+    if (_priceLock != null || price == null) return null;
+    final text = _discountPrice.text.trim();
+    if (text.isEmpty) return null;
+    final discount = num.tryParse(text);
+    if (discount != null && discount >= 0 && discount < price) return null;
+    return context.tr('vendor.form.discountBelowPrice');
+  }
+
+  void _bringIntoView(GlobalKey key) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final ctx = key.currentContext;
+      if (ctx != null && ctx.mounted) {
+        Scrollable.ensureVisible(
+          ctx,
+          duration: const Duration(milliseconds: 200),
+        );
+      }
+    });
+  }
+
   /// The body with the ledger on. Null when something needs fixing first.
   Map<String, dynamic>? _ledgerBody() {
     final errors = validateVariants(_variantRows);
@@ -2361,31 +2397,31 @@ class _VendorProductFormState extends State<VendorProductForm> {
     final priceError = price == null || price <= 0
         ? context.tr('vendor.form.priceRequired')
         : null;
+    final discountError = _checkDiscount(price);
     final invalid =
-        nameError != null || priceError != null || errors.isNotEmpty;
+        nameError != null ||
+        priceError != null ||
+        discountError != null ||
+        errors.isNotEmpty;
     setState(() {
       _variantErrors = errors;
       _nameError = nameError;
       _priceError = priceError;
+      _discountError = discountError;
       // Never a silent Save: say what to fix, next to the button too.
       _saveError = invalid ? context.tr('vendor.form.fixErrors') : null;
     });
     if (invalid) {
       // Bring the first problem into view.
-      final target = nameError != null
-          ? _nameKey
-          : priceError != null
-          ? _priceKey
-          : _variantsKey;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        final ctx = target.currentContext;
-        if (ctx != null && ctx.mounted) {
-          Scrollable.ensureVisible(
-            ctx,
-            duration: const Duration(milliseconds: 200),
-          );
-        }
-      });
+      _bringIntoView(
+        nameError != null
+            ? _nameKey
+            : priceError != null
+            ? _priceKey
+            : discountError != null
+            ? _discountKey
+            : _variantsKey,
+      );
       return null;
     }
     final common = _common();
@@ -2767,7 +2803,7 @@ class _VendorProductFormState extends State<VendorProductForm> {
       // Locked: greyed like the discount price, the reason under both.
       enabled: _priceLock == null,
       errorText: _ledger ? _priceError : null,
-      onChanged: _ledger ? (_) => _clearFieldError() : null,
+      onChanged: (_) => _clearFieldError(),
     ),
   );
 
@@ -2816,23 +2852,32 @@ class _VendorProductFormState extends State<VendorProductForm> {
 
   /// Typing clears the previous save's messages.
   void _clearFieldError() {
-    if (_nameError == null && _priceError == null && _saveError == null) {
+    if (_nameError == null &&
+        _priceError == null &&
+        _discountError == null &&
+        _saveError == null) {
       return;
     }
     setState(() {
       _nameError = null;
       _priceError = null;
+      _discountError = null;
       _saveError = null;
     });
   }
 
   List<Widget> _middleFields() => [
-    FFTextField(
-      key: const Key('vendor-product-discount-price'),
-      controller: _discountPrice,
-      keyboardType: TextInputType.number,
-      label: context.tr('vendor.discountPrice'),
-      enabled: _priceLock == null,
+    KeyedSubtree(
+      key: _discountKey,
+      child: FFTextField(
+        key: const Key('vendor-product-discount-price'),
+        controller: _discountPrice,
+        keyboardType: TextInputType.number,
+        label: context.tr('vendor.discountPrice'),
+        enabled: _priceLock == null,
+        errorText: _discountError,
+        onChanged: (_) => _clearFieldError(),
+      ),
     ),
     // QA #6: its own line, wrapping fully at any width and text size.
     if (_lockHelper() case final why?)

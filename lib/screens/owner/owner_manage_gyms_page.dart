@@ -59,22 +59,30 @@ class OwnerManageGymsPage extends StatelessWidget {
             else
               SliverPadding(
                 padding: const EdgeInsets.all(FFTokens.spacingLg),
-                sliver: SliverGrid(
-                  delegate: SliverChildBuilderDelegate(
-                    (ctx, i) => _OwnerGymGridCard(
-                      gym: ownerGymList[i],
-                      onEdit: () =>
-                          _showEditGymDialog(context, ownerGymList[i]),
-                      onDelete: () =>
-                          _confirmDeleteGym(context, ownerGymList[i]),
+                // Rows of cards rather than a fixed-ratio grid: each row is as
+                // tall as its tallest card, so long names, Swahili pills and
+                // large text grow the card instead of overflowing it.
+                sliver: SliverList.separated(
+                  itemCount: (ownerGymList.length + cols - 1) ~/ cols,
+                  separatorBuilder: (_, _) =>
+                      const SizedBox(height: FFTokens.spacingMd),
+                  itemBuilder: (ctx, row) => IntrinsicHeight(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        for (var col = 0; col < cols; col++) ...[
+                          if (col > 0)
+                            const SizedBox(width: FFTokens.spacingMd),
+                          Expanded(
+                            child: _gridCell(
+                              context,
+                              ownerGymList,
+                              row * cols + col,
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
-                    childCount: ownerGymList.length,
-                  ),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: cols,
-                    crossAxisSpacing: FFTokens.spacingMd,
-                    mainAxisSpacing: FFTokens.spacingMd,
-                    childAspectRatio: 0.65,
                   ),
                 ),
               ),
@@ -97,6 +105,19 @@ class OwnerManageGymsPage extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+
+  Widget _gridCell(
+    BuildContext context,
+    List<Map<String, dynamic>> gyms,
+    int i,
+  ) {
+    if (i >= gyms.length) return const SizedBox.shrink();
+    return _OwnerGymGridCard(
+      gym: gyms[i],
+      onEdit: () => _showEditGymDialog(context, gyms[i]),
+      onDelete: () => _confirmDeleteGym(context, gyms[i]),
     );
   }
 
@@ -266,7 +287,7 @@ class _OwnerGymGridCard extends StatelessWidget {
           ),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(10, 8, 10, 0),
+              padding: const EdgeInsets.all(FFTokens.spacingSm),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -276,17 +297,17 @@ class _OwnerGymGridCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: tt.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
                   ),
-                  const SizedBox(height: 3),
+                  const SizedBox(height: FFTokens.spacing2xs),
                   Text(
                     gym['location']?.toString() ?? '',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: tt.bodySmall?.copyWith(fontSize: 11),
+                    style: tt.bodySmall,
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: FFTokens.spacingSm),
                   Wrap(
-                    spacing: 4,
-                    runSpacing: 4,
+                    spacing: FFTokens.spacingXs,
+                    runSpacing: FFTokens.spacingXs,
                     children: [
                       FFPill(label: tierLabel(context, tierKeyOf(gym['tier']))),
                       FFPill(
@@ -301,12 +322,13 @@ class _OwnerGymGridCard extends StatelessWidget {
             ),
           ),
           Divider(height: 1, thickness: 1, color: cs.outlineVariant),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+          // Wraps rather than overflowing if the card is ever too narrow.
+          Wrap(
+            alignment: WrapAlignment.end,
             children: [
               IconButton(
                 key: Key('owner-gym-entrance-qr-${gym['id']}'),
-                icon: const Icon(Icons.qr_code_2, size: 18),
+                icon: const Icon(Icons.qr_code_2, size: FFTokens.iconMd),
                 onPressed: () => showGymEntranceQr(
                   context,
                   gymId: gym['id']?.toString() ?? '',
@@ -316,13 +338,17 @@ class _OwnerGymGridCard extends StatelessWidget {
                 visualDensity: VisualDensity.compact,
               ),
               IconButton(
-                icon: const Icon(Icons.edit, size: 18),
+                icon: const Icon(Icons.edit, size: FFTokens.iconMd),
                 onPressed: onEdit,
                 tooltip: context.tr('owner.editGym'),
                 visualDensity: VisualDensity.compact,
               ),
               IconButton(
-                icon: Icon(Icons.delete_outline, size: 18, color: cs.error),
+                icon: Icon(
+                  Icons.delete_outline,
+                  size: FFTokens.iconMd,
+                  color: cs.error,
+                ),
                 onPressed: onDelete,
                 tooltip: context.tr('owner.deleteGym'),
                 visualDensity: VisualDensity.compact,
