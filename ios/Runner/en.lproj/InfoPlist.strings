@@ -1,8 +1,8 @@
 /* iOS permission prompts (English). Keep in step with Info.plist. */
 
-"NSLocationWhenInUseUsageDescription" = "FitFlex uses your location to show gyms near you, record your runs, place your gym on the map and, if you choose, find your approximate area for the shop. Your exact location isn't used for the shop.";
-"NSLocationAlwaysUsageDescription" = "FitFlex uses your location in the background only while you record a run.";
+"NSLocationWhenInUseUsageDescription" = "FitFlex uses your location to show gyms near you and directions to them, place your gym on the map and, if you choose, find your approximate area for the shop and the pickup gyms closest to you.";
 "NSMotionUsageDescription" = "FitFlex counts your steps to track your activity goals and challenges.";
-"NSContactsUsageDescription" = "FitFlex reads the contact you choose so you can find them and invite them. Your address book is not uploaded.";
-"NSCameraUsageDescription" = "FitFlex needs camera access to scan member QR codes and take gym photos.";
-"NSPhotoLibraryUsageDescription" = "FitFlex needs photo library access to upload gym images.";
+"NSContactsUsageDescription" = "FitFlex opens your contacts so you can pick a friend and find them on FitFlex. Only the number or email you choose is searched. Your address book is not uploaded.";
+"NSCameraUsageDescription" = "FitFlex uses your camera to scan QR codes for check-in and to take photos you choose to add, such as profile, gym and verification photos.";
+"NSPhotoLibraryUsageDescription" = "FitFlex opens your photo library so you can choose pictures to upload, such as profile, gym and product photos and verification documents.";
+"NSPhotoLibraryAddUsageDescription" = "FitFlex saves a picture to your photo library only when you choose to, such as your event result card.";

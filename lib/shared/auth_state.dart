@@ -530,6 +530,25 @@ class AuthState extends ChangeNotifier {
     }
   }
 
+  /// Deletes this account for good, then ends the session on this device.
+  /// Throws, and leaves the session alone, when the account was not deleted.
+  Future<void> deleteAccount({FirebaseAuthService? firebaseAuth}) async {
+    try {
+      await api.deleteMyAccount();
+    } on ApiException catch (error) {
+      // An earlier try already got through and only its answer was lost
+      // (a timeout, or ApiClient's retry after a dropped connection).
+      if (error.status != 404 || error.code != 'user_not_found') rethrow;
+    }
+    try {
+      await firebaseAuth?.signOut();
+    } catch (error) {
+      // The account is gone either way; the session below must still end.
+      debugPrint('[account-delete] Firebase sign-out failed: $error');
+    }
+    await signOut();
+  }
+
   Future<void> signOut() async {
     // Forget sign-in contacts held for browser history, so the next person
     // cannot press Back into this user's email/phone screen. A screen still

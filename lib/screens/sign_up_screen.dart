@@ -174,14 +174,16 @@ class _SignUpScreenState extends State<SignUpScreen>
 
   /// Google, OR, the identifier and Continue. Shared by both layouts.
   List<Widget> _formChildren(BuildContext context, bool loading) => [
-    FFGoogleSignInButton(
-      label: context.tr('auth.continueWithGoogle').toUpperCase(),
-      onTap: loading ? null : _signInWithGoogle,
-      loading: _busy,
-    ),
-    const SizedBox(height: 28),
-    FFDividerLabel(label: context.tr('auth.or')),
-    const SizedBox(height: 28),
+    if (googleSignInAvailable) ...[
+      FFGoogleSignInButton(
+        label: context.tr('auth.continueWithGoogle').toUpperCase(),
+        onTap: loading ? null : _signInWithGoogle,
+        loading: _busy,
+      ),
+      const SizedBox(height: 28),
+      FFDividerLabel(label: context.tr('auth.or')),
+      const SizedBox(height: 28),
+    ],
     FFTextField(
       controller: _emailCtrl,
       enabled: !loading,

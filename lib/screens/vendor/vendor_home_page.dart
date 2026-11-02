@@ -31,6 +31,7 @@ import '../../shared/widgets/product_category_picker.dart';
 import '../../shared/widgets/ff_photo_picker_field.dart';
 import '../../shared/widgets/partner_payouts_page.dart';
 import '../../shared/widgets/invitations.dart';
+import '../../shared/widgets/delete_account.dart';
 import '../../shared/widgets/persona_switcher.dart';
 import '../../shared/widgets/terms_agreement.dart';
 import '../pin_flows.dart';
@@ -1863,6 +1864,7 @@ class _VendorHomePageState extends State<VendorHomePage> {
   }
 
   Widget _businessTab() {
+    final api = AppScope.of(context).api;
     return ListView(
       padding: const EdgeInsets.all(FFTokens.spacingLg),
       children: [
@@ -2029,6 +2031,12 @@ class _VendorHomePageState extends State<VendorHomePage> {
                     ),
             ),
           ),
+        const SizedBox(height: FFTokens.spacingMd),
+        DeleteAccountButton(
+          confirmLeave: confirmLeaveWithQueuedSales,
+          // S4: customer names held in memory go with the session.
+          onDeleted: () => CustomerRepository.clear(api),
+        ),
       ],
     );
   }

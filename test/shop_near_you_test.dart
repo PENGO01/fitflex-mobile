@@ -1670,7 +1670,6 @@ void main() {
     test('iOS: location prompts name the shop use, in English and Swahili', () {
       final plist = File('ios/Runner/Info.plist').readAsStringSync();
       expect(plist, contains('approximate area for the shop'));
-      expect(plist, contains('only while you record a run'));
       expect(plist, contains('<string>sw</string>'));
       final en = File(
         'ios/Runner/en.lproj/InfoPlist.strings',
@@ -1685,7 +1684,6 @@ void main() {
       expect(keys.allMatches(en).map((m) => m.group(1)).toSet(), plistKeys);
       expect(keys.allMatches(sw).map((m) => m.group(1)).toSet(), plistKeys);
       expect(sw, contains('kukadiria eneo lako kwa ajili ya duka'));
-      expect(sw, contains('chinichini tu unaporekodi mbio'));
       final pbx = File(
         'ios/Runner.xcodeproj/project.pbxproj',
       ).readAsStringSync();

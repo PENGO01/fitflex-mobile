@@ -7,6 +7,8 @@ import '../run_metrics.dart';
 /// GPS through geolocator. On Android it runs as a foreground service with
 /// an ongoing notification, so a run keeps recording with the screen off.
 /// Only "while in use" permission is needed: the member starts the run.
+/// Not on iOS: giving it runs means adding `UIBackgroundModes` location and
+/// the Always purpose text back to Info.plist.
 class GeolocatorGpsSource implements GpsSource {
   const GeolocatorGpsSource();
 

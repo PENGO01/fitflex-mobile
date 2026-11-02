@@ -1,8 +1,14 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart'
+    show TargetPlatform, defaultTargetPlatform, kIsWeb;
 import 'package:google_sign_in/google_sign_in.dart';
+
+/// Hidden in the iOS app: it has no Firebase iOS client for its bundle ID, and
+/// offering it would also need an equal login option (App Store guideline 4.8).
+bool get googleSignInAvailable =>
+    kIsWeb || defaultTargetPlatform != TargetPlatform.iOS;
 
 class FirebaseAuthService {
   FirebaseAuthService({

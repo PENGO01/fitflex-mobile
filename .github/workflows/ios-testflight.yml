@@ -1,0 +1,272 @@
+name: Upload iOS to TestFlight
+
+# Builds the iOS app and uploads it to App Store Connect / TestFlight.
+#
+# Triggers: every push to main (like distribute-android.yml), every push to the
+# testflight branch and manual runs (Actions -> Upload iOS to TestFlight, which
+# GitHub only lists once this file is on main). release-candidate itself does
+# not upload: to test it, push it to testflight:
+#   git push -f origin origin/release-candidate:refs/heads/testflight
+#
+# Dormant until the owner adds the App Store Connect API key secrets: with
+# ASC_KEY_ID empty, every step after the first is skipped and the run ends
+# green with a notice. One-time setup: docs/ios-testflight-ci.md.
+#
+# Signing: Xcode automatic signing with cloud-managed certificates, using the
+# App Store Connect API key (-allowProvisioningUpdates -authenticationKey*).
+# No certificates or profiles are stored in GitHub. The key must have the Admin
+# role, because only Admin keys may use cloud-managed distribution certificates.
+on:
+  push:
+    branches: [main, testflight]
+  workflow_dispatch:
+
+concurrency:
+  group: ios-testflight
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  TEAM_ID: UT3M2LB58H
+  BUNDLE_ID: com.fitflexafrica.app
+
+jobs:
+  testflight:
+    name: Build iOS release and upload to TestFlight
+    # Uploads must be built with a current iOS SDK (Xcode 26).
+    runs-on: macos-26
+    timeout-minutes: 60
+
+    env:
+      # IOS_API_BASE, else the shared API_BASE variable, else the live server
+      # (same default as the Android and web workflows).
+      API_BASE: ${{ vars.IOS_API_BASE || vars.API_BASE || 'https://fitflex-faas.bfast.smartstock.co.tz' }}
+      # Shop home V2 (on/off). Set repo variable SHOP_HOME_V2=true to switch it on;
+      # the server also needs SHOP_HOME_V2=1, otherwise the app falls back to today's shop.
+      SHOP_HOME_V2: ${{ vars.SHOP_HOME_V2 || 'false' }}
+      # Photo heroes (PHOTO_HERO_UI) and the photo footer (PHOTO_FOOTER_UI),
+      # on/off. Off unless the repository variable is set to true; the app
+      # ignores PHOTO_FOOTER_UI unless PHOTO_HERO_UI is on as well.
+      PHOTO_HERO_UI: ${{ vars.PHOTO_HERO_UI || 'false' }}
+      PHOTO_FOOTER_UI: ${{ vars.PHOTO_FOOTER_UI || 'false' }}
+      ARCHIVE_PATH: ${{ github.workspace }}/build/ios/archive/Runner.xcarchive
+      EXPORT_PATH: ${{ github.workspace }}/build/ios/export
+
+    steps:
+      # Dormant switch. Secrets cannot be read in a job-level `if`, so this
+      # step decides and every later step checks its output.
+      - name: Check App Store Connect secrets
+        id: gate
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+        run: |
+          if [ -z "$ASC_KEY_ID" ]; then
+            echo "::notice::ASC_KEY_ID is not set, so the iOS TestFlight upload is off. See docs/ios-testflight-ci.md."
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [ -z "$ASC_ISSUER_ID" ] || [ -z "$ASC_KEY_P8" ]; then
+            echo "::error::ASC_KEY_ID is set but ASC_ISSUER_ID or ASC_KEY_P8 is missing."
+            exit 1
+          fi
+          echo "enabled=true" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout repository
+        if: steps.gate.outputs.enabled == 'true'
+        uses: actions/checkout@v4
+
+      # The bundle ID and team come from the Xcode project (PR #243), not from
+      # command-line overrides (those would also rename every Pod target).
+      - name: Check the Xcode project signs as FitFlex Africa
+        if: steps.gate.outputs.enabled == 'true'
+        run: |
+          PBX=ios/Runner.xcodeproj/project.pbxproj
+          if ! grep -q "PRODUCT_BUNDLE_IDENTIFIER = $BUNDLE_ID;" "$PBX" || ! grep -q "DEVELOPMENT_TEAM = $TEAM_ID;" "$PBX"; then
+            echo "::error::The Runner target must use bundle ID $BUNDLE_ID and team $TEAM_ID (fitflex-mobile#243)."
+            exit 1
+          fi
+
+      - name: Select Xcode
+        if: steps.gate.outputs.enabled == 'true'
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      # pubspec.yaml requires Dart ^3.10.8, i.e. Flutter 3.38 or newer.
+      - name: Setup Flutter
+        if: steps.gate.outputs.enabled == 'true'
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.2'
+          channel: stable
+          cache: true
+
+      # - .env is a bundled asset (pubspec.yaml) and gitignored.
+      # - GoogleService-Info.plist is gitignored but listed in the Runner
+      #   target's resources, so the build fails without it.
+      # - Version name from pubspec.yaml; the build number must grow with every
+      #   upload: IOS_BUILD_NUMBER_OFFSET (default 100) + this workflow's run
+      #   number, which only ever increases.
+      - name: Prepare build (config, version)
+        if: steps.gate.outputs.enabled == 'true'
+        id: prep
+        env:
+          GOOGLE_SERVICE_INFO_PLIST: ${{ secrets.IOS_GOOGLE_SERVICE_INFO_PLIST }}
+          OFFSET: ${{ vars.IOS_BUILD_NUMBER_OFFSET || '100' }}
+          RUN_NUMBER: ${{ github.run_number }}
+        run: |
+          set -euo pipefail
+          if [ -z "$GOOGLE_SERVICE_INFO_PLIST" ]; then
+            echo "::error::Secret IOS_GOOGLE_SERVICE_INFO_PLIST is not set (contents of ios/Runner/GoogleService-Info.plist, raw or base64)."
+            exit 1
+          fi
+          case "$GOOGLE_SERVICE_INFO_PLIST" in
+            *"<plist"*) printf '%s' "$GOOGLE_SERVICE_INFO_PLIST" > ios/Runner/GoogleService-Info.plist ;;
+            *) printf '%s' "$GOOGLE_SERVICE_INFO_PLIST" | base64 --decode > ios/Runner/GoogleService-Info.plist ;;
+          esac
+          plutil -lint ios/Runner/GoogleService-Info.plist
+          echo "API_BASE=$API_BASE" > .env
+          NAME="$(grep -E '^version:' pubspec.yaml | sed -E 's/version:[[:space:]]*([0-9]+\.[0-9]+\.[0-9]+).*/\1/')"
+          if ! printf '%s' "$NAME" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "::error::Could not read major.minor.patch from pubspec.yaml (got '$NAME')."
+            exit 1
+          fi
+          CODE=$((OFFSET + RUN_NUMBER))
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"
+          echo "code=$CODE" >> "$GITHUB_OUTPUT"
+          echo "Building $NAME ($CODE) for $BUNDLE_ID"
+          flutter pub get
+
+      # Photo heroes (PHOTO_HERO_UI) shown to users: no test-only hero photo
+      # may ship (kTestOnlyHeroAssets, assets/photos/hero/LICENSES.md).
+      - name: Photo hero release guard
+        if: steps.gate.outputs.enabled == 'true' && env.PHOTO_HERO_UI == 'true'
+        run: flutter test test/photo_hero_release_guard_test.dart --dart-define=PHOTO_HERO_UI=true --dart-define=PHOTO_HERO_RELEASE=true
+
+      # Compiles Dart, runs pod install and writes ios/Flutter/Generated.xcconfig
+      # (build name/number and dart-defines), which the archive below reuses.
+      - name: Build Flutter iOS release (unsigned)
+        if: steps.gate.outputs.enabled == 'true'
+        run: |
+          flutter build ios --release --no-codesign \
+            --build-name="${{ steps.prep.outputs.name }}" \
+            --build-number="${{ steps.prep.outputs.code }}" \
+            --dart-define=API_BASE="$API_BASE" --dart-define=SHOP_HOME_V2="$SHOP_HOME_V2" --dart-define=PHOTO_HERO_UI="$PHOTO_HERO_UI" --dart-define=PHOTO_FOOTER_UI="$PHOTO_FOOTER_UI"
+
+      # The API key goes to a temp file only for this run (removed in the last
+      # step). Xcode keeps the signing keys it creates in a throwaway keychain.
+      - name: Install App Store Connect key and temp keychain
+        if: steps.gate.outputs.enabled == 'true'
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+        run: |
+          set -euo pipefail
+          KEY_DIR="$RUNNER_TEMP/asc"
+          mkdir -p "$KEY_DIR"
+          chmod 700 "$KEY_DIR"
+          KEY_PATH="$KEY_DIR/AuthKey_${ASC_KEY_ID}.p8"
+          case "$ASC_KEY_P8" in
+            *"BEGIN PRIVATE KEY"*) printf '%s\n' "$ASC_KEY_P8" > "$KEY_PATH" ;;
+            *) printf '%s' "$ASC_KEY_P8" | base64 --decode > "$KEY_PATH" ;;
+          esac
+          chmod 600 "$KEY_PATH"
+          if ! grep -q "BEGIN PRIVATE KEY" "$KEY_PATH"; then
+            echo "::error::ASC_KEY_P8 is not a .p8 private key (raw or base64)."
+            exit 1
+          fi
+          echo "ASC_KEY_PATH=$KEY_PATH" >> "$GITHUB_ENV"
+
+          KEYCHAIN="$RUNNER_TEMP/fitflex-signing.keychain-db"
+          KEYCHAIN_PASSWORD="$(uuidgen)"
+          echo "::add-mask::$KEYCHAIN_PASSWORD"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security set-keychain-settings -lut 3600 "$KEYCHAIN"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security list-keychains -d user -s "$KEYCHAIN" login.keychain-db
+          security default-keychain -s "$KEYCHAIN"
+          echo "SIGNING_KEYCHAIN=$KEYCHAIN" >> "$GITHUB_ENV"
+
+      - name: Archive (automatic signing)
+        if: steps.gate.outputs.enabled == 'true'
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+        run: |
+          set -euo pipefail
+          archive() {
+            xcodebuild archive \
+              -workspace ios/Runner.xcworkspace \
+              -scheme Runner \
+              -configuration Release \
+              -destination 'generic/platform=iOS' \
+              -archivePath "$ARCHIVE_PATH" \
+              -allowProvisioningUpdates \
+              -authenticationKeyPath "$ASC_KEY_PATH" \
+              -authenticationKeyID "$ASC_KEY_ID" \
+              -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
+              "$@"
+          }
+          # Automatic signing makes a development profile here, which needs a
+          # device registered on the team. Without one, archive unsigned: the
+          # export below signs for the App Store with the cloud certificate.
+          if ! archive CODE_SIGN_STYLE=Automatic; then
+            echo "::warning::Signed archive failed, trying unsigned. If no device is registered, this is expected."
+            rm -rf "$ARCHIVE_PATH"
+            archive CODE_SIGN_STYLE=Automatic CODE_SIGNING_ALLOWED=NO
+          fi
+
+      # destination=upload: the export signs for App Store distribution (cloud
+      # certificate) and sends the build straight to App Store Connect; it then
+      # appears in TestFlight after Apple's processing.
+      - name: Export and upload to App Store Connect
+        if: steps.gate.outputs.enabled == 'true'
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+        run: |
+          set -euo pipefail
+          PLIST="$RUNNER_TEMP/ExportOptions.plist"
+          cat > "$PLIST" <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>app-store-connect</string>
+            <key>destination</key>
+            <string>upload</string>
+            <key>teamID</key>
+            <string>${TEAM_ID}</string>
+            <key>signingStyle</key>
+            <string>automatic</string>
+            <key>uploadSymbols</key>
+            <true/>
+            <key>manageAppVersionAndBuildNumber</key>
+            <false/>
+          </dict>
+          </plist>
+          EOF
+          plutil -lint "$PLIST"
+          xcodebuild -exportArchive \
+            -archivePath "$ARCHIVE_PATH" \
+            -exportOptionsPlist "$PLIST" \
+            -exportPath "$EXPORT_PATH" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$ASC_KEY_PATH" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID"
+          echo "::notice::Uploaded ${BUNDLE_ID} ${{ steps.prep.outputs.name }} (${{ steps.prep.outputs.code }}). It shows in TestFlight once Apple has processed it."
+
+      - name: Remove key, keychain and Firebase config
+        if: always() && steps.gate.outputs.enabled == 'true'
+        run: |
+          rm -rf "$RUNNER_TEMP/asc" "$RUNNER_TEMP/ExportOptions.plist"
+          rm -f ios/Runner/GoogleService-Info.plist .env
+          if [ -n "${SIGNING_KEYCHAIN:-}" ]; then
+            security delete-keychain "$SIGNING_KEYCHAIN" || true
+          fi

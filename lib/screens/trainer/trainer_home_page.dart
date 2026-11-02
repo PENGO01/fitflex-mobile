@@ -38,6 +38,7 @@ import 'trainer_reviews_page.dart';
 import 'trainer_schedule.dart';
 import 'widgets/clients_digest.dart';
 import 'widgets/trainer_sheets.dart';
+import '../../shared/widgets/delete_account.dart';
 import '../../shared/widgets/persona_switcher.dart';
 import '../../shared/widgets/invitations.dart';
 import '../../shared/widgets/verify_identifier.dart';
@@ -714,6 +715,8 @@ class _TrainerHomePageState extends State<TrainerHomePage> {
       variant: FFButtonVariant.secondary,
       icon: Icons.logout,
     ),
+    const SizedBox(height: FFTokens.spacingXs),
+    const DeleteAccountButton(),
   ]);
 
   Widget _section(String text) => Padding(
