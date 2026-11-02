@@ -4786,6 +4786,8 @@ class FFLocale extends ChangeNotifier {
       'vendor.form.fixErrors':
           'Some fields need fixing. They are marked above.',
       'vendor.form.priceRequired': 'Enter a price above 0.',
+      'vendor.form.discountBelowPrice':
+          'The discount price must be below the price. Change it or leave it empty.',
       'vendor.form.nameRequired': 'Enter the product name.',
       'vendor.stock.variantHistory': '{product} · {variant}',
       'vendor.stock.retryEntry':
@@ -12238,6 +12240,8 @@ class FFLocale extends ChangeNotifier {
       'vendor.form.fixErrors':
           'Baadhi ya sehemu zinahitaji kurekebishwa. Zimeonyeshwa hapo juu.',
       'vendor.form.priceRequired': 'Weka bei iliyo zaidi ya 0.',
+      'vendor.form.discountBelowPrice':
+          'Bei ya punguzo lazima iwe chini ya bei. Ibadilishe au iache wazi.',
       'vendor.form.nameRequired': 'Weka jina la bidhaa.',
       'vendor.stock.variantHistory': '{product} · chaguo {variant}',
       'vendor.stock.retryEntry':
