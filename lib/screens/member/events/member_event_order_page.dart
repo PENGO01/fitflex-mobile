@@ -103,6 +103,8 @@ class _MemberEventOrderPageState extends State<MemberEventOrderPage>
     }
   }
 
+  bool _offerCounted = false;
+
   Future<void> _start() async {
     if (!mounted || !eventsRegistrationAllowed(context, _options)) return;
     await _load();
@@ -126,6 +128,11 @@ class _MemberEventOrderPageState extends State<MemberEventOrderPage>
         _loading = false;
       });
       _noteStateChange(before, next);
+      if (before == null && next.order.fromWaitlist && !_offerCounted) {
+        // Events S7 (spec §5.3): a held waitlist ticket was opened.
+        _offerCounted = true;
+        EventsAnalytics.waitlistOfferOpened(eventId: next.order.eventId);
+      }
       _schedulePoll();
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) _heading.requestFocus();
@@ -152,6 +159,7 @@ class _MemberEventOrderPageState extends State<MemberEventOrderPage>
       EventsAnalytics.paymentStateSeen(
         orderId: next.order.id,
         state: state.wire,
+        eventId: next.order.eventId,
       );
     }
     if (before != null &&
@@ -283,7 +291,7 @@ class _MemberEventOrderPageState extends State<MemberEventOrderPage>
     try {
       await _api.resendEventClaimInvitation(d.order.id, registrationId: r.id);
       if (!mounted) return;
-      EventsAnalytics.invitationResent();
+      EventsAnalytics.invitationResent(eventId: d.order.eventId);
       setState(() => _busy = false);
       snack.success(sent);
       await _load(quiet: true);
@@ -546,6 +554,12 @@ class _MemberEventOrderPageState extends State<MemberEventOrderPage>
                       label: status,
                       tone: tone,
                     ),
+                    if (o.fromWaitlist)
+                      FFBadge(
+                        key: const Key('order-waitlist-chip'),
+                        label: context.tr('events.waitlist.offer.chip'),
+                        tone: FFBadgeTone.info,
+                      ),
                     Text(
                       o.reference,
                       key: const Key('order-reference'),
@@ -610,6 +624,15 @@ class _MemberEventOrderPageState extends State<MemberEventOrderPage>
           key: const Key('order-expired'),
           tone: FFAlertTone.warning,
           message: context.tr('events.order.expired.body'),
+        ),
+      if (o.status == EventOrderStatus.expired && o.fromWaitlist)
+        Padding(
+          padding: const EdgeInsets.only(top: FFTokens.spacingSm),
+          child: FFAlert(
+            key: const Key('order-waitlist-passed'),
+            tone: FFAlertTone.info,
+            message: context.tr('events.waitlist.offer.passed'),
+          ),
         ),
       if (o.status == EventOrderStatus.cancelled)
         FFAlert(

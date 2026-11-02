@@ -40,6 +40,7 @@ class EventTicketType {
     this.minPerOrder = 1,
     this.maxPerOrder = 10,
     this.availability = EventAvailability.closed,
+    this.waitlistState = 'none',
   });
 
   final String id;
@@ -52,7 +53,15 @@ class EventTicketType {
   final int maxPerOrder;
   final EventAvailability availability;
 
+  /// Events S7 (spec §4.9): `none` | `open` | `closed`. An older server sends
+  /// nothing, which reads as `none` (the plain "Sold out" stays).
+  final String waitlistState;
+
   bool get isFree => priceTzs == 0;
+
+  /// Sold out with a waitlist the member can join.
+  bool get canJoinWaitlist =>
+      availability == EventAvailability.soldOut && waitlistState == 'open';
 
   static EventTicketType fromJson(Map json) => EventTicketType(
     id: json['id']?.toString() ?? '',
@@ -70,6 +79,9 @@ class EventTicketType {
         ? (json['maxPerOrder'] as num).toInt()
         : 10,
     availability: EventAvailability.parse(json['availability']),
+    waitlistState: json['waitlist'] is Map
+        ? ((json['waitlist'] as Map)['state']?.toString() ?? 'none')
+        : 'none',
   );
 }
 

@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'models.dart';
 import 'promotion.dart';
 import 'rest_log.dart';
+import 'shop_checkout.dart' show newCheckoutKey;
 import 'shop_clock.dart';
 
 class ApiException implements Exception {
@@ -3573,6 +3574,71 @@ class ApiClient {
         await _request('GET', '/me/event-teams/${Uri.encodeComponent(teamId)}')
             as Map,
       );
+
+  // ── Events S7: waitlist and analytics ────────────────────────────────────
+  // docs/design/events-s7-hardening-and-pilot.md §4.9, §5.7. Every route
+  // 404s `feature_disabled` while its flag (EVENTS_WAITLIST /
+  // EVENTS_ANALYTICS) is off.
+
+  /// Joins the waitlist for a sold-out ticket type (§4.9). 201 `{entry}`.
+  /// The server does NOT honour the `Idempotency-Key` on the waitlist routes
+  /// (s7-contract.md, B). The header is still sent, but a retry after an
+  /// unknown outcome answers 409 `already_registered`: callers reload
+  /// `GET /me/event-waitlist` and treat a live entry as done.
+  Future<Map<String, dynamic>> joinEventWaitlist(
+    String eventId,
+    Map<String, dynamic> body, {
+    required String idempotencyKey,
+  }) async => Map<String, dynamic>.from(
+    await _request(
+          'POST',
+          '/me/events/${Uri.encodeComponent(eventId)}/waitlist',
+          extraHeaders: {'Idempotency-Key': idempotencyKey},
+          body: body,
+        )
+        as Map,
+  );
+
+  /// My waitlist entries: `{items, serverTime}`.
+  Future<Map<String, dynamic>> listEventWaitlist() async =>
+      Map<String, dynamic>.from(
+        await _request('GET', '/me/event-waitlist') as Map,
+      );
+
+  /// Leaves the waitlist. 409 `payment_pending` while a manual payment waits
+  /// for confirmation; 409 `already_ended` (also what a retry after an
+  /// unknown outcome answers, because the key is not honoured).
+  Future<Map<String, dynamic>> leaveEventWaitlist(String id) async =>
+      Map<String, dynamic>.from(
+        await _request(
+              'DELETE',
+              '/me/event-waitlist/${Uri.encodeComponent(id)}',
+              extraHeaders: {'Idempotency-Key': newCheckoutKey()},
+            )
+            as Map,
+      );
+
+  /// Confirms the changed consent text so the entry is offered again.
+  Future<Map<String, dynamic>> reconfirmEventWaitlist(
+    String id, {
+    required String textVersion,
+  }) async => Map<String, dynamic>.from(
+    await _request(
+          'POST',
+          '/me/event-waitlist/${Uri.encodeComponent(id)}/reconfirm',
+          extraHeaders: {'Idempotency-Key': newCheckoutKey()},
+          body: {
+            'consent': {'accepted': true, 'textVersion': textVersion},
+          },
+        )
+        as Map,
+  );
+
+  /// Screen counts for the events health view (§5.7): `{events:[{name,
+  /// props}]}`, at most 20. 202 `{accepted, dropped}`.
+  Future<void> postEventsAnalytics(List<Map<String, dynamic>> events) async {
+    await _request('POST', '/events/analytics', body: {'events': events});
+  }
 
   // ── Events S6: runs, results, medals, rewards ────────────────────────────
   // docs/design/events-s6-runs-results-medals-rewards.md §8.3. Every route

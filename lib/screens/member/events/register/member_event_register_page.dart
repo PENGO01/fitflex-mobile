@@ -524,7 +524,7 @@ class _MemberEventRegisterPageState extends State<MemberEventRegisterPage> {
           if (eventOrderOutcomeUnknown(e)) {
             await _uncertain();
           } else {
-            snack.error(errorMessage(locale, e));
+            snack.error(eventsErrorMessage(locale, e));
           }
       }
     } catch (e) {
@@ -533,7 +533,7 @@ class _MemberEventRegisterPageState extends State<MemberEventRegisterPage> {
       if (eventOrderOutcomeUnknown(e)) {
         await _uncertain();
       } else {
-        snack.error(errorMessage(locale, e));
+        snack.error(eventsErrorMessage(locale, e));
       }
     }
   }

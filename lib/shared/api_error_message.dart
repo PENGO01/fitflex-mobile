@@ -29,6 +29,16 @@ String eventsErrorMessage(FFLocale locale, Object error) {
       'unsupported_currency' => 'error.reason.unsupported_currency',
       _ => null,
     };
+    // Events S7: refused order creation, in their own words (no wrapper).
+    switch (error.code) {
+      case 'waitlist_active':
+        return locale.t('events.waitlist.error.waitlist_active');
+      case 'unpaid_places_limit':
+        final limit = error.body is Map ? (error.body as Map)['limit'] : null;
+        return locale
+            .t('events.error.unpaid_places_limit')
+            .replaceFirst('{limit}', '${limit ?? ''}');
+    }
     if (key != null) {
       return locale
           .t('error.requestDeclined')

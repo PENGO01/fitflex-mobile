@@ -439,6 +439,7 @@ class EventOrder {
     this.teamId,
     this.placesCount = 0,
     this.event,
+    this.source,
   });
 
   final String id;
@@ -460,6 +461,12 @@ class EventOrder {
   final String? teamId;
   final int placesCount;
   final EventSummary? event;
+
+  /// Events S7 (spec §4.9): `waitlist` when the order was opened for a
+  /// member off the waitlist, else null.
+  final String? source;
+
+  bool get fromWaitlist => source == 'waitlist';
 
   bool get isAwaitingPayment => status == EventOrderStatus.awaitingPayment;
 
@@ -483,6 +490,7 @@ class EventOrder {
     closeReason: _opt(json['closeReason']),
     teamId: _opt(json['teamId']),
     placesCount: _int(json['placesCount']),
+    source: _opt(json['source']),
     event:
         event ?? (json['event'] is Map ? eventSummaryOf(json['event']) : null),
   );

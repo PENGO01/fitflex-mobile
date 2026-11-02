@@ -6119,6 +6119,95 @@ class FFLocale extends ChangeNotifier {
       'events.cta.closingSoon': 'Closing soon · {n} days left',
       'events.cta.soldOut': 'Sold out',
       'events.cta.soldOutHint': 'Check back for cancellations',
+      // ── Events S7: waitlist (spec §10.2).
+      'events.waitlist.cta.join': 'Join waitlist',
+      'events.waitlist.cta.hint':
+          'No payment now. We will tell you if a ticket becomes available.',
+      'events.waitlist.cta.joined': 'On the waitlist',
+      'events.waitlist.join.title': 'Join the waitlist',
+      'events.waitlist.join.pickTicket': 'Choose a sold-out ticket',
+      'events.waitlist.join.details': 'Your details',
+      'events.waitlist.join.rules':
+          'Waiting is free. If a ticket opens up, we hold it for you for {hours} hours and you pay as usual. Tickets are offered in the order people joined.',
+      'events.waitlist.join.one': 'One ticket per person, for you only.',
+      'events.waitlist.join.price': 'Price today: {amount}',
+      'events.waitlist.join.button': 'Join waitlist',
+      'events.waitlist.join.busy': 'Joining...',
+      'events.waitlist.joined.title': 'You\'re on the waitlist',
+      'events.waitlist.joined.position': 'Your number on the list: {n}',
+      'events.waitlist.joined.body':
+          'We will send a notification if a ticket is held for you. Keep notifications on.',
+      'events.waitlist.joined.view': 'View my waitlist',
+      'events.waitlist.joined.back': 'Back to event',
+      'events.waitlist.status.waiting': 'Waiting',
+      'events.waitlist.status.offered': 'Ticket held for you',
+      'events.waitlist.status.converted': 'Ticket bought',
+      'events.waitlist.status.expired': 'Time ran out',
+      'events.waitlist.status.declined': 'You gave it up',
+      'events.waitlist.status.left': 'You left the list',
+      'events.waitlist.status.removed': 'Removed by FitFlex',
+      'events.waitlist.status.closed': 'Waitlist closed',
+      'events.waitlist.ended.sale_closed': 'Ticket sales ended.',
+      'events.waitlist.ended.event_cancelled': 'The event was cancelled.',
+      'events.waitlist.ended.organizer_closed':
+          'The organizer closed the waitlist.',
+      'events.waitlist.ended.registered_elsewhere':
+          'You already have a ticket in this race.',
+      'events.waitlist.ended.not_eligible':
+          'You can no longer take part in this waitlist.',
+      'events.waitlist.offer.title': 'A ticket is held for you',
+      'events.waitlist.offer.body':
+          'Pay before {time} or it goes to the next person.',
+      'events.waitlist.offer.pay': 'Pay now',
+      'events.waitlist.offer.chip': 'From the waitlist',
+      'events.waitlist.offer.passed':
+          'Your turn passed. If you already paid, we will refund you.',
+      'events.waitlist.leave.button': 'Leave waitlist',
+      'events.waitlist.leave.title': 'Leave the waitlist?',
+      'events.waitlist.leave.body':
+          'You will lose your number on the list. You can join again, at the end.',
+      'events.waitlist.leave.offeredBody':
+          'This gives up your held ticket. Nothing has been charged.',
+      'events.waitlist.leave.done': 'You left the waitlist.',
+      'events.waitlist.error.not_sold_out':
+          'Tickets are available now. Register instead.',
+      'events.waitlist.error.already_registered':
+          'You already have a ticket in this race.',
+      'events.waitlist.error.full': 'The waitlist is full.',
+      'events.waitlist.error.lapse_limit':
+          'You gave up too many held tickets for this event, so you can\'t rejoin.',
+      'events.waitlist.error.limit': 'You are on the most waitlists allowed.',
+      'events.waitlist.error.verification':
+          'Verify your phone number or email to join.',
+      'events.waitlist.error.unavailable':
+          'The waitlist isn\'t open right now.',
+      'events.waitlist.error.payment_pending':
+          'A payment is waiting for confirmation. Cancel the order instead.',
+      'events.waitlist.error.rate':
+          'Too many tries. Wait a little and try again.',
+      'events.waitlist.offline':
+          'No internet. You need a connection to join or leave.',
+      'events.waitlist.error.already_ended': 'This has already ended.',
+      'events.waitlist.error.entry_gone':
+          'We couldn\'t find this entry on the waitlist.',
+      'events.waitlist.error.not_blocked':
+          'There is nothing to review on this entry.',
+      'events.waitlist.error.waitlist_active':
+          'This ticket has a waitlist. Join the waitlist instead.',
+      'events.waitlist.error.closed': 'The waitlist is closed.',
+      'events.error.unpaid_places_limit':
+          'You already hold too many unpaid places (limit {limit}). Pay for or cancel an order first.',
+      'events.waitlist.reconfirm.banner':
+          'The terms changed. Review them to stay on the list.',
+      'events.waitlist.reconfirm.button': 'Review terms',
+      'events.waitlist.reconfirm.done': 'Thanks. You\'re still on the list.',
+      'events.waitlist.list.title': 'Waitlist',
+      'events.waitlist.list.empty': 'You\'re not on any waitlist.',
+      'events.waitlist.sem.position': 'Number {n} on the list',
+      'events.privacy.analytics':
+          'We count how the events screens are used, without your name or account.',
+      'inbox.open.eventWaitlist': 'View waitlist',
+      'inbox.open.eventWaitlistOffer': 'Pay now',
       'events.cta.closed': 'Registration closed',
       'events.cta.opens': 'Opens {date}',
       'events.cta.cancelled': 'Event cancelled',
@@ -13467,7 +13556,7 @@ class FFLocale extends ChangeNotifier {
       'a11y.clear': 'Futa',
       'common.share': 'Shiriki',
       'common.copied': 'Kiungo kimenakiliwa',
-      'error.offlineTitle': 'Hauko mtandaoni',
+      'error.offlineTitle': 'Hakuna intaneti',
       'activity.events': 'Matukio',
       'home.events.title': 'Matukio yajayo',
       'home.events.seeAll': 'Ona yote',
@@ -13590,7 +13679,98 @@ class FFLocale extends ChangeNotifier {
       'events.cta.closes': 'Hufungwa {date}',
       'events.cta.closingSoon': 'Inafungwa karibuni · zimebaki siku {n}',
       'events.cta.soldOut': 'Zimeisha',
-      'events.cta.soldOutHint': 'Rudi kuangalia nafasi zitakazoachwa',
+      'events.cta.soldOutHint': 'Rudi baadaye kuona kama tiketi zimeachiliwa',
+      // ── Events S7: waitlist (spec §10.2).
+      // TODO(sw-review): Swahili drafts pending native review (D22).
+      'events.waitlist.cta.join': 'Jiunge na orodha ya kusubiri',
+      'events.waitlist.cta.hint':
+          'Hakuna malipo sasa. Tutakuambia tiketi ikipatikana.',
+      'events.waitlist.cta.joined': 'Uko kwenye orodha ya kusubiri',
+      'events.waitlist.join.title': 'Jiunge na orodha ya kusubiri',
+      'events.waitlist.join.pickTicket': 'Chagua tiketi iliyouzwa yote',
+      'events.waitlist.join.details': 'Taarifa zako',
+      'events.waitlist.join.rules':
+          'Kusubiri ni bure. Tiketi ikipatikana, tutakushikilia kwa saa {hours} nawe utalipa kama kawaida. Tiketi hutolewa kwa mpangilio wa waliojiunga.',
+      'events.waitlist.join.one': 'Tiketi moja kwa mtu, kwa ajili yako tu.',
+      'events.waitlist.join.price': 'Bei ya leo: {amount}',
+      'events.waitlist.join.button': 'Jiunge na orodha ya kusubiri',
+      'events.waitlist.join.busy': 'Inajiunga...',
+      'events.waitlist.joined.title': 'Uko kwenye orodha ya kusubiri',
+      'events.waitlist.joined.position': 'Namba yako kwenye orodha: {n}',
+      'events.waitlist.joined.body':
+          'Tutakutumia arifa ikiwa tiketi imeshikiliwa kwa ajili yako. Acha arifa zikiwa zimewashwa.',
+      'events.waitlist.joined.view': 'Tazama orodha yangu',
+      'events.waitlist.joined.back': 'Rudi kwenye tukio',
+      'events.waitlist.status.waiting': 'Inasubiri',
+      'events.waitlist.status.offered': 'Tiketi imeshikiliwa kwa ajili yako',
+      'events.waitlist.status.converted': 'Tiketi imenunuliwa',
+      'events.waitlist.status.expired': 'Muda umeisha',
+      'events.waitlist.status.declined': 'Uliiachia',
+      'events.waitlist.status.left': 'Uliondoka kwenye orodha',
+      'events.waitlist.status.removed': 'Imeondolewa na FitFlex',
+      'events.waitlist.status.closed': 'Orodha imefungwa',
+      'events.waitlist.ended.sale_closed': 'Uuzaji wa tiketi umeisha.',
+      'events.waitlist.ended.event_cancelled': 'Tukio limeghairiwa.',
+      'events.waitlist.ended.organizer_closed':
+          'Mwandaaji amefunga orodha ya kusubiri.',
+      'events.waitlist.ended.registered_elsewhere':
+          'Tayari una tiketi katika aina hii ya mbio.',
+      'events.waitlist.ended.not_eligible':
+          'Huwezi tena kuwa kwenye orodha hii ya kusubiri.',
+      'events.waitlist.offer.title': 'Tiketi imeshikiliwa kwa ajili yako',
+      'events.waitlist.offer.body':
+          'Lipa kabla ya {time} la sivyo itapewa mtu anayefuata.',
+      'events.waitlist.offer.pay': 'Lipa sasa',
+      'events.waitlist.offer.chip': 'Kutoka orodha ya kusubiri',
+      'events.waitlist.offer.passed':
+          'Zamu yako imepita. Ikiwa ulishalipa, tutakurejeshea pesa.',
+      'events.waitlist.leave.button': 'Ondoka kwenye orodha',
+      'events.waitlist.leave.title': 'Kuondoka kwenye orodha?',
+      'events.waitlist.leave.body':
+          'Utapoteza namba yako kwenye orodha. Unaweza kujiunga tena, mwishoni.',
+      'events.waitlist.leave.offeredBody':
+          'Hii inaachia tiketi yako iliyoshikiliwa. Hakuna kilichotozwa.',
+      'events.waitlist.leave.done': 'Umeondoka kwenye orodha ya kusubiri.',
+      'events.waitlist.error.not_sold_out':
+          'Tiketi zinapatikana sasa. Jisajili badala yake.',
+      'events.waitlist.error.already_registered':
+          'Tayari una tiketi katika aina hii ya mbio.',
+      'events.waitlist.error.full': 'Orodha ya kusubiri imejaa.',
+      'events.waitlist.error.lapse_limit':
+          'Umeacha tiketi nyingi zilizoshikiliwa kwa tukio hili, kwa hivyo huwezi kujiunga tena.',
+      'events.waitlist.error.limit':
+          'Umefikia idadi ya juu ya orodha za kusubiri zinazoruhusiwa.',
+      'events.waitlist.error.verification':
+          'Thibitisha namba yako ya simu au barua pepe ili ujiunge.',
+      'events.waitlist.error.unavailable':
+          'Orodha ya kusubiri haijafunguliwa kwa sasa.',
+      'events.waitlist.error.payment_pending':
+          'Malipo yanasubiri uthibitisho. Ghairi oda badala yake.',
+      'events.waitlist.error.rate':
+          'Majaribio mengi mno. Subiri kidogo kisha jaribu tena.',
+      'events.waitlist.offline':
+          'Hakuna intaneti. Unahitaji intaneti ili ujiunge au uondoke.',
+      'events.waitlist.error.already_ended': 'Hii tayari imekwisha.',
+      'events.waitlist.error.entry_gone':
+          'Hatukupata ingizo hili kwenye orodha.',
+      'events.waitlist.error.not_blocked':
+          'Hakuna cha kupitia kwenye ingizo hili.',
+      'events.waitlist.error.waitlist_active':
+          'Tiketi hii ina orodha ya kusubiri. Jiunge na orodha badala yake.',
+      'events.waitlist.error.closed': 'Orodha ya kusubiri imefungwa.',
+      'events.error.unpaid_places_limit':
+          'Una tiketi nyingi ambazo hazijalipiwa (kikomo {limit}). Lipia au ghairi oda kwanza.',
+      'events.waitlist.reconfirm.banner':
+          'Vigezo vimebadilika. Vipitie ili uendelee kuwa kwenye orodha.',
+      'events.waitlist.reconfirm.button': 'Pitia vigezo',
+      'events.waitlist.reconfirm.done': 'Asante. Bado uko kwenye orodha.',
+      'events.waitlist.list.title': 'Orodha ya kusubiri',
+      'events.waitlist.list.empty': 'Hauko kwenye orodha yoyote ya kusubiri.',
+      'events.waitlist.sem.position': 'Namba {n} kwenye orodha',
+      'events.privacy.analytics':
+          'Tunahesabu jinsi skrini za matukio zinavyotumika, bila jina lako wala akaunti yako.',
+      'inbox.open.eventWaitlist': 'Tazama orodha ya kusubiri',
+      'inbox.open.eventWaitlistOffer': 'Lipa sasa',
       'events.cta.closed': 'Usajili umefungwa',
       'events.cta.opens': 'Hufunguliwa {date}',
       'events.cta.cancelled': 'Tukio limeghairiwa',

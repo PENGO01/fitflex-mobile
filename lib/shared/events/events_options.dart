@@ -152,6 +152,43 @@ class EventsRunsOptions {
   }
 }
 
+/// `waitlist` of the options (events S7 spec §4.9): whether the waitlist is
+/// on and the numbers the wording quotes. Off until the server says
+/// otherwise, so an older server changes nothing.
+class EventsWaitlistOptions {
+  const EventsWaitlistOptions({
+    this.enabled = false,
+    this.offerHours = 12,
+    this.maxActivePerUser = 5,
+  });
+
+  final bool enabled;
+  final int offerHours;
+  final int maxActivePerUser;
+
+  static EventsWaitlistOptions fromJson(Object? json) {
+    if (json is! Map) return const EventsWaitlistOptions();
+    int n(Object? v, int d) => v is num ? v.toInt() : d;
+    return EventsWaitlistOptions(
+      enabled: json['enabled'] == true,
+      offerHours: n(json['offerHours'], 12),
+      maxActivePerUser: n(json['maxActivePerUser'], 5),
+    );
+  }
+}
+
+/// `analytics` of the options (events S7 spec §5.4): the app sends its
+/// screen counts only while this says so.
+class EventsAnalyticsOptions {
+  const EventsAnalyticsOptions({this.enabled = false});
+
+  final bool enabled;
+
+  static EventsAnalyticsOptions fromJson(Object? json) => json is Map
+      ? EventsAnalyticsOptions(enabled: json['enabled'] == true)
+      : const EventsAnalyticsOptions();
+}
+
 class EventsOptions {
   const EventsOptions({
     this.discovery = false,
@@ -174,6 +211,8 @@ class EventsOptions {
     this.tickets = const EventsTicketOptions(),
     this.results = const EventsResultsOptions(),
     this.runs = const EventsRunsOptions(),
+    this.waitlist = const EventsWaitlistOptions(),
+    this.analytics = const EventsAnalyticsOptions(),
   });
 
   /// Everything off: the probe failed or the module is off.
@@ -222,6 +261,11 @@ class EventsOptions {
   final EventsResultsOptions results;
   final EventsRunsOptions runs;
 
+  // ── Waitlist and analytics (S7 spec §4.9, §5.4) ──
+
+  final EventsWaitlistOptions waitlist;
+  final EventsAnalyticsOptions analytics;
+
   /// Whether a payment can be started in the app at all (`manual` or
   /// `provider`). `none` keeps the S3 "payment isn't open yet" slot.
   bool get paymentsOn => payment == 'manual' || payment == 'provider';
@@ -248,6 +292,8 @@ class EventsOptions {
       tickets: EventsTicketOptions.fromJson(json['tickets']),
       results: EventsResultsOptions.fromJson(json['results']),
       runs: EventsRunsOptions.fromJson(json['runs']),
+      waitlist: EventsWaitlistOptions.fromJson(json['waitlist']),
+      analytics: EventsAnalyticsOptions.fromJson(json['analytics']),
       currency: (json['currency']?.toString() ?? '').isEmpty
           ? 'TZS'
           : json['currency'].toString(),
