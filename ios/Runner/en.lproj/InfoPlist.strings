@@ -1,6 +1,7 @@
 /* iOS permission prompts (English). Keep in step with Info.plist. */
 
 "NSLocationWhenInUseUsageDescription" = "FitFlex uses your location to show gyms near you and directions to them, place your gym on the map and, if you choose, find your approximate area for the shop and the pickup gyms closest to you.";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "FitFlex uses your location only while you are using the app, to show gyms near you and directions to them, and to place your gym on the map. It does not track your location in the background.";
 "NSMotionUsageDescription" = "FitFlex counts your steps to track your activity goals and challenges.";
 "NSContactsUsageDescription" = "FitFlex opens your contacts so you can pick a friend and find them on FitFlex. Only the number or email you choose is searched. Your address book is not uploaded.";
 "NSCameraUsageDescription" = "FitFlex uses your camera to scan QR codes for check-in and to take photos you choose to add, such as profile, gym and verification photos.";
