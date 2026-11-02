@@ -570,10 +570,8 @@ void main() {
             ),
           );
           await tester.pump();
-          // The grid card already overflows at 360 in tests before this change
-          // (37px, also 17px at 412; reported separately). Drop that error, and
-          // pin that the marker sits on the cover photo, so it adds no height.
-          tester.takeException();
+          expect(tester.takeException(), isNull);
+          // The marker sits on the cover photo, so it adds no height.
           expect(
             find.ancestor(
               of: find.byKey(const Key('owner-gym-payout-owner-g1')),
