@@ -57,6 +57,9 @@ enum ReportSection {
 /// The mobile address of a section.
 String reportSectionRoute(ReportSection s) => '/vendor/reports/${s.route}';
 
+/// The products list filtered to products with no cost price (UAT D7).
+const noCostProductsRoute = '/vendor/home?open=products&filter=noCost';
+
 /// The Reports segment of the vendor home.
 const reportsHomeRoute = '/vendor/home?open=reports';
 

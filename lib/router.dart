@@ -915,6 +915,7 @@ GoRouter buildRouter(AuthState auth) {
           open: state.uri.queryParameters['open'],
           filter: state.uri.queryParameters['filter'],
           view: state.uri.queryParameters['view'],
+          openAt: state.uri.queryParameters['at'],
         ),
       ),
       // Partner home photo and logo (spec §41.1). With the build flag off the
