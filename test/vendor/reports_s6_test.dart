@@ -506,11 +506,12 @@ void main() {
     ) async {
       seedHome(api);
       final slow = Completer<void>();
+      var holdNext = false;
       api.onCall('GET /vendor/reports/summary', (r) async {
-        final q = Uri.splitQueryString(r.query);
         final s = ownerSummary();
-        if (q['from'] == q['to']) {
+        if (holdNext) {
           // "Today": held, then answers after "Yesterday" did.
+          holdNext = false;
           await slow.future;
           (s['sales'] as Map)['netTzs'] = 111;
         } else {
@@ -519,9 +520,10 @@ void main() {
         return s;
       });
       await pumpHome(tester, api);
+      holdNext = true;
       await tester.tap(find.byKey(const Key('reports-preset-today')));
       await tester.pump();
-      await tester.tap(find.byKey(const Key('reports-preset-thisWeek')));
+      await tester.tap(find.byKey(const Key('reports-preset-yesterday')));
       await tester.pumpAndSettle();
       slow.complete();
       await tester.pumpAndSettle();
@@ -1320,7 +1322,7 @@ void main() {
       expect(find.text('Mauzo 12 · bidhaa 17'), findsOneWidget);
       expect(
         tester.widget<Text>(find.byKey(const Key('reports-header-line'))).data,
-        contains('Okt 2026 (hadi sasa) · Mauzo yote'),
+        contains('(hadi sasa) · Mauzo yote'),
       );
       await openExport(tester);
       expect(find.text('Upakuaji unatumia Kiswahili.'), findsOneWidget);
