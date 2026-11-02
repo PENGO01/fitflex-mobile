@@ -103,6 +103,37 @@ void main() {
       expect(text['props'], {'platform': 'web'});
     });
 
+    test('cancel events: scope registration|order, mode policy|none|full', () {
+      Map props(String name, String scope, String mode) {
+        final w = analyticsWire(name, {
+          'scope': scope,
+          'mode': mode,
+        }, platform: 'web')!;
+        return w['props'] as Map;
+      }
+
+      expect(props('cancel_preview_viewed', 'registration', 'auto'), {
+        'scope': 'registration',
+        'mode': 'policy',
+        'platform': 'web',
+      });
+      expect(
+        props('cancel_confirmed', 'order', 'manualReview')['mode'],
+        'policy',
+      );
+      expect(props('cancel_confirmed', 'order', 'none')['mode'], 'none');
+      // A closed cancel has no mode to count: the key is left out.
+      expect(props('cancel_preview_viewed', 'order', 'closed'), {
+        'scope': 'order',
+        'platform': 'web',
+      });
+      // The old, wrong scope is no longer forwarded.
+      expect(
+        props('cancel_confirmed', 'place', 'none').containsKey('scope'),
+        isFalse,
+      );
+    });
+
     test('names the server writes itself are never sent', () {
       for (final n in serverOnlyEvents) {
         expect(analyticsWire(n, {'orderId': 'x'}, platform: 'web'), isNull);

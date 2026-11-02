@@ -364,6 +364,7 @@ void main() {
       }
       for (final type in const [
         'event_waitlist_joined',
+        'event_waitlist_deferred',
         'event_waitlist_offer_expired',
         'event_waitlist_closed',
         'event_waitlist_removed',

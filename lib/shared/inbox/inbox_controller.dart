@@ -152,6 +152,7 @@ String memberLinkFor({required String deepLink, required String type}) =>
         'event_waitlist_offer' ||
         'event_waitlist_offer_reminder' => 'eventWaitlistOffer',
         'event_waitlist_joined' ||
+        'event_waitlist_deferred' ||
         'event_waitlist_offer_expired' ||
         'event_waitlist_closed' ||
         'event_waitlist_removed' => 'eventWaitlist',

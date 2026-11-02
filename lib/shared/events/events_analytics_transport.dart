@@ -77,12 +77,12 @@ const Map<String, Map<String, Set<String>?>> _allowlist = {
   'ticket_rotated': {'eventId': null},
   'invitation_resent': {'eventId': null},
   'cancel_preview_viewed': {
-    'scope': {'place', 'order'},
-    'mode': {'policy', 'none', 'full', 'other'},
+    'scope': {'registration', 'order'},
+    'mode': {'policy', 'none', 'full'},
   },
   'cancel_confirmed': {
-    'scope': {'place', 'order'},
-    'mode': {'policy', 'none', 'full', 'other'},
+    'scope': {'registration', 'order'},
+    'mode': {'policy', 'none', 'full'},
   },
   'run_started': {'eventId': null},
   'waitlist_cta_viewed': {'eventId': null},
@@ -125,6 +125,17 @@ Map<String, dynamic>? analyticsWire(
   }
   if (name == 'payment_started') {
     src['method'] = _method(raw['mode']);
+  }
+  if (name == 'cancel_preview_viewed' || name == 'cancel_confirmed') {
+    // The app's cancel modes folded into what the server counts: a refund
+    // or a person's decision follows the policy; nothing is refunded is
+    // none; a closed cancel has no mode (dropped, not sent).
+    src['mode'] = switch (raw['mode']?.toString()) {
+      'auto' || 'manualReview' || 'policy' => 'policy',
+      'none' => 'none',
+      'full' => 'full',
+      _ => null,
+    };
   }
   if (name == 'payment_state_seen') {
     // The app's payment states folded into the closed set the server counts.
