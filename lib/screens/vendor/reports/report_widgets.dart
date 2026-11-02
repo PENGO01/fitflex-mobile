@@ -12,9 +12,27 @@ import '../../../shared/tone_theme.dart';
 import '../stock/stock_options.dart' show fillIn, eatToday;
 import 'report_period.dart';
 
-/// "TSh 1,250,000"; a negative amount with a real minus sign before it.
-String reportMoney(num value) =>
-    value < 0 ? '−${formatCurrency(-value)}' : formatCurrency(value);
+/// "TSh 1,250,000"; a negative amount with a real minus sign before it:
+/// "−TSh 39,000". The space after TSh does not break (UAT D6), so the sign,
+/// the currency and the number always stay on one line.
+String reportMoney(num value) {
+  final amount = formatCurrency(value.abs()).replaceFirst(' ', '\u00A0');
+  return value < 0 ? '−$amount' : amount;
+}
+
+/// A counted string: `{key}One` for exactly 1 in English ("1 sale"), else
+/// [key]; `{n}` filled with [n] (UAT D10). Swahili keeps one form.
+String reportPlural(
+  BuildContext context,
+  String key,
+  num n, [
+  Map<String, Object?> values = const {},
+]) {
+  final one = '${key}One';
+  final t = context.tr;
+  final template = n == 1 && t(one) != one ? t(one) : t(key);
+  return fillIn(template, {...values, 'n': reportCount(n)});
+}
 
 /// A count with thousands separators.
 String reportCount(num value) => formatMoney(value);
@@ -55,11 +73,13 @@ class ReportChoicePill extends StatelessWidget {
     required this.label,
     required this.selected,
     this.onTap,
+    this.focusNode,
   });
 
   final String group;
   final String label;
   final bool selected;
+  final FocusNode? focusNode;
 
   /// Null: the choice is not available (shown faded, not tappable).
   final VoidCallback? onTap;
@@ -75,7 +95,12 @@ class ReportChoicePill extends StatelessWidget {
       onTap: onTap,
       excludeSemantics: true,
       child: enabled
-          ? FFPill(label: label, filled: selected, onTap: onTap)
+          ? FFPill(
+              label: label,
+              filled: selected,
+              onTap: onTap,
+              focusNode: focusNode,
+            )
           : ConstrainedBox(
               constraints: const BoxConstraints(minHeight: 48),
               child: Center(
@@ -104,8 +129,12 @@ class ReportControls extends StatefulWidget {
     this.onGroupBy,
     this.periodEnabled = true,
     this.serverError,
+    this.periodFocus,
     this.now,
   });
+
+  /// Focus for the selected period pill ("Try another period", UAT D14).
+  final FocusNode? periodFocus;
 
   final ReportPeriod period;
   final ValueChanged<ReportPeriod> onPeriod;
@@ -191,6 +220,7 @@ class _ReportControlsState extends State<ReportControls> {
               group: periodGroup,
               label: context.tr(_presetKeys[p]!),
               selected: widget.period.preset == p,
+              focusNode: widget.period.preset == p ? widget.periodFocus : null,
               onTap: !widget.periodEnabled
                   ? null
                   : p == ReportPreset.custom
@@ -526,9 +556,15 @@ class ReportCard extends StatelessWidget {
     );
     final card = FFCard(child: body);
     if (onTap == null) return card;
+    // The template adds its own full stops: a summary ending in one would
+    // be read "Not in profit.. Open details" (UAT D14).
+    var summary = (semanticSummary ?? '').trim();
+    while (summary.endsWith('.')) {
+      summary = summary.substring(0, summary.length - 1).trimRight();
+    }
     final label = fillIn(context.tr('vendor.reports.a11y.card'), {
       'section': title,
-      'summary': semanticSummary ?? '',
+      'summary': summary,
     });
     return Semantics(
       button: true,
@@ -570,7 +606,7 @@ class ReportShareBar extends StatelessWidget {
       reportMoney(amount),
       pct,
       if (count != null)
-        fillIn(context.tr('vendor.reports.countTimes'), {'n': count}),
+        reportPlural(context, 'vendor.reports.countTimes', count!),
     ].join(' · ');
     return MergeSemantics(
       child: Padding(
@@ -685,19 +721,51 @@ class ReportChart extends StatelessWidget {
       key: const Key('reports-chart'),
       label: summary,
       container: true,
-      child: ActivityBarChart(
-        height: height,
-        data: [
-          for (final b in bars)
-            BarDatum(
-              barLabel(b.start, groupBy, lang),
-              b.value < 0 ? 0 : b.value,
-              b.description,
-            ),
-        ],
+      child: LayoutBuilder(
+        builder: (context, box) {
+          final step = labelStep(
+            bars: bars.length,
+            width: box.maxWidth,
+            groupBy: groupBy,
+            textScale: MediaQuery.textScalerOf(context).scale(100) / 100,
+          );
+          return ActivityBarChart(
+            height: height,
+            wideLabels: true,
+            data: [
+              for (var i = 0; i < bars.length; i++)
+                BarDatum(
+                  i % step == 0 ? barLabel(bars[i].start, groupBy, lang) : '',
+                  bars[i].value < 0 ? 0 : bars[i].value,
+                  bars[i].description,
+                ),
+            ],
+          );
+        },
       ),
     );
   }
+}
+
+/// Show every [labelStep]th bar label so whole labels fit side by side
+/// (UAT D5): a day number needs about 24px, "12 Oct" 52px, "Oct" 36px, more
+/// at larger text. 1 shows them all.
+int labelStep({
+  required int bars,
+  required double width,
+  required ReportGroupBy groupBy,
+  double textScale = 1,
+}) {
+  if (bars <= 1 || width <= 0) return 1;
+  final need =
+      switch (groupBy) {
+        ReportGroupBy.day => 24.0,
+        ReportGroupBy.week => 52.0,
+        ReportGroupBy.month => 36.0,
+      } *
+      textScale;
+  final step = (bars * need / width).ceil();
+  return step < 1 ? 1 : step;
 }
 
 /// A neutral note line (period basis, footnotes).

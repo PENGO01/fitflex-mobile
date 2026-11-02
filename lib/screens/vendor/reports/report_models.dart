@@ -160,8 +160,9 @@ bool walkInChannel(Map? answer) => mapAt(answer, 'channels')?['walkIn'] == true;
 /// A margin in percent with one decimal: "12.5%" (sw "12.5%").
 String formatPct(num? pct) {
   if (pct == null) return '—';
-  final s = pct.toStringAsFixed(1);
-  return '$s%';
+  // Always one decimal ("25.0%"), the same minus as money (UAT D11, D12).
+  final s = pct.abs().toStringAsFixed(1);
+  return pct < 0 ? '−$s%' : '$s%';
 }
 
 // ── days of cover (§6, Q-9) ──────────────────────────────────────────────

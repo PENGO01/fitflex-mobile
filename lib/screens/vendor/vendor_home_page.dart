@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../shared/inbox/inbox_pages.dart';
@@ -45,6 +46,7 @@ import 'orders/vendor_order_card.dart';
 import 'reports/report_models.dart';
 import 'reports/report_section_page.dart' show reportSectionLink;
 import 'reports/report_period.dart' show ReportPeriod;
+import 'reports/report_widgets.dart' show reportMoney;
 import 'reports/reports_view.dart';
 import 'stock/adjust_stock_sheet.dart';
 import 'stock/stock_history_page.dart';
@@ -58,6 +60,16 @@ import 'sales/sales_widgets.dart';
 
 /// Bottom padding for vendor lists: the extended FAB (56) plus margins.
 const vendorFabClearance = 96.0;
+
+/// Flutter web: puts the open tab in the address bar (`/vendor/home?open=
+/// reports`) without navigating, so a reload opens the same tab (UAT D13).
+/// Other platforms have no address bar. Tests replace it.
+@visibleForTesting
+void Function(Uri address) vendorHomeAddress = (address) {
+  if (kIsWeb) {
+    SystemNavigator.routeInformationUpdated(uri: address, replace: true);
+  }
+};
 
 /// PHOTO_HERO_UI (owner 2026-10-22, bands "too dark"): the band grows for
 /// [FFTokens.heroBandClearPhoto] of clear photo above its text, but no taller
@@ -411,6 +423,28 @@ class _VendorHomePageState extends State<VendorHomePage> {
       : !_can('payments')
       ? 'reports'
       : _tab2View;
+
+  /// The `open=` name of the tab on screen (null: Business, no name).
+  String? get _openName => switch (_tab) {
+    0 => 'products',
+    1 => 'orders',
+    2 when _reportsTab => _tab2Shown == 'reports' ? 'reports' : 'payments',
+    2 => 'payments',
+    3 when _customersTab => 'customers',
+    3 => 'enquiries',
+    _salesSection => 'sales',
+    _ => null,
+  };
+
+  void _syncAddress() {
+    final open = _openName;
+    vendorHomeAddress(
+      Uri(
+        path: AppRoutes.vendorHome,
+        queryParameters: open == null ? null : {'open': open},
+      ),
+    );
+  }
 
   /// S4: tab 3 is "Customers" (with segments) when the tool is on.
   bool get _customersTab => _tools.customers && _can('customers');
@@ -1157,8 +1191,10 @@ class _VendorHomePageState extends State<VendorHomePage> {
           ? null
           : NavigationBar(
               selectedIndex: sections.indexOf(tab),
-              onDestinationSelected: (index) =>
-                  setState(() => _tab = sections[index]),
+              onDestinationSelected: (index) {
+                setState(() => _tab = sections[index]);
+                _syncAddress();
+              },
               destinations: [
                 if (sections.contains(0))
                   NavigationDestination(
@@ -1640,7 +1676,10 @@ class _VendorHomePageState extends State<VendorHomePage> {
               key: const Key('vendor-reports-segment'),
               value: view,
               options: segments,
-              onChanged: (v) => setState(() => _tab2View = v),
+              onChanged: (v) {
+                setState(() => _tab2View = v);
+                _syncAddress();
+              },
             ),
           ),
         Expanded(child: view == 'reports' ? reports : _paymentsTab()),
@@ -1654,7 +1693,7 @@ class _VendorHomePageState extends State<VendorHomePage> {
     final v = _payments[key];
     if (v is! num) return null;
     return fillIn(context.tr('vendor.reports.youReceiveLine'), {
-      'amount': formatCurrency(v),
+      'amount': reportMoney(v),
     });
   }
 

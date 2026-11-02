@@ -311,7 +311,7 @@ void main() {
         find.byKey(const Key('vendor-download-statement')),
         findsOneWidget,
       );
-      expect(find.text('You receive TSh 45,000'), findsOneWidget);
+      expect(find.text('You receive TSh\u00a045,000'), findsOneWidget);
       await tapVisible(
         tester,
         find.byKey(const Key('vendor-payouts-report-link')),
@@ -369,14 +369,14 @@ void main() {
     ) async {
       seedHome(api);
       final host = await pumpHome(tester, api);
-      expect(find.text('TSh 350,000'), findsWidgets);
+      expect(find.text('TSh\u00a0350,000'), findsWidgets);
       expect(
-        textContaining('Gross TSh 400,000 · Discounts −TSh 30,000'),
+        textContaining('Gross TSh\u00a0400,000 · Discounts −TSh\u00a030,000'),
         findsOneWidget,
       );
       expect(find.text('12 sales · 17 items'), findsOneWidget);
       expect(
-        find.text('Voided (not counted): 1 sales · TSh 45,000'),
+        find.text('Voided (not counted): 1 sale · TSh\u00a045,000'),
         findsOneWidget,
       );
       expect(find.text('Updated 14:05'), findsOneWidget);
@@ -398,7 +398,7 @@ void main() {
       expect(find.byKey(const Key('reports-card-stock-cost')), findsOneWidget);
       expect(
         find.text(
-          'Sold without a cost price: 3 items · TSh 50,000. Not in profit.',
+          'Sold without a cost price: 3 items · TSh\u00a050,000. Not in profit.',
         ),
         findsOneWidget,
       );
@@ -472,7 +472,7 @@ void main() {
     ) async {
       seedHome(api);
       final host = await pumpHome(tester, api);
-      expect(find.text('TSh 350,000'), findsWidgets);
+      expect(find.text('TSh\u00a0350,000'), findsWidgets);
       api.onCall(
         'GET /vendor/reports/summary',
         (_) => throw Exception('offline'),
@@ -483,7 +483,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byKey(const Key('reports-offline')), findsOneWidget);
       expect(find.text(host.tr('error.network')), findsOneWidget);
-      expect(find.text('TSh 350,000'), findsNothing);
+      expect(find.text('TSh\u00a0350,000'), findsNothing);
       expect(find.byKey(const Key('reports-export')), findsNothing);
     });
 
@@ -527,8 +527,8 @@ void main() {
       await tester.pumpAndSettle();
       slow.complete();
       await tester.pumpAndSettle();
-      expect(find.text('TSh 222'), findsWidgets);
-      expect(find.text('TSh 111'), findsNothing);
+      expect(find.text('TSh\u00a0222'), findsWidgets);
+      expect(find.text('TSh\u00a0111'), findsNothing);
     });
 
     apiTest('a period the server refuses: inline error, figures stay', (
@@ -654,8 +654,8 @@ void main() {
       expect(
         chart.label,
         startsWith(
-          'Net sales by day, 1–29 Oct 2026. Highest: 2 Oct, TSh 250,000. '
-          'Total TSh 350,000. Table below.',
+          'Net sales by day, 1–29 Oct 2026. Highest: 2 Oct, TSh\u00a0250,000. '
+          'Total TSh\u00a0350,000. Table below.',
         ),
       );
       expect(find.byKey(const Key('reports-channel-split')), findsOneWidget);
@@ -686,7 +686,7 @@ void main() {
       });
       await pumpSection(tester, api, ReportSection.sales);
       expect(find.byKey(const Key('reports-sales-vat')), findsOneWidget);
-      expect(find.text('TSh 18,000'), findsOneWidget);
+      expect(find.text('TSh\u00a018,000'), findsOneWidget);
     });
 
     apiTest('Products: cover from the server, Reorder soon, sorts, no profit '
@@ -891,7 +891,7 @@ void main() {
       });
       final host = await pumpSection(tester, api, ReportSection.profit);
       expect(find.byKey(const Key('reports-profit-uncosted')), findsOneWidget);
-      expect(find.text('−TSh 19,000'), findsOneWidget);
+      expect(find.text('−TSh\u00a019,000'), findsOneWidget);
       expect(find.text('27.0%'), findsOneWidget);
       expect(find.text(host.tr('vendor.reports.profit.noVat')), findsOneWidget);
       expect(
@@ -980,7 +980,7 @@ void main() {
         'buyers': {'shop': 4, 'app': 3},
       });
       await pumpSection(tester, api, ReportSection.customers);
-      expect(find.text('TSh 70,000'), findsOneWidget);
+      expect(find.text('TSh\u00a070,000'), findsOneWidget);
       expect(find.text('7'), findsOneWidget);
       await tapVisible(tester, find.byKey(const Key('reports-open-owed')));
       expect(
@@ -1011,7 +1011,7 @@ void main() {
         findsOneWidget,
       );
       expect(
-        find.text('Cash after change · TSh 120,000 · 60.0% · 5 times'),
+        find.text('Cash after change · TSh\u00a0120,000 · 60.0% · 5 times'),
         findsOneWidget,
       );
       expect(find.text(host.tr('vendor.reports.methods.none')), findsOneWidget);
