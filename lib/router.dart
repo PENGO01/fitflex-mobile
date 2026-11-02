@@ -44,6 +44,8 @@ import 'screens/member/events/results/member_event_results_list_page.dart';
 import 'screens/member/events/results/member_medals_page.dart';
 import 'screens/member/events/results/member_reward_wallet_page.dart';
 import 'screens/member/events/tickets/member_event_ticket_page.dart';
+import 'screens/member/events/waitlist/member_event_waitlist_join_page.dart';
+import 'screens/member/events/waitlist/member_event_waitlist_view.dart';
 import 'screens/member/events/member_event_orders_page.dart';
 import 'screens/member/events/member_event_registration_page.dart';
 import 'screens/member/events/member_events_page.dart';
@@ -258,6 +260,10 @@ abstract class AppRoutes {
   static const memberEventMedals = '/member/events/medals';
   static const memberEventRewards = '/member/events/rewards';
 
+  /// Events S7 (spec §4.10): the member's waitlist. A static segment, so it
+  /// sits before `:eventId`.
+  static const memberEventWaitlist = '/member/events/waitlist';
+
   /// The claim-link page (`/event-claim/#<token>`); the token is kept on
   /// the device, never in the location. Sits beside [friendInvite].
   static const eventClaim = '/event-claim';
@@ -265,6 +271,13 @@ abstract class AppRoutes {
 
   static String memberEventDetailPath(String eventId) =>
       '/member/events/${Uri.encodeComponent(eventId)}';
+  static String memberEventWaitlistJoinPath(
+    String eventId, {
+    String? ticketTypeId,
+  }) =>
+      '/member/events/${Uri.encodeComponent(eventId)}/register'
+      '?mode=waitlist'
+      '${ticketTypeId == null ? '' : '&ticketTypeId=${Uri.encodeComponent(ticketTypeId)}'}';
   static String memberEventRegisterPath(String eventId, {String? ticket}) =>
       '/member/events/${Uri.encodeComponent(eventId)}/register'
       '${ticket == null ? '' : '?ticket=${Uri.encodeQueryComponent(ticket)}'}';
@@ -1520,6 +1533,11 @@ GoRouter buildRouter(AuthState auth) {
                       const MemberEventResultsListPage(),
                 ),
                 GoRoute(
+                  path: 'waitlist',
+                  name: 'memberEventWaitlist',
+                  builder: (context, state) => const MemberEventWaitlistPage(),
+                ),
+                GoRoute(
                   path: 'medals',
                   name: 'memberEventMedals',
                   builder: (context, state) => const MemberMedalsPage(),
@@ -1630,13 +1648,23 @@ GoRouter buildRouter(AuthState auth) {
                     GoRoute(
                       path: 'register',
                       name: 'memberEventRegister',
-                      builder: (context, state) => MemberEventRegisterPage(
-                        eventId: state.pathParameters['eventId']!,
-                        preselectTicketId: state.uri.queryParameters['ticket'],
-                        source: state.uri.queryParameters['ticket'] == null
-                            ? 'cta'
-                            : 'ticket_row',
-                      ),
+                      builder: (context, state) =>
+                          // Events S7 (spec §4.10): the waitlist join.
+                          state.uri.queryParameters['mode'] == 'waitlist'
+                          ? MemberEventWaitlistJoinPage(
+                              eventId: state.pathParameters['eventId']!,
+                              ticketTypeId:
+                                  state.uri.queryParameters['ticketTypeId'],
+                            )
+                          : MemberEventRegisterPage(
+                              eventId: state.pathParameters['eventId']!,
+                              preselectTicketId:
+                                  state.uri.queryParameters['ticket'],
+                              source:
+                                  state.uri.queryParameters['ticket'] == null
+                                  ? 'cta'
+                                  : 'ticket_row',
+                            ),
                     ),
                   ],
                 ),

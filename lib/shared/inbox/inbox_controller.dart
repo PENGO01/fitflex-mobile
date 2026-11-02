@@ -146,6 +146,15 @@ String memberLinkFor({required String deepLink, required String type}) =>
         'event_kit_collected' ||
         'event_bib_assigned' => 'eventTicket',
         'event_place_cancelled_by_purchaser' => 'eventRegistrations',
+        // Events S7 (spec §4.8): a held ticket and its reminder open the
+        // order (the payment page is one tap away); every other waitlist
+        // notice opens the member's waitlist.
+        'event_waitlist_offer' ||
+        'event_waitlist_offer_reminder' => 'eventWaitlistOffer',
+        'event_waitlist_joined' ||
+        'event_waitlist_offer_expired' ||
+        'event_waitlist_closed' ||
+        'event_waitlist_removed' => 'eventWaitlist',
         // Events S6 (spec §11): results, corrections, rejections and
         // disputes open the result; medals and rewards open their screens.
         'event_result_published' ||
@@ -234,6 +243,9 @@ String? memberRouteFor({
       '/member/events/registrations/$registrationId',
     'eventRegistration' => '/member/events/orders',
     'eventTickets' => '/member/events/tickets',
+    'eventWaitlistOffer' when orderId != null && _safeId.hasMatch(orderId) =>
+      '/member/events/orders/$orderId',
+    'eventWaitlistOffer' || 'eventWaitlist' => '/member/events/waitlist',
     'eventPay' when orderId != null && _safeId.hasMatch(orderId) =>
       '/member/events/orders/$orderId/pay',
     'eventPay' => '/member/events/orders',
