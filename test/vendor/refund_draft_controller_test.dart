@@ -6,6 +6,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:fitflexmobile/screens/vendor/sales/receipt_data.dart';
 import 'package:fitflexmobile/screens/vendor/sales/refunds/refund_models.dart';
 import 'package:fitflexmobile/screens/vendor/stock/stock_options.dart';
 import 'package:fitflexmobile/shared/i18n.dart';
@@ -382,7 +383,7 @@ void main() {
     expect(en, contains('For receipt R-000123'));
     expect(en, contains('1 x Whey'));
     expect(en, contains('Refund total'));
-    expect(en, contains('Paid back by Cash'));
+    expect(en, contains('Refunded by Cash'));
     expect(en, contains('Refund given by Dar Gear.'));
     expect(en, isNot(contains('Customer returned it')));
     final sw = text('sw');
@@ -400,6 +401,83 @@ void main() {
     );
     expect(credit, contains('For invoice INV-000045'));
     expect(credit, contains('Taken off the balance'));
+  });
+
+  test('VAT preview uses the server\'s refundedVatTzs when sent', () {
+    // 3 units, VAT 1,000 in the line; one unit refunded gave back 334 VAT
+    // (the estimate would be 333): the next unit gives back 332, not 333.
+    const line = RefundableLine(
+      saleLineId: 'l',
+      name: 'Whey',
+      qty: 3,
+      lineNetTzs: 10000,
+      refundedQty: 1,
+      refundedTzs: 3333,
+      vatTzs: 1000,
+      refundedVatTzs: 334,
+    );
+    expect(previewRefund([line], {'l': 1}).vatTzs, 666 - 334);
+    expect(
+      RefundableLine.fromSaleLine({
+        'id': 'l',
+        'qty': 3,
+        'refundedVatTzs': 12,
+      }).refundedVatTzs,
+      12,
+    );
+    expect(
+      RefundableLine.fromSaleLine({'id': 'l', 'qty': 3}).refundedVatTzs,
+      isNull,
+    );
+  });
+
+  test('receipt text: Refunds heading, a date per active refund', () {
+    final data = ReceiptData.fromSale(
+      refundSale(
+        wheyRefunded: 1,
+        wheyRefundedTzs: 3333,
+        refunds: const [
+          {
+            'id': 'vrf_a',
+            'number': 'CN-000004',
+            'status': 'active',
+            'refundedAt': '2026-11-03T11:05:00.000Z',
+            'amountTzs': 3333,
+          },
+          {
+            'id': 'vrf_b',
+            'number': 'CN-000005',
+            'status': 'reverted',
+            'refundedAt': '2026-11-03T11:30:00.000Z',
+            'amountTzs': 3333,
+          },
+        ],
+      ),
+    );
+    String text(String lang) => receiptShareText(
+      data,
+      (k) => (FFLocale()..set(Locale(lang))).t(k),
+      lang,
+    );
+    final en = text('en');
+    expect(en, contains('\nRefunds\n'));
+    expect(en, contains('CN-000004 · 3 Nov 2026'));
+    expect(en, contains('-3,333'));
+    expect(en, isNot(contains('CN-000005')));
+    expect(en, contains('Total after refunds'));
+    // After the payments (spec §6.3).
+    expect(en.indexOf('CN-000004'), greaterThan(en.indexOf('M-Pesa')));
+    expect(text('sw'), contains('\nMarejesho\n'));
+  });
+
+  test('reason too long and method missing have their own words', () {
+    for (final k in [
+      'vendor.refunds.reasonTooLong',
+      'vendor.refunds.methodMissing',
+    ]) {
+      expect(FFLocale.textOf('en', k), isNotNull);
+      expect(FFLocale.textOf('sw', k), isNotNull);
+    }
   });
 
   test('every S7 string has English and Swahili', () {

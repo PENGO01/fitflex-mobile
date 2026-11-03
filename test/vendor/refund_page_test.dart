@@ -251,6 +251,51 @@ void main() {
     expect(find.byKey(const Key('refund-restock-gone-sln_b')), findsOneWidget);
   });
 
+  apiTest('line_not_on_sale: the sale is read again, its lines shown', (
+    tester,
+    api,
+  ) async {
+    await pumpRefund(tester, api);
+    await tapKey(tester, 'refund-inc-sln_b');
+    await tapKey(tester, 'refund-reason-wrong');
+    await tapKey(tester, 'refund-method-cash');
+    api.fail('POST /vendor/sales/sal_1/refunds', 400, {
+      'error': 'line_not_on_sale',
+      'saleLineId': 'sln_b',
+    });
+    final fresh = refundSale();
+    (fresh['lines'] as List).removeLast();
+    api.on('GET /vendor/sales/sal_1', {'sale': fresh});
+    api.clear();
+    await tapKey(tester, 'refund-review');
+    await tapKey(tester, 'refund-confirm');
+    expect(api.sent('GET', '/vendor/sales/sal_1'), isTrue);
+    expect(find.byKey(const Key('refund-confirm-error')), findsNothing);
+    expect(find.byKey(const Key('refund-line-sln_b')), findsNothing);
+    expect(find.byKey(const Key('refund-line-sln_a')), findsOneWidget);
+    expect(isEnabled(tester, find.byKey(const Key('refund-review'))), isFalse);
+  });
+
+  apiTest('method_required: the method section says what is missing', (
+    tester,
+    api,
+  ) async {
+    final host = await pumpRefund(
+      tester,
+      api,
+      sale: refundSale(kind: 'credit', balanceTzs: 20000),
+    );
+    await tapKey(tester, 'refund-inc-sln_b');
+    await tapKey(tester, 'refund-reason-faulty');
+    api.fail('POST /vendor/sales/sal_1/refunds', 400, {
+      'error': 'method_required',
+    });
+    await tapKey(tester, 'refund-review');
+    await tapKey(tester, 'refund-confirm');
+    expect(find.text(host.tr('vendor.refunds.methodMissing')), findsOneWidget);
+    expect(find.byKey(const Key('refund-method-cash')), findsOneWidget);
+  });
+
   apiTest('network failure: dialog stays; Try again reuses the key; '
       'nothing is queued', (tester, api) async {
     final host = await pumpRefund(tester, api);

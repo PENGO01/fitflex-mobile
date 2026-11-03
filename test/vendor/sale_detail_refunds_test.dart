@@ -348,6 +348,64 @@ void main() {
       );
     });
 
+    apiTest('summary.refunds fills the card: no extra report call', (
+      tester,
+      api,
+    ) async {
+      api.on('GET /vendor/reports/summary', {
+        ...summary(),
+        'refunds': {
+          'count': 2,
+          'amountTzs': 9999,
+          'paidOutTzs': 6666,
+          'balanceReducedTzs': 3333,
+        },
+      });
+      await pumpPage(
+        tester,
+        api,
+        VendorReportsView(
+          access: ReportAccess.of(reportTools, (_) => true),
+          now: DateTime.utc(2026, 11, 3, 12),
+        ),
+        size: const Size(420, 3000),
+        keepRequests: true,
+      );
+      expect(find.byKey(const Key('reports-card-refunds')), findsOneWidget);
+      expect(find.text('TSh\u00A09,999'), findsOneWidget);
+      expect(api.sent('GET', '/vendor/reports/refunds'), isFalse);
+    });
+
+    apiTest('refunds off and summary.refunds empty: no card', (
+      tester,
+      api,
+    ) async {
+      api.on('GET /vendor/reports/summary', {
+        ...summary(),
+        'refunds': {
+          'count': 0,
+          'amountTzs': 0,
+          'paidOutTzs': 0,
+          'balanceReducedTzs': 0,
+        },
+      });
+      await pumpPage(
+        tester,
+        api,
+        VendorReportsView(
+          access: ReportAccess.of(
+            const VendorTools(reports: true, walkInSales: true),
+            (_) => true,
+          ),
+          now: DateTime.utc(2026, 11, 3, 12),
+        ),
+        size: const Size(420, 3000),
+        keepRequests: true,
+      );
+      expect(find.byKey(const Key('reports-card-refunds')), findsNothing);
+      expect(api.sent('GET', '/vendor/reports/refunds'), isFalse);
+    });
+
     apiTest('refunds off and no refund rows: no Refunds card', (
       tester,
       api,
@@ -407,11 +465,11 @@ void main() {
 
   group('document status (S7)', () {
     for (final (status, en, sw) in const [
-      ('refunded', 'Refunded', 'Imerejeshwa'),
+      ('refunded', 'Refunded', 'Imerejeshwa yote'),
       (
         'settled_by_credit_note',
         'Settled by credit note',
-        'Imelipwa kwa hati ya marejesho',
+        'Deni limefutwa kwa hati ya marejesho',
       ),
     ]) {
       apiTest('a sale document "$status" has its badge', (tester, api) async {

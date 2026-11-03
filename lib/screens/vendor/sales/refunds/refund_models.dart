@@ -55,6 +55,7 @@ class RefundableLine {
     this.refundedQty = 0,
     this.refundedTzs = 0,
     this.vatTzs = 0,
+    this.refundedVatTzs,
   });
 
   /// From a line of GET /vendor/sales/:id. Missing counters read as none
@@ -74,6 +75,9 @@ class RefundableLine {
       refundedQty: refunded,
       refundedTzs: _int(line['refundedTzs']),
       vatTzs: _int(line['vatTzs']),
+      refundedVatTzs: line['refundedVatTzs'] is num
+          ? _int(line['refundedVatTzs'])
+          : null,
     );
   }
 
@@ -94,6 +98,10 @@ class RefundableLine {
 
   /// The line's VAT (inside the price).
   final int vatTzs;
+
+  /// VAT already given back by active refunds (functions#318 round 3);
+  /// null from an older answer (then estimated).
+  final int? refundedVatTzs;
 
   int get refundableQty => max(0, qty - refundedQty);
   String get displayName => variant == null ? name : '$name ($variant)';
@@ -146,8 +154,8 @@ class RefundPreview {
   final Map<String, int> lineAmounts;
   final int totalTzs;
 
-  /// VAT inside [totalTzs]. An estimate: the server keeps the VAT already
-  /// given back per line, the sale view does not send it.
+  /// VAT inside [totalTzs]. Exact when the sale view sends each line's
+  /// `refundedVatTzs`; estimated otherwise.
   final int vatTzs;
 
   /// Pay later: taken off what the customer still owes (no money moves).
@@ -178,12 +186,14 @@ RefundPreview previewRefund(
       given: l.refundedTzs,
       q: q,
     );
-    // VAT already given back is not in the sale view: estimated as what
-    // the refunded units took when refunded in order (exact unless an
-    // earlier refund was undone in the middle).
-    final vatGiven = l.refundedQty >= l.qty
-        ? l.vatTzs
-        : (l.vatTzs * l.refundedQty) ~/ max(1, l.qty);
+    // VAT already given back: the server's `refundedVatTzs`; an older
+    // answer without it is estimated as what the refunded units took when
+    // refunded in order (exact unless a refund was undone in the middle).
+    final vatGiven =
+        l.refundedVatTzs ??
+        (l.refundedQty >= l.qty
+            ? l.vatTzs
+            : (l.vatTzs * l.refundedQty) ~/ max(1, l.qty));
     final lineVat = cumulativeShare(
       total: l.vatTzs,
       sold: l.qty,

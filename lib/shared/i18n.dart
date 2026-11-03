@@ -5905,7 +5905,7 @@ class FFLocale extends ChangeNotifier {
       'vendor.refunds.offBalance': 'Taken off what {name} owes',
       'vendor.refunds.offBalanceShort': 'Taken off the balance',
       'vendor.refunds.payBack': 'Give back to the customer',
-      'vendor.refunds.paidBackBy': 'Paid back by {method}',
+      'vendor.refunds.paidBackBy': 'Refunded by {method}',
       'vendor.refunds.nothingBack':
           'Nothing to give back: the refund comes off what is owed.',
       'vendor.refunds.method': 'How you give the money back',
@@ -5958,7 +5958,10 @@ class FFLocale extends ChangeNotifier {
           'Could not save the refund. Nothing was changed.',
       'vendor.refunds.notFound': 'This refund is not available.',
       'vendor.refunds.err.rateLimited':
-          'Too many tries. Wait a minute, then try again. Nothing was changed.',
+          'Too many tries. Wait a minute and try again.',
+      'vendor.refunds.reasonTooLong':
+          'The reason is too long (200 characters at most).',
+      'vendor.refunds.methodMissing': 'Choose how you give the money back.',
       'vendor.sales.voidHasRefunds':
           'This sale has refunds, so it can\'t be voided.',
       'vendor.sales.refundsLine': 'Refunds −{amount} · after refunds {net}',
@@ -13477,7 +13480,7 @@ class FFLocale extends ChangeNotifier {
       'vendor.refunds.offBalance': 'Kinapunguzwa kwenye deni la {name}',
       'vendor.refunds.offBalanceShort': 'Imepunguzwa kwenye deni',
       'vendor.refunds.payBack': 'Mrudishie mteja',
-      'vendor.refunds.paidBackBy': 'Imerudishwa kwa {method}',
+      'vendor.refunds.paidBackBy': 'Imerejeshwa kwa {method}',
       'vendor.refunds.nothingBack':
           'Hakuna pesa ya kurudisha: marejesho yanapunguzwa kwenye deni.',
       'vendor.refunds.method': 'Unarudisha pesa kwa njia gani',
@@ -13531,7 +13534,10 @@ class FFLocale extends ChangeNotifier {
           'Imeshindikana kuhifadhi marejesho. Hakuna kilichobadilishwa.',
       'vendor.refunds.notFound': 'Marejesho haya hayapatikani.',
       'vendor.refunds.err.rateLimited':
-          'Majaribio ni mengi mno. Subiri dakika moja, kisha ujaribu tena. Hakuna kilichobadilishwa.',
+          'Majaribio ni mengi mno. Subiri dakika moja kisha ujaribu tena.',
+      'vendor.refunds.reasonTooLong':
+          'Sababu ni ndefu mno (herufi 200 kwa juu kabisa).',
+      'vendor.refunds.methodMissing': 'Chagua jinsi unavyorudisha pesa.',
       'vendor.sales.voidHasRefunds':
           'Mauzo haya yana marejesho, hivyo hayawezi kubatilishwa.',
       'vendor.sales.refundsLine':
@@ -13540,8 +13546,9 @@ class FFLocale extends ChangeNotifier {
       'vendor.doc.forInvoice': 'Kwa ankara {number}',
       'vendor.doc.saleDate': 'Iliuzwa {date}',
       'vendor.doc.statusIssued': 'Imetolewa',
-      'vendor.doc.statusRefunded': 'Imerejeshwa',
-      'vendor.doc.statusSettledByCreditNote': 'Imelipwa kwa hati ya marejesho',
+      'vendor.doc.statusRefunded': 'Imerejeshwa yote',
+      'vendor.doc.statusSettledByCreditNote':
+          'Deni limefutwa kwa hati ya marejesho',
       'vendor.doc.returnedItems': 'Bidhaa zilizorudishwa',
       'vendor.doc.refundTotal': 'Jumla ya marejesho',
       'vendor.doc.balanceReduced': 'Imepunguzwa kwenye deni {amount}',

@@ -109,7 +109,8 @@ class VendorReportsViewState extends State<VendorReportsView> {
         _rangeError = null;
         _refunds = null;
       });
-      unawaited(_loadRefunds(mine));
+      // Older backend without `summary.refunds`: ask the Refunds report.
+      if (data['refunds'] is! Map) unawaited(_loadRefunds(mine));
     } catch (e) {
       if (!mounted || mine != _seq) return;
       final failure = reportFailureOf(e, vendorStaff: isStaff);
@@ -131,7 +132,8 @@ class VendorReportsViewState extends State<VendorReportsView> {
     }
   }
 
-  /// The Refunds card's figures (walk-in only: not for the App channel).
+  /// Fallback for the Refunds card when the summary has no `refunds`
+  /// (walk-in only: not for the App channel).
   Future<void> _loadRefunds(int mine) async {
     final a = widget.access;
     if (!a.allows(ReportSection.refunds) || _channel == 'app') return;
@@ -147,14 +149,23 @@ class VendorReportsViewState extends State<VendorReportsView> {
     }
   }
 
+  /// The Refunds card: `summary.refunds {count, amountTzs, paidOutTzs,
+  /// balanceReducedTzs}`, else the fallback report's totals.
   Widget? _refundsCard() {
-    final r = _refunds;
-    if (r == null) return null;
-    final rows = listAt(r, 'rows');
-    // Shown when the tool is on, or the period has refund rows (§0.2).
-    if (!widget.access.refunds && rows.isEmpty) return null;
+    if (_channel == 'app' || !widget.access.allows(ReportSection.refunds)) {
+      return null;
+    }
+    final totals = mapAt(_data, 'refunds') ?? mapAt(_refunds, 'totals');
+    if (totals == null) return null;
+    final any =
+        numAt(totals, 'count') != 0 ||
+        numAt(totals, 'amountTzs') != 0 ||
+        numAt(totals, 'paidOutTzs') != 0 ||
+        numAt(totals, 'balanceReducedTzs') != 0 ||
+        listAt(_refunds, 'rows').isNotEmpty;
+    // Shown when the tool is on, or the period has refunds (§0.2).
+    if (!widget.access.refunds && !any) return null;
     final t = context.tr;
-    final totals = mapAt(r, 'totals');
     final lines = [
       (t('vendor.reports.refunds.count'), reportCount(numAt(totals, 'count'))),
       (

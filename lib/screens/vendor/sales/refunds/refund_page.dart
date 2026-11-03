@@ -266,6 +266,8 @@ class _RefundPageState extends State<RefundPage> {
             .where((l) => _exceeded.contains(l.saleLineId))
             .firstOrNull;
         if (first != null) _focusOf(first.saleLineId).requestFocus();
+      case _LinesChanged():
+        await _load(afterExceeds: true);
       case _SaleVoided():
         setState(() => _saleVoidedNow = true);
       case _RestockGone(:final saleLineId):
@@ -941,6 +943,11 @@ class _Exceeds extends _ConfirmResult {
   final Set<String> lineIds;
 }
 
+/// 400 line_not_on_sale: reload the sale and show its lines as they are.
+class _LinesChanged extends _ConfirmResult {
+  const _LinesChanged();
+}
+
 class _SaleVoided extends _ConfirmResult {
   const _SaleVoided();
 }
@@ -1034,10 +1041,17 @@ class _ConfirmDialogState extends State<_ConfirmDialog> {
           _close(const _FieldError('reference', 'vendor.pos.err.payment'));
           return;
         case 'method_required' || 'invalid_method':
-          _close(const _FieldError('method', 'vendor.refunds.method'));
+          _close(const _FieldError('method', 'vendor.refunds.methodMissing'));
           return;
-        case 'reason_required' || 'reason_too_long':
+        case 'reason_too_long':
+          _close(const _FieldError('reason', 'vendor.refunds.reasonTooLong'));
+          return;
+        case 'reason_required':
           _close(const _FieldError('reason', 'vendor.refunds.reasonMissing'));
+          return;
+        case 'line_not_on_sale':
+          // The sale changed under the screen: read it again (as the portal).
+          _close(const _LinesChanged());
           return;
         case 'refund_not_allowed':
           _close(const _Leave('vendor.refunds.askOwner'));

@@ -468,21 +468,6 @@ String receiptShareText(
       }),
     );
   }
-  // S7 §6.3: the active credit notes and the total after them.
-  if (r.refundedTzs > 0 && !r.voided) {
-    for (final rf in r.refunds) {
-      if (rf['status']?.toString() == 'reverted') continue;
-      b.writeln(
-        _row('${rf['number'] ?? ''}', '-${formatMoney(_int(rf['amountTzs']))}'),
-      );
-    }
-    b.writeln(
-      _row(
-        t('vendor.doc.totalAfterRefunds'),
-        formatCurrency(r.netAfterRefundsTzs),
-      ),
-    );
-  }
   for (final p in r.payments) {
     final method = t(paymentMethodKey(p.method));
     b.writeln(
@@ -503,6 +488,27 @@ String receiptShareText(
     }
   } else if (r.changeTzs > 0) {
     b.writeln(_row(t('vendor.pos.change'), formatMoney(r.changeTzs)));
+  }
+  // S7 §6.3: after the payments, the active credit notes ("CN-000004 ·
+  // 3 Nov 2026  -6,666") under a Refunds heading, and the total after them.
+  if (r.refundedTzs > 0 && !r.voided) {
+    b.writeln(t('vendor.doc.refundsOnSale'));
+    for (final rf in r.refunds) {
+      if (rf['status']?.toString() == 'reverted') continue;
+      final day = eatDayOf(rf['refundedAt']?.toString());
+      final label = [
+        '${rf['number'] ?? ''}',
+        if (day != null)
+          formatDate(DateTime(day.year, day.month, day.day), locale: lang),
+      ].join(' · ');
+      b.writeln(_row(label, '-${formatMoney(_int(rf['amountTzs']))}'));
+    }
+    b.writeln(
+      _row(
+        t('vendor.doc.totalAfterRefunds'),
+        formatCurrency(r.netAfterRefundsTzs),
+      ),
+    );
   }
   b.writeln(rule);
   if (r.servedBy != null) {
