@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:fitflexmobile/screens/vendor/customers/customer_profile_page.dart'
-    show creditClearedKey, saleKindBadges;
+    show saleKindBadges, saleStatusBadges;
 import 'package:fitflexmobile/screens/vendor/sales/refunds/refund_page.dart';
 import 'package:fitflexmobile/screens/vendor/sales/sale_detail_page.dart';
 import 'package:fitflexmobile/screens/vendor/vendor_home_page.dart';
@@ -198,6 +198,34 @@ void main() {
     });
   }
 
+  apiTest('stepper buttons are announced once, with one label', (
+    tester,
+    api,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    await pumpRefund(tester, api);
+    for (final label in ['Refund one more Whey', 'Refund one fewer Whey']) {
+      final f = find.bySemanticsLabel(label);
+      expect(f, findsOneWidget, reason: label);
+      expect(tester.getSemantics(f).label, label);
+      expect(
+        find.bySemanticsLabel(RegExp('${RegExp.escape(label)}.*$label')),
+        findsNothing,
+      );
+    }
+    expect(
+      tester.getSemantics(find.bySemanticsLabel('Refund one more Whey')),
+      isSemantics(isButton: true, hasTapAction: true, isEnabled: true),
+    );
+    await tester.tap(find.byKey(const Key('refund-inc-sln_a')));
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<Text>(find.byKey(const Key('refund-qty-sln_a'))).data,
+      '1',
+    );
+    semantics.dispose();
+  });
+
   apiTest('L-8: the sticky Review button is at least 44dp tall', (
     tester,
     api,
@@ -250,24 +278,52 @@ void main() {
   });
 
   group('L-3: a pay-later sale cleared by a refund is not "Paid off"', () {
-    test('the rule with and without balanceReducedTzs (functions#321)', () {
-      Map<String, dynamic> r(String state, [int? reduced]) => {
-        'kind': 'credit',
-        'balanceTzs': 0,
-        'refundState': state,
-        'balanceReducedTzs': ?reduced,
-      };
-      expect(creditClearedKey(r('none')), 'vendor.sales.paidOffBadge');
-      expect(creditClearedKey(r('none', 0)), 'vendor.sales.paidOffBadge');
-      expect(
-        creditClearedKey(r('partial', 4000)),
+    test('one rule for list and profile (retest 1104)', () {
+      List<String> keys(Map<String, dynamic> s) => [
+        for (final b in saleStatusBadges(s)) b.key,
+      ];
+      Map<String, dynamic> credit(String state, {int bal = 0, int? reduced}) =>
+          {
+            'kind': 'credit',
+            'status': 'completed',
+            'balanceTzs': bal,
+            'refundState': state,
+            'balanceReducedTzs': ?reduced,
+          };
+      // R-000005 / R-000035: fully refunded pay-later sales.
+      expect(keys(credit('full', reduced: 20000)), [
+        'vendor.sales.payLaterBadge',
+        'vendor.refunds.badgeFull',
+      ]);
+      // R-000034: paid off by the customer, then part refunded.
+      expect(keys(credit('partial')), [
+        'vendor.sales.payLaterBadge',
+        'vendor.sales.paidOffBadge',
+        'vendor.refunds.badgePartial',
+      ]);
+      expect(keys(credit('partial', reduced: 4000)), [
+        'vendor.sales.payLaterBadge',
         'vendor.doc.statusSettledByCreditNote',
-      );
-      // Field absent (older answer): Part refunded only, never Paid off.
-      expect(creditClearedKey(r('partial')), isNull);
-      expect(creditClearedKey(r('partial', 0)), isNull);
-      // Whole total refunded: the Refunded badge (document `refunded`).
-      expect(creditClearedKey(r('full', 20000)), isNull);
+        'vendor.refunds.badgePartial',
+      ]);
+      expect(keys(credit('partial', bal: 5000)), [
+        'vendor.sales.payLaterBadge',
+        'vendor.sales.owesBadge',
+        'vendor.refunds.badgePartial',
+      ]);
+      expect(keys(credit('none')), [
+        'vendor.sales.payLaterBadge',
+        'vendor.sales.paidOffBadge',
+      ]);
+      // Cash sales: only the refund badges.
+      expect(keys({'kind': 'cash', 'refundState': 'full'}), [
+        'vendor.refunds.badgeFull',
+      ]);
+      expect(keys({'kind': 'cash', 'refundState': 'none'}), isEmpty);
+      // Voided: Pay later only.
+      expect(keys({...credit('partial'), 'status': 'voided'}), [
+        'vendor.sales.payLaterBadge',
+      ]);
     });
 
     apiTest('customer profile rows: settled by credit note', (
@@ -299,6 +355,27 @@ void main() {
                   'refundState': 'none',
                 }),
               ),
+              Wrap(
+                key: const Key('full'),
+                children: saleKindBadges(context, {
+                  'id': 'r5',
+                  'kind': 'credit',
+                  'status': 'completed',
+                  'balanceTzs': 0,
+                  'refundState': 'full',
+                  'balanceReducedTzs': 20000,
+                }),
+              ),
+              Wrap(
+                key: const Key('paidPart'),
+                children: saleKindBadges(context, {
+                  'id': 'r34',
+                  'kind': 'credit',
+                  'status': 'completed',
+                  'balanceTzs': 0,
+                  'refundState': 'partial',
+                }),
+              ),
             ],
           ),
         ),
@@ -316,6 +393,21 @@ void main() {
       );
       expect(
         inRow('paid', host.tr('vendor.sales.paidOffBadge')),
+        findsOneWidget,
+      );
+      // R-000005 / R-000035: Refunded, not "Pay later" alone.
+      expect(
+        inRow('full', host.tr('vendor.refunds.badgeFull')),
+        findsOneWidget,
+      );
+      expect(inRow('full', host.tr('vendor.sales.paidOffBadge')), findsNothing);
+      // R-000034: Paid off + Part refunded.
+      expect(
+        inRow('paidPart', host.tr('vendor.sales.paidOffBadge')),
+        findsOneWidget,
+      );
+      expect(
+        inRow('paidPart', host.tr('vendor.refunds.badgePartial')),
         findsOneWidget,
       );
     });
@@ -369,7 +461,8 @@ void main() {
         inRow('full', host.tr('vendor.refunds.badgeFull')),
         findsOneWidget,
       );
-      expect(inRow('part', paidOff), findsNothing);
+      // Paid off by the customer, then part refunded (R-000034).
+      expect(inRow('part', paidOff), findsOneWidget);
       expect(
         inRow('part', host.tr('vendor.refunds.badgePartial')),
         findsOneWidget,
