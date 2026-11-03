@@ -308,6 +308,7 @@ String? memberRouteFor({
       customerId: data['customerId']?.toString(),
       bannerId: (data['bannerId'] ?? data['item'])?.toString(),
       flashSaleId: (data['saleId'] ?? data['item'])?.toString(),
+      refundId: data['refundId']?.toString(),
     );
     if (direct != null) return (location: direct, go: true);
   }
@@ -396,6 +397,9 @@ String partnerLinkFor({required String side, required String type}) =>
         'vendor_low_stock' => 'lowStock',
         // S3: a walk-in sale was voided (sent to the vendor account).
         'vendor_sale_voided' => 'sale',
+        // S7: staff refunded part of a sale, or undid a refund (data
+        // `{saleId, refundId, number}`).
+        'vendor_sale_refunded' || 'vendor_refund_reverted' => 'refund',
         // S4: the daily overdue digest, and a payment voided by staff.
         'vendor_customers_overdue' => 'owed',
         'vendor_customer_payment_voided' => 'customer',
@@ -451,6 +455,7 @@ String? partnerRouteFor({
   String? customerId,
   String? bannerId,
   String? flashSaleId,
+  String? refundId,
 }) {
   bool ok(String? id) => id != null && _safeId.hasMatch(id);
   return switch (partnerLinkFor(side: side, type: type)) {
@@ -476,6 +481,11 @@ String? partnerRouteFor({
     // The sale detail checks the feature and the `sales` permission.
     'sale' when ok(saleId) => '/vendor/sales/$saleId',
     'sale' => '/vendor/home?open=sales',
+    // The refund detail checks walk-in sales and `sales` (it is readable
+    // with the refunds tool off); without a refund id, the sale.
+    'refund' when ok(refundId) => '/vendor/refunds/$refundId',
+    'refund' when ok(saleId) => '/vendor/sales/$saleId',
+    'refund' => '/vendor/home?open=sales',
     // The customer pages check the feature and the `customers` permission.
     'owed' => '/vendor/home?open=customers&view=owed',
     'customer' when ok(customerId) => '/vendor/customers/$customerId',

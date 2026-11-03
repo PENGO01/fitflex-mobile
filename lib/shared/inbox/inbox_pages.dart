@@ -79,6 +79,7 @@ String? routeForMessage(BuildContext context, InboxMessage m) {
       customerId: m.data['customerId']?.toString(),
       bannerId: (m.data['bannerId'] ?? m.data['item'])?.toString(),
       flashSaleId: (m.data['saleId'] ?? m.data['item'])?.toString(),
+      refundId: m.data['refundId']?.toString(),
     );
   }
   if (role != 'member') return null;

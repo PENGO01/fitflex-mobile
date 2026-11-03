@@ -21,7 +21,10 @@ enum ReportSection {
   profit('profit', 'profit', 'vendor.reports.view.profit'),
   payouts('payouts', 'marketplace-net', 'vendor.reports.view.payouts'),
   customers('customers', 'customers', 'vendor.reports.view.customers'),
-  methods('methods', 'payment-methods', 'vendor.reports.view.methods');
+  methods('methods', 'payment-methods', 'vendor.reports.view.methods'),
+
+  /// S7: credit notes and undos on walk-in sales (walk-in only: no channel).
+  refunds('refunds', 'refunds', 'vendor.reports.view.refunds');
 
   const ReportSection(this.route, this.api, this.titleKey);
 
@@ -73,6 +76,7 @@ class ReportAccess {
     this.stock = false,
     this.walkIn = false,
     this.payments = false,
+    this.refunds = false,
   });
 
   /// [can] answers a permission (`reports`, `customers`, `payments`).
@@ -86,6 +90,7 @@ class ReportAccess {
       stock: on && tools.stockLedger,
       walkIn: tools.walkInSales,
       payments: can('payments'),
+      refunds: on && tools.refundsOn,
     );
   }
 
@@ -104,6 +109,11 @@ class ReportAccess {
   /// The Payouts segment (today's Payments content) needs `payments`.
   final bool payments;
 
+  /// S7: the refunds tool is on (walk-in sales + VENDOR_REFUNDS): the
+  /// Refunds card and CSV are offered. With it off the view still opens
+  /// (and the card shows) when the period has refund rows (spec §0.2).
+  final bool refunds;
+
   bool allows(ReportSection s) => switch (s) {
     ReportSection.sales ||
     ReportSection.products ||
@@ -112,6 +122,8 @@ class ReportAccess {
     ReportSection.profit => cost,
     ReportSection.payouts => payouts,
     ReportSection.customers => customers,
+    // Refunds made stay readable: walk-in sales on is enough to open it.
+    ReportSection.refunds => reports && (refunds || walkIn),
   };
 
   /// The sections offered, in the order of the cards (§9).
@@ -124,8 +136,9 @@ class ReportAccess {
       ReportSection.payouts,
       ReportSection.customers,
       ReportSection.methods,
+      ReportSection.refunds,
     ])
-      if (allows(s)) s,
+      if (allows(s) && (s != ReportSection.refunds || refunds)) s,
   ];
 }
 

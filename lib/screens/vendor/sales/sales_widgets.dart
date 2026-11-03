@@ -369,6 +369,20 @@ class ReceiptView extends StatelessWidget {
             strong: true,
             strike: data.voided,
           ),
+          // S7 §4.1: active refunds and what the sale is worth after them.
+          if (data.refundedTzs > 0 && !data.voided) ...[
+            MoneyRow(
+              t('vendor.refunds.refundsRow'),
+              '−${formatCurrency(data.refundedTzs)}',
+              key: const Key('sales-receipt-refunds'),
+            ),
+            MoneyRow(
+              t('vendor.refunds.netAfter'),
+              formatCurrency(data.netAfterRefundsTzs),
+              strong: true,
+              key: const Key('sales-receipt-net-after'),
+            ),
+          ],
           if (data.hasVat)
             VatBlock(
               vatIncludedTzs: data.vatIncludedTzs,
@@ -459,6 +473,12 @@ class ReceiptView extends StatelessWidget {
               MoneyRow(
                 t('vendor.pos.lineDiscountShort'),
                 '−${formatMoney(l.discountTzs)}',
+              ),
+            if (l.refundedQty > 0 && !data.voided)
+              Text(
+                _fill('vendor.refunds.lineRefunded', {'n': l.refundedQty}),
+                key: const Key('sales-line-refunded'),
+                style: muted,
               ),
           ],
         ),

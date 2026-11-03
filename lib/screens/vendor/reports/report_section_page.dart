@@ -325,7 +325,9 @@ class _ReportSectionPageState extends State<ReportSectionPage> {
             numAt(t, 'costTzs') == 0 &&
             numAt(u, 'qty') == 0;
       case ReportSection.methods:
-        return listAt(d, 'byYou').isEmpty && listAt(d, 'viaFitFlex').isEmpty;
+        return listAt(d, 'byYou').isEmpty &&
+            listAt(d, 'viaFitFlex').isEmpty &&
+            listAt(d, 'paidBack').isEmpty;
       case ReportSection.payouts:
         final s = mapAt(d, 'status');
         return listAt(d, 'weeks').isEmpty &&
@@ -334,6 +336,8 @@ class _ReportSectionPageState extends State<ReportSectionPage> {
         return listAt(d, 'rows').isEmpty;
       case ReportSection.customers:
         return false;
+      case ReportSection.refunds:
+        return listAt(d, 'rows').isEmpty;
     }
   }
 
@@ -375,6 +379,10 @@ class _ReportSectionPageState extends State<ReportSectionPage> {
         icon: Icons.bar_chart_outlined,
         title: _section == ReportSection.stock
             ? t('vendor.reports.stock.empty')
+            : _section == ReportSection.refunds
+            ? fillIn(t('vendor.reports.refunds.empty'), {
+                'period': periodInWords(_period.from, _period.to, lang),
+              })
             : fillIn(t('vendor.reports.empty'), {
                 'period': periodInWords(_period.from, _period.to, lang),
               }),
@@ -438,6 +446,17 @@ class _ReportSectionPageState extends State<ReportSectionPage> {
         );
       case ReportSection.methods:
         return MethodsReportBody(data: data);
+      case ReportSection.refunds:
+        return RefundsReportBody(
+          data: data,
+          onOpen: (_access?.walkIn ?? false) && canVendor(context, 'sales')
+              ? (id) {
+                  if (RegExp(r'^[A-Za-z0-9._:-]{1,100}$').hasMatch(id)) {
+                    context.push('/vendor/refunds/${Uri.encodeComponent(id)}');
+                  }
+                }
+              : null,
+        );
     }
   }
 
@@ -604,6 +623,9 @@ class _ReportSectionPageState extends State<ReportSectionPage> {
                       ),
                       ReportSection.stock || ReportSection.customers => t(
                         'vendor.reports.channel.allChannels',
+                      ),
+                      ReportSection.refunds => t(
+                        'vendor.reports.channel.shopSales',
                       ),
                       _ => null,
                     },
