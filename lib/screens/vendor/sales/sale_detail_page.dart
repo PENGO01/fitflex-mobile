@@ -865,8 +865,11 @@ class _RefundsCard extends StatelessWidget {
                     final date = eatDateTime(r.refundedAt, locale: lang);
                     final amount = formatCurrency(r.amountTzs);
                     final open = onOpen;
+                    // Its own node, never merged into the heading (L-6).
                     return Semantics(
+                      container: true,
                       button: open != null,
+                      onTap: open == null ? null : () => open(r.id),
                       label: fillIn(t('vendor.refunds.rowLabel'), {
                         'number': r.number,
                         'amount': amount,

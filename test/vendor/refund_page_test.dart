@@ -314,7 +314,7 @@ void main() {
     await tapKey(tester, 'refund-review');
     await tapKey(tester, 'refund-confirm');
     expect(find.byKey(const Key('refund-confirm')), findsOneWidget);
-    expect(find.text(host.tr('vendor.refunds.offline')), findsOneWidget);
+    expect(find.text(host.tr('vendor.refunds.err.unconfirmed')), findsOneWidget);
     await tapKey(tester, 'refund-confirm');
     final sent = api.where('POST', '/vendor/sales/sal_1/refunds');
     expect(sent, hasLength(2));

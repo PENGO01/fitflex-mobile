@@ -5962,6 +5962,9 @@ class FFLocale extends ChangeNotifier {
       'vendor.refunds.reasonTooLong':
           'The reason is too long (200 characters at most).',
       'vendor.refunds.methodMissing': 'Choose how you give the money back.',
+      'vendor.refunds.tryAgain': 'Try again',
+      'vendor.refunds.err.unconfirmed':
+          'We couldn\'t confirm the refund. Try again — it won\'t be made twice.',
       'vendor.sales.voidHasRefunds':
           'This sale has refunds, so it can\'t be voided.',
       'vendor.sales.refundsLine': 'Refunds −{amount} · after refunds {net}',
@@ -13538,6 +13541,9 @@ class FFLocale extends ChangeNotifier {
       'vendor.refunds.reasonTooLong':
           'Sababu ni ndefu mno (herufi 200 kwa juu kabisa).',
       'vendor.refunds.methodMissing': 'Chagua jinsi unavyorudisha pesa.',
+      'vendor.refunds.tryAgain': 'Jaribu tena',
+      'vendor.refunds.err.unconfirmed':
+          'Hatukuweza kuthibitisha marejesho. Jaribu tena — hayatafanywa mara mbili.',
       'vendor.sales.voidHasRefunds':
           'Mauzo haya yana marejesho, hivyo hayawezi kubatilishwa.',
       'vendor.sales.refundsLine':

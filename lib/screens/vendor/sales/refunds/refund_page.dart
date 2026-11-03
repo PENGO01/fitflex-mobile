@@ -95,6 +95,26 @@ class _RefundPageState extends State<RefundPage> {
     super.dispose();
   }
 
+  /// Moves focus to a line card once the dialog has closed and the route
+  /// has given focus back (UAT L-4: never left on Close).
+  void _focusLine(String id) {
+    void go() {
+      if (!mounted) return;
+      final node = _focusOf(id);
+      final ctx = node.context;
+      if (ctx != null) {
+        Scrollable.ensureVisible(ctx, duration: const Duration(milliseconds: 150));
+      }
+      node.requestFocus();
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      go();
+      // The dialog route may hand focus back a frame later: ask again.
+      WidgetsBinding.instance.addPostFrameCallback((_) => go());
+    });
+  }
+
   FocusNode _focusOf(String id) =>
       _lineFocus.putIfAbsent(id, () => FocusNode(debugLabel: 'refund-$id'));
 
@@ -265,7 +285,7 @@ class _RefundPageState extends State<RefundPage> {
         final first = draft.lines
             .where((l) => _exceeded.contains(l.saleLineId))
             .firstOrNull;
-        if (first != null) _focusOf(first.saleLineId).requestFocus();
+        if (first != null) _focusLine(first.saleLineId);
       case _LinesChanged():
         await _load(afterExceeds: true);
       case _SaleVoided():
@@ -273,7 +293,7 @@ class _RefundPageState extends State<RefundPage> {
       case _RestockGone(:final saleLineId):
         draft.setRestock(saleLineId, false);
         setState(() => _noRestock.add(saleLineId));
-        _focusOf(saleLineId).requestFocus();
+        _focusLine(saleLineId);
       case _FieldError(:final field, :final key):
         setState(() {
           if (field == 'reference') {
@@ -560,14 +580,11 @@ class _RefundPageState extends State<RefundPage> {
         runSpacing: FFTokens.spacingXs,
         children: [
           for (final k in refundReasonKeys)
-            Semantics(
-              inMutuallyExclusiveGroup: true,
-              child: FFPill(
-                key: Key('refund-reason-$k'),
-                label: t('vendor.refunds.reason.$k'),
-                filled: _reasonPill == k,
-                onTap: () => _pickReason(k),
-              ),
+            _ChoicePill(
+              pillKey: Key('refund-reason-$k'),
+              label: t('vendor.refunds.reason.$k'),
+              selected: _reasonPill == k,
+              onTap: () => _pickReason(k),
             ),
         ],
       ),
@@ -649,21 +666,18 @@ class _RefundPageState extends State<RefundPage> {
             runSpacing: FFTokens.spacingXs,
             children: [
               for (final m in salePaymentMethods)
-                Semantics(
-                  inMutuallyExclusiveGroup: true,
-                  child: FFPill(
-                    key: Key('refund-method-$m'),
-                    label: t(paymentMethodKey(m)),
-                    filled: draft.method == m,
-                    onTap: () {
-                      setState(() {
-                        _methodError = null;
-                        _referenceError = null;
-                      });
-                      draft.setMethod(m);
-                      if (m == 'cash') _reference.clear();
-                    },
-                  ),
+                _ChoicePill(
+                  pillKey: Key('refund-method-$m'),
+                  label: t(paymentMethodKey(m)),
+                  selected: draft.method == m,
+                  onTap: () {
+                    setState(() {
+                      _methodError = null;
+                      _referenceError = null;
+                    });
+                    draft.setMethod(m);
+                    if (m == 'cash') _reference.clear();
+                  },
                 ),
             ],
           ),
@@ -743,6 +757,8 @@ class _RefundPageState extends State<RefundPage> {
               ),
             FFButton(
               key: const Key('refund-review'),
+              // ≥ 48dp on web too (compact density takes 8 off; UAT L-8).
+              visualDensity: VisualDensity.standard,
               label: label,
               semanticLabel: label,
               fullWidth: true,
@@ -833,7 +849,6 @@ class _LineCard extends StatelessWidget {
                   children: [
                     IconButton(
                       key: Key('refund-dec-${line.saleLineId}'),
-                      focusNode: focusNode,
                       style: IconButton.styleFrom(
                         minimumSize: const Size(48, 48),
                         visualDensity: VisualDensity.standard,
@@ -887,9 +902,13 @@ class _LineCard extends StatelessWidget {
               ],
             ),
             if (qty > 0) ...[
+              // Its own node (UAT M-1/L-7): only this row toggles restock;
+              // the card, name, counts and amount never do.
               Semantics(
+                container: true,
                 label: fillIn(t('vendor.refunds.a11y.restock'), {'name': name}),
                 toggled: restock,
+                enabled: !restockGone,
                 excludeSemantics: true,
                 onTap: restockGone ? null : () => onRestock(!restock),
                 child: SwitchListTile(
@@ -915,13 +934,24 @@ class _LineCard extends StatelessWidget {
         ],
       ),
     );
-    if (!highlighted) return card;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        border: Border.all(color: warningText(context), width: 2),
-        borderRadius: BorderRadius.circular(FFTokens.radiusLg),
+    // The card is a semantics boundary with separate children (never read
+    // or tapped as the switch), and the focus target after a 409 (L-4).
+    final framed = highlighted
+        ? DecoratedBox(
+            decoration: BoxDecoration(
+              border: Border.all(color: warningText(context), width: 2),
+              borderRadius: BorderRadius.circular(FFTokens.radiusLg),
+            ),
+            child: card,
+          )
+        : card;
+    return Focus(
+      focusNode: focusNode,
+      child: Semantics(
+        container: true,
+        explicitChildNodes: true,
+        child: framed,
       ),
-      child: card,
     );
   }
 }
@@ -1083,7 +1113,9 @@ class _ConfirmDialogState extends State<_ConfirmDialog> {
       if (mounted) {
         setState(() {
           _busy = false;
-          _error = context.tr('vendor.refunds.offline');
+          // It may have reached the server: never say nothing changed
+          // (UAT L-5). Try again reuses the key, so it is never made twice.
+          _error = context.tr('vendor.refunds.err.unconfirmed');
         });
       }
     }
@@ -1096,6 +1128,11 @@ class _ConfirmDialogState extends State<_ConfirmDialog> {
     final p = draft.preview;
     final amount = formatCurrency(p.totalTzs);
     final confirm = fillIn(t('vendor.refunds.confirm'), {'amount': amount});
+    final confirmLabel = _busy
+        ? t('vendor.refunds.saving')
+        : _error != null
+        ? t('vendor.refunds.tryAgain')
+        : confirm;
     return PopScope(
       canPop: !_busy,
       child: AlertDialog(
@@ -1172,12 +1209,8 @@ class _ConfirmDialogState extends State<_ConfirmDialog> {
           ),
           FFButton(
             key: const Key('refund-confirm'),
-            label: _busy
-                ? t('vendor.refunds.saving')
-                : _error != null
-                ? t('common.retry')
-                : confirm,
-            semanticLabel: _busy ? t('vendor.refunds.saving') : confirm,
+            label: confirmLabel,
+            semanticLabel: confirmLabel,
             visualDensity: VisualDensity.standard,
             loading: _busy,
             maxLines: 2,
@@ -1187,4 +1220,32 @@ class _ConfirmDialogState extends State<_ConfirmDialog> {
       ),
     );
   }
+}
+
+/// A single-choice pill (reason, method) read as one button with its
+/// selected state, in a mutually exclusive group (UAT L-1).
+class _ChoicePill extends StatelessWidget {
+  const _ChoicePill({
+    required this.pillKey,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final Key pillKey;
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+    container: true,
+    button: true,
+    inMutuallyExclusiveGroup: true,
+    selected: selected,
+    label: label,
+    onTap: onTap,
+    excludeSemantics: true,
+    child: FFPill(key: pillKey, label: label, filled: selected, onTap: onTap),
+  );
 }
