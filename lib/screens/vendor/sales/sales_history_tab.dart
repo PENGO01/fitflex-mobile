@@ -415,6 +415,20 @@ class VendorSalesTabState extends State<VendorSalesTab> {
                 ],
               ),
             ),
+            // S7: refunds made in the range (minus undos) and the net.
+            if (((s['refundTzs'] as num?) ?? 0) > 0)
+              Text(
+                fillIn(context.tr('vendor.sales.refundsLine'), {
+                  'amount': formatCurrency(s['refundTzs'] as num),
+                  'net': formatCurrency(
+                    (s['netTzs'] as num?) ??
+                        ((s['totalTzs'] as num?) ?? 0) -
+                            (s['refundTzs'] as num),
+                  ),
+                }),
+                key: const Key('sales-summary-refunds'),
+                style: theme.textTheme.bodySmall,
+              ),
             if (discounts > 0)
               MoneyRow(
                 context.tr('vendor.sales.discountsGiven'),
@@ -538,6 +552,13 @@ class VendorSalesTabState extends State<VendorSalesTab> {
         ? customerDisplayName(s['customer'] as Map, context.tr)
         : null;
     final kindBadges = saleKindBadges(context, s);
+    // S7: Part refunded / Refunded.
+    final refundState = voided ? 'none' : s['refundState']?.toString();
+    final refundKey = switch (refundState) {
+      'partial' => 'vendor.refunds.badgePartial',
+      'full' => 'vendor.refunds.badgeFull',
+      _ => null,
+    };
     final status = context.tr(
       voided ? 'vendor.sales.voidedBadge' : 'vendor.sales.filter.completed',
     );
@@ -567,6 +588,7 @@ class VendorSalesTabState extends State<VendorSalesTab> {
             ],
             if (late) context.tr('vendor.sales.offlineBadge'),
             if (override) context.tr('vendor.sales.overrideBadge'),
+            if (refundKey != null) context.tr(refundKey),
           ].join(', '),
           excludeSemantics: true,
           child: InkWell(
@@ -611,6 +633,7 @@ class VendorSalesTabState extends State<VendorSalesTab> {
                     if (voided ||
                         late ||
                         override ||
+                        refundKey != null ||
                         kindBadges.isNotEmpty) ...[
                       const SizedBox(height: FFTokens.spacingXs),
                       Wrap(
@@ -633,6 +656,15 @@ class VendorSalesTabState extends State<VendorSalesTab> {
                             FFBadge(
                               label: context.tr('vendor.sales.overrideBadge'),
                               tone: FFBadgeTone.warning,
+                              wrap: true,
+                            ),
+                          if (refundKey != null)
+                            FFBadge(
+                              key: Key('sales-row-refund-$id'),
+                              label: context.tr(refundKey),
+                              tone: refundState == 'full'
+                                  ? FFBadgeTone.gray
+                                  : FFBadgeTone.info,
                               wrap: true,
                             ),
                         ],

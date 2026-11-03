@@ -2531,6 +2531,36 @@ class ApiClient {
     body: {'reason': reason},
   );
 
+  // ── Vendor refunds on walk-in sales (S7, fitflex-functions#318) ────────
+
+  /// Refunds units of lines of a completed walk-in sale. [body] is
+  /// `{clientRef, lines: [{saleLineId, qty, restock}], reason, method?,
+  /// reference?}`: never an amount (the server computes every figure).
+  /// 201 `{refund, sale}`; a replay of the same `clientRef` answers 200
+  /// with the same refund (header `Idempotent-Replay: true`).
+  Future<Map<String, dynamic>> vendorRefundSale(
+    String saleId,
+    Map<String, dynamic> body,
+  ) async => await _request(
+    'POST',
+    '/vendor/sales/${Uri.encodeComponent(saleId)}/refunds',
+    body: body,
+  );
+
+  /// Undoes a refund made by mistake. 200 `{refund, sale}`.
+  Future<Map<String, dynamic>> vendorRevertRefund(
+    String refundId,
+    String reason,
+  ) async => await _request(
+    'POST',
+    '/vendor/refunds/${Uri.encodeComponent(refundId)}/revert',
+    body: {'reason': reason},
+  );
+
+  /// One refund `{refund}` (readable with refunds off: bookkeeping).
+  Future<Map<String, dynamic>> vendorRefund(String refundId) async =>
+      await _request('GET', '/vendor/refunds/${Uri.encodeComponent(refundId)}');
+
   // ── Vendor customers, pay later, customer payments (S4) ────────────────
 
   static String _seg(String id) => Uri.encodeComponent(id);
@@ -2692,6 +2722,8 @@ class ApiClient {
       'payment' =>
         '/vendor/customers/${_seg(customerId ?? '')}/payments/${_seg(id)}/share',
       'statement' => '/vendor/customers/${_seg(id)}/statement/share',
+      // S7: a refund's credit note (CN-…).
+      'refund' => '/vendor/refunds/${_seg(id)}/share',
       _ => throw ArgumentError.value(kind, 'kind'),
     };
     return await _request('POST', path, body: {'lang': ?lang});
@@ -2777,6 +2809,8 @@ class ApiClient {
     'marketplace-net',
     'customers',
     'payment-methods',
+    // S7: credit notes and undos on walk-in sales.
+    'refunds',
   };
 
   /// One report as JSON. [query] carries `from` / `to` (EAT dates, both or

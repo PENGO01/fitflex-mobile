@@ -85,6 +85,8 @@ import 'screens/vendor/merch/vendor_merch_page.dart';
 import 'screens/vendor/sales/pos_page.dart';
 import 'screens/vendor/sales/receipt_page.dart';
 import 'screens/vendor/sales/sale_detail_page.dart';
+import 'screens/vendor/sales/refunds/refund_detail_page.dart';
+import 'screens/vendor/sales/refunds/refund_page.dart';
 import 'screens/vendor/sales/sales_sync_page.dart';
 import 'screens/vendor/sales/sales_widgets.dart' show salesIdPattern;
 import 'screens/vendor/customers/customer_form_page.dart';
@@ -1167,6 +1169,34 @@ GoRouter buildRouter(AuthState auth) {
             : '${AppRoutes.vendorHome}?open=sales',
         builder: (context, state) =>
             SaleDetailPage(saleId: state.pathParameters['saleId']!),
+        routes: [
+          // S7: the refund screen (it checks the refunds tool, `sales` and
+          // the M2 rule itself; off → the sale detail, no message).
+          GoRoute(
+            path: 'refund',
+            name: 'vendorSaleRefund',
+            builder: (context, state) =>
+                RefundPage(saleId: state.pathParameters['saleId']!),
+          ),
+        ],
+      ),
+      // S7: one refund (credit note). Readable with walk-in sales on and
+      // `sales`, even with the refunds tool off (read-only).
+      GoRoute(
+        path: '/vendor/refunds/:refundId',
+        name: 'vendorRefundDetail',
+        redirect: (context, state) =>
+            salesIdPattern.hasMatch(state.pathParameters['refundId'] ?? '')
+            ? null
+            : '${AppRoutes.vendorHome}?open=sales',
+        builder: (context, state) => RefundDetailPage(
+          key: ValueKey('refund-${state.uri}'),
+          refundId: state.pathParameters['refundId']!,
+          saved: state.uri.queryParameters['saved'] == '1',
+          initial: state.extra is Map<String, dynamic>
+              ? state.extra as Map<String, dynamic>
+              : null,
+        ),
       ),
       // Owner routes
       GoRoute(

@@ -22,6 +22,7 @@ class ReceiptLine {
     required this.lineTotalTzs,
     this.priceChangedBy,
     this.vatCode,
+    this.refundedQty = 0,
   });
 
   final String name;
@@ -35,6 +36,9 @@ class ReceiptLine {
 
   /// S5: the line's VAT code (A, C, E) when VAT applied to the sale.
   final String? vatCode;
+
+  /// S7: units given back by active refunds.
+  final int refundedQty;
 
   bool get priceChanged => unitPriceTzs != listPriceTzs;
 }
@@ -83,6 +87,9 @@ class ReceiptData {
     this.invoiceNumber,
     this.vatIncludedTzs = 0,
     this.vatSummary = const [],
+    this.refundedTzs = 0,
+    this.refundState = 'none',
+    this.refunds = const [],
   });
 
   final String? id;
@@ -162,6 +169,21 @@ class ReceiptData {
 
   bool get hasVat => vatIncludedTzs > 0 || vatSummary.isNotEmpty;
 
+  /// S7: Σ active refunds (credit notes), returned whatever the flags.
+  final int refundedTzs;
+
+  /// S7: none | partial | full (every unit refunded).
+  final String refundState;
+
+  /// S7: every refund of the sale, active and undone, oldest first:
+  /// `{id, number, status, refundedAt, amountTzs}`.
+  final List<Map<String, dynamic>> refunds;
+
+  /// What the sale is worth after its active refunds.
+  int get netAfterRefundsTzs => totalTzs - refundedTzs;
+  bool get hasActiveRefunds =>
+      refunds.any((r) => r['status']?.toString() != 'reverted');
+
   bool get credit => kind == 'credit';
   bool get hasCustomer => customerId != null;
 
@@ -216,6 +238,7 @@ class ReceiptData {
             lineTotalTzs: _int(l['lineTotalTzs']),
             priceChangedBy: _str(person(l['priceChangedBy'])?['name']),
             vatCode: vatApplied ? _str(l['vatCode']) : null,
+            refundedQty: _int(l['refundedQty']),
           ),
       ],
       subtotalTzs: _int(sale['subtotalTzs']),
@@ -253,6 +276,14 @@ class ReceiptData {
       invoiceNumber: documents ? _str(sale['invoiceNumber']) : null,
       vatIncludedTzs: vatTzs,
       vatSummary: vatRows,
+      refundedTzs: _int(sale['refundedTzs']),
+      refundState: const {'partial', 'full'}.contains(sale['refundState'])
+          ? sale['refundState'] as String
+          : 'none',
+      refunds: [
+        for (final r in (sale['refunds'] as List? ?? []).whereType<Map>())
+          Map<String, dynamic>.from(r),
+      ],
     );
   }
 
@@ -435,6 +466,21 @@ String receiptShareText(
       fill('vendor.doc.includesVat', {
         'amount': formatCurrency(r.vatIncludedTzs),
       }),
+    );
+  }
+  // S7 §6.3: the active credit notes and the total after them.
+  if (r.refundedTzs > 0 && !r.voided) {
+    for (final rf in r.refunds) {
+      if (rf['status']?.toString() == 'reverted') continue;
+      b.writeln(
+        _row('${rf['number'] ?? ''}', '-${formatMoney(_int(rf['amountTzs']))}'),
+      );
+    }
+    b.writeln(
+      _row(
+        t('vendor.doc.totalAfterRefunds'),
+        formatCurrency(r.netAfterRefundsTzs),
+      ),
     );
   }
   for (final p in r.payments) {

@@ -68,8 +68,18 @@ class DocumentRef {
     titleKey: 'vendor.doc.statement',
   );
 
-  /// `sale` | `order` | `payment` | `statement` (the share route and the
-  /// links list's `docType`).
+  /// S7: a refund's credit note (`CN-`). Its share route is
+  /// POST /vendor/refunds/:id/share; links and the PDF use `refund`.
+  factory DocumentRef.refund({required String refundId, String? number}) =>
+      DocumentRef(
+        kind: 'refund',
+        id: refundId,
+        titleKey: 'vendor.doc.credit_note',
+        number: number,
+      );
+
+  /// `sale` | `order` | `payment` | `statement` | `refund` (the share route
+  /// and the links list's `docType`).
   final String kind;
 
   /// The sale, order or payment id; the customer id for a statement.
@@ -336,7 +346,10 @@ class VendorDoc {
     return VendorDoc(
       docType: json['docType']?.toString() ?? 'receipt',
       number: _str(json['number']),
-      saleRef: _str(json['saleRef']),
+      // S7: a credit note's saleRef is `{number, invoiceNumber?, soldAt}`.
+      saleRef: json['saleRef'] is Map
+          ? _str((json['saleRef'] as Map)['number'])
+          : _str(json['saleRef']),
       orderShortRef: _str(json['orderShortRef']),
       status: _str(json['status']),
       issuedAt: _str(json['issuedAt']),

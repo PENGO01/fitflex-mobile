@@ -58,6 +58,10 @@ class VendorReportsViewState extends State<VendorReportsView> {
   late ReportPeriod _period = ReportPeriod.initial(now: widget.now);
   String _channel = 'all';
   Map<String, dynamic>? _data;
+
+  /// S7: the Refunds report for the same period (its own call; the
+  /// summary has no refund totals). Null until answered, or on failure.
+  Map<String, dynamic>? _refunds;
   ReportFailure? _failure;
   String? _rangeError;
   bool _loading = true;
@@ -103,7 +107,9 @@ class VendorReportsViewState extends State<VendorReportsView> {
         _data = data;
         _loading = false;
         _rangeError = null;
+        _refunds = null;
       });
+      unawaited(_loadRefunds(mine));
     } catch (e) {
       if (!mounted || mine != _seq) return;
       final failure = reportFailureOf(e, vendorStaff: isStaff);
@@ -123,6 +129,52 @@ class VendorReportsViewState extends State<VendorReportsView> {
         }
       });
     }
+  }
+
+  /// The Refunds card's figures (walk-in only: not for the App channel).
+  Future<void> _loadRefunds(int mine) async {
+    final a = widget.access;
+    if (!a.allows(ReportSection.refunds) || _channel == 'app') return;
+    try {
+      final data = await AppScope.of(context).api.vendorReport(
+        'refunds',
+        query: {'from': _period.fromParam, 'to': _period.toParam},
+      );
+      if (!mounted || mine != _seq) return;
+      setState(() => _refunds = data);
+    } catch (_) {
+      // No card: the Sales figures still include refunds.
+    }
+  }
+
+  Widget? _refundsCard() {
+    final r = _refunds;
+    if (r == null) return null;
+    final rows = listAt(r, 'rows');
+    // Shown when the tool is on, or the period has refund rows (§0.2).
+    if (!widget.access.refunds && rows.isEmpty) return null;
+    final t = context.tr;
+    final totals = mapAt(r, 'totals');
+    final lines = [
+      (t('vendor.reports.refunds.count'), reportCount(numAt(totals, 'count'))),
+      (
+        t('vendor.reports.refunds.amount'),
+        reportMoney(numAt(totals, 'amountTzs')),
+      ),
+      (
+        t('vendor.reports.refunds.paidBack'),
+        reportMoney(numAt(totals, 'paidOutTzs')),
+      ),
+    ];
+    return ReportCard(
+      key: const Key('reports-card-refunds'),
+      title: t('vendor.reports.view.refunds'),
+      semanticSummary: [for (final l in lines) '${l.$1} ${l.$2}'].join('. '),
+      onTap: () => _open(ReportSection.refunds),
+      child: Column(
+        children: [for (final l in lines) ReportRow(label: l.$1, value: l.$2)],
+      ),
+    );
   }
 
   void _change(void Function() change) {
@@ -413,6 +465,9 @@ class VendorReportsViewState extends State<VendorReportsView> {
         ])
           '${t(g.$1)}: ${[for (final r in listAt(methods, g.$2).take(3)) '${t(methodKey(r[g.$3]?.toString(), byYou: g.$4))} '
                 '${reportMoney(numAt(r, 'amountTzs'))}'].join(', ').ifEmpty(t('vendor.reports.methods.none'))}',
+        // S7: money paid back, its own group.
+        if (listAt(methods, 'paidBack').isNotEmpty)
+          '${t('vendor.reports.methods.paidBack')}: ${[for (final r in listAt(methods, 'paidBack').take(3)) '${t(methodKey(r['method']?.toString()))} ${reportMoney(numAt(r, 'amountTzs'))}'].join(', ')}',
       ].join('. '),
       onTap: () => _open(ReportSection.methods),
       child: MethodsReportBody(data: methods, limit: 3),
@@ -460,6 +515,7 @@ class VendorReportsViewState extends State<VendorReportsView> {
         if (a.payouts && payouts != null) _payoutsCard(payouts),
         if (a.customers && customers != null) _customersCard(customers),
         _methodsCard(),
+        ?_refundsCard(),
       ],
     ];
   }
