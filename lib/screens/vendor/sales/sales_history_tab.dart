@@ -15,7 +15,7 @@ import '../../../shared/i18n.dart';
 import '../stock/stock_history_page.dart' show stockRangePickerTheme;
 import '../stock/stock_options.dart';
 import '../customers/customer_models.dart' show customerDisplayName;
-import '../customers/customer_profile_page.dart' show saleKindBadges;
+import '../customers/customer_profile_page.dart' show creditClearedKey, saleKindBadges;
 import '../customers/customers_widgets.dart' show owedHomeRoute, intOf;
 import 'offline_sale_queue.dart';
 import 'receipt_data.dart';
@@ -580,11 +580,12 @@ class VendorSalesTabState extends State<VendorSalesTab> {
             if (s['kind'] == 'credit') ...[
               context.tr('vendor.sales.payLaterBadge'),
               if (!voided)
-                (s['balanceTzs'] as num? ?? 0) > 0
-                    ? fillIn(context.tr('vendor.sales.owesBadge'), {
-                        'amount': formatCurrency(s['balanceTzs'] as num),
-                      })
-                    : context.tr('vendor.sales.paidOffBadge'),
+                if ((s['balanceTzs'] as num? ?? 0) > 0)
+                  fillIn(context.tr('vendor.sales.owesBadge'), {
+                    'amount': formatCurrency(s['balanceTzs'] as num),
+                  })
+                else if (creditClearedKey(s) case final key?)
+                  context.tr(key),
             ],
             if (late) context.tr('vendor.sales.offlineBadge'),
             if (override) context.tr('vendor.sales.overrideBadge'),

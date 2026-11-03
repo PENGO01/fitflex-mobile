@@ -1274,7 +1274,9 @@ class RefundsReportBody extends StatelessWidget {
       key: Key('reports-refund-row-$id-${r['type']}'),
       padding: const EdgeInsets.only(bottom: FFTokens.spacingSm),
       child: Semantics(
+        container: true,
         button: open != null,
+        onTap: open == null || id.isEmpty ? null : () => open(id),
         label: [
           '${r['number'] ?? ''}',
           type,
