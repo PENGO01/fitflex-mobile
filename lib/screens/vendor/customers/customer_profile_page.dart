@@ -1080,50 +1080,78 @@ class _CustomerProfilePageState extends State<CustomerProfilePage> {
 /// The order number for a customer's app order row.
 String vendorShortRef(Map<String, dynamic> o) => shopOrderRef(o);
 
-/// "Pay later" + "Owes {amount}" / "Paid off" for a credit sale row.
-List<Widget> saleKindBadges(BuildContext context, Map s) {
-  if (s['kind'] != 'credit') return const [];
-  final balance = intOf(s['balanceTzs']);
+/// One status badge of a sale row: its i18n key, tone and `{amount}`.
+typedef SaleBadge = ({String key, FFBadgeTone tone, int? amount});
+
+/// The status badges of a sale row, the ONE rule the sales list and the
+/// customer profile share (S7 retest; same as the portal and the document
+/// status):
+/// - pay later: "Pay later";
+/// - fully refunded (refundState full): "Refunded" (document `refunded`);
+/// - else, pay later with something owed: "Owes {amount}";
+/// - else, pay later with nothing owed: "Settled by credit note" when a
+///   refund took the balance off (`balanceReducedTzs` > 0, document
+///   `settled_by_credit_note`), otherwise "Paid off" (`paid_in_full`);
+/// - plus "Part refunded" when partly refunded.
+/// A voided sale keeps only "Pay later" (its Voided badge says the rest).
+List<SaleBadge> saleStatusBadges(Map s) {
+  final credit = s['kind'] == 'credit';
   final voided = s['status'] == 'voided';
-  final clearedKey = creditClearedKey(s);
-  return <Widget?>[
-    FFBadge(
-      label: context.tr('vendor.sales.payLaterBadge'),
-      tone: FFBadgeTone.brand,
-      wrap: true,
-    ),
-    if (!voided)
-      balance > 0
-          ? FFBadge(
-              label: fillIn(context.tr('vendor.sales.owesBadge'), {
-                'amount': formatCurrency(balance),
-              }),
-              tone: FFBadgeTone.warning,
-              wrap: true,
-            )
-          : clearedKey != null
-          ? FFBadge(
-              label: context.tr(clearedKey),
-              tone: FFBadgeTone.success,
-              wrap: true,
-            )
-          : null,
-  ].nonNulls.toList();
+  final state = s['refundState']?.toString();
+  final balance = intOf(s['balanceTzs']);
+  return [
+    if (credit)
+      (
+        key: 'vendor.sales.payLaterBadge',
+        tone: FFBadgeTone.brand,
+        amount: null,
+      ),
+    if (!voided) ...[
+      if (state == 'full')
+        (key: 'vendor.refunds.badgeFull', tone: FFBadgeTone.gray, amount: null)
+      else if (credit)
+        if (balance > 0)
+          (
+            key: 'vendor.sales.owesBadge',
+            tone: FFBadgeTone.warning,
+            amount: balance,
+          )
+        else if (intOf(s['balanceReducedTzs']) > 0)
+          (
+            key: 'vendor.doc.statusSettledByCreditNote',
+            tone: FFBadgeTone.success,
+            amount: null,
+          )
+        else
+          (
+            key: 'vendor.sales.paidOffBadge',
+            tone: FFBadgeTone.success,
+            amount: null,
+          ),
+      if (state == 'partial')
+        (
+          key: 'vendor.refunds.badgePartial',
+          tone: FFBadgeTone.info,
+          amount: null,
+        ),
+    ],
+  ];
 }
 
-/// What a pay-later sale with nothing owed reads as (S7 UAT L-3, in line
-/// with the document statuses): "Paid off" only when no refund touched it.
-/// Fully refunded: nothing here (the Refunded badge says it, as the
-/// document's `refunded`). A refund took the balance off
-/// (`balanceReducedTzs` > 0, functions#321): "Settled by credit note" (the
-/// document's `settled_by_credit_note`). Partly refunded without that field
-/// (older answer): nothing beside Part refunded.
-String? creditClearedKey(Map s) {
-  final state = s['refundState']?.toString();
-  if (state == 'full') return null;
-  if (intOf(s['balanceReducedTzs']) > 0) {
-    return 'vendor.doc.statusSettledByCreditNote';
-  }
-  if (state == 'partial') return null;
-  return 'vendor.sales.paidOffBadge';
-}
+/// The words of one [SaleBadge] ("Owes TSh 5,000").
+String saleBadgeText(BuildContext context, SaleBadge b) => b.amount == null
+    ? context.tr(b.key)
+    : fillIn(context.tr(b.key), {'amount': formatCurrency(b.amount!)});
+
+/// The status badges of a sale row as widgets ([saleStatusBadges]).
+List<Widget> saleKindBadges(BuildContext context, Map s) => [
+  for (final b in saleStatusBadges(s))
+    FFBadge(
+      key: b.key.startsWith('vendor.refunds.')
+          ? Key('sales-row-refund-${s['id']}')
+          : null,
+      label: saleBadgeText(context, b),
+      tone: b.tone,
+      wrap: true,
+    ),
+];
