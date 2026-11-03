@@ -7,6 +7,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:fitflexmobile/screens/vendor/customers/customer_profile_page.dart'
+    show creditClearedKey, saleKindBadges;
 import 'package:fitflexmobile/screens/vendor/sales/refunds/refund_page.dart';
 import 'package:fitflexmobile/screens/vendor/sales/sale_detail_page.dart';
 import 'package:fitflexmobile/screens/vendor/vendor_home_page.dart';
@@ -69,11 +71,7 @@ void main() {
     expect(node.label, 'Put Whey back in stock');
     expect(
       node,
-      isSemantics(
-        hasToggledState: true,
-        isToggled: true,
-        hasTapAction: true,
-      ),
+      isSemantics(hasToggledState: true, isToggled: true, hasTapAction: true),
     );
     // The card is not announced as the switch.
     expect(
@@ -252,6 +250,75 @@ void main() {
   });
 
   group('L-3: a pay-later sale cleared by a refund is not "Paid off"', () {
+    test('the rule with and without balanceReducedTzs (functions#321)', () {
+      Map<String, dynamic> r(String state, [int? reduced]) => {
+        'kind': 'credit',
+        'balanceTzs': 0,
+        'refundState': state,
+        'balanceReducedTzs': ?reduced,
+      };
+      expect(creditClearedKey(r('none')), 'vendor.sales.paidOffBadge');
+      expect(creditClearedKey(r('none', 0)), 'vendor.sales.paidOffBadge');
+      expect(
+        creditClearedKey(r('partial', 4000)),
+        'vendor.doc.statusSettledByCreditNote',
+      );
+      // Field absent (older answer): Part refunded only, never Paid off.
+      expect(creditClearedKey(r('partial')), isNull);
+      expect(creditClearedKey(r('partial', 0)), isNull);
+      // Whole total refunded: the Refunded badge (document `refunded`).
+      expect(creditClearedKey(r('full', 20000)), isNull);
+    });
+
+    apiTest('customer profile rows: settled by credit note', (
+      tester,
+      api,
+    ) async {
+      final host = await pumpPage(
+        tester,
+        api,
+        Builder(
+          builder: (context) => Column(
+            children: [
+              Wrap(
+                key: const Key('settled'),
+                children: saleKindBadges(context, {
+                  'kind': 'credit',
+                  'status': 'completed',
+                  'balanceTzs': 0,
+                  'refundState': 'partial',
+                  'balanceReducedTzs': 5000,
+                }),
+              ),
+              Wrap(
+                key: const Key('paid'),
+                children: saleKindBadges(context, {
+                  'kind': 'credit',
+                  'status': 'completed',
+                  'balanceTzs': 0,
+                  'refundState': 'none',
+                }),
+              ),
+            ],
+          ),
+        ),
+        user: ownerUser,
+      );
+      Finder inRow(String key, String text) =>
+          find.descendant(of: find.byKey(Key(key)), matching: find.text(text));
+      expect(
+        inRow('settled', host.tr('vendor.doc.statusSettledByCreditNote')),
+        findsOneWidget,
+      );
+      expect(
+        inRow('settled', host.tr('vendor.sales.paidOffBadge')),
+        findsNothing,
+      );
+      expect(
+        inRow('paid', host.tr('vendor.sales.paidOffBadge')),
+        findsOneWidget,
+      );
+    });
     Map<String, dynamic> row(String id, String state, {int reduced = 0}) => {
       'id': id,
       'number': 'R-$id',

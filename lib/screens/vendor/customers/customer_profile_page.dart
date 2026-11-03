@@ -1113,16 +1113,17 @@ List<Widget> saleKindBadges(BuildContext context, Map s) {
 
 /// What a pay-later sale with nothing owed reads as (S7 UAT L-3, in line
 /// with the document statuses): "Paid off" only when no refund touched it.
-/// Fully refunded: nothing here (the Refunded badge says it). Partly
-/// refunded: "Settled by credit note" when the row says a refund took the
-/// balance off (`balanceReducedTzs`), else nothing beside Part refunded.
+/// Fully refunded: nothing here (the Refunded badge says it, as the
+/// document's `refunded`). A refund took the balance off
+/// (`balanceReducedTzs` > 0, functions#321): "Settled by credit note" (the
+/// document's `settled_by_credit_note`). Partly refunded without that field
+/// (older answer): nothing beside Part refunded.
 String? creditClearedKey(Map s) {
   final state = s['refundState']?.toString();
   if (state == 'full') return null;
-  if (state == 'partial') {
-    return intOf(s['balanceReducedTzs']) > 0
-        ? 'vendor.doc.statusSettledByCreditNote'
-        : null;
+  if (intOf(s['balanceReducedTzs']) > 0) {
+    return 'vendor.doc.statusSettledByCreditNote';
   }
+  if (state == 'partial') return null;
   return 'vendor.sales.paidOffBadge';
 }
