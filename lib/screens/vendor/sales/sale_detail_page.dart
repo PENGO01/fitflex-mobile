@@ -25,6 +25,8 @@ import '../stock/stock_options.dart';
 import 'offline_sale_queue.dart';
 import 'receipt_data.dart';
 import 'receipt_page.dart';
+import 'refunds/refund_models.dart';
+import 'refunds/refund_page.dart';
 import 'sale_models.dart';
 import 'sales_widgets.dart';
 
@@ -188,6 +190,30 @@ class _SaleDetailPageState extends State<SaleDetailPage> {
     }
   }
 
+  /// S7: opens the refund screen; back with a refund, the sale updates and
+  /// the refund's credit note opens (§3.3).
+  Future<void> _refund() async {
+    final out = await context.push<Object?>(saleRefundRoute(widget.saleId));
+    if (!mounted) return;
+    if (out is RefundOutcome) {
+      if (out.sale != null) setState(() => _sale = out.sale);
+      final id = out.refund['id']?.toString() ?? '';
+      if (salesIdPattern.hasMatch(id)) {
+        await context.push(
+          refundDetailRoute(id, saved: true),
+          extra: out.refund,
+        );
+      }
+    }
+    if (mounted) await _load();
+  }
+
+  Future<void> _openRefund(String id) async {
+    if (!salesIdPattern.hasMatch(id)) return;
+    await context.push(refundDetailRoute(id));
+    if (mounted) await _load();
+  }
+
   /// S4: customers screens are on and this person has `customers`.
   bool get _seesCustomers =>
       _tools.customers && canVendor(context, 'customers');
@@ -240,6 +266,39 @@ class _SaleDetailPageState extends State<SaleDetailPage> {
     );
   }
 
+  /// S7 §4.1 item 5: whether Refund items shows, and the muted line
+  /// instead of it.
+  _RefundUi _refundUi(
+    Map<String, dynamic>? user,
+    ReceiptData data,
+    Map<String, dynamic> sale,
+  ) {
+    if (!_tools.refundsOn || !_salesActions) return _RefundUi.hidden;
+    if (data.voided) return _RefundUi.hidden;
+    if (data.queued || data.id == null) return _RefundUi.queued;
+    final lines = refundableLinesOf(sale);
+    if (data.refundState == 'full' ||
+        (lines.isNotEmpty && lines.every((l) => l.refundableQty == 0))) {
+      return _RefundUi.fully;
+    }
+    final block = refundBlockFor(
+      user,
+      servedById: data.servedById,
+      soldAt: data.soldAt,
+    );
+    if (block == RefundBlock.noAccess) return _RefundUi.hidden;
+    if (block == RefundBlock.askOwner) return _RefundUi.askOwner;
+    return BrowserOnline.instance.value ? _RefundUi.button : _RefundUi.offline;
+  }
+
+  String? _refundNote(_RefundUi ui) => switch (ui) {
+    _RefundUi.fully => 'vendor.refunds.fully',
+    _RefundUi.queued => 'vendor.refunds.queuedNo',
+    _RefundUi.askOwner => 'vendor.refunds.askOwner',
+    _RefundUi.offline => 'vendor.refunds.offline',
+    _ => null,
+  };
+
   @override
   Widget build(BuildContext context) {
     final locale = FFLocaleScope.of(context);
@@ -255,7 +314,13 @@ class _SaleDetailPageState extends State<SaleDetailPage> {
           );
     if (data != null) _loadTaxIds(data);
     final user = AppScope.of(context).auth.user;
-    final mayVoid = data != null && _salesActions && canVoidSale(user, data);
+    // S7 (Q-3): a sale with active refunds cannot be voided.
+    final hasRefunds = data != null && data.hasActiveRefunds;
+    final mayVoid =
+        data != null && _salesActions && !hasRefunds && canVoidSale(user, data);
+    final refundState = data == null
+        ? _RefundUi.hidden
+        : _refundUi(user, data, sale!);
     return Scaffold(
       appBar: AppBar(
         leading: BackButton(onPressed: _back),
@@ -346,6 +411,19 @@ class _SaleDetailPageState extends State<SaleDetailPage> {
                             label: context.tr('vendor.sales.offlineBadge'),
                             tone: FFBadgeTone.gray,
                           ),
+                        if (!data.voided && data.refundState != 'none')
+                          FFBadge(
+                            key: const Key('sale-detail-refund-badge'),
+                            label: context.tr(
+                              data.refundState == 'full'
+                                  ? 'vendor.refunds.badgeFull'
+                                  : 'vendor.refunds.badgePartial',
+                            ),
+                            tone: data.refundState == 'full'
+                                ? FFBadgeTone.gray
+                                : FFBadgeTone.info,
+                            wrap: true,
+                          ),
                       ],
                     ),
                     const SizedBox(height: FFTokens.spacingSm),
@@ -375,6 +453,14 @@ class _SaleDetailPageState extends State<SaleDetailPage> {
                       tin: _taxIds.tin,
                       vrn: _taxIds.vrn,
                     ),
+                    if (data.refunds.isNotEmpty)
+                      _RefundsCard(
+                        refunds: saleRefundRowsOf(data.refunds),
+                        lang: lang,
+                        onOpen: _salesActions && canVendor(context, 'sales')
+                            ? _openRefund
+                            : null,
+                      ),
                     // From the profile itself there is nothing to go back to.
                     if (widget.customerId == null &&
                         data.hasCustomer &&
@@ -451,6 +537,22 @@ class _SaleDetailPageState extends State<SaleDetailPage> {
                                 ? () => _recordPayment(data)
                                 : null,
                           ),
+                        if (refundState == _RefundUi.button ||
+                            refundState == _RefundUi.offline)
+                          FFButton(
+                            key: const Key('sale-detail-refund'),
+                            label: context.tr('vendor.refunds.open'),
+                            semanticLabel: fillIn(
+                              context.tr('vendor.refunds.a11y.open'),
+                              {'number': data.number ?? ''},
+                            ),
+                            icon: Icons.assignment_return_outlined,
+                            variant: FFButtonVariant.secondary,
+                            visualDensity: VisualDensity.standard,
+                            onPressed: BrowserOnline.instance.value
+                                ? _refund
+                                : null,
+                          ),
                         if (mayVoid)
                           FFButton(
                             key: const Key('sale-detail-void'),
@@ -462,6 +564,31 @@ class _SaleDetailPageState extends State<SaleDetailPage> {
                           ),
                       ],
                     ),
+                    if (_refundNote(refundState) case final key?)
+                      Padding(
+                        padding: const EdgeInsets.only(top: FFTokens.spacingXs),
+                        child: Semantics(
+                          container: true,
+                          liveRegion: refundState == _RefundUi.offline,
+                          child: Text(
+                            context.tr(key),
+                            key: const Key('sale-detail-refund-note'),
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ),
+                      ),
+                    if (hasRefunds &&
+                        !data.voided &&
+                        _salesActions &&
+                        canVoidSale(user, data))
+                      Padding(
+                        padding: const EdgeInsets.only(top: FFTokens.spacingXs),
+                        child: Text(
+                          context.tr('vendor.sales.voidHasRefunds'),
+                          key: const Key('sale-detail-void-has-refunds'),
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ),
                     if (data.credit &&
                         !data.voided &&
                         data.balanceTzs > 0 &&
@@ -560,6 +687,9 @@ class _VoidDialogState extends State<_VoidDialog> {
           );
         case 'vendor_suspended':
           setState(() => _error = context.tr('vendor.sales.suspended'));
+        case 'has_refunds':
+          // S7 (Q-3): undo the refunds first (or refund the rest).
+          setState(() => _error = context.tr('vendor.sales.voidHasRefunds'));
         case 'sale_has_payments':
           final pays = (body['payments'] as List? ?? [])
               .whereType<Map>()
@@ -692,6 +822,119 @@ class _VoidDialogState extends State<_VoidDialog> {
           ),
         ],
       ),
+    );
+  }
+}
+
+enum _RefundUi { hidden, button, offline, fully, queued, askOwner }
+
+/// S7 §4.1 item 4: the sale's refunds, oldest first. Each row opens the
+/// refund (its credit note); an undone one is struck through and says so.
+class _RefundsCard extends StatelessWidget {
+  const _RefundsCard({
+    required this.refunds,
+    required this.lang,
+    required this.onOpen,
+  });
+
+  final List<SaleRefundRow> refunds;
+  final String lang;
+  final ValueChanged<String>? onOpen;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.tr;
+    final theme = Theme.of(context);
+    return Column(
+      key: const Key('sale-detail-refunds'),
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        FFSectionTitle(t('vendor.refunds.section')),
+        FFCard(
+          padding: EdgeInsets.zero,
+          child: Column(
+            children: [
+              for (final r in refunds)
+                Builder(
+                  builder: (context) {
+                    final status = t(
+                      r.reverted
+                          ? 'vendor.refunds.status.reverted'
+                          : 'vendor.refunds.status.active',
+                    );
+                    final date = eatDateTime(r.refundedAt, locale: lang);
+                    final amount = formatCurrency(r.amountTzs);
+                    final open = onOpen;
+                    return Semantics(
+                      button: open != null,
+                      label: fillIn(t('vendor.refunds.rowLabel'), {
+                        'number': r.number,
+                        'amount': amount,
+                        'date': date,
+                        'status': status,
+                      }),
+                      excludeSemantics: true,
+                      child: InkWell(
+                        key: Key('sale-detail-refund-${r.id}'),
+                        onTap: open == null ? null : () => open(r.id),
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(minHeight: 56),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: FFTokens.spacingMd,
+                              vertical: FFTokens.spacingSm,
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        r.number,
+                                        style: theme.textTheme.titleSmall,
+                                      ),
+                                      Text(
+                                        date,
+                                        style: theme.textTheme.bodySmall,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      amount,
+                                      style: theme.textTheme.titleSmall
+                                          ?.copyWith(
+                                            decoration: r.reverted
+                                                ? TextDecoration.lineThrough
+                                                : null,
+                                          ),
+                                    ),
+                                    if (r.reverted)
+                                      FFBadge(
+                                        label: status,
+                                        tone: FFBadgeTone.gray,
+                                      ),
+                                  ],
+                                ),
+                                if (open != null)
+                                  const Icon(Icons.chevron_right),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

@@ -702,6 +702,27 @@ class _StockHistoryPageState extends State<StockHistoryPage> {
             )
           : Text(text, style: theme.textTheme.bodySmall);
     }
+    // S7: a refund's restock (or its undo) names its credit note.
+    if (doc != null && doc['type'] == 'refund') {
+      final refundId = doc['id']?.toString() ?? '';
+      final text = fillIn(context.tr('vendor.stock.creditNote'), {
+        'number': doc['number'] ?? '',
+      });
+      orderLink =
+          _walkInSales &&
+              canVendor(context, 'sales') &&
+              RegExp(r'^[A-Za-z0-9._:-]{1,100}$').hasMatch(refundId)
+          ? FFButton(
+              key: Key('stock-refund-$id'),
+              label: text,
+              variant: FFButtonVariant.ghost,
+              size: FFButtonSize.sm,
+              onPressed: () => context.push(
+                '/vendor/refunds/${Uri.encodeComponent(refundId)}',
+              ),
+            )
+          : Text(text, style: theme.textTheme.bodySmall);
+    }
     final expanded = _expanded.contains(id);
     return Padding(
       padding: const EdgeInsets.only(bottom: FFTokens.spacingSm),

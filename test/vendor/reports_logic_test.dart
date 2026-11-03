@@ -255,8 +255,24 @@ void main() {
     );
 
     test('the owner sees every section; customers need the tool too', () {
+      // S7: Refunds is listed only with the refunds tool on.
       expect(
         ReportAccess.of(allTools, (_) => true).sections,
+        ReportSection.values.where((s) => s != ReportSection.refunds),
+      );
+      expect(
+        ReportAccess.of(
+          const VendorTools(
+            reports: true,
+            canSeeCost: true,
+            canSeeOrderMoney: true,
+            customers: true,
+            stockLedger: true,
+            walkInSales: true,
+            refunds: true,
+          ),
+          (_) => true,
+        ).sections,
         ReportSection.values,
       );
       final noCustomersTool = ReportAccess.of(
