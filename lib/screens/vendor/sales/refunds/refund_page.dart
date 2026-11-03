@@ -103,7 +103,10 @@ class _RefundPageState extends State<RefundPage> {
       final node = _focusOf(id);
       final ctx = node.context;
       if (ctx != null) {
-        Scrollable.ensureVisible(ctx, duration: const Duration(milliseconds: 150));
+        Scrollable.ensureVisible(
+          ctx,
+          duration: const Duration(milliseconds: 150),
+        );
       }
       node.requestFocus();
     }
@@ -847,17 +850,28 @@ class _LineCard extends StatelessWidget {
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    IconButton(
-                      key: Key('refund-dec-${line.saleLineId}'),
-                      style: IconButton.styleFrom(
-                        minimumSize: const Size(48, 48),
-                        visualDensity: VisualDensity.standard,
-                      ),
-                      tooltip: fillIn(t('vendor.refunds.decrease'), {
+                    // One label for screen readers (the tooltip alone was read twice).
+                    Semantics(
+                      container: true,
+                      button: true,
+                      enabled: qty > 0,
+                      label: fillIn(t('vendor.refunds.decrease'), {
                         'name': name,
                       }),
-                      icon: const Icon(Icons.remove),
-                      onPressed: qty > 0 ? onDecrement : null,
+                      onTap: qty > 0 ? onDecrement : null,
+                      excludeSemantics: true,
+                      child: IconButton(
+                        key: Key('refund-dec-${line.saleLineId}'),
+                        style: IconButton.styleFrom(
+                          minimumSize: const Size(48, 48),
+                          visualDensity: VisualDensity.standard,
+                        ),
+                        tooltip: fillIn(t('vendor.refunds.decrease'), {
+                          'name': name,
+                        }),
+                        icon: const Icon(Icons.remove),
+                        onPressed: qty > 0 ? onDecrement : null,
+                      ),
                     ),
                     Semantics(
                       label: fillIn(t('vendor.refunds.qtyLabel'), {
@@ -878,17 +892,30 @@ class _LineCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    IconButton(
-                      key: Key('refund-inc-${line.saleLineId}'),
-                      style: IconButton.styleFrom(
-                        minimumSize: const Size(48, 48),
-                        visualDensity: VisualDensity.standard,
-                      ),
-                      tooltip: fillIn(t('vendor.refunds.increase'), {
+                    // One label for screen readers (the tooltip alone was read twice).
+                    Semantics(
+                      container: true,
+                      button: true,
+                      enabled: qty < line.refundableQty,
+                      label: fillIn(t('vendor.refunds.increase'), {
                         'name': name,
                       }),
-                      icon: const Icon(Icons.add),
-                      onPressed: qty < line.refundableQty ? onIncrement : null,
+                      onTap: qty < line.refundableQty ? onIncrement : null,
+                      excludeSemantics: true,
+                      child: IconButton(
+                        key: Key('refund-inc-${line.saleLineId}'),
+                        style: IconButton.styleFrom(
+                          minimumSize: const Size(48, 48),
+                          visualDensity: VisualDensity.standard,
+                        ),
+                        tooltip: fillIn(t('vendor.refunds.increase'), {
+                          'name': name,
+                        }),
+                        icon: const Icon(Icons.add),
+                        onPressed: qty < line.refundableQty
+                            ? onIncrement
+                            : null,
+                      ),
                     ),
                   ],
                 ),

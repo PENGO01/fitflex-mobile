@@ -15,7 +15,8 @@ import '../../../shared/i18n.dart';
 import '../stock/stock_history_page.dart' show stockRangePickerTheme;
 import '../stock/stock_options.dart';
 import '../customers/customer_models.dart' show customerDisplayName;
-import '../customers/customer_profile_page.dart' show creditClearedKey, saleKindBadges;
+import '../customers/customer_profile_page.dart'
+    show saleBadgeText, saleKindBadges, saleStatusBadges;
 import '../customers/customers_widgets.dart' show owedHomeRoute, intOf;
 import 'offline_sale_queue.dart';
 import 'receipt_data.dart';
@@ -552,13 +553,6 @@ class VendorSalesTabState extends State<VendorSalesTab> {
         ? customerDisplayName(s['customer'] as Map, context.tr)
         : null;
     final kindBadges = saleKindBadges(context, s);
-    // S7: Part refunded / Refunded.
-    final refundState = voided ? 'none' : s['refundState']?.toString();
-    final refundKey = switch (refundState) {
-      'partial' => 'vendor.refunds.badgePartial',
-      'full' => 'vendor.refunds.badgeFull',
-      _ => null,
-    };
     final status = context.tr(
       voided ? 'vendor.sales.voidedBadge' : 'vendor.sales.filter.completed',
     );
@@ -577,19 +571,10 @@ class VendorSalesTabState extends State<VendorSalesTab> {
               'status': status,
             }),
             ?customer,
-            if (s['kind'] == 'credit') ...[
-              context.tr('vendor.sales.payLaterBadge'),
-              if (!voided)
-                if ((s['balanceTzs'] as num? ?? 0) > 0)
-                  fillIn(context.tr('vendor.sales.owesBadge'), {
-                    'amount': formatCurrency(s['balanceTzs'] as num),
-                  })
-                else if (creditClearedKey(s) case final key?)
-                  context.tr(key),
-            ],
+            // Pay later, Refunded / Owes / Settled / Paid off, Part refunded.
+            for (final b in saleStatusBadges(s)) saleBadgeText(context, b),
             if (late) context.tr('vendor.sales.offlineBadge'),
             if (override) context.tr('vendor.sales.overrideBadge'),
-            if (refundKey != null) context.tr(refundKey),
           ].join(', '),
           excludeSemantics: true,
           child: InkWell(
@@ -634,7 +619,6 @@ class VendorSalesTabState extends State<VendorSalesTab> {
                     if (voided ||
                         late ||
                         override ||
-                        refundKey != null ||
                         kindBadges.isNotEmpty) ...[
                       const SizedBox(height: FFTokens.spacingXs),
                       Wrap(
@@ -657,15 +641,6 @@ class VendorSalesTabState extends State<VendorSalesTab> {
                             FFBadge(
                               label: context.tr('vendor.sales.overrideBadge'),
                               tone: FFBadgeTone.warning,
-                              wrap: true,
-                            ),
-                          if (refundKey != null)
-                            FFBadge(
-                              key: Key('sales-row-refund-$id'),
-                              label: context.tr(refundKey),
-                              tone: refundState == 'full'
-                                  ? FFBadgeTone.gray
-                                  : FFBadgeTone.info,
                               wrap: true,
                             ),
                         ],
