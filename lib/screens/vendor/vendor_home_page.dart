@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../shared/inbox/inbox_pages.dart';
@@ -45,6 +46,7 @@ import 'orders/vendor_order_card.dart';
 import 'reports/report_models.dart';
 import 'reports/report_section_page.dart' show reportSectionLink;
 import 'reports/report_period.dart' show ReportPeriod;
+import 'reports/report_widgets.dart' show reportMoney;
 import 'reports/reports_view.dart';
 import 'stock/adjust_stock_sheet.dart';
 import 'stock/stock_history_page.dart';
@@ -59,6 +61,16 @@ import 'sales/sales_widgets.dart';
 /// Bottom padding for vendor lists: the extended FAB (56) plus margins.
 const vendorFabClearance = 96.0;
 
+/// Flutter web: puts the open tab in the address bar (`/vendor/home?open=
+/// reports`) without navigating, so a reload opens the same tab (UAT D13).
+/// Other platforms have no address bar. Tests replace it.
+@visibleForTesting
+void Function(Uri address) vendorHomeAddress = (address) {
+  if (kIsWeb) {
+    SystemNavigator.routeInformationUpdated(uri: address, replace: true);
+  }
+};
+
 /// PHOTO_HERO_UI (owner 2026-10-22, bands "too dark"): the band grows for
 /// [FFTokens.heroBandClearPhoto] of clear photo above its text, but no taller
 /// than this on a 390x844 screen, so Add product (in the band) starts
@@ -67,7 +79,18 @@ const vendorFabClearance = 96.0;
 const double vendorHomeBandMaxHeight = 409;
 
 class VendorHomePage extends StatefulWidget {
-  const VendorHomePage({super.key, this.open, this.filter, this.view});
+  const VendorHomePage({
+    super.key,
+    this.open,
+    this.filter,
+    this.view,
+    this.openAt,
+  });
+
+  /// A new value asks again for [open] and [filter], even when they are
+  /// what the address already says: the person may have moved tab or
+  /// cleared the filter since ("Add cost prices" a second time).
+  final String? openAt;
 
   /// The section to show first — where a notification leads: `orders`,
   /// `enquiries`, `products`, `payments`, `sales`, `customers` or (S6)
@@ -79,6 +102,8 @@ class VendorHomePage extends StatefulWidget {
   final String? view;
 
   /// `low`: start the product list on the low-stock filter (stock ledger).
+  /// `noCost`: on the products with no cost price (people who may see cost
+  /// only; for anyone else it is ignored).
   final String? filter;
 
   @override
@@ -104,6 +129,7 @@ class _VendorHomePageState extends State<VendorHomePage> {
   VendorTools _tools = VendorTools.off;
   LowStockIndex _low = LowStockIndex.empty();
   late bool _lowOnly = widget.filter == 'low';
+  late bool _noCostOnly = widget.filter == 'noCost';
   // Vendor tools · S3: walk-in sales kept on this device (synced from here).
   SalesSession? _sales;
   // Vendor tools · S4: the Customers tab's segment.
@@ -412,6 +438,28 @@ class _VendorHomePageState extends State<VendorHomePage> {
       ? 'reports'
       : _tab2View;
 
+  /// The `open=` name of the tab on screen (null: Business, no name).
+  String? get _openName => switch (_tab) {
+    0 => 'products',
+    1 => 'orders',
+    2 when _reportsTab => _tab2Shown == 'reports' ? 'reports' : 'payments',
+    2 => 'payments',
+    3 when _customersTab => 'customers',
+    3 => 'enquiries',
+    _salesSection => 'sales',
+    _ => null,
+  };
+
+  void _syncAddress() {
+    final open = _openName;
+    vendorHomeAddress(
+      Uri(
+        path: AppRoutes.vendorHome,
+        queryParameters: open == null ? null : {'open': open},
+      ),
+    );
+  }
+
   /// S4: tab 3 is "Customers" (with segments) when the tool is on.
   bool get _customersTab => _tools.customers && _can('customers');
 
@@ -445,12 +493,17 @@ class _VendorHomePageState extends State<VendorHomePage> {
   @override
   void didUpdateWidget(VendorHomePage old) {
     super.didUpdateWidget(old);
+    final again = widget.openAt != old.openAt;
     if (widget.open != old.open ||
+        again ||
         (widget.open == 'customers' && widget.view != old.view)) {
       _show(widget.open);
     }
-    if (widget.filter != old.filter) {
-      setState(() => _lowOnly = widget.filter == 'low');
+    if (widget.filter != old.filter || again) {
+      setState(() {
+        _lowOnly = widget.filter == 'low';
+        _noCostOnly = widget.filter == 'noCost';
+      });
     }
   }
 
@@ -1157,8 +1210,10 @@ class _VendorHomePageState extends State<VendorHomePage> {
           ? null
           : NavigationBar(
               selectedIndex: sections.indexOf(tab),
-              onDestinationSelected: (index) =>
-                  setState(() => _tab = sections[index]),
+              onDestinationSelected: (index) {
+                setState(() => _tab = sections[index]);
+                _syncAddress();
+              },
               destinations: [
                 if (sections.contains(0))
                   NavigationDestination(
@@ -1319,16 +1374,19 @@ class _VendorHomePageState extends State<VendorHomePage> {
       );
     }
     final ledger = _ledger;
-    final showFilter = ledger && (_low.count > 0 || _lowOnly);
-    final lowOnly = ledger && _lowOnly;
-    final products = lowOnly
+    final noCostOnly = _noCostFilter;
+    final lowOnly = ledger && _lowOnly && !noCostOnly;
+    final showFilter = ledger && (_low.count > 0 || lowOnly || noCostOnly);
+    final products = noCostOnly
+        ? _products.where(_lacksCost).toList()
+        : lowOnly
         ? _products.where((p) => _low.isLow(p['id']?.toString())).toList()
         : _products;
     final itemCount =
         lead.length +
         products.length +
         (showFilter ? 1 : 0) +
-        (lowOnly && products.isEmpty ? 1 : 0);
+        ((lowOnly || noCostOnly) && products.isEmpty ? 1 : 0);
     Widget item(BuildContext context, int index) {
       if (index < lead.length) return lead[index];
       index -= lead.length;
@@ -1338,12 +1396,14 @@ class _VendorHomePageState extends State<VendorHomePage> {
       }
       if (index >= products.length) {
         return FFEmptyState(
-          key: const Key('vendor-low-empty'),
-          title: context.tr('vendor.stock.lowEmpty'),
+          key: Key(noCostOnly ? 'vendor-no-cost-empty' : 'vendor-low-empty'),
+          title: context.tr(
+            noCostOnly ? 'vendor.stock.noCostEmpty' : 'vendor.stock.lowEmpty',
+          ),
           action: FFButton(
             label: context.tr('vendor.stock.all'),
             variant: FFButtonVariant.secondary,
-            onPressed: () => setState(() => _lowOnly = false),
+            onPressed: _clearProductFilters,
           ),
         );
       }
@@ -1514,20 +1574,53 @@ class _VendorHomePageState extends State<VendorHomePage> {
         FFPill(
           key: const Key('vendor-filter-all'),
           label: context.tr('vendor.stock.all'),
-          filled: !_lowOnly,
-          onTap: () => setState(() => _lowOnly = false),
+          filled: !_lowOnly && !_noCostFilter,
+          onTap: _clearProductFilters,
         ),
-        FFPill(
-          key: const Key('vendor-filter-low'),
-          label: fillIn(context.tr('vendor.stock.lowFilter'), {
-            'n': _low.count,
-          }),
-          filled: _lowOnly,
-          onTap: () => setState(() => _lowOnly = true),
-        ),
+        if (_low.count > 0 || _lowOnly)
+          FFPill(
+            key: const Key('vendor-filter-low'),
+            label: fillIn(context.tr('vendor.stock.lowFilter'), {
+              'n': _low.count,
+            }),
+            filled: _lowOnly && !_noCostFilter,
+            onTap: () => setState(() {
+              _lowOnly = true;
+              _noCostOnly = false;
+            }),
+          ),
+        // Reached from "Add cost prices" in Reports (UAT D7).
+        if (_noCostFilter)
+          FFPill(
+            key: const Key('vendor-filter-no-cost'),
+            label: fillIn(context.tr('vendor.stock.noCostFilter'), {
+              'n': _products.where(_lacksCost).length,
+            }),
+            filled: true,
+            onTap: () {},
+          ),
       ],
     ),
   );
+
+  /// The no-cost filter is on: never for people who may not see cost.
+  bool get _noCostFilter => _noCostOnly && _ledger && _tools.canSeeCost;
+
+  /// No cost price: on the product, or (with variants) on any variant even
+  /// after falling back to the product's, as the stock value report counts.
+  /// A row without the key says nothing, so it is not listed.
+  bool _lacksCost(Map<String, dynamic> product) {
+    if (!product.containsKey('costTzs')) return false;
+    final variants = (product['variants'] as List? ?? []).whereType<Map>();
+    return variants.isEmpty
+        ? product['costTzs'] == null
+        : variants.any((v) => v['effectiveCostTzs'] == null);
+  }
+
+  void _clearProductFilters() => setState(() {
+    _lowOnly = false;
+    _noCostOnly = false;
+  });
 
   Widget _ordersTab() {
     if (_orders.isEmpty) {
@@ -1640,7 +1733,10 @@ class _VendorHomePageState extends State<VendorHomePage> {
               key: const Key('vendor-reports-segment'),
               value: view,
               options: segments,
-              onChanged: (v) => setState(() => _tab2View = v),
+              onChanged: (v) {
+                setState(() => _tab2View = v);
+                _syncAddress();
+              },
             ),
           ),
         Expanded(child: view == 'reports' ? reports : _paymentsTab()),
@@ -1654,7 +1750,7 @@ class _VendorHomePageState extends State<VendorHomePage> {
     final v = _payments[key];
     if (v is! num) return null;
     return fillIn(context.tr('vendor.reports.youReceiveLine'), {
-      'amount': formatCurrency(v),
+      'amount': reportMoney(v),
     });
   }
 

@@ -12,12 +12,33 @@ import '../../../shared/tone_theme.dart';
 import '../stock/stock_options.dart' show fillIn, eatToday;
 import 'report_period.dart';
 
-/// "TSh 1,250,000"; a negative amount with a real minus sign before it.
-String reportMoney(num value) =>
-    value < 0 ? '−${formatCurrency(-value)}' : formatCurrency(value);
+/// "TSh 1,250,000"; a negative amount with a real minus sign before it:
+/// "−TSh 39,000". The space after TSh does not break (UAT D6), so the sign,
+/// the currency and the number always stay on one line.
+String reportMoney(num value) {
+  final amount = formatCurrency(value.abs()).replaceFirst(' ', '\u00A0');
+  return value < 0 ? '−$amount' : amount;
+}
 
-/// A count with thousands separators.
-String reportCount(num value) => formatMoney(value);
+/// A counted string: `{key}One` for exactly 1 in English ("1 sale"), else
+/// [key]; `{n}` filled with [n] (UAT D10). Swahili keeps one form.
+String reportPlural(
+  BuildContext context,
+  String key,
+  num n, [
+  Map<String, Object?> values = const {},
+]) {
+  final one = '${key}One';
+  final t = context.tr;
+  // A refund day counts down: "−1 item", not "-1 items" (UAT D10).
+  final template = n.abs() == 1 && t(one) != one ? t(one) : t(key);
+  return fillIn(template, {...values, 'n': reportCount(n)});
+}
+
+/// A count with thousands separators; a negative count with the same real
+/// minus as money: "−3" (UAT D11).
+String reportCount(num value) =>
+    value < 0 ? '−${formatMoney(-value)}' : formatMoney(value);
 
 /// The app's language code ('en' / 'sw').
 String reportLang(BuildContext context) =>
@@ -55,11 +76,13 @@ class ReportChoicePill extends StatelessWidget {
     required this.label,
     required this.selected,
     this.onTap,
+    this.focusNode,
   });
 
   final String group;
   final String label;
   final bool selected;
+  final FocusNode? focusNode;
 
   /// Null: the choice is not available (shown faded, not tappable).
   final VoidCallback? onTap;
@@ -75,7 +98,12 @@ class ReportChoicePill extends StatelessWidget {
       onTap: onTap,
       excludeSemantics: true,
       child: enabled
-          ? FFPill(label: label, filled: selected, onTap: onTap)
+          ? FFPill(
+              label: label,
+              filled: selected,
+              onTap: onTap,
+              focusNode: focusNode,
+            )
           : ConstrainedBox(
               constraints: const BoxConstraints(minHeight: 48),
               child: Center(
@@ -104,8 +132,12 @@ class ReportControls extends StatefulWidget {
     this.onGroupBy,
     this.periodEnabled = true,
     this.serverError,
+    this.periodFocus,
     this.now,
   });
+
+  /// Focus for the selected period pill ("Try another period", UAT D14).
+  final FocusNode? periodFocus;
 
   final ReportPeriod period;
   final ValueChanged<ReportPeriod> onPeriod;
@@ -191,6 +223,7 @@ class _ReportControlsState extends State<ReportControls> {
               group: periodGroup,
               label: context.tr(_presetKeys[p]!),
               selected: widget.period.preset == p,
+              focusNode: widget.period.preset == p ? widget.periodFocus : null,
               onTap: !widget.periodEnabled
                   ? null
                   : p == ReportPreset.custom
@@ -360,7 +393,9 @@ String channelWords(BuildContext context, String? channel) =>
     });
 
 /// One figure: a label over a value; the value never wraps mid-number and
-/// the label wraps rather than truncating (§13.7).
+/// the label wraps rather than truncating (§13.7). A value wider than the
+/// space it gets scales down, so it can never run over its neighbour; the
+/// grid gives such a figure a full row first (UAT N2).
 class ReportFigure extends StatelessWidget {
   const ReportFigure({
     super.key,
@@ -374,6 +409,28 @@ class ReportFigure extends StatelessWidget {
   final String value;
   final String? sub;
   final bool large;
+
+  TextStyle? _valueStyle(BuildContext context) {
+    final theme = Theme.of(context);
+    return (large ? theme.textTheme.headlineSmall : theme.textTheme.titleMedium)
+        ?.copyWith(
+          fontWeight: FontWeight.w600,
+          fontFeatures: const [FontFeature.tabularFigures()],
+        );
+  }
+
+  /// Whether the value fits [width] at its full size and the text scale.
+  bool fitsIn(BuildContext context, double width) {
+    final painter = TextPainter(
+      text: TextSpan(text: value, style: _valueStyle(context)),
+      textDirection: TextDirection.ltr,
+      textScaler: MediaQuery.textScalerOf(context),
+      maxLines: 1,
+    )..layout();
+    final fits = painter.width <= width;
+    painter.dispose();
+    return fits;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -390,18 +447,10 @@ class ReportFigure extends StatelessWidget {
             ),
           ),
           const SizedBox(height: FFTokens.spacing2xs),
-          Text(
-            value,
-            softWrap: false,
-            overflow: TextOverflow.visible,
-            style:
-                (large
-                        ? theme.textTheme.headlineSmall
-                        : theme.textTheme.titleMedium)
-                    ?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      fontFeatures: const [FontFeature.tabularFigures()],
-                    ),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(value, softWrap: false, style: _valueStyle(context)),
           ),
           if (sub != null) ...[
             const SizedBox(height: FFTokens.spacing2xs),
@@ -417,7 +466,7 @@ class ReportFigure extends StatelessWidget {
 class ReportFigureGrid extends StatelessWidget {
   const ReportFigureGrid({super.key, required this.figures});
 
-  final List<Widget> figures;
+  final List<ReportFigure> figures;
 
   @override
   Widget build(BuildContext context) {
@@ -430,17 +479,12 @@ class ReportFigureGrid extends StatelessWidget {
           spacing: FFTokens.spacingMd,
           runSpacing: FFTokens.spacingMd,
           children: [
+            // A value too wide for half the card takes a full row (TSh
+            // 12,345,678 at 375 px), never its neighbour's space (UAT N2).
             for (final f in figures)
               SizedBox(
-                width: w,
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: w),
-                    child: f,
-                  ),
-                ),
+                width: f.fitsIn(context, w) ? w : box.maxWidth,
+                child: f,
               ),
           ],
         );
@@ -469,6 +513,10 @@ class ReportRow extends StatelessWidget {
     final style = strong
         ? theme.textTheme.titleSmall
         : theme.textTheme.bodyMedium;
+    final valueStyle = style?.copyWith(
+      fontWeight: strong ? FontWeight.w700 : FontWeight.w600,
+      fontFeatures: const [FontFeature.tabularFigures()],
+    );
     return MergeSemantics(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: FFTokens.spacing2xs),
@@ -477,14 +525,16 @@ class ReportRow extends StatelessWidget {
           spacing: FFTokens.spacingSm,
           children: [
             Text(label, style: style),
-            Text(
-              value,
-              softWrap: false,
-              style: style?.copyWith(
-                fontWeight: strong ? FontWeight.w700 : FontWeight.w600,
-                fontFeatures: const [FontFeature.tabularFigures()],
+            // A single amount stays whole and scales down if it must; a
+            // composed value wraps between its parts (the money in it has
+            // a non-breaking space), so nothing is cut off (UAT N2).
+            if (value.contains(' '))
+              Text(value, style: valueStyle)
+            else
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(value, softWrap: false, style: valueStyle),
               ),
-            ),
           ],
         ),
       ),
@@ -526,9 +576,15 @@ class ReportCard extends StatelessWidget {
     );
     final card = FFCard(child: body);
     if (onTap == null) return card;
+    // The template adds its own full stops: a summary ending in one would
+    // be read "Not in profit.. Open details" (UAT D14).
+    var summary = (semanticSummary ?? '').trim();
+    while (summary.endsWith('.')) {
+      summary = summary.substring(0, summary.length - 1).trimRight();
+    }
     final label = fillIn(context.tr('vendor.reports.a11y.card'), {
       'section': title,
-      'summary': semanticSummary ?? '',
+      'summary': summary,
     });
     return Semantics(
       button: true,
@@ -570,7 +626,7 @@ class ReportShareBar extends StatelessWidget {
       reportMoney(amount),
       pct,
       if (count != null)
-        fillIn(context.tr('vendor.reports.countTimes'), {'n': count}),
+        reportPlural(context, 'vendor.reports.countTimes', count!),
     ].join(' · ');
     return MergeSemantics(
       child: Padding(
@@ -605,11 +661,16 @@ class ReportBar {
     required this.end,
     required this.value,
     required this.description,
+    this.known = true,
   });
   final DateTime start;
   final DateTime end;
   final num value;
   final String description;
+
+  /// False: no figure for this bar (no cost price, no sales): drawn empty
+  /// and never named as the highest (UAT N3b).
+  final bool known;
 }
 
 /// The label under a bar: a day ("12"), a week ("12 Oct") or a month
@@ -669,8 +730,10 @@ class ReportChart extends StatelessWidget {
       );
     }
     final lang = reportLang(context);
-    var top = bars.first;
-    for (final b in bars) {
+    final measured = bars.where((b) => b.known);
+    if (measured.isEmpty) return const SizedBox.shrink();
+    var top = measured.first;
+    for (final b in measured) {
       if (b.value > top.value) top = b;
     }
     final summary = fillIn(context.tr('vendor.reports.chartSummary'), {
@@ -685,19 +748,51 @@ class ReportChart extends StatelessWidget {
       key: const Key('reports-chart'),
       label: summary,
       container: true,
-      child: ActivityBarChart(
-        height: height,
-        data: [
-          for (final b in bars)
-            BarDatum(
-              barLabel(b.start, groupBy, lang),
-              b.value < 0 ? 0 : b.value,
-              b.description,
-            ),
-        ],
+      child: LayoutBuilder(
+        builder: (context, box) {
+          final step = labelStep(
+            bars: bars.length,
+            width: box.maxWidth,
+            groupBy: groupBy,
+            textScale: MediaQuery.textScalerOf(context).scale(100) / 100,
+          );
+          return ActivityBarChart(
+            height: height,
+            wideLabels: true,
+            data: [
+              for (var i = 0; i < bars.length; i++)
+                BarDatum(
+                  i % step == 0 ? barLabel(bars[i].start, groupBy, lang) : '',
+                  bars[i].value < 0 ? 0 : bars[i].value,
+                  bars[i].description,
+                ),
+            ],
+          );
+        },
       ),
     );
   }
+}
+
+/// Show every [labelStep]th bar label so whole labels fit side by side
+/// (UAT D5): a day number needs about 24px, "12 Oct" 52px, "Oct" 36px, more
+/// at larger text. 1 shows them all.
+int labelStep({
+  required int bars,
+  required double width,
+  required ReportGroupBy groupBy,
+  double textScale = 1,
+}) {
+  if (bars <= 1 || width <= 0) return 1;
+  final need =
+      switch (groupBy) {
+        ReportGroupBy.day => 24.0,
+        ReportGroupBy.week => 52.0,
+        ReportGroupBy.month => 36.0,
+      } *
+      textScale;
+  final step = (bars * need / width).ceil();
+  return step < 1 ? 1 : step;
 }
 
 /// A neutral note line (period basis, footnotes).

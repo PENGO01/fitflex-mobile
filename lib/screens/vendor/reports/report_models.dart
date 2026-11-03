@@ -57,6 +57,9 @@ enum ReportSection {
 /// The mobile address of a section.
 String reportSectionRoute(ReportSection s) => '/vendor/reports/${s.route}';
 
+/// The products list filtered to products with no cost price (UAT D7).
+const noCostProductsRoute = '/vendor/home?open=products&filter=noCost';
+
 /// The Reports segment of the vendor home.
 const reportsHomeRoute = '/vendor/home?open=reports';
 
@@ -160,8 +163,9 @@ bool walkInChannel(Map? answer) => mapAt(answer, 'channels')?['walkIn'] == true;
 /// A margin in percent with one decimal: "12.5%" (sw "12.5%").
 String formatPct(num? pct) {
   if (pct == null) return '—';
-  final s = pct.toStringAsFixed(1);
-  return '$s%';
+  // Always one decimal ("25.0%"), the same minus as money (UAT D11, D12).
+  final s = pct.abs().toStringAsFixed(1);
+  return pct < 0 ? '−$s%' : '$s%';
 }
 
 // ── days of cover (§6, Q-9) ──────────────────────────────────────────────

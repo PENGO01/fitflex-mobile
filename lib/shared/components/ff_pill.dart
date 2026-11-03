@@ -12,11 +12,15 @@ class FFPill extends StatelessWidget {
     required this.label,
     this.filled = false,
     this.onTap,
+    this.focusNode,
   });
 
   final String label;
   final bool filled;
   final VoidCallback? onTap;
+
+  /// Lets a screen move keyboard focus to this pill (a tappable pill only).
+  final FocusNode? focusNode;
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +54,7 @@ class FFPill extends StatelessWidget {
       child: ConstrainedBox(
         constraints: const BoxConstraints(minHeight: 48, minWidth: 48),
         child: InkWell(
+          focusNode: focusNode,
           onTap: onTap,
           borderRadius: BorderRadius.circular(FFTokens.radiusFull),
           child: Center(widthFactor: 1, child: child),
