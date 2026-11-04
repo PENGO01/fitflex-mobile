@@ -7559,6 +7559,7 @@ class FFLocale extends ChangeNotifier {
       'vendor.stock.reason.stock_in': 'Received from supplier',
       'vendor.stock.reason.stock_in_void':
           'Delivery voided, out of stock again',
+      'vendor.stock.note.variantGone': 'This option no longer exists',
       'vendor.stock.grn': 'Delivery {number}',
       'vendor.reports.methods.paidToSuppliers': 'Paid to suppliers (by you)',
       'vendor.purchases.tab': 'Purchases',
@@ -7575,7 +7576,7 @@ class FFLocale extends ChangeNotifier {
       'vendor.purchases.filter.owing': 'Owing',
       'vendor.purchases.filter.overdue': 'Overdue',
       'vendor.purchases.filter.voided': 'Voided',
-      'vendor.purchases.loading': 'Loading deliveries',
+      'vendor.purchases.loading': 'Loading purchases',
       'vendor.purchases.failed': 'Could not load purchases.',
       'vendor.purchases.noAccess':
           'You don\'t have access to purchases. Ask the owner.',
@@ -7594,7 +7595,7 @@ class FFLocale extends ChangeNotifier {
       'vendor.payables.total': 'Total you owe',
       'vendor.payables.loading': 'Loading what you owe',
       'vendor.payables.failed': 'Could not load what you owe.',
-      'vendor.payables.oldestDue': 'Oldest due {date}',
+      'vendor.payables.oldestDue': 'Oldest due date',
       'vendor.payables.rowLabel': '{name}, you owe {amount}, overdue {overdue}',
       'vendor.purchases.close': 'Close receive stock',
       'vendor.purchases.supplier': 'Supplier',
@@ -7653,7 +7654,7 @@ class FFLocale extends ChangeNotifier {
       'vendor.purchases.leftToPayLabel': 'Left to pay',
       'vendor.purchases.payBy': 'Pay by',
       'vendor.purchases.split': 'Split into instalments',
-      'vendor.purchases.oneDate': 'Pay in one go',
+      'vendor.purchases.oneDate': 'One date to pay by',
       'vendor.purchases.instalmentCount': 'Number of instalments',
       'vendor.purchases.instalmentMore': 'One more instalment',
       'vendor.purchases.instalmentFewer': 'One fewer instalment',
@@ -7691,7 +7692,7 @@ class FFLocale extends ChangeNotifier {
           'Bought from a supplier? Use Receive stock to record the cost and what you owe.',
       'vendor.purchases.confirmTitle': 'Receive {units} items from {supplier}?',
       'vendor.purchases.confirmTitleNoSupplier': 'Receive {units} items?',
-      'vendor.purchases.confirmPaidNow': 'Paid now ({method}) {amount}',
+      'vendor.purchases.confirmPaidNow': 'Paid now ({method})',
       'vendor.purchases.confirmPlan': '{n} instalments: {list}',
       'vendor.purchases.confirmPayBy': 'Pay by {date}',
       'vendor.purchases.costChanges': 'Cost price changes for {n} items',
@@ -7745,7 +7746,6 @@ class FFLocale extends ChangeNotifier {
       'vendor.purchases.share.from': 'From {name}',
       'vendor.purchases.share.received': 'Received {date}',
       'vendor.purchases.share.paid': 'Paid ({method})',
-      'vendor.purchases.share.notFiscal': 'Not a TRA fiscal receipt.',
       'vendor.purchases.void': 'Void purchase',
       'vendor.purchases.voidA11y': 'Void {number}',
       'vendor.purchases.voidTitle': 'Void {number}?',
@@ -7795,7 +7795,7 @@ class FFLocale extends ChangeNotifier {
       'vendor.suppliers.nameRequired': 'Enter a name of 2 to 120 characters.',
       'vendor.suppliers.invalidPhone': 'Enter a valid phone number.',
       'vendor.suppliers.invalidEmail': 'Enter a valid email address.',
-      'vendor.suppliers.tooLong': 'Too long: at most {max} characters.',
+      'vendor.suppliers.tooLong': 'Too long: {max} characters at most.',
       'vendor.suppliers.open': 'Open {name}',
       'vendor.suppliers.save': 'Save supplier',
       'vendor.suppliers.saved': 'Supplier saved',
@@ -15471,6 +15471,7 @@ class FFLocale extends ChangeNotifier {
       'vendor.stock.reason.stock_in': 'Imepokelewa kutoka kwa msambazaji',
       'vendor.stock.reason.stock_in_void':
           'Mzigo umebatilishwa, imetolewa kwenye Stock',
+      'vendor.stock.note.variantGone': 'Chaguo hili halipo tena',
       'vendor.stock.grn': 'Mzigo {number}',
       'vendor.reports.methods.paidToSuppliers':
           'Uliyowalipa wasambazaji (wewe)',
@@ -15488,7 +15489,7 @@ class FFLocale extends ChangeNotifier {
       'vendor.purchases.filter.owing': 'Zinadaiwa',
       'vendor.purchases.filter.overdue': 'Zimechelewa',
       'vendor.purchases.filter.voided': 'Zilizobatilishwa',
-      'vendor.purchases.loading': 'Inapakia mizigo',
+      'vendor.purchases.loading': 'Inapakia ununuzi',
       'vendor.purchases.failed': 'Imeshindikana kupakia ununuzi.',
       'vendor.purchases.noAccess': 'Huna ruhusa ya ununuzi. Muulize mmiliki.',
       'vendor.purchases.unavailable': 'Ununuzi haupatikani kwa sasa.',
@@ -15506,7 +15507,7 @@ class FFLocale extends ChangeNotifier {
       'vendor.payables.total': 'Jumla unayodaiwa',
       'vendor.payables.loading': 'Inapakia madeni yako',
       'vendor.payables.failed': 'Imeshindikana kupakia madeni yako.',
-      'vendor.payables.oldestDue': 'Ya zamani zaidi {date}',
+      'vendor.payables.oldestDue': 'Tarehe ya zamani zaidi ya kulipa',
       'vendor.payables.rowLabel':
           '{name}, unadaiwa {amount}, imechelewa {overdue}',
       'vendor.purchases.close': 'Funga kupokea Stock',
@@ -15523,7 +15524,7 @@ class FFLocale extends ChangeNotifier {
       'vendor.purchases.added': 'Imeongezwa',
       'vendor.purchases.searchProducts': 'Tafuta kwa jina au SKU',
       'vendor.purchases.chooseVariant': 'Ipi?',
-      'vendor.purchases.variantCount': 'Aina {n}',
+      'vendor.purchases.variantCount': 'Machaguo {n}',
       'vendor.purchases.inStockN': 'Zipo {n}',
       'vendor.purchases.notListed': 'Haipo dukani',
       'vendor.purchases.noProducts':
@@ -15531,8 +15532,8 @@ class FFLocale extends ChangeNotifier {
       'vendor.purchases.qty': 'Idadi iliyopokelewa',
       'vendor.purchases.qtyValue': '{name} {qty} zimepokelewa',
       'vendor.purchases.qtyInvalid': 'Weka 1 hadi 100,000.',
-      'vendor.purchases.oneMore': 'Ongeza moja ya {name}',
-      'vendor.purchases.oneFewer': 'Punguza moja ya {name}',
+      'vendor.purchases.oneMore': 'Moja zaidi {name}',
+      'vendor.purchases.oneFewer': 'Moja pungufu {name}',
       'vendor.purchases.unitCost': 'Bei ya kununua kwa kimoja',
       'vendor.purchases.unitCostFor':
           'Bei ya kununua kwa kimoja ya {name}, shilingi za Tanzania',
@@ -15568,7 +15569,7 @@ class FFLocale extends ChangeNotifier {
       'vendor.purchases.leftToPayLabel': 'Kiasi kilichobaki',
       'vendor.purchases.payBy': 'Lipa kabla ya',
       'vendor.purchases.split': 'Gawa kwa awamu',
-      'vendor.purchases.oneDate': 'Lipa mara moja',
+      'vendor.purchases.oneDate': 'Tarehe moja ya kulipa',
       'vendor.purchases.instalmentCount': 'Idadi ya awamu',
       'vendor.purchases.instalmentMore': 'Ongeza awamu moja',
       'vendor.purchases.instalmentFewer': 'Punguza awamu moja',
@@ -15579,7 +15580,7 @@ class FFLocale extends ChangeNotifier {
       'vendor.purchases.everyMonth': 'Mwezi',
       'vendor.purchases.splitEvenly': 'Gawa sawa',
       'vendor.purchases.instalmentN': 'Awamu ya {n}',
-      'vendor.purchases.instalmentDue': 'Tarehe ya mwisho ya awamu ya {n}',
+      'vendor.purchases.instalmentDue': 'Tarehe ya kulipa awamu ya {n}',
       'vendor.purchases.instalmentAmount': 'Kiasi cha awamu ya {n}',
       'vendor.purchases.amount': 'Kiasi',
       'vendor.purchases.sumCheck': 'Awamu zinafikia {sum} kati ya {left}',
@@ -15607,7 +15608,7 @@ class FFLocale extends ChangeNotifier {
       'vendor.purchases.confirmTitle':
           'Upokee bidhaa {units} kutoka kwa {supplier}?',
       'vendor.purchases.confirmTitleNoSupplier': 'Upokee bidhaa {units}?',
-      'vendor.purchases.confirmPaidNow': 'Imelipwa sasa ({method}) {amount}',
+      'vendor.purchases.confirmPaidNow': 'Imelipwa sasa ({method})',
       'vendor.purchases.confirmPlan': 'Awamu {n}: {list}',
       'vendor.purchases.confirmPayBy': 'Lipa kabla ya {date}',
       'vendor.purchases.costChanges':
@@ -15661,10 +15662,9 @@ class FFLocale extends ChangeNotifier {
       'vendor.purchases.savePayment': 'Hifadhi malipo {amount}',
       'vendor.purchases.paySaved': 'Malipo yamehifadhiwa: {amount}',
       'vendor.purchases.shareText': 'Tuma kama maandishi',
-      'vendor.purchases.share.from': 'Kutoka {name}',
+      'vendor.purchases.share.from': 'Kutoka kwa {name}',
       'vendor.purchases.share.received': 'Imepokelewa {date}',
       'vendor.purchases.share.paid': 'Imelipwa ({method})',
-      'vendor.purchases.share.notFiscal': 'Si risiti ya kodi ya TRA.',
       'vendor.purchases.void': 'Batilisha ununuzi',
       'vendor.purchases.voidA11y': 'Batilisha {number}',
       'vendor.purchases.voidTitle': 'Ubatilishe {number}?',
@@ -15713,10 +15713,10 @@ class FFLocale extends ChangeNotifier {
       'vendor.suppliers.address': 'Anwani (si lazima)',
       'vendor.suppliers.tin': 'TIN (si lazima)',
       'vendor.suppliers.note': 'Maelezo (si lazima)',
-      'vendor.suppliers.nameRequired': 'Weka jina lenye herufi 2 hadi 120.',
+      'vendor.suppliers.nameRequired': 'Weka jina la herufi 2 hadi 120.',
       'vendor.suppliers.invalidPhone': 'Weka namba sahihi ya simu.',
       'vendor.suppliers.invalidEmail': 'Weka barua pepe sahihi.',
-      'vendor.suppliers.tooLong': 'Ni ndefu mno: herufi {max} zaidi.',
+      'vendor.suppliers.tooLong': 'Ndefu mno: herufi {max} kwa juu kabisa.',
       'vendor.suppliers.open': 'Fungua {name}',
       'vendor.suppliers.save': 'Hifadhi msambazaji',
       'vendor.suppliers.saved': 'Msambazaji amehifadhiwa',
@@ -15736,8 +15736,7 @@ class FFLocale extends ChangeNotifier {
       'vendor.suppliers.notFound': 'Msambazaji huyu hapatikani.',
       'vendor.purchases.offline':
           'Kupokea Stock kunahitaji intaneti. Rasimu yako imehifadhiwa.',
-      'vendor.purchases.offlineWrite':
-          'Hakuna mtandao. Hakuna kilichohifadhiwa; jaribu tena ukiwa mtandaoni.',
+      'vendor.purchases.offlineWrite': 'Hakuna intaneti. Hakuna kilichohifadhiwa; jaribu tena ukiwa na intaneti.',
       'vendor.purchases.err.server':
           'Imeshindikana kuhifadhi. Hakuna kilichobadilishwa.',
       'vendor.purchases.err.productGone':
@@ -15762,8 +15761,7 @@ class FFLocale extends ChangeNotifier {
           'Chagua tarehe kati ya {earliest} na {latest}.',
       'vendor.purchases.err.tooLong':
           'Namba ya ankara au maelezo ni marefu mno.',
-      'vendor.purchases.err.hasOthersPayments':
-          'Mwombe mmiliki au msimamizi abatilishe hii; ina malipo yaliyorekodiwa na mtu mwingine.',
+      'vendor.purchases.err.hasOthersPayments': 'Mwombe mmiliki au admin abatilishe hii; ina malipo yaliyorekodiwa na mtu mwingine.',
       'vendor.purchases.notFound': 'Mzigo huu haupatikani.',
     },
   };

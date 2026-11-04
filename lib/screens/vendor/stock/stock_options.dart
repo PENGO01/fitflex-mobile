@@ -344,6 +344,9 @@ String? stockNoteLabel(BuildContext context, String? note) => switch (note) {
   'product_form' => context.tr('vendor.stock.fromProductForm'),
   'product_created' => context.tr('vendor.stock.initial'),
   'variants_tracked' => context.tr('vendor.stock.toVariants'),
+  // A sale / refund void or a GRN whose variant was removed meanwhile: the
+  // units went to (or came from) the product's own count.
+  'variant_gone' => context.tr('vendor.stock.note.variantGone'),
   _ => note,
 };
 

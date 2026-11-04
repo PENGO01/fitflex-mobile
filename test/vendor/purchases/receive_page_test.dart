@@ -71,6 +71,24 @@ void main() {
     expect(host.snack(host.tr('vendor.purchases.noAccess')), findsOneWidget);
   });
 
+  apiTest('a stale session: the gate asks GET /vendor/me before refusing', (
+    tester,
+    api,
+  ) async {
+    seedReceive(api);
+    api.on('GET /vendor/me', {
+      'vendorRole': 'admin',
+      'permissions': ['products', 'purchases'],
+    });
+    await pumpReceive(
+      tester,
+      api,
+      user: staffUser(['products'], role: 'admin'),
+    );
+    expect(find.textContaining('ROUTE-VENDOR-HOME'), findsNothing);
+    expect(find.byKey(const Key('purchase-add-item')), findsOneWidget);
+  });
+
   apiTest('empty: Review is off with "Add at least one item."', (
     tester,
     api,

@@ -152,6 +152,43 @@ void main() {
       expect(find.byKey(const Key('vendor-add-product')), findsNothing);
     });
 
+    apiTest(
+      'contract check: admin staff signed in before the backfill see Purchases (GET /vendor/me)',
+      (tester, api) async {
+        seedHome(api, purchasesOnTools);
+        api.on('GET /vendor/me', {
+          'vendorId': 'v1',
+          'userType': 'vendor_staff',
+          'vendorRole': 'admin',
+          'permissions': ['products', 'purchases'],
+        });
+        final host = await pumpHome(
+          tester,
+          api,
+          user: staffUser(['products'], role: 'admin'),
+        );
+        expect(
+          find.byKey(const Key('vendor-products-segment')),
+          findsOneWidget,
+        );
+        expect(
+          host.auth.user?['vendorPermissions'],
+          containsAll(['products', 'purchases']),
+        );
+      },
+    );
+
+    apiTest('GET /vendor/me failing keeps the session permissions', (
+      tester,
+      api,
+    ) async {
+      seedHome(api, purchasesOnTools);
+      api.fail('GET /vendor/me', 404, {'error': 'feature_disabled'});
+      final host = await pumpHome(tester, api, user: staffUser(['products']));
+      expect(find.byKey(const Key('vendor-products-segment')), findsNothing);
+      expect(host.auth.user?['vendorPermissions'], ['products']);
+    });
+
     apiTest('AC-5 products-only staff: no Purchases anywhere', (
       tester,
       api,
@@ -201,6 +238,44 @@ void main() {
   });
 
   group('stock history', () {
+    apiTest('variant_gone is said in words, never the raw code', (
+      tester,
+      api,
+    ) async {
+      api.on('GET /vendor/products', [stockProduct('p1', 'Whey', stock: 13)]);
+      api.on('GET /vendor/stock/low', []);
+      api.on('GET /vendor/tools/options', purchasesOnTools);
+      api.on('GET $_path', {
+        'productId': 'p1',
+        'variant': null,
+        'openingStock': 3,
+        'closingStock': 4,
+        'rows': [
+          {
+            ...stockInRow('m3', 'sale_void', 1),
+            'note': 'variant_gone',
+            'document': {'type': 'sale', 'id': 'sal_1', 'number': 'R-000001'},
+          },
+        ],
+        'nextCursor': null,
+      });
+      final host = await pumpPage(
+        tester,
+        api,
+        const StockHistoryPage(productId: 'p1'),
+        user: ownerUser,
+        lang: 'sw',
+        size: const Size(400, 1200),
+        extraRoutes: purchaseRoutes,
+      );
+      expect(
+        find.text(host.tr('vendor.stock.note.variantGone')),
+        findsOneWidget,
+      );
+      expect(find.text('Chaguo hili halipo tena'), findsOneWidget);
+      expect(find.textContaining('variant_gone'), findsNothing);
+    });
+
     apiTest(
       'stock_in / stock_in_void labelled; the GRN links to the purchase',
       (tester, api) async {

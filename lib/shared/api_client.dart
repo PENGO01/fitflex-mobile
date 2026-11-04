@@ -2702,6 +2702,14 @@ class ApiClient {
     }),
   );
 
+  /// Who I am in my business (VENDOR_TOOLS + VENDOR_PORTAL; off → 404
+  /// feature_disabled): `{vendorId, userType, vendorRole, permissions,
+  /// tools, …}`. Staff permissions are read from the stored staff record,
+  /// so they are fresher than the sign-in session (S9: `purchases` is
+  /// backfilled onto admin staff by migration).
+  Future<Map<String, dynamic>> vendorMe() async =>
+      await _request('GET', '/vendor/me');
+
   // ── Vendor suppliers, receiving stock and payables (S9, functions#327) ──
   // Every route needs `tools.purchases` (else 404 feature_disabled) and the
   // `purchases` permission (else 403 vendor_permission_forbidden). FitFlex

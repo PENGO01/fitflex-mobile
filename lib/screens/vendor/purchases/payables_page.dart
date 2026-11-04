@@ -260,9 +260,7 @@ class _PayablesPageState extends State<PayablesPage> {
                         ),
                       if (strOf(r['oldestDueDate']) case final due?)
                         Text(
-                          fillIn(t('vendor.payables.oldestDue'), {
-                            'date': formatDay(due, locale: lang),
-                          }),
+                          '${t('vendor.payables.oldestDue')}: ${formatDay(due, locale: lang)}',
                           style: theme.textTheme.bodySmall,
                         ),
                     ],

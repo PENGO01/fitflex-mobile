@@ -43,6 +43,7 @@ import 'documents/document_models.dart'
     show TaxProfile, VatCodeOption, ratePctText, vatCodesOf;
 import 'settings/tax_details_page.dart' show vendorTaxRoute;
 import 'orders/vendor_order_card.dart';
+import 'purchases/purchase_models.dart' show refreshVendorAccess;
 import 'purchases/purchases_hub.dart';
 import 'reports/report_models.dart';
 import 'reports/report_section_page.dart' show reportSectionLink;
@@ -554,6 +555,7 @@ class _VendorHomePageState extends State<VendorHomePage> {
   @override
   void initState() {
     super.initState();
+    _lifecycle = AppLifecycleListener(onResume: _onResume);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final sales = SalesSession.of(context)?..attach();
@@ -586,9 +588,25 @@ class _VendorHomePageState extends State<VendorHomePage> {
     }
   }
 
+  /// S9 (contract check on #278): staff permissions come from the server's
+  /// stored staff record (GET /vendor/me), not only from the sign-in
+  /// session, so `purchases` backfilled onto admin staff shows without
+  /// signing in again.
+  Future<bool> _refreshVendorAccess() => refreshVendorAccess(context);
+
+  /// Coming back to the app: pick up permission changes made meanwhile.
+  late final AppLifecycleListener _lifecycle;
+
+  Future<void> _onResume() async {
+    if (!mounted || _loading) return;
+    if (await _refreshVendorAccess() && mounted) setState(() {});
+  }
+
   Future<void> _refresh({bool askTools = false}) async {
     setState(() => _loading = true);
     await _checkApproval();
+    if (!mounted) return;
+    await _refreshVendorAccess();
     if (!mounted) return;
     // Which vendor tools are on; never fails (off when it cannot tell).
     final tools = VendorToolsOptions.of(context, refresh: askTools);
@@ -780,6 +798,7 @@ class _VendorHomePageState extends State<VendorHomePage> {
 
   @override
   void dispose() {
+    _lifecycle.dispose();
     _stopWatchingTools();
     _sales?.detach();
     super.dispose();

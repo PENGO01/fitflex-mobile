@@ -1402,10 +1402,7 @@ class _ConfirmDialogState extends State<_ConfirmDialog> {
               ),
               if (d.paysNow)
                 Text(
-                  fillIn(t('vendor.purchases.confirmPaidNow'), {
-                    'method': widget.methodName(d.method),
-                    'amount': formatCurrency(d.paidNow),
-                  }),
+                  '${fillIn(t('vendor.purchases.confirmPaidNow'), {'method': widget.methodName(d.method)})} ${formatCurrency(d.paidNow)}',
                 ),
               if (plan != null) ...[
                 Text(

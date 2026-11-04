@@ -373,6 +373,28 @@ void main() {
     );
   });
 
+  test('#327: othersPaymentsBlockVoid mirrors has_others_payments', () {
+    final p = purchaseJson(
+      payments: [
+        paymentJson(recordedById: 'v1'),
+        paymentJson(id: 'vpp_2', recordedById: 's1'),
+      ],
+    );
+    expect(othersPaymentsBlockVoid(staffUser(['purchases']), p), isTrue);
+    expect(
+      othersPaymentsBlockVoid(staffUser(['purchases'], role: 'admin'), p),
+      isFalse,
+    );
+    expect(othersPaymentsBlockVoid(ownerUser, p), isFalse);
+    final voidedOthers = purchaseJson(
+      payments: [paymentJson(recordedById: 'v1', status: 'voided')],
+    );
+    expect(
+      othersPaymentsBlockVoid(staffUser(['purchases']), voidedOthers),
+      isFalse,
+    );
+  });
+
   group('error words', () {
     String text(
       String code, [
@@ -503,7 +525,7 @@ void main() {
       expect(text, contains('20 x Whey 1kg'));
       expect(text, contains('1 x Tee (M)'));
       expect(text, contains('Left to pay'));
-      expect(text, contains('Not a TRA fiscal receipt.'));
+      expect(text, contains('This is not a TRA fiscal receipt.'));
       expect(text, isNot(contains('9,000')));
       expect(text, isNot(contains('Back door')));
       expect(text, isNot(contains('Asha')));
@@ -512,7 +534,7 @@ void main() {
     test('Swahili words', () {
       String sw(String k) => FFLocale.textOf('sw', k) ?? k;
       final text = purchaseShareText(purchaseJson(), sw, 'sw');
-      expect(text, contains('Kutoka Juma Supplies'));
+      expect(text, contains('Kutoka kwa Juma Supplies'));
       expect(text, contains('Jumla'));
       expect(text, contains('Kiasi kilichobaki'));
     });

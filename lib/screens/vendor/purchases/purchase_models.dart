@@ -12,6 +12,7 @@ import 'dart:math';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../app_scope.dart';
 import '../../../shared/api_client.dart';
 import '../../../shared/components/components.dart';
 import '../../../shared/formatters.dart';
@@ -83,12 +84,35 @@ Future<VendorTools?> enterPurchasesRoute(BuildContext context) async {
     context.go('/vendor/home');
     return null;
   }
+  // The session may predate the `purchases` backfill: ask the server's
+  // stored staff record once before refusing.
+  if (!canVendor(context, 'purchases')) await refreshVendorAccess(context);
+  if (!context.mounted) return null;
   if (!canVendor(context, 'purchases')) {
     FFSnack.error(context, context.tr('vendor.purchases.noAccess'));
     context.go('/vendor/home');
     return null;
   }
   return tools;
+}
+
+/// Vendor staff: replaces the session's permissions with the server's
+/// (GET /vendor/me, the stored staff record). Answers whether they changed.
+/// Quiet: any failure (VENDOR_PORTAL off → 404, offline) keeps the session's.
+Future<bool> refreshVendorAccess(BuildContext context) async {
+  final scope = AppScope.of(context);
+  if (scope.auth.user?['userType'] != 'vendor_staff') return false;
+  try {
+    final me = await scope.api.vendorMe();
+    final perms = me['permissions'];
+    if (perms is! List) return false;
+    return await scope.auth.updateVendorAccess(
+      permissions: [for (final p in perms) p.toString()],
+      vendorRole: me['vendorRole']?.toString(),
+    );
+  } catch (_) {
+    return false;
+  }
 }
 
 int intOfP(Object? v) => v is num ? v.toInt() : int.tryParse('$v') ?? 0;
@@ -271,6 +295,18 @@ bool canVoidPurchaseRecord(
   if (byId == null || byId != user?['id']?.toString()) return false;
   final day = eatDayOf(at);
   return day != null && dayString(day) == eatTodayString(now);
+}
+
+/// Whether the server would refuse [user]'s purchase void with
+/// `has_others_payments`: staff who are not admin, and an active payment on
+/// it recorded by someone else (#327 security review; as the portal).
+bool othersPaymentsBlockVoid(Map<String, dynamic>? user, Map purchase) {
+  if (user?['userType']?.toString() != 'vendor_staff') return false;
+  if (user?['vendorRole']?.toString() == 'admin') return false;
+  final me = user?['id']?.toString();
+  return mapsOf(
+    purchase['payments'],
+  ).any((p) => p['status'] != 'voided' && idOf(p['recordedBy']) != me);
 }
 
 String? idOf(Object? person) => person is Map ? person['id']?.toString() : null;
@@ -510,6 +546,6 @@ String purchaseShareText(
   }
   if (voided) b.writeln(t('vendor.purchases.state.voided'));
   b.writeln(_rule);
-  b.write(t('vendor.purchases.share.notFiscal'));
+  b.write(t('vendor.pos.notFiscal'));
   return b.toString();
 }

@@ -236,6 +236,40 @@ void main() {
     );
   });
 
+  apiTest(
+    '#327: own purchase today but a payment by someone else — Void hidden',
+    (tester, api) async {
+      final host = await pumpDetail(
+        tester,
+        api,
+        user: staffUser(['purchases']),
+        purchase: purchaseJson(
+          createdById: 's1',
+          recordedAt: '2026-11-03T07:00:00.000Z',
+          payments: [paymentJson(recordedById: 'v1')],
+        ),
+      );
+      expect(find.byKey(const Key('purchase-void')), findsNothing);
+      expect(
+        find.text(host.tr('vendor.purchases.err.hasOthersPayments')),
+        findsOneWidget,
+      );
+    },
+  );
+
+  apiTest('admin staff: others\' payments do not hide Void', (
+    tester,
+    api,
+  ) async {
+    await pumpDetail(
+      tester,
+      api,
+      user: staffUser(['purchases'], role: 'admin'),
+      purchase: purchaseJson(payments: [paymentJson(recordedById: 'v1')]),
+    );
+    expect(find.byKey(const Key('purchase-void')), findsOneWidget);
+  });
+
   apiTest('AC-22: voided — banner with reason, no actions but Share', (
     tester,
     api,

@@ -143,6 +143,13 @@ class _PurchaseDetailPageState extends State<PurchaseDetailPage> {
   bool _mayVoid(String? byId, String? at) =>
       canVoidPurchaseRecord(_user, byId: byId, at: at, now: widget.now?.call());
 
+  /// M2 plus the #327 review: staff who are not admin cannot void a
+  /// purchase carrying an active payment someone else recorded (the server
+  /// answers 403 void_not_allowed has_others_payments; still handled).
+  bool _mayVoidPurchase(Map<String, dynamic> p) =>
+      _mayVoid(idOf(p['createdBy']), p['recordedAt']?.toString()) &&
+      !othersPaymentsBlockVoid(_user, p);
+
   // ── actions ──────────────────────────────────────────────────────────
 
   Future<void> _recordPayment() async {
@@ -462,11 +469,14 @@ class _PurchaseDetailPageState extends State<PurchaseDetailPage> {
       ],
       const SizedBox(height: FFTokens.spacingMd),
       const PurchaseMoneyNotice(),
-      if (!voided &&
-          !_mayVoid(idOf(p['createdBy']), p['recordedAt']?.toString())) ...[
+      if (!voided && !_mayVoidPurchase(p)) ...[
         const SizedBox(height: FFTokens.spacingSm),
         Text(
-          t('vendor.purchases.askOwner'),
+          t(
+            _mayVoid(idOf(p['createdBy']), p['recordedAt']?.toString())
+                ? 'vendor.purchases.err.hasOthersPayments'
+                : 'vendor.purchases.askOwner',
+          ),
           key: const Key('purchase-ask-owner'),
           style: theme.textTheme.bodySmall,
         ),
@@ -679,8 +689,7 @@ class _PurchaseDetailPageState extends State<PurchaseDetailPage> {
     final voided = p['status'] == 'voided';
     final online = BrowserOnline.instance.value;
     final balance = intOfP(p['balanceTzs']);
-    final mayVoid =
-        !voided && _mayVoid(idOf(p['createdBy']), p['recordedAt']?.toString());
+    final mayVoid = !voided && _mayVoidPurchase(p);
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.all(FFTokens.spacingMd),
