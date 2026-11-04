@@ -2702,6 +2702,153 @@ class ApiClient {
     }),
   );
 
+  // ── Vendor suppliers, receiving stock and payables (S9, functions#327) ──
+  // Every route needs `tools.purchases` (else 404 feature_disabled) and the
+  // `purchases` permission (else 403 vendor_permission_forbidden). FitFlex
+  // moves no money for payables: these are records only.
+
+  /// My suppliers: `{suppliers: [...], nextCursor}`. [filter] active
+  /// (default) | owing | overdue | archived; [sort] name | owed | recent.
+  Future<Map<String, dynamic>> vendorSuppliers({
+    String? q,
+    String? filter,
+    String? sort,
+    int? limit,
+    String? cursor,
+  }) async => await _request(
+    'GET',
+    _withQuery('/vendor/suppliers', {
+      if (q != null && q.trim().length >= 2) 'q': q.trim(),
+      if (filter != null && filter.isNotEmpty && filter != 'active')
+        'filter': filter,
+      if (sort != null && sort.isNotEmpty && sort != 'name') 'sort': sort,
+      if (limit != null) 'limit': '$limit',
+      if (cursor != null && cursor.isNotEmpty) 'cursor': cursor,
+    }),
+  );
+
+  /// Adds a supplier. 201 `{supplier}`; 409 duplicate_supplier {supplierId}.
+  Future<Map<String, dynamic>> vendorCreateSupplier(
+    Map<String, dynamic> body,
+  ) async => await _request('POST', '/vendor/suppliers', body: body);
+
+  /// One supplier's profile: `{supplier, totals, owedTzs, overdueTzs, aging,
+  /// asOf, openInstalments}`.
+  Future<Map<String, dynamic>> vendorSupplier(String id) async =>
+      await _request('GET', '/vendor/suppliers/${_seg(id)}');
+
+  /// Edit (partial; null clears) and/or `archived: true | false`.
+  Future<Map<String, dynamic>> vendorUpdateSupplier(
+    String id,
+    Map<String, dynamic> body,
+  ) async => await _request('PUT', '/vendor/suppliers/${_seg(id)}', body: body);
+
+  /// Receives stock (a GRN). 201 `{purchase, costChanges}`; a replay of the
+  /// same `clientRef` answers 200 with the same purchase. The server
+  /// computes every total.
+  Future<Map<String, dynamic>> vendorReceiveStock(
+    Map<String, dynamic> body,
+  ) async => await _request('POST', '/vendor/purchases', body: body);
+
+  /// Purchases, newest first, with the filter's summary.
+  Future<Map<String, dynamic>> vendorPurchases({
+    String? from,
+    String? to,
+    String? supplierId,
+    String? status,
+    String? payment,
+    bool mine = false,
+    int? limit,
+    String? cursor,
+  }) async => await _request(
+    'GET',
+    _withQuery('/vendor/purchases', {
+      'from': ?from,
+      'to': ?to,
+      if (supplierId != null && supplierId.isNotEmpty) 'supplierId': supplierId,
+      if (status != null && status.isNotEmpty && status != 'all')
+        'status': status,
+      if (payment != null && payment.isNotEmpty && payment != 'all')
+        'payment': payment,
+      if (mine) 'createdBy': 'me',
+      if (limit != null) 'limit': '$limit',
+      if (cursor != null && cursor.isNotEmpty) 'cursor': cursor,
+    }),
+  );
+
+  Future<Map<String, dynamic>> vendorPurchase(String id) async =>
+      await _request('GET', '/vendor/purchases/${_seg(id)}');
+
+  /// The last purchase cost per product + variant: `{rows: [{productId,
+  /// variant, unitCostTzs, receivedOn, supplierName, number}]}` (≤ 100 ids).
+  Future<Map<String, dynamic>> vendorPurchaseLastCosts(
+    List<String> productIds,
+  ) async => await _request(
+    'GET',
+    _withQuery('/vendor/purchases/last-costs', {
+      'productIds': productIds.take(100).join(','),
+    }),
+  );
+
+  /// Voids a whole purchase: `{purchase, costRestored, costKept,
+  /// paymentsVoided}`.
+  Future<Map<String, dynamic>> vendorVoidPurchase(
+    String id,
+    String reason,
+  ) async => await _request(
+    'POST',
+    '/vendor/purchases/${_seg(id)}/void',
+    body: {'reason': reason},
+  );
+
+  /// Records a payment made to the supplier. 201 `{purchase, payment,
+  /// covered}`; a replay of the same `clientRef` answers 200.
+  Future<Map<String, dynamic>> vendorRecordPurchasePayment(
+    String id,
+    Map<String, dynamic> body,
+  ) async => await _request(
+    'POST',
+    '/vendor/purchases/${_seg(id)}/payments',
+    body: body,
+  );
+
+  Future<Map<String, dynamic>> vendorVoidPurchasePayment(
+    String id,
+    String paymentId,
+    String reason,
+  ) async => await _request(
+    'POST',
+    '/vendor/purchases/${_seg(id)}/payments/${_seg(paymentId)}/void',
+    body: {'reason': reason},
+  );
+
+  /// Replaces the unpaid part of the plan: `{schedule: [{dueDate,
+  /// amountTzs}]}` adding up to the balance. `{purchase}`.
+  Future<Map<String, dynamic>> vendorChangePurchasePlan(
+    String id,
+    List<Map<String, dynamic>> schedule,
+  ) async => await _request(
+    'PUT',
+    '/vendor/purchases/${_seg(id)}/instalments',
+    body: {'schedule': schedule},
+  );
+
+  /// What I owe suppliers, by age: `{asOf, totals, rows, nextCursor}`.
+  Future<Map<String, dynamic>> vendorPayablesAging({
+    String? bucket,
+    String? sort,
+    int? limit,
+    String? cursor,
+  }) async => await _request(
+    'GET',
+    _withQuery('/vendor/payables/aging', {
+      if (bucket != null && bucket.isNotEmpty) 'bucket': bucket,
+      if (sort != null && sort.isNotEmpty && sort != 'overdue') 'sort': sort,
+      if (limit != null) 'limit': '$limit',
+      if (cursor != null && cursor.isNotEmpty) 'cursor': cursor,
+    }),
+  );
+
   // ── Vendor documents and VAT (S5) ──────────────────────────────────────
 
   /// Makes a share link for one document (fitflex-functions #229). [kind] is

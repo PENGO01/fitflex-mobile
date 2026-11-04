@@ -43,6 +43,7 @@ import 'documents/document_models.dart'
     show TaxProfile, VatCodeOption, ratePctText, vatCodesOf;
 import 'settings/tax_details_page.dart' show vendorTaxRoute;
 import 'orders/vendor_order_card.dart';
+import 'purchases/purchases_hub.dart';
 import 'reports/report_models.dart';
 import 'reports/report_section_page.dart' show reportSectionLink;
 import 'reports/report_period.dart' show ReportPeriod;
@@ -140,6 +141,10 @@ class _VendorHomePageState extends State<VendorHomePage> {
   String _tab2View = 'reports';
   final _reportsKey = GlobalKey<VendorReportsViewState>();
   final _owedKey = GlobalKey<OwedViewState>();
+  // Vendor tools · S9: tab 0's segment while purchases are on: `products`
+  // or `purchases`.
+  String _tab0View = 'products';
+  final _purchasesKey = GlobalKey<PurchasesHubViewState>();
 
   // PHOTO_HERO_UI (spec §25.2): a band hero on Products only.
   final _heroKey = GlobalKey();
@@ -147,7 +152,19 @@ class _VendorHomePageState extends State<VendorHomePage> {
   int? _heroTab;
   bool _precached = false;
 
-  bool _heroOn(int tab) => photoHeroUi && tab == 0 && !_staffDisabled;
+  bool _heroOn(int tab) =>
+      photoHeroUi && tab == 0 && !_staffDisabled && _tab0Shown == 'products';
+
+  /// S9: the Purchases view may show (tool on and `purchases`).
+  bool get _purchasesOn => _tools.purchases && _can('purchases');
+
+  /// The view tab 0 shows: Products, or Purchases (staff with `purchases`
+  /// but not `products` see Purchases alone).
+  String get _tab0Shown => !_purchasesOn
+      ? 'products'
+      : !_can('products')
+      ? 'purchases'
+      : _tab0View;
 
   @override
   void didChangeDependencies() {
@@ -400,6 +417,7 @@ class _VendorHomePageState extends State<VendorHomePage> {
 
   static const _sectionOf = {
     'products': 0,
+    'purchases': 0,
     'orders': 1,
     'payments': 2,
     'reports': 2,
@@ -410,6 +428,11 @@ class _VendorHomePageState extends State<VendorHomePage> {
 
   /// S4: the segment a request opens (`open=enquiries` → Messages).
   void _pickView(String? open, String? view) {
+    if (open == 'purchases') {
+      _tab0View = 'purchases';
+    } else if (open == 'products') {
+      _tab0View = view == 'purchases' ? 'purchases' : 'products';
+    }
     if (open == 'reports') {
       _tab2View = 'reports';
     } else if (open == 'payments') {
@@ -455,7 +478,12 @@ class _VendorHomePageState extends State<VendorHomePage> {
     vendorHomeAddress(
       Uri(
         path: AppRoutes.vendorHome,
-        queryParameters: open == null ? null : {'open': open},
+        queryParameters: open == null
+            ? null
+            : {
+                'open': open,
+                if (_tab == 0 && _tab0Shown == 'purchases') 'view': 'purchases',
+              },
       ),
     );
   }
@@ -496,7 +524,8 @@ class _VendorHomePageState extends State<VendorHomePage> {
     final again = widget.openAt != old.openAt;
     if (widget.open != old.open ||
         again ||
-        (widget.open == 'customers' && widget.view != old.view)) {
+        (widget.open == 'customers' && widget.view != old.view) ||
+        (widget.open == 'products' && widget.view != old.view)) {
       _show(widget.open);
     }
     if (widget.filter != old.filter || again) {
@@ -509,7 +538,8 @@ class _VendorHomePageState extends State<VendorHomePage> {
 
   List<int> get _sections {
     final sections = <int>[
-      if (_can('products')) 0,
+      // S9: staff with `purchases` only see tab 0 as Purchases.
+      if (_can('products') || _purchasesOn) 0,
       if (_can('orders')) 1,
       if (_walkInSales) _salesSection,
       if (_can('payments') || _can('reports')) 2,
@@ -1123,6 +1153,10 @@ class _VendorHomePageState extends State<VendorHomePage> {
                         unawaited(_customersListKey.currentState?.reload());
                         unawaited(_owedKey.currentState?.reload());
                       }
+                      // S9: the Purchases view reloads with the page.
+                      if (tab == 0 && _tab0Shown == 'purchases') {
+                        unawaited(_purchasesKey.currentState?.reload());
+                      }
                       // S6: the reports reload with the page.
                       if (tab == 2 && _tab2Shown == 'reports') {
                         unawaited(_reportsKey.currentState?.reload());
@@ -1130,6 +1164,7 @@ class _VendorHomePageState extends State<VendorHomePage> {
                       await _refresh(askTools: true);
                     },
                     child: switch (tab) {
+                      0 when _purchasesOn => _productsAndPurchasesTab(),
                       0 when _heroOn(tab) =>
                         NotificationListener<ScrollNotification>(
                           onNotification: _onProductsScroll,
@@ -1161,7 +1196,10 @@ class _VendorHomePageState extends State<VendorHomePage> {
       // Exactly one "vendor-add-product" at a time: the hero's while the
       // hero shows, this one otherwise.
       floatingActionButton:
-          tab == 0 && !(_heroOn(tab) && (_loading || _heroVisible))
+          tab == 0 &&
+              _tab0Shown == 'products' &&
+              _can('products') &&
+              !(_heroOn(tab) && (_loading || _heroVisible))
           ? FloatingActionButton.extended(
               key: const Key('vendor-add-product'),
               onPressed: _busy ? null : () => _editProduct(),
@@ -1216,12 +1254,23 @@ class _VendorHomePageState extends State<VendorHomePage> {
               },
               destinations: [
                 if (sections.contains(0))
-                  NavigationDestination(
-                    key: const Key('vendor-nav-products'),
-                    icon: _lowBadge(const Icon(Icons.inventory_2_outlined)),
-                    selectedIcon: _lowBadge(const Icon(Icons.inventory_2)),
-                    label: context.tr('vendor.products'),
-                  ),
+                  !_can('products') && _purchasesOn
+                      ? NavigationDestination(
+                          key: const Key('vendor-nav-purchases'),
+                          icon: const Icon(Icons.local_shipping_outlined),
+                          selectedIcon: const Icon(Icons.local_shipping),
+                          label: context.tr('vendor.purchases.tab'),
+                        )
+                      : NavigationDestination(
+                          key: const Key('vendor-nav-products'),
+                          icon: _lowBadge(
+                            const Icon(Icons.inventory_2_outlined),
+                          ),
+                          selectedIcon: _lowBadge(
+                            const Icon(Icons.inventory_2),
+                          ),
+                          label: context.tr('vendor.products'),
+                        ),
                 if (sections.contains(1))
                   NavigationDestination(
                     key: const Key('vendor-nav-orders'),
@@ -1690,6 +1739,48 @@ class _VendorHomePageState extends State<VendorHomePage> {
           ),
         );
       },
+    );
+  }
+
+  /// S9: tab 0 with purchases on — Products | Purchases (Products only
+  /// with `products`; without it the Purchases view alone, no segment).
+  Widget _productsAndPurchasesTab() {
+    final view = _tab0Shown;
+    final hub = PurchasesHubView(
+      key: _purchasesKey,
+      disabled: _staffDisabled || _accountSuspended,
+    );
+    if (!_can('products')) return hub;
+    final products = _heroOn(0)
+        ? NotificationListener<ScrollNotification>(
+            onNotification: _onProductsScroll,
+            child: _productsTab(),
+          )
+        : _productsTab();
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            FFTokens.spacingLg,
+            FFTokens.spacingMd,
+            FFTokens.spacingLg,
+            0,
+          ),
+          child: FFSegmented(
+            key: const Key('vendor-products-segment'),
+            value: view,
+            options: [
+              ('products', context.tr('vendor.purchases.segProducts')),
+              ('purchases', context.tr('vendor.purchases.segPurchases')),
+            ],
+            onChanged: (v) {
+              setState(() => _tab0View = v);
+              _syncAddress();
+            },
+          ),
+        ),
+        Expanded(child: view == 'purchases' ? hub : products),
+      ],
     );
   }
 
@@ -2192,6 +2283,7 @@ class _VendorHomePageState extends State<VendorHomePage> {
         role: 'staff',
         orgType: 'vendor',
         vendorSales: _tools.walkInSales,
+        vendorPurchases: _tools.purchases,
       );
       if (mounted) await _refresh();
       return;
@@ -2203,6 +2295,7 @@ class _VendorHomePageState extends State<VendorHomePage> {
       builder: (_) => VendorStaffForm(
         walkInSales: _tools.walkInSales,
         customersTool: _tools.customers,
+        purchasesTool: _tools.purchases,
       ),
     );
     if (result == null || !mounted) return;
@@ -3534,7 +3627,11 @@ class VendorStaffForm extends StatefulWidget {
     super.key,
     this.walkInSales = false,
     this.customersTool = false,
+    this.purchasesTool = false,
   });
+
+  /// S9: offer the `purchases` permission (only while the tool is on).
+  final bool purchasesTool;
 
   /// S3: offer the `sales` permission (only while walk-in sales are on).
   final bool walkInSales;
@@ -3592,6 +3689,7 @@ class _VendorStaffFormState extends State<VendorStaffForm> {
       'reports',
       'payments',
       'staff',
+      if (widget.purchasesTool) 'purchases',
     ];
     return SafeArea(
       child: Padding(
@@ -3671,6 +3769,8 @@ class _VendorStaffFormState extends State<VendorStaffForm> {
                   title: Text(context.tr('vendor.permission.$permission')),
                   subtitle: permission == 'customers' && widget.customersTool
                       ? Text(context.tr('vendor.permission.customersHint'))
+                      : permission == 'purchases'
+                      ? Text(context.tr('vendor.permission.purchasesHint'))
                       : null,
                   onChanged: (selected) => setState(() {
                     if (selected == true) {

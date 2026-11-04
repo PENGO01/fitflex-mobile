@@ -13,6 +13,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../app_scope.dart';
 import '../../../shared/api_client.dart';
@@ -147,6 +148,10 @@ class _AdjustStockSheetState extends State<AdjustStockSheet> {
   String? _quantityError;
   String? _noteError;
 
+  /// S9: "Bought from a supplier? Use Receive stock…" (tool on and
+  /// `purchases`).
+  bool _purchasesHint = false;
+
   String get _productId => widget.product['id']?.toString() ?? '';
 
   List<({String name, int stock})> get _variants => trackedVariants(_product);
@@ -174,6 +179,11 @@ class _AdjustStockSheetState extends State<AdjustStockSheet> {
 
   /// Fresh counts on open; the ones the sheet was given stand if this fails.
   Future<void> _refresh() async {
+    VendorToolsOptions.of(context).then((tools) {
+      if (mounted && tools.purchases && canVendor(context, 'purchases')) {
+        setState(() => _purchasesHint = true);
+      }
+    });
     try {
       final rows = await AppScope.of(context).api.vendorProducts();
       final fresh = rows.whereType<Map>().firstWhere(
@@ -578,6 +588,35 @@ class _AdjustStockSheetState extends State<AdjustStockSheet> {
                   ),
               ],
             ),
+            if (_purchasesHint &&
+                (_reason == null || inReasons.contains(_reason)))
+              Padding(
+                padding: const EdgeInsets.only(top: FFTokens.spacingXs),
+                child: Column(
+                  key: const Key('adjust-purchases-hint'),
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      context.tr('vendor.purchases.adjustHint'),
+                      style: theme.textTheme.bodySmall,
+                    ),
+                    FFButton(
+                      key: const Key('adjust-receive-stock'),
+                      label: context.tr('vendor.purchases.receive'),
+                      icon: Icons.local_shipping_outlined,
+                      variant: FFButtonVariant.ghost,
+                      visualDensity: VisualDensity.standard,
+                      onPressed: _busy
+                          ? null
+                          : () {
+                              final router = GoRouter.of(context);
+                              Navigator.of(context).pop();
+                              router.push('/vendor/purchases/receive');
+                            },
+                    ),
+                  ],
+                ),
+              ),
             if (_reason == 'other') ...[
               const SizedBox(height: FFTokens.spacingSm),
               Text(

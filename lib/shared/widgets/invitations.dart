@@ -444,6 +444,7 @@ Future<bool> openInvitePersonSheet(
   required String role,
   String orgType = 'gym',
   bool vendorSales = false,
+  bool vendorPurchases = false,
 }) async {
   final sent = await showModalBottomSheet<bool>(
     context: context,
@@ -454,6 +455,7 @@ Future<bool> openInvitePersonSheet(
       role: role,
       orgType: orgType,
       vendorSales: vendorSales,
+      vendorPurchases: vendorPurchases,
     ),
   );
   return sent == true;
@@ -465,6 +467,7 @@ class _InvitePersonSheet extends StatefulWidget {
     required this.role,
     this.orgType = 'gym',
     this.vendorSales = false,
+    this.vendorPurchases = false,
   });
 
   final String gymId;
@@ -473,6 +476,9 @@ class _InvitePersonSheet extends StatefulWidget {
 
   /// S3: offer the shop's `sales` permission (walk-in sales on).
   final bool vendorSales;
+
+  /// S9: offer `purchases` (the purchases tool on).
+  final bool vendorPurchases;
 
   @override
   State<_InvitePersonSheet> createState() => _InvitePersonSheetState();
@@ -648,6 +654,7 @@ class _InvitePersonSheetState extends State<_InvitePersonSheet> {
                   ..._vendorPermissions.take(2),
                   if (widget.vendorSales) 'sales',
                   ..._vendorPermissions.skip(2),
+                  if (widget.vendorPurchases) 'purchases',
                 ])
                   CheckboxListTile(
                     key: Key('invite-vendor-permission-$permission'),

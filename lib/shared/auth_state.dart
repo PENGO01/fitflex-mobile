@@ -12,6 +12,7 @@ import 'partner_details.dart';
 import 'pending_friend_invite.dart';
 import 'pending_org_invite.dart';
 import 'push_service.dart';
+import 'vendor_purchase_draft_store.dart';
 
 /// Global session state. In a larger app this would be DI'd via Riverpod/Provider.
 class AuthState extends ChangeNotifier {
@@ -564,6 +565,8 @@ class AuthState extends ChangeNotifier {
       await EventTicketCache.clearAll();
       // And so are results, medals, rewards and the event lists (M7).
       await EventsCache.clearAll();
+      // S9: an unfinished Receive stock form holds cost figures.
+      await VendorPurchaseDraftStore.clearAll();
     }
     // Partner date of birth: the session copy and the device-side prompt
     // counts are not the next person's (security review L1/L2).
