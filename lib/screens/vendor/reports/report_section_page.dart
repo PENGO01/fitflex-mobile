@@ -327,7 +327,8 @@ class _ReportSectionPageState extends State<ReportSectionPage> {
       case ReportSection.methods:
         return listAt(d, 'byYou').isEmpty &&
             listAt(d, 'viaFitFlex').isEmpty &&
-            listAt(d, 'paidBack').isEmpty;
+            listAt(d, 'paidBack').isEmpty &&
+            listAt(d, 'paidToSuppliers').isEmpty;
       case ReportSection.payouts:
         final s = mapAt(d, 'status');
         return listAt(d, 'weeks').isEmpty &&

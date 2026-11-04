@@ -12,6 +12,7 @@ import 'partner_details.dart';
 import 'pending_friend_invite.dart';
 import 'pending_org_invite.dart';
 import 'push_service.dart';
+import 'vendor_purchase_draft_store.dart';
 
 /// Global session state. In a larger app this would be DI'd via Riverpod/Provider.
 class AuthState extends ChangeNotifier {
@@ -347,6 +348,36 @@ class AuthState extends ChangeNotifier {
     unawaited(push?.register());
   }
 
+  /// Vendor staff: the server's current permissions and role (GET
+  /// /vendor/me) replace the ones the session started with. Answers whether
+  /// anything changed. Nothing happens without a session.
+  Future<bool> updateVendorAccess({
+    required List<String> permissions,
+    String? vendorRole,
+  }) async {
+    final user = _user;
+    if (_token == null || user == null) return false;
+    if (user['userType']?.toString() != 'vendor_staff') return false;
+    final before = (user['vendorPermissions'] as List? ?? const [])
+        .map((p) => p.toString())
+        .toSet();
+    final sameRole = vendorRole == null || user['vendorRole'] == vendorRole;
+    if (sameRole &&
+        before.length == permissions.toSet().length &&
+        before.containsAll(permissions)) {
+      return false;
+    }
+    _user = {
+      ...user,
+      'vendorPermissions': permissions,
+      'vendorRole': vendorRole ?? user['vendorRole'],
+    };
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user', jsonEncode(_user));
+    notifyListeners();
+    return true;
+  }
+
   Future<void> signInWithFitFlexSession(
     String token,
     Map<String, dynamic> user,
@@ -564,6 +595,8 @@ class AuthState extends ChangeNotifier {
       await EventTicketCache.clearAll();
       // And so are results, medals, rewards and the event lists (M7).
       await EventsCache.clearAll();
+      // S9: an unfinished Receive stock form holds cost figures.
+      await VendorPurchaseDraftStore.clearAll();
     }
     // Partner date of birth: the session copy and the device-side prompt
     // counts are not the next person's (security review L1/L2).

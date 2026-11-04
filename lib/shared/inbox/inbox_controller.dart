@@ -309,6 +309,7 @@ String? memberRouteFor({
       bannerId: (data['bannerId'] ?? data['item'])?.toString(),
       flashSaleId: (data['saleId'] ?? data['item'])?.toString(),
       refundId: data['refundId']?.toString(),
+      purchaseId: data['purchaseId']?.toString(),
     );
     if (direct != null) return (location: direct, go: true);
   }
@@ -403,6 +404,10 @@ String partnerLinkFor({required String side, required String type}) =>
         // S4: the daily overdue digest, and a payment voided by staff.
         'vendor_customers_overdue' => 'owed',
         'vendor_customer_payment_voided' => 'customer',
+        // S9: staff voided a delivery (GRN) or a supplier payment (data
+        // `{purchaseId, number}`).
+        'vendor_purchase_voided' ||
+        'vendor_purchase_payment_voided' => 'purchase',
         // S5: a KYC reviewer verified or did not accept the VAT details
         // (push data.open = 'tax').
         'vendor_vat_verified' || 'vendor_vat_rejected' => 'tax',
@@ -456,6 +461,7 @@ String? partnerRouteFor({
   String? bannerId,
   String? flashSaleId,
   String? refundId,
+  String? purchaseId,
 }) {
   bool ok(String? id) => id != null && _safeId.hasMatch(id);
   return switch (partnerLinkFor(side: side, type: type)) {
@@ -490,6 +496,9 @@ String? partnerRouteFor({
     'owed' => '/vendor/home?open=customers&view=owed',
     'customer' when ok(customerId) => '/vendor/customers/$customerId',
     'customer' => '/vendor/home?open=customers',
+    // The purchase detail checks the `purchases` tool and permission.
+    'purchase' when ok(purchaseId) => '/vendor/purchases/$purchaseId',
+    'purchase' => '/vendor/home?open=products&view=purchases',
     // The page checks the `vat` tool and who may see it.
     'tax' => '/vendor/settings/tax',
     // The Promotions page checks the tool and the `products` permission.

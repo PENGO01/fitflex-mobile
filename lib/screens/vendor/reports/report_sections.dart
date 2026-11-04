@@ -1096,6 +1096,10 @@ class MethodsReportBody extends StatelessWidget {
     // S7: money paid back on refunds, its own group (never summed with
     // money in; no share).
     final paidBack = cut(listAt(data, 'paidBack'));
+    // S9: money paid to suppliers (money out, its own group, never summed
+    // with money in). The server sends it only to people with `reports` +
+    // `purchases` while the purchases tool is on.
+    final paidToSuppliers = cut(listAt(data, 'paidToSuppliers'));
     Widget group(
       String title,
       List<Map<String, dynamic>> rows,
@@ -1145,6 +1149,36 @@ class MethodsReportBody extends StatelessWidget {
                       ? '${t(methodKey(r['method']?.toString()))} · ${reportPlural(context, 'vendor.reports.countTimes', numAt(r, 'count'))}'
                       : t(methodKey(r['method']?.toString())),
                   value: reportMoney(numAt(r, 'amountTzs')),
+                ),
+            ],
+          ),
+        ],
+        if (paidToSuppliers.isNotEmpty) ...[
+          const SizedBox(height: FFTokens.spacingSm),
+          Column(
+            key: const Key('reports-methods-paid-to-suppliers'),
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                t('vendor.reports.methods.paidToSuppliers'),
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+              for (final r in paidToSuppliers)
+                ReportRow(
+                  label: limit == null
+                      ? '${t(methodKey(r['method']?.toString()))} · ${reportPlural(context, 'vendor.reports.countTimes', numAt(r, 'count'))}'
+                      : t(methodKey(r['method']?.toString())),
+                  value: reportMoney(numAt(r, 'amountTzs')),
+                ),
+              if (limit == null)
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: FFButton(
+                    key: const Key('reports-open-payables'),
+                    label: t('vendor.payables.title'),
+                    variant: FFButtonVariant.ghost,
+                    onPressed: () => context.push('/vendor/payables'),
+                  ),
                 ),
             ],
           ),
