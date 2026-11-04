@@ -261,12 +261,13 @@ void main() {
     api.on('GET $_path', {
       'openingStock': 10,
       'closingStock': 8,
-      'rows': [_row('m1', reason: 'stock_in')],
+      // S9 labels stock_in, so a reason no screen knows yet stands in.
+      'rows': [_row('m1', reason: 'transfer_in')],
       'nextCursor': null,
     });
     await _pump(tester, api, lang: 'sw');
     expect(find.text('Badiliko la Stock'), findsOneWidget);
-    expect(find.textContaining('stock_in'), findsNothing);
+    expect(find.textContaining('transfer_in'), findsNothing);
   });
 
   apiTest('a variant notice shows that variant\'s history', (

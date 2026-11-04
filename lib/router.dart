@@ -94,6 +94,12 @@ import 'screens/vendor/customers/customer_profile_page.dart';
 import 'screens/vendor/customers/statement_page.dart';
 import 'screens/vendor/customers/customers_widgets.dart' show customerIdPattern;
 import 'screens/vendor/documents/document_view.dart';
+import 'screens/vendor/purchases/payables_page.dart';
+import 'screens/vendor/purchases/purchase_detail_page.dart';
+import 'screens/vendor/purchases/purchase_models.dart' show purchaseIdPattern;
+import 'screens/vendor/purchases/purchases_hub.dart' show PurchasesListPage;
+import 'screens/vendor/purchases/receive_stock_page.dart';
+import 'screens/vendor/purchases/suppliers_pages.dart';
 import 'screens/vendor/settings/tax_details_page.dart';
 import 'screens/vendor/reports/report_models.dart'
     show ReportSection, reportsHomeRoute;
@@ -380,6 +386,12 @@ final _vendorReportsPath = RegExp(r'^/vendor/reports/[a-z]{1,20}$');
 /// Customer pages (S4). Pending vendors keep their own records too.
 final _vendorCustomersPath = RegExp(
   r'^/vendor/customers/(new|[A-Za-z0-9._:-]{1,100}(/edit|/statement|/sales/[A-Za-z0-9._:-]{1,100})?)$',
+);
+
+/// Purchases, suppliers and payables (S9). Pending vendors keep their own
+/// records too (§4.10).
+final _vendorPurchasesPath = RegExp(
+  r'^/vendor/(purchases(/(receive|[A-Za-z0-9_-]{1,64}))?|suppliers(/(new|[A-Za-z0-9_-]{1,64}(/edit)?))?|payables)$',
 );
 
 /// The inbox and one message (a tapped bell or push). Pending vendors get
@@ -722,6 +734,7 @@ GoRouter buildRouter(AuthState auth) {
               _vendorCustomersPath.hasMatch(loc) ||
               _vendorDocumentsPath.hasMatch(loc) ||
               _vendorReportsPath.hasMatch(loc) ||
+              _vendorPurchasesPath.hasMatch(loc) ||
               _inboxPath.hasMatch(loc) ||
               // Their own home photo and logo (spec §41.3: allowed while
               // pending).
@@ -1053,6 +1066,75 @@ GoRouter buildRouter(AuthState auth) {
                 StatementPage(customerId: state.pathParameters['customerId']!),
           ),
         ],
+      ),
+      // Vendor purchases, suppliers and payables (S9). Each page checks the
+      // tool (`purchases`) and the permission itself; a bad id goes to the
+      // Purchases view. `receive` and `new` come before the ids.
+      GoRoute(
+        path: '/vendor/purchases',
+        name: 'vendorPurchases',
+        builder: (context, state) => const PurchasesListPage(),
+      ),
+      GoRoute(
+        path: '/vendor/purchases/receive',
+        name: 'vendorReceiveStock',
+        builder: (context, state) {
+          final s = state.uri.queryParameters['supplierId'];
+          return ReceiveStockPage(
+            supplierId: s != null && purchaseIdPattern.hasMatch(s) ? s : null,
+          );
+        },
+      ),
+      GoRoute(
+        path: '/vendor/purchases/:purchaseId',
+        name: 'vendorPurchase',
+        redirect: (context, state) =>
+            purchaseIdPattern.hasMatch(state.pathParameters['purchaseId'] ?? '')
+            ? null
+            : '${AppRoutes.vendorHome}?open=products&view=purchases',
+        builder: (context, state) => PurchaseDetailPage(
+          key: ValueKey('purchase-${state.pathParameters['purchaseId']}'),
+          purchaseId: state.pathParameters['purchaseId']!,
+          initial: state.extra is Map<String, dynamic>
+              ? state.extra as Map<String, dynamic>
+              : null,
+        ),
+      ),
+      GoRoute(
+        path: '/vendor/suppliers',
+        name: 'vendorSuppliers',
+        builder: (context, state) => const SuppliersPage(),
+      ),
+      GoRoute(
+        path: '/vendor/suppliers/new',
+        name: 'vendorSupplierNew',
+        builder: (context, state) => const SupplierFormPage(),
+      ),
+      GoRoute(
+        path: '/vendor/suppliers/:supplierId',
+        name: 'vendorSupplier',
+        redirect: (context, state) =>
+            purchaseIdPattern.hasMatch(state.pathParameters['supplierId'] ?? '')
+            ? null
+            : '/vendor/suppliers',
+        builder: (context, state) => SupplierProfilePage(
+          key: ValueKey('supplier-${state.pathParameters['supplierId']}'),
+          supplierId: state.pathParameters['supplierId']!,
+        ),
+        routes: [
+          GoRoute(
+            path: 'edit',
+            name: 'vendorSupplierEdit',
+            builder: (context, state) => SupplierFormPage(
+              supplierId: state.pathParameters['supplierId'],
+            ),
+          ),
+        ],
+      ),
+      GoRoute(
+        path: '/vendor/payables',
+        name: 'vendorPayables',
+        builder: (context, state) => const PayablesPage(),
       ),
       GoRoute(
         path: '/vendor/products/:productId/stock',
