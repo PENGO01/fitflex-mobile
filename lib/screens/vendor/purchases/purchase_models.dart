@@ -20,7 +20,7 @@ import '../../../shared/i18n.dart';
 import '../customers/customer_models.dart'
     show addDaysTo, daysBetween, dayString, eatTodayString, parseDay;
 import '../sales/receipt_data.dart' show eatDayOf;
-import '../sales/sale_models.dart' show paymentMethodKey;
+import '../sales/sale_models.dart' show paymentMethodKey, pluralKey;
 import '../stock/stock_options.dart';
 
 // ── limits (server src/shared/vendor-purchase.mjs) ──────────────────────
@@ -263,7 +263,10 @@ String instalmentStateText(String Function(String) t, Instalment i) {
         'amount': formatCurrency(i.amountTzs),
       });
     case 'overdue':
-      return fillIn(t('vendor.purchases.inst.overdue'), {'n': i.daysOverdue});
+      return fillIn(
+        t(pluralKey('vendor.purchases.inst.overdue', i.daysOverdue)),
+        {'n': i.daysOverdue},
+      );
   }
   return '';
 }
@@ -272,7 +275,7 @@ String instalmentStateText(String Function(String) t, Instalment i) {
 String dueText(String Function(String) t, String dueDate, String today) {
   final d = parseDay(dueDate) == null ? 0 : daysBetween(dueDate, today);
   if (d <= 0) return t('vendor.purchases.inst.dueToday');
-  return fillIn(t('vendor.purchases.inst.dueIn'), {'n': d});
+  return fillIn(t(pluralKey('vendor.purchases.inst.dueIn', d)), {'n': d});
 }
 
 // ── who may void (M2, mirrors the server) ───────────────────────────────

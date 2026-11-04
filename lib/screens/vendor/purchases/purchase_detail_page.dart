@@ -20,7 +20,7 @@ import '../customers/payment_sheets.dart' show loadBusinessName;
 import '../sales/receipt_data.dart' show eatDateTime, eatDayOf;
 import '../sales/receipt_page.dart' show shareReceipt;
 import '../sales/sale_models.dart'
-    show paymentMethodKey, referenceRequiredMethods;
+    show paymentMethodKey, pluralKey, referenceRequiredMethods;
 import '../sales/sales_widgets.dart' show warningText;
 import '../stock/adjust_stock_sheet.dart' show openAdjustStock;
 import '../stock/stock_options.dart';
@@ -643,11 +643,22 @@ class _PurchaseDetailPageState extends State<PurchaseDetailPage> {
                       ),
                   ],
                 ),
-                if (voided && strOf(pay['voidReason']) != null)
+                // UAT L-3: who voided it and when, as the portal shows.
+                if (voided)
                   Text(
-                    fillIn(t('vendor.purchases.voidedReason'), {
-                      'reason': pay['voidReason'],
-                    }),
+                    nameOf(pay['voidedBy']) == null
+                        ? fillIn(t('vendor.purchases.voidedReason'), {
+                            'reason': pay['voidReason'] ?? '',
+                          })
+                        : fillIn(t('vendor.purchases.voidedBy'), {
+                            'name': nameOf(pay['voidedBy']),
+                            'time': eatDateTime(
+                              pay['voidedAt']?.toString(),
+                              locale: lang,
+                            ),
+                            'reason': pay['voidReason'] ?? '',
+                          }),
+                    key: Key('purchase-payment-voided-${pay['id']}'),
                     style: theme.textTheme.bodySmall,
                   ),
               ],
@@ -759,6 +770,9 @@ class _RecordPurchasePaymentSheetState
   String _method = 'cash';
   String? _paidOn;
   bool _saving = false;
+
+  /// UAT L-6: the last try got no answer: the button says Try again.
+  bool _netFailed = false;
   String? _amountError;
   String? _problem;
   // Made once per sheet: Try again after a lost answer records it once.
@@ -798,6 +812,7 @@ class _RecordPurchasePaymentSheetState
     setState(() {
       _saving = true;
       _problem = null;
+      _netFailed = false;
       _amountError = null;
     });
     final body = {
@@ -825,7 +840,10 @@ class _RecordPurchasePaymentSheetState
         _problem = purchaseErrorText(context.tr, e, where: 'payment');
       }
     } catch (_) {
-      if (mounted) _problem = context.tr('vendor.purchases.offlineWrite');
+      if (mounted) {
+        _problem = context.tr('vendor.purchases.offlineWrite');
+        _netFailed = true;
+      }
     }
     if (mounted) setState(() => _saving = false);
   }
@@ -953,9 +971,11 @@ class _RecordPurchasePaymentSheetState
             const SizedBox(height: FFTokens.spacingMd),
             FFButton(
               key: const Key('ppay-save'),
-              label: fillIn(t('vendor.purchases.savePayment'), {
-                'amount': formatCurrency(_amountTzs),
-              }),
+              label: _netFailed
+                  ? t('common.retry')
+                  : fillIn(t('vendor.purchases.savePayment'), {
+                      'amount': formatCurrency(_amountTzs),
+                    }),
               fullWidth: true,
               maxLines: 2,
               loading: _saving,
@@ -987,6 +1007,9 @@ class _ChangePlanSheetState extends State<ChangePlanSheet> {
   late String _first;
   PlanEvery _every = PlanEvery.month;
   bool _saving = false;
+
+  /// UAT L-6: the last try got no answer: the button says Try again.
+  bool _netFailed = false;
   String? _problem;
 
   String get _today => eatTodayString(widget.now?.call());
@@ -1028,6 +1051,7 @@ class _ChangePlanSheetState extends State<ChangePlanSheet> {
     setState(() {
       _saving = true;
       _problem = null;
+      _netFailed = false;
     });
     try {
       final res = await AppScope.of(context).api.vendorChangePurchasePlan(
@@ -1039,7 +1063,10 @@ class _ChangePlanSheetState extends State<ChangePlanSheet> {
     } on ApiException catch (e) {
       if (mounted) _problem = purchaseErrorText(context.tr, e, where: 'plan');
     } catch (_) {
-      if (mounted) _problem = context.tr('vendor.purchases.offlineWrite');
+      if (mounted) {
+        _problem = context.tr('vendor.purchases.offlineWrite');
+        _netFailed = true;
+      }
     }
     if (mounted) setState(() => _saving = false);
   }
@@ -1109,7 +1136,9 @@ class _ChangePlanSheetState extends State<ChangePlanSheet> {
           const SizedBox(height: FFTokens.spacingMd),
           FFButton(
             key: const Key('plan-save'),
-            label: t('vendor.purchases.savePlan'),
+            label: _netFailed
+                ? t('common.retry')
+                : t('vendor.purchases.savePlan'),
             fullWidth: true,
             loading: _saving,
             visualDensity: VisualDensity.standard,
@@ -1134,6 +1163,9 @@ class VoidPurchaseDialog extends StatefulWidget {
 class _VoidPurchaseDialogState extends State<VoidPurchaseDialog> {
   final _reason = TextEditingController();
   bool _busy = false;
+
+  /// UAT L-6: the last try got no answer: the button says Try again.
+  bool _netFailed = false;
   String? _error;
   List<Map<String, dynamic>> _short = const [];
 
@@ -1156,6 +1188,7 @@ class _VoidPurchaseDialogState extends State<VoidPurchaseDialog> {
     setState(() {
       _busy = true;
       _error = null;
+      _netFailed = false;
     });
     try {
       final res = await AppScope.of(
@@ -1176,7 +1209,10 @@ class _VoidPurchaseDialogState extends State<VoidPurchaseDialog> {
       });
     } catch (_) {
       if (mounted) {
-        setState(() => _error = context.tr('vendor.purchases.offlineWrite'));
+        setState(() {
+          _error = context.tr('vendor.purchases.offlineWrite');
+          _netFailed = true;
+        });
       }
     }
     if (mounted) setState(() => _busy = false);
@@ -1226,10 +1262,10 @@ class _VoidPurchaseDialogState extends State<VoidPurchaseDialog> {
               if (live.isNotEmpty) ...[
                 const SizedBox(height: FFTokens.spacingSm),
                 Text(
-                  fillIn(t('vendor.purchases.voidPayments'), {
-                    'n': live.length,
-                    'amount': formatCurrency(paid),
-                  }),
+                  fillIn(
+                    t(pluralKey('vendor.purchases.voidPayments', live.length)),
+                    {'n': live.length, 'amount': formatCurrency(paid)},
+                  ),
                   key: const Key('purchase-void-payments'),
                 ),
               ],
@@ -1281,7 +1317,7 @@ class _VoidPurchaseDialogState extends State<VoidPurchaseDialog> {
           ),
           FFButton(
             key: const Key('purchase-void-confirm'),
-            label: t('vendor.purchases.void'),
+            label: _netFailed ? t('common.retry') : t('vendor.purchases.void'),
             variant: FFButtonVariant.destructive,
             visualDensity: VisualDensity.standard,
             loading: _busy,
@@ -1310,6 +1346,9 @@ class VoidPurchasePaymentDialog extends StatefulWidget {
 class _VoidPurchasePaymentDialogState extends State<VoidPurchasePaymentDialog> {
   final _reason = TextEditingController();
   bool _busy = false;
+
+  /// UAT L-6: the last try got no answer: the button says Try again.
+  bool _netFailed = false;
   String? _error;
 
   @override
@@ -1326,6 +1365,7 @@ class _VoidPurchasePaymentDialogState extends State<VoidPurchasePaymentDialog> {
     setState(() {
       _busy = true;
       _error = null;
+      _netFailed = false;
     });
     try {
       final res = await AppScope.of(context).api.vendorVoidPurchasePayment(
@@ -1351,7 +1391,10 @@ class _VoidPurchasePaymentDialogState extends State<VoidPurchasePaymentDialog> {
       );
     } catch (_) {
       if (mounted) {
-        setState(() => _error = context.tr('vendor.purchases.offlineWrite'));
+        setState(() {
+          _error = context.tr('vendor.purchases.offlineWrite');
+          _netFailed = true;
+        });
       }
     }
     if (mounted) setState(() => _busy = false);
@@ -1409,7 +1452,9 @@ class _VoidPurchasePaymentDialogState extends State<VoidPurchasePaymentDialog> {
           ),
           FFButton(
             key: const Key('purchase-payment-void-confirm'),
-            label: t('vendor.purchases.voidPayment'),
+            label: _netFailed
+                ? t('common.retry')
+                : t('vendor.purchases.voidPayment'),
             variant: FFButtonVariant.destructive,
             visualDensity: VisualDensity.standard,
             loading: _busy,
