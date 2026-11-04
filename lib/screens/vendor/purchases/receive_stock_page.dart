@@ -892,8 +892,12 @@ class _ReceiveStockPageState extends State<ReceiveStockPage> {
                     controller: _qty[l.key],
                     // UAT M-1: a real label (read with the value).
                     label: t('vendor.purchases.qty'),
-                    semanticsLabel: fillIn(t('vendor.purchases.qtyFor'), {
+                    // UAT L-12: the count is in the label too, so a screen
+                    // reader on the web hears a prefilled value before the
+                    // field is focused.
+                    semanticsLabel: fillIn(t('vendor.purchases.qtyForValue'), {
                       'name': name,
+                      'qty': _qty[l.key]!.text,
                     }),
                     keyboardType: TextInputType.number,
                     inputFormatters: [
@@ -914,9 +918,13 @@ class _ReceiveStockPageState extends State<ReceiveStockPage> {
               key: Key('purchase-line-cost-${l.productId}-${l.variant ?? ''}'),
               controller: _cost[l.key],
               label: t('vendor.purchases.unitCost'),
-              semanticsLabel: fillIn(t('vendor.purchases.unitCostFor'), {
-                'name': name,
-              }),
+              // UAT L-12: a prefilled cost is said before focus (web).
+              semanticsLabel: l.unitCostTzs == null
+                  ? fillIn(t('vendor.purchases.unitCostFor'), {'name': name})
+                  : fillIn(t('vendor.purchases.unitCostForValue'), {
+                      'name': name,
+                      'amount': formatCurrency(l.unitCostTzs!),
+                    }),
               prefixIcon: const Padding(
                 padding: EdgeInsets.all(FFTokens.spacingSm),
                 child: Text('TSh'),
@@ -1491,8 +1499,12 @@ class _ConfirmDialogState extends State<_ConfirmDialog> {
             label: _problem == null
                 ? t('vendor.purchases.confirm')
                 : t('common.retry'),
-            semanticLabel:
-                '${t('vendor.purchases.confirm')} ${formatCurrency(d.totalTzs)}',
+            // UAT L-6: after a lost connection or a lost answer the button
+            // is Try again (same clientRef), on screen and to a screen
+            // reader.
+            semanticLabel: _problem == null
+                ? '${t('vendor.purchases.confirm')} ${formatCurrency(d.totalTzs)}'
+                : t('common.retry'),
             loading: _saving,
             visualDensity: VisualDensity.standard,
             onPressed: _saving ? null : _save,
