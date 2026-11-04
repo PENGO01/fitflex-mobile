@@ -2,10 +2,13 @@
 // server: chunks until nothing remains, the waits for a busy server, the
 // give-up into a calm pause, a finished batch found after a refusal, a retry
 // that must not trust a stale `partial`, and a page that is left mid-run.
+import 'dart:async' show TimeoutException;
+
 import 'package:fitflexmobile/screens/vendor/import/import_apply.dart';
 import 'package:fitflexmobile/screens/vendor/import/import_models.dart';
 import 'package:fitflexmobile/shared/api_client.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
 
 import 'import_support.dart';
 
@@ -194,7 +197,10 @@ void main() {
 
   test('a dropped connection is waited out like a busy server', () async {
     final g = Fake(
-      applies: [StateError('socket'), res(batch('applied', applied: 10))],
+      applies: [
+        http.ClientException('Connection reset'),
+        res(batch('applied', applied: 10)),
+      ],
     );
     final out = await drive(g);
     expect(out, isA<ApplyDone>());
@@ -209,13 +215,54 @@ void main() {
     expect(g.calls.where((c) => c == 'apply'), hasLength(3));
     expect(slept, hasLength(2));
 
-    final net = await drive(Fake(applies: [StateError('x')]), maxWaits: 1);
+    final net = await drive(
+      Fake(applies: [TimeoutException('slow')]),
+      maxWaits: 1,
+    );
     expect((net as ApplyPaused).reason, ImportPause.network);
     final rate = await drive(
       Fake(applies: [refused(429, 'rate_limited')]),
       maxWaits: 1,
     );
     expect((rate as ApplyPaused).reason, ImportPause.rate);
+  });
+
+  test('a timeout is a pause, never a failure', () async {
+    final g = Fake(applies: [TimeoutException('150s')]);
+    final out = await drive(g, maxWaits: 2);
+    expect(out, isA<ApplyPaused>());
+    expect((out as ApplyPaused).reason, ImportPause.network);
+    expect(g.calls.where((c) => c == 'apply'), hasLength(3));
+  });
+
+  test('a parse error or bug is a failure, not a connection wait', () async {
+    final g = Fake(applies: [StateError('bad json')]);
+    final out = await drive(g);
+    expect(out, isA<ApplyFailed>());
+    expect(g.calls, ['apply']);
+    expect(slept, isEmpty);
+  });
+
+  test('a rate-limit pause carries what the server asked for', () async {
+    final g = Fake(
+      applies: [
+        refused(429, 'rate_limited', {'retryAfterSeconds': 20}),
+      ],
+    );
+    final out = await drive(g, maxWaits: 1) as ApplyPaused;
+    expect(out.reason, ImportPause.rate);
+    expect(out.retryAfterSeconds, 20);
+    final busy =
+        await drive(
+              Fake(
+                applies: [
+                  refused(503, 'import_busy', {'retryAfterSeconds': 5}),
+                ],
+              ),
+              maxWaits: 1,
+            )
+            as ApplyPaused;
+    expect(busy.retryAfterSeconds, isNull);
   });
 
   test('a pause remembers the last batch it saw', () async {
@@ -308,7 +355,7 @@ void main() {
   test('remaining 0 and the re-read fails: done with what we have', () async {
     final g = Fake(
       applies: [res(batch('applying', applied: 10), remaining: 0)],
-      details: [StateError('offline')],
+      details: [http.ClientException('offline')],
     );
     final out = await drive(g);
     expect(out, isA<ApplyDone>());

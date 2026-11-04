@@ -1,6 +1,7 @@
 // Vendor smart import V3: reading the server's answers, the gating rules, the
 // file checks, the error wording (never a raw code) and that every string the
 // screens use exists in English and Swahili.
+import 'dart:async' show TimeoutException;
 import 'dart:io';
 
 import 'package:fitflexmobile/screens/vendor/import/import_errors.dart';
@@ -9,6 +10,7 @@ import 'package:fitflexmobile/screens/vendor/stock/stock_options.dart';
 import 'package:fitflexmobile/shared/api_client.dart';
 import 'package:fitflexmobile/shared/i18n.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
 
 import 'import_support.dart';
 
@@ -267,12 +269,41 @@ void main() {
       }
     });
 
-    test('a request that never reached the server is a connection problem', () {
-      expect(say(StateError('socket')), en('vendor.import.err.network'));
+    test('only connection failures say "no connection"', () {
+      for (final e in [
+        TimeoutException('slow'),
+        http.ClientException('Connection reset'),
+      ]) {
+        expect(say(e), en('vendor.import.err.network'));
+        expect(say(e, lang: 'sw'), sw('vendor.import.err.network'));
+      }
+      // A parse error or a bug is not a connection problem.
+      for (final e in [StateError('bad json'), const FormatException('x')]) {
+        expect(say(e), en('vendor.import.err.unexpected'));
+        expect(say(e, lang: 'sw'), sw('vendor.import.err.unexpected'));
+        expect(say(e), isNot(contains('connection')));
+      }
+    });
+
+    test('a missing parameter never leaves a broken sentence', () {
       expect(
-        say(StateError('socket'), lang: 'sw'),
-        sw('vendor.import.err.network'),
+        cleanImportText('It will be left empty. Closest: .'),
+        'It will be left empty.',
       );
+      expect(
+        cleanImportText('Itaachwa wazi. Karibu zaidi: .'),
+        'Itaachwa wazi.',
+      );
+      expect(cleanImportText('{field} is not valid.'), 'is not valid.');
+      expect(cleanImportText('Closest: Fitness.'), 'Closest: Fitness.');
+      expect(cleanImportText('Price: 5.'), 'Price: 5.');
+      final m = LocalText.from({
+        'en': 'Unknown category. Closest: .',
+        'sw': 'Aina haijulikani. Karibu zaidi: .',
+      })!;
+      expect(m.of('en'), 'Unknown category.');
+      expect(m.of('sw'), 'Aina haijulikani.');
+      expect(LocalText.from({'en': '{x}'})!.of('en'), isNull);
     });
 
     test('status-based lines for answers without text', () {
@@ -371,6 +402,10 @@ void main() {
         'vendor.import.field.stock',
         'vendor.import.field.sku',
         'vendor.import.template.swahili',
+        // Each language is named in its own language, in both UIs.
+        'vendor.import.template.english',
+        'vendor.import.unit.mb',
+        'vendor.import.unit.kb',
       };
       for (final k in FFLocale.keysOf('en')) {
         if (!k.startsWith('vendor.import.') || sameOk.contains(k)) continue;
@@ -392,6 +427,43 @@ void main() {
         expect(sw('vendor.import.field.price_tzs'), contains('TSh'));
       },
     );
+
+    test(
+      'units read the same in both languages; language names are native',
+      () {
+        expect(sw('vendor.import.unit.mb'), en('vendor.import.unit.mb'));
+        expect(sw('vendor.import.unit.kb'), en('vendor.import.unit.kb'));
+        expect(sw('vendor.import.template.english'), 'English');
+        expect(sw('vendor.import.template.swahili'), 'Kiswahili');
+        expect(en('vendor.import.template.english'), 'English');
+        expect(en('vendor.import.template.swahili'), 'Kiswahili');
+        expect(sw('vendor.import.file.hint'), contains('{size}'));
+        expect(en('vendor.import.file.hint'), contains('{size}'));
+      },
+    );
+
+    test('portal-aligned words: Ready, Match columns, one retry label', () {
+      expect(en('vendor.import.count.valid'), 'Ready rows');
+      expect(sw('vendor.import.count.valid'), 'Safu mlalo tayari');
+      expect(en('vendor.import.rowStatus.valid'), 'Ready');
+      expect(sw('vendor.import.rowStatus.valid'), 'Tayari');
+      expect(en('vendor.import.status.mapping_required'), 'Match columns');
+      expect(
+        sw('vendor.import.status.mapping_required'),
+        'Unganisha safu wima',
+      );
+      expect(
+        en('vendor.import.result.retry'),
+        en('vendor.import.continue.retry'),
+      );
+      expect(
+        sw('vendor.import.result.retry'),
+        sw('vendor.import.continue.retry'),
+      );
+      expect(sw('vendor.import.title'), 'Ingiza data');
+      expect(sw('vendor.import.confirm.products'), contains('Rudisha'));
+      expect(sw('vendor.import.result.products'), contains('urudishe'));
+    });
 
     test('rows and counts are worded without singular/plural forms', () {
       expect(en('vendor.import.confirm.summary'), 'Rows to import: {n}');

@@ -479,7 +479,7 @@ void main() {
       await tapVisible(tester, find.byKey(const Key('import-pick')));
       expect(
         find.text(
-          host.tr('vendor.import.file.tooLarge').replaceAll('{mb}', '1'),
+          host.tr('vendor.import.file.tooLarge').replaceAll('{size}', '1 MB'),
         ),
         findsOneWidget,
       );

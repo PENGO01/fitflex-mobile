@@ -102,7 +102,13 @@ class _ImportHistoryPageState extends State<ImportHistoryPage> {
   Widget build(BuildContext context) {
     final t = context.tr;
     return Scaffold(
-      appBar: AppBar(title: Text(t('vendor.import.title'))),
+      appBar: AppBar(
+        title: Text(
+          t('vendor.import.title'),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
       body: !_ready
           ? const Center(child: FFSpinner())
           : RefreshIndicator(

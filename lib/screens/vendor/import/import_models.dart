@@ -6,6 +6,18 @@
 // loop. Nothing here talks to a server.
 import '../stock/stock_options.dart' show VendorTools;
 
+/// A server message with a missing parameter must not read as a broken
+/// sentence: an unfilled `{name}` is dropped, and so is a "Label: ." left
+/// behind when the value was empty ("Closest: .").
+String cleanImportText(String text) {
+  var out = text.replaceAll(RegExp(r'\{\w*\}'), '');
+  out = out.replaceAll(
+    RegExp(r'\s*[^\s.:]+(?:\s[^\s.:]+)?:\s*(?=[.!]|$)[.!]?'),
+    '',
+  );
+  return out.replaceAll(RegExp(r'\s{2,}'), ' ').trim();
+}
+
 /// What a file holds. `profile` is for the account holder only.
 enum ImportEntity { products, inventory, profile }
 
@@ -64,8 +76,15 @@ class LocalText {
     return t.en == null && t.sw == null ? null : t;
   }
 
-  /// The text in [lang], else the other language's rather than nothing.
-  String? of(String lang) => lang == 'sw' ? (sw ?? en) : (en ?? sw);
+  /// The text in [lang], else the other language's rather than nothing,
+  /// with any placeholder the server left unfilled removed
+  /// ([cleanImportText]).
+  String? of(String lang) {
+    final raw = lang == 'sw' ? (sw ?? en) : (en ?? sw);
+    if (raw == null) return null;
+    final clean = cleanImportText(raw);
+    return clean.isEmpty ? null : clean;
+  }
 }
 
 class ImportCounts {

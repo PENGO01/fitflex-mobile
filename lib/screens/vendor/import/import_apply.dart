@@ -80,9 +80,12 @@ class ApplyDone extends ApplyOutcome {
 
 /// Waited long enough; the vendor can continue. [batch] is the last one seen.
 class ApplyPaused extends ApplyOutcome {
-  const ApplyPaused(this.reason, this.batch);
+  const ApplyPaused(this.reason, this.batch, {this.retryAfterSeconds});
   final ImportPause reason;
   final ImportBatch? batch;
+
+  /// What the server asked for when it limited the rate, if it said.
+  final int? retryAfterSeconds;
 }
 
 /// Refused for good; [error] is what the server (or network) said.
@@ -153,7 +156,7 @@ Future<ApplyOutcome> driveApply({
     } catch (err) {
       final code = importErrorCode(err);
       final transient =
-          err is! ApiException ||
+          (err is! ApiException && importErrorIsNetwork(err)) ||
           code == 'apply_in_progress' ||
           code == 'import_busy' ||
           code == 'rate_limited';
@@ -182,8 +185,14 @@ Future<ApplyOutcome> driveApply({
           }
         }
       }
-      if (waits >= maxWaits) return ApplyPaused(reason, last);
       final after = importRetryAfterSeconds(err);
+      if (waits >= maxWaits) {
+        return ApplyPaused(
+          reason,
+          last,
+          retryAfterSeconds: reason == ImportPause.rate ? after : null,
+        );
+      }
       final delay = after != null
           ? Duration(seconds: after > 30 ? 30 : after)
           : _backoff(baseDelay, waits);

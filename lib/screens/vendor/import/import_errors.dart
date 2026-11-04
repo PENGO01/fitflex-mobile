@@ -3,8 +3,20 @@
 // in the active language. When there is none (an HTML error page, a proxy),
 // the app's own wording for the code is used. A raw code ("duplicate_file")
 // is never shown to anyone.
+import 'dart:async' show TimeoutException;
+
+import 'package:http/http.dart' as http;
+
 import '../../../shared/api_client.dart';
 import 'import_models.dart';
+
+/// A failure of the connection itself: a timeout, a dropped or refused
+/// connection. These are waited out; any other non-API exception (a parse
+/// error, a bug) is not "no connection".
+bool importErrorIsNetwork(Object error) =>
+    error is TimeoutException ||
+    error is http.ClientException ||
+    error.runtimeType.toString().contains('SocketException');
 
 /// The server's machine-readable code, e.g. `duplicate_file`.
 String? importErrorCode(Object? error) =>
@@ -69,7 +81,13 @@ String importErrorText(
   required String lang,
   required String Function(String key) t,
 }) {
-  if (error is! ApiException) return t('vendor.import.err.network');
+  if (error is! ApiException) {
+    return t(
+      importErrorIsNetwork(error)
+          ? 'vendor.import.err.network'
+          : 'vendor.import.err.unexpected',
+    );
+  }
   final body = _body(error);
   final main = LocalText.from(body['message'])?.of(lang);
   if (main != null) {

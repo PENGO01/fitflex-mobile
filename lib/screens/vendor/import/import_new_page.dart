@@ -197,7 +197,7 @@ class _ImportNewPageState extends State<ImportNewPage> {
       ImportFileProblem.empty => t('vendor.import.file.empty'),
       ImportFileProblem.tooLarge => t(
         'vendor.import.file.tooLarge',
-      ).replaceAll('{mb}', megabytes(_maxBytes)),
+      ).replaceAll('{size}', _mb(_maxBytes)),
       null => '',
     };
   }
@@ -207,7 +207,13 @@ class _ImportNewPageState extends State<ImportNewPage> {
     final t = context.tr;
     final access = _access;
     return Scaffold(
-      appBar: AppBar(title: Text(t('vendor.import.new'))),
+      appBar: AppBar(
+        title: Text(
+          t('vendor.import.new'),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
       body: access == null
           ? const Center(child: FFSpinner())
           // A short, fixed form: every part is built (a lazy list would not
@@ -306,7 +312,7 @@ class _ImportNewPageState extends State<ImportNewPage> {
         _heading('vendor.import.step.file'),
         Text(
           t('vendor.import.file.hint')
-              .replaceAll('{mb}', megabytes(maxBytes))
+              .replaceAll('{size}', _mb(maxBytes))
               .replaceAll('{rows}', '${access.tools.importMaxRows}'),
           style: theme.textTheme.bodySmall,
         ),
@@ -387,7 +393,13 @@ class _ImportNewPageState extends State<ImportNewPage> {
     ];
   }
 
+  /// "2 MB": the unit sits in the string, so both languages read alike.
+  String _mb(int bytes) =>
+      context.tr('vendor.import.unit.mb').replaceAll('{n}', megabytes(bytes));
+
   String _size(int bytes) => bytes >= 1024 * 1024
-      ? '${megabytes(bytes)} MB'
-      : '${(bytes / 1024).ceil()} KB';
+      ? _mb(bytes)
+      : context
+            .tr('vendor.import.unit.kb')
+            .replaceAll('{n}', '${(bytes / 1024).ceil()}');
 }

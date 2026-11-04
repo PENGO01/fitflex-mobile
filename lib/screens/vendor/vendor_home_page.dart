@@ -2325,6 +2325,7 @@ class _VendorHomePageState extends State<VendorHomePage> {
         orgType: 'vendor',
         vendorSales: _tools.walkInSales,
         vendorPurchases: _tools.purchases,
+        vendorImport: _tools.dataImport,
       );
       if (mounted) await _refresh();
       return;
@@ -2337,6 +2338,7 @@ class _VendorHomePageState extends State<VendorHomePage> {
         walkInSales: _tools.walkInSales,
         customersTool: _tools.customers,
         purchasesTool: _tools.purchases,
+        importTool: _tools.dataImport,
       ),
     );
     if (result == null || !mounted) return;
@@ -3669,7 +3671,13 @@ class VendorStaffForm extends StatefulWidget {
     this.walkInSales = false,
     this.customersTool = false,
     this.purchasesTool = false,
+    this.importTool = false,
   });
+
+  /// Smart import: offer the `import` permission (only while the tool is
+  /// on). It lets staff create products and stock counts from a file even
+  /// without `products`.
+  final bool importTool;
 
   /// S9: offer the `purchases` permission (only while the tool is on).
   final bool purchasesTool;
@@ -3731,6 +3739,7 @@ class _VendorStaffFormState extends State<VendorStaffForm> {
       'payments',
       'staff',
       if (widget.purchasesTool) 'purchases',
+      if (widget.importTool) 'import',
     ];
     return SafeArea(
       child: Padding(
@@ -3812,6 +3821,8 @@ class _VendorStaffFormState extends State<VendorStaffForm> {
                       ? Text(context.tr('vendor.permission.customersHint'))
                       : permission == 'purchases'
                       ? Text(context.tr('vendor.permission.purchasesHint'))
+                      : permission == 'import'
+                      ? Text(context.tr('vendor.permission.importHint'))
                       : null,
                   onChanged: (selected) => setState(() {
                     if (selected == true) {

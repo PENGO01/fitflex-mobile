@@ -445,6 +445,7 @@ Future<bool> openInvitePersonSheet(
   String orgType = 'gym',
   bool vendorSales = false,
   bool vendorPurchases = false,
+  bool vendorImport = false,
 }) async {
   final sent = await showModalBottomSheet<bool>(
     context: context,
@@ -456,6 +457,7 @@ Future<bool> openInvitePersonSheet(
       orgType: orgType,
       vendorSales: vendorSales,
       vendorPurchases: vendorPurchases,
+      vendorImport: vendorImport,
     ),
   );
   return sent == true;
@@ -468,6 +470,7 @@ class _InvitePersonSheet extends StatefulWidget {
     this.orgType = 'gym',
     this.vendorSales = false,
     this.vendorPurchases = false,
+    this.vendorImport = false,
   });
 
   final String gymId;
@@ -479,6 +482,9 @@ class _InvitePersonSheet extends StatefulWidget {
 
   /// S9: offer `purchases` (the purchases tool on).
   final bool vendorPurchases;
+
+  /// Smart import: offer `import` (the import tool on).
+  final bool vendorImport;
 
   @override
   State<_InvitePersonSheet> createState() => _InvitePersonSheetState();
@@ -655,6 +661,7 @@ class _InvitePersonSheetState extends State<_InvitePersonSheet> {
                   if (widget.vendorSales) 'sales',
                   ..._vendorPermissions.skip(2),
                   if (widget.vendorPurchases) 'purchases',
+                  if (widget.vendorImport) 'import',
                 ])
                   CheckboxListTile(
                     key: Key('invite-vendor-permission-$permission'),
@@ -662,6 +669,9 @@ class _InvitePersonSheetState extends State<_InvitePersonSheet> {
                     enabled: !sent,
                     value: _vendorPerms.contains(permission),
                     title: Text(context.tr('vendor.permission.$permission')),
+                    subtitle: permission == 'import'
+                        ? Text(context.tr('vendor.permission.importHint'))
+                        : null,
                     onChanged: (on) => setState(
                       () => on == true
                           ? _vendorPerms.add(permission)

@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import '../../../app_scope.dart';
 import '../../../shared/components/components.dart';
 import '../../../shared/i18n.dart';
+import '../purchases/purchase_models.dart' show refreshVendorAccess;
 import '../stock/stock_options.dart';
 import 'import_models.dart';
 
@@ -33,6 +34,11 @@ Future<ImportAccess?> enterImportRoute(BuildContext context) async {
     context.go('/vendor/home');
     return null;
   }
+  // The session may predate the grant of `import`: ask the server's stored
+  // staff record once before refusing. If /vendor/me cannot be read the
+  // session's own permissions stand, so this fails closed.
+  if (!canVendor(context, 'import')) await refreshVendorAccess(context);
+  if (!context.mounted) return null;
   if (!canVendor(context, 'import')) {
     FFSnack.error(context, context.tr('vendor.import.noAccess'));
     context.go('/vendor/home');

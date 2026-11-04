@@ -75,6 +75,7 @@ class _ImportBatchPageState extends State<ImportBatchPage> {
   /// status moves under it (a retry from the result stays on the result).
   BatchStatus _runStartStatus = BatchStatus.unknown;
   ImportPause? _pause;
+  int? _pauseSeconds;
   String? _runError;
   bool _expired = false;
   bool _include = false;
@@ -146,6 +147,7 @@ class _ImportBatchPageState extends State<ImportBatchPage> {
       _runFromFresh = _fresh;
       _runStartStatus = _fresh ? BatchStatus.ready : b.status;
       _pause = null;
+      _pauseSeconds = null;
       _runError = null;
       _expired = false;
     });
@@ -169,7 +171,10 @@ class _ImportBatchPageState extends State<ImportBatchPage> {
         _adopt(batch);
       case ApplyPaused(:final reason, :final batch):
         if (batch != null) _adopt(batch);
-        setState(() => _pause = reason);
+        setState(() {
+          _pause = reason;
+          _pauseSeconds = outcome.retryAfterSeconds;
+        });
       case ApplyFailed(:final error):
         setState(() {
           _expired = importErrorCode(error) == 'batch_expired';
@@ -244,7 +249,13 @@ class _ImportBatchPageState extends State<ImportBatchPage> {
   Widget build(BuildContext context) {
     final t = context.tr;
     return Scaffold(
-      appBar: AppBar(title: Text(t('vendor.import.batch.title'))),
+      appBar: AppBar(
+        title: Text(
+          t('vendor.import.batch.title'),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
       body: _access == null || (_loading && _detail == null)
           ? const Center(child: FFSpinner())
           : RefreshIndicator(
@@ -583,7 +594,11 @@ class _ImportBatchPageState extends State<ImportBatchPage> {
           padding: const EdgeInsets.only(bottom: FFTokens.spacingMd),
           child: FFAlert(
             key: const Key('import-paused'),
-            message: t('vendor.import.paused.${_pause!.name}'),
+            message: _pause == ImportPause.rate && _pauseSeconds != null
+                ? t(
+                    'vendor.import.paused.rateIn',
+                  ).replaceAll('{n}', '$_pauseSeconds')
+                : t('vendor.import.paused.${_pause!.name}'),
           ),
         ),
       if (_runError != null && !_expired)
@@ -630,8 +645,10 @@ class _ImportBatchPageState extends State<ImportBatchPage> {
         items: [
           (t('vendor.import.result.imported'), c.applied),
           (t('vendor.import.result.failed'), c.failed),
+          // One number: the server finishes every row it did not try as
+          // "skipped" (invalid ones included), so a separate Skipped card
+          // would count the same rows twice.
           (t('vendor.import.result.notImported'), c.notImported(include)),
-          (t('vendor.import.result.skipped'), c.skipped),
         ],
       ),
       const SizedBox(height: FFTokens.spacingMd),
@@ -673,7 +690,9 @@ class _ImportBatchPageState extends State<ImportBatchPage> {
           onPressed: _running ? null : () => _run(ApplyStart.retry),
         ),
       ],
-      if (problems > 0) _errorsButton(),
+      // errors.csv lists the problems found when the rows were checked, not
+      // rows that failed while importing (those are listed below).
+      if (c.invalid + c.needsReview > 0) _errorsButton(),
       const SizedBox(height: FFTokens.spacingSm),
       importButton(
         key: const Key('import-another'),
@@ -701,6 +720,7 @@ class _ImportBatchPageState extends State<ImportBatchPage> {
           batchId: b.id,
           version: b.version,
           offerFailedFilter: c.failed > 0,
+          failedCount: c.failed,
         ),
       ],
     ];
@@ -708,13 +728,26 @@ class _ImportBatchPageState extends State<ImportBatchPage> {
 
   Widget _errorsButton() => Padding(
     padding: const EdgeInsets.only(top: FFTokens.spacingSm),
-    child: importButton(
-      key: const Key('import-errors-csv'),
-      label: context.tr('vendor.import.errorsCsv'),
-      icon: Icons.download_outlined,
-      variant: FFButtonVariant.secondary,
-      loading: _csvBusy,
-      onPressed: _csvBusy ? null : _downloadErrors,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        importButton(
+          key: const Key('import-errors-csv'),
+          label: context.tr('vendor.import.errorsCsv'),
+          icon: Icons.download_outlined,
+          variant: FFButtonVariant.secondary,
+          loading: _csvBusy,
+          onPressed: _csvBusy ? null : _downloadErrors,
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: FFTokens.spacingXs),
+          child: Text(
+            context.tr('vendor.import.errorsCsv.help'),
+            key: const Key('import-errors-help'),
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+        ),
+      ],
     ),
   );
 

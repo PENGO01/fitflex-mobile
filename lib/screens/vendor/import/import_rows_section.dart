@@ -27,6 +27,7 @@ class ImportRowsSection extends StatefulWidget {
     required this.batchId,
     required this.version,
     this.offerFailedFilter = false,
+    this.failedCount = 0,
   });
 
   final String batchId;
@@ -36,6 +37,11 @@ class ImportRowsSection extends StatefulWidget {
 
   /// After an apply with failed rows: offer "All problems | Failed rows".
   final bool offerFailedFilter;
+
+  /// The server's count of rows that failed to apply. When it is above zero
+  /// but no failed row can be listed (a server that cannot filter or order
+  /// them), the section says so instead of showing a number with no rows.
+  final int failedCount;
 
   @override
   State<ImportRowsSection> createState() => _ImportRowsSectionState();
@@ -119,11 +125,25 @@ class _ImportRowsSectionState extends State<ImportRowsSection> {
   List<ImportRow> get _shown =>
       _failedOnly ? _rows : _rows.where(importRowIsProblem).toList();
 
-  /// More pages can hold problems only while the last row read was one
-  /// (problem rows come first).
+  /// Problem rows come first, in bands: invalid, failed, needs review, then
+  /// the plain valid rows. A page is therefore worth asking for while no
+  /// plain valid row has been seen yet. Applied rows that needed review
+  /// share a band with pending ones, so they never end the paging, and a
+  /// pending needs-review row is never hidden behind them. An older server
+  /// that buries failed rows among the valid ones stops at the first valid
+  /// row (the safe behaviour: nothing is guessed about what comes after).
   bool get _canShowMore =>
       _cursor != null &&
-      (_failedOnly || (_rows.isNotEmpty && importRowIsProblem(_rows.last)));
+      (_failedOnly || !_rows.any((r) => r.status == 'valid' && !r.failed));
+
+  /// Failed rows exist but none is listed and none can still be loaded.
+  bool get _failedHidden =>
+      widget.failedCount > 0 &&
+      !_failedOnly &&
+      !_loading &&
+      _error == null &&
+      !_canShowMore &&
+      !_shown.any((r) => r.failed);
 
   @override
   Widget build(BuildContext context) {
@@ -169,7 +189,7 @@ class _ImportRowsSectionState extends State<ImportRowsSection> {
             ),
             onRetry: _load,
           )
-        else if (_shown.isEmpty)
+        else if (_shown.isEmpty && !_failedHidden)
           Padding(
             padding: const EdgeInsets.only(bottom: FFTokens.spacingSm),
             child: Text(
@@ -180,6 +200,15 @@ class _ImportRowsSectionState extends State<ImportRowsSection> {
           )
         else
           for (final r in _shown) ImportRowTile(row: r),
+        if (_failedHidden)
+          Padding(
+            padding: const EdgeInsets.only(bottom: FFTokens.spacingSm),
+            child: FFAlert(
+              key: const Key('import-failed-hidden'),
+              message: t('vendor.import.rows.failedHidden'),
+              tone: FFAlertTone.warning,
+            ),
+          ),
         if (_canShowMore)
           importButton(
             key: const Key('import-rows-more'),

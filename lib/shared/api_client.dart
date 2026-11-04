@@ -2314,7 +2314,8 @@ class ApiClient {
 
   /// `POST /vendor/imports/:id/apply`: `{batch, processed, remaining}`. One
   /// call works up to 200 rows and may wait for a place in the queue, so it
-  /// gets a longer time limit than other calls.
+  /// gets a much longer time limit than other calls (up to four queue
+  /// waits of 15 s plus the row work).
   Future<Map<String, dynamic>> vendorImportApply(
     String id, {
     required bool includeNeedsReview,
@@ -2323,7 +2324,7 @@ class ApiClient {
       'POST',
       _importPath(id, '/apply'),
       body: {'includeNeedsReview': includeNeedsReview},
-      timeout: const Duration(seconds: 75),
+      timeout: const Duration(seconds: 150),
     );
     return out is Map ? Map<String, dynamic>.from(out) : <String, dynamic>{};
   }
@@ -2334,7 +2335,7 @@ class ApiClient {
       'POST',
       _importPath(id, '/retry'),
       body: const <String, dynamic>{},
-      timeout: const Duration(seconds: 75),
+      timeout: const Duration(seconds: 150),
     );
     return out is Map ? Map<String, dynamic>.from(out) : <String, dynamic>{};
   }

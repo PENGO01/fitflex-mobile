@@ -7556,6 +7556,10 @@ class FFLocale extends ChangeNotifier {
       'vendor.permission.purchases': 'Suppliers and stock in',
       'vendor.permission.purchasesHint':
           'Suppliers, receiving stock, cost prices from deliveries and what you owe',
+      'vendor.permission.import':
+          'Data import',
+      'vendor.permission.importHint':
+          'Lets them add products and stock counts from a file, even without Products.',
       'vendor.stock.reason.stock_in': 'Received from supplier',
       'vendor.stock.reason.stock_in_void':
           'Delivery voided, out of stock again',
@@ -7865,7 +7869,8 @@ class FFLocale extends ChangeNotifier {
           'Upload a CSV file to add many products or stock counts at once.',
       'vendor.import.noName': 'Unnamed file',
       'vendor.import.rowsTotal': 'Rows: {n}',
-      'vendor.import.status.mapping_required': 'Columns need checking',
+      'vendor.import.status.mapping_required':
+          'Match columns',
       'vendor.import.status.ready': 'Ready to import',
       'vendor.import.status.applying': 'Importing',
       'vendor.import.status.applied': 'Imported',
@@ -7900,14 +7905,18 @@ class FFLocale extends ChangeNotifier {
       'vendor.import.template.example': 'Include two example rows',
       'vendor.import.template.download': 'Download template',
       'vendor.import.file.hint':
-          'CSV file saved as UTF-8, up to {mb} MB and {rows} rows.',
+          'CSV file saved as UTF-8, up to {size} and {rows} rows.',
+      'vendor.import.unit.mb':
+          '{n} MB',
+      'vendor.import.unit.kb':
+          '{n} KB',
       'vendor.import.file.pick': 'Choose CSV file',
       'vendor.import.file.change': 'Choose another file',
       'vendor.import.file.spreadsheet':
           'Excel files are not supported yet. Open it and save it as CSV (UTF-8), then choose that file.',
       'vendor.import.file.empty': 'This file is empty.',
       'vendor.import.file.tooLarge':
-          'This file is larger than {mb} MB. Split it into smaller files.',
+          'This file is larger than {size}. Split it into smaller files.',
       'vendor.import.upload': 'Upload and check',
       'vendor.import.uploading': 'Uploading',
       'vendor.import.openExisting': 'Open that import',
@@ -7922,7 +7931,8 @@ class FFLocale extends ChangeNotifier {
       'vendor.import.match.synonym': 'Similar name',
       'vendor.import.match.fuzzy': 'Close spelling, needs confirming',
       'vendor.import.match.none': 'No match',
-      'vendor.import.count.valid': 'Valid rows',
+      'vendor.import.count.valid':
+          'Ready rows',
       'vendor.import.count.needs_review': 'Rows to review',
       'vendor.import.count.invalid': 'Invalid rows',
       'vendor.import.count.total': 'All rows',
@@ -7934,10 +7944,13 @@ class FFLocale extends ChangeNotifier {
       'vendor.import.rows.loading': 'Loading rows',
       'vendor.import.rows.more': 'Show more rows',
       'vendor.import.rows.none': 'No rows to show.',
+      'vendor.import.rows.failedHidden':
+          'Some rows failed. Retry failed rows, or review them in the portal.',
       'vendor.import.rowNo': 'Row {n}',
       'vendor.import.rowStatus.invalid': 'Invalid',
       'vendor.import.rowStatus.needs_review': 'Needs review',
-      'vendor.import.rowStatus.valid': 'Valid',
+      'vendor.import.rowStatus.valid':
+          'Ready',
       'vendor.import.rowStatus.failed': 'Failed',
       'vendor.import.rowError': 'This row could not be imported.',
       'vendor.import.issue.generic': 'This row has a problem.',
@@ -7951,7 +7964,7 @@ class FFLocale extends ChangeNotifier {
       'vendor.import.confirm.excludeFixed':
           'Rows that need review are not included.',
       'vendor.import.confirm.products':
-          'Imported products are created paused and wait for FitFlex approval. Nothing is on sale until you restore each product in Products.',
+          'Imported products are created as paused, waiting for approval. They are not on sale yet. Restore each product in Products to publish it, and FitFlex approval still applies.',
       'vendor.import.confirm.inventory':
           'Each row sets the Stock of the product with that SKU. It is recorded in the stock history.',
       'vendor.import.confirm.profile':
@@ -7971,7 +7984,9 @@ class FFLocale extends ChangeNotifier {
       'vendor.import.paused.busy':
           'FitFlex is busy with other imports. Your progress is saved. Tap Continue import in a moment.',
       'vendor.import.paused.rate':
-          'Too many requests for now. Your progress is saved. Tap Continue import in a minute.',
+          'Too many requests for now. Your progress is saved. Tap Continue import in a moment.',
+      'vendor.import.paused.rateIn':
+          'Too many requests. Your progress is saved. Try again in {n} seconds.',
       'vendor.import.paused.network':
           'The connection was lost. Your progress is saved. Tap Continue import when you are online.',
       'vendor.import.result.applied': 'Import finished',
@@ -7979,18 +7994,21 @@ class FFLocale extends ChangeNotifier {
       'vendor.import.result.imported': 'Imported',
       'vendor.import.result.failed': 'Failed',
       'vendor.import.result.notImported': 'Not imported',
-      'vendor.import.result.skipped': 'Skipped',
       'vendor.import.result.products':
-          'Imported products are paused and wait for FitFlex approval. Open Products, check each one and restore it to put it on sale.',
+          'Imported products are paused and waiting for FitFlex approval. They are not on sale yet. Open Products and restore each product to publish it. FitFlex approval still applies.',
       'vendor.import.result.inventory':
           'Stock counts were applied and recorded in the stock history.',
       'vendor.import.result.profile':
           'Empty profile fields were filled. Nothing was published.',
       'vendor.import.result.viewProducts': 'Go to Products',
-      'vendor.import.result.retry': 'Retry failed rows',
+      'vendor.import.result.retry':
+          'Retry failed rows',
       'vendor.import.result.newImport': 'New import',
       'vendor.import.result.rowsTitle': 'Rows to check',
-      'vendor.import.errorsCsv': 'Download errors file',
+      'vendor.import.errorsCsv':
+          'Download problems file',
+      'vendor.import.errorsCsv.help':
+          'The file lists the problems found when your rows were checked. Rows that failed while importing are listed on this screen.',
       'vendor.import.expired.title': 'This import has expired',
       'vendor.import.discard': 'Discard import',
       'vendor.import.discard.title': 'Discard this import?',
@@ -8024,6 +8042,8 @@ class FFLocale extends ChangeNotifier {
       'vendor.import.field.businessHours': 'Business hours',
       'vendor.import.field.other': 'Another field',
       'vendor.import.err.generic': 'Something went wrong. Try again.',
+      'vendor.import.err.unexpected':
+          'Something unexpected went wrong. Try again.',
       'vendor.import.err.network':
           'No connection to FitFlex. Check your internet and try again.',
       'vendor.import.err.server':
@@ -15680,6 +15700,10 @@ class FFLocale extends ChangeNotifier {
       'vendor.permission.purchases': 'Wasambazaji na kupokea Stock',
       'vendor.permission.purchasesHint':
           'Wasambazaji, kupokea Stock, bei za kununua na madeni yako',
+      'vendor.permission.import':
+          'Kuingiza data',
+      'vendor.permission.importHint':
+          'Inawawezesha kuongeza bidhaa na hesabu za Stock kutoka kwenye faili, hata bila ruhusa ya Bidhaa.',
       'vendor.stock.reason.stock_in': 'Imepokelewa kutoka kwa msambazaji',
       'vendor.stock.reason.stock_in_void':
           'Mzigo umebatilishwa, imetolewa kwenye Stock',
@@ -15988,8 +16012,9 @@ class FFLocale extends ChangeNotifier {
       // Vendor smart import V3: Swahili is a draft for native review.
       'vendor.import.tile': 'Ingiza data ya biashara',
       'vendor.import.tileSubtitle':
-          'Ongeza bidhaa, hesabu za Stock au wasifu wa biashara kutoka faili ya CSV.',
-      'vendor.import.title': 'Ingiza data ya biashara',
+          'Ongeza bidhaa, Stock au wasifu kutoka CSV.',
+      'vendor.import.title':
+          'Ingiza data',
       'vendor.import.new': 'Uingizaji mpya',
       'vendor.import.loading': 'Inapakia uingizaji',
       'vendor.import.more': 'Onyesha zaidi',
@@ -15999,7 +16024,7 @@ class FFLocale extends ChangeNotifier {
       'vendor.import.noName': 'Faili isiyo na jina',
       'vendor.import.rowsTotal': 'Safu mlalo: {n}',
       'vendor.import.status.mapping_required':
-          'Safu wima zinahitaji kuhakikiwa',
+          'Unganisha safu wima',
       'vendor.import.status.ready': 'Tayari kuingizwa',
       'vendor.import.status.applying': 'Inaingizwa',
       'vendor.import.status.applied': 'Imeingizwa',
@@ -16029,19 +16054,24 @@ class FFLocale extends ChangeNotifier {
       'vendor.import.step.file': 'Faili yako ya CSV',
       'vendor.import.template.body':
           'Anza na kiolezo chetu ili safu wima ziendane. Chagua lugha yake.',
-      'vendor.import.template.english': 'Kiingereza',
+      'vendor.import.template.english':
+          'English',
       'vendor.import.template.swahili': 'Kiswahili',
       'vendor.import.template.example': 'Jumuisha safu mlalo mbili za mfano',
       'vendor.import.template.download': 'Pakua kiolezo',
       'vendor.import.file.hint':
-          'Faili ya CSV iliyohifadhiwa kama UTF-8, hadi MB {mb} na safu mlalo {rows}.',
+          'Faili ya CSV iliyohifadhiwa kama UTF-8, hadi {size} na safu mlalo {rows}.',
+      'vendor.import.unit.mb':
+          '{n} MB',
+      'vendor.import.unit.kb':
+          '{n} KB',
       'vendor.import.file.pick': 'Chagua faili ya CSV',
       'vendor.import.file.change': 'Chagua faili nyingine',
       'vendor.import.file.spreadsheet':
           'Faili za Excel bado hazikubaliwi. Ifungue na uihifadhi kama CSV (UTF-8), kisha uchague faili hiyo.',
       'vendor.import.file.empty': 'Faili hii ni tupu.',
       'vendor.import.file.tooLarge':
-          'Faili hii ni kubwa kuliko MB {mb}. Igawe kuwa faili ndogo zaidi.',
+          'Faili hii ni kubwa kuliko {size}. Igawe kuwa faili ndogo zaidi.',
       'vendor.import.upload': 'Pakia na hakiki',
       'vendor.import.uploading': 'Inapakia',
       'vendor.import.openExisting': 'Fungua uingizaji huo',
@@ -16056,7 +16086,8 @@ class FFLocale extends ChangeNotifier {
       'vendor.import.match.synonym': 'Jina linalofanana',
       'vendor.import.match.fuzzy': 'Tahajia ya karibu, inahitaji kuthibitishwa',
       'vendor.import.match.none': 'Hakuna linalolingana',
-      'vendor.import.count.valid': 'Safu mlalo sahihi',
+      'vendor.import.count.valid':
+          'Safu mlalo tayari',
       'vendor.import.count.needs_review': 'Safu mlalo za kuhakiki',
       'vendor.import.count.invalid': 'Safu mlalo zisizo sahihi',
       'vendor.import.count.total': 'Safu mlalo zote',
@@ -16068,10 +16099,13 @@ class FFLocale extends ChangeNotifier {
       'vendor.import.rows.loading': 'Inapakia safu mlalo',
       'vendor.import.rows.more': 'Onyesha safu mlalo zaidi',
       'vendor.import.rows.none': 'Hakuna safu mlalo za kuonyesha.',
+      'vendor.import.rows.failedHidden':
+          'Baadhi ya safu mlalo zimeshindikana. Jaribu tena safu mlalo zilizoshindikana, au zihakiki kwenye tovuti.',
       'vendor.import.rowNo': 'Safu mlalo {n}',
       'vendor.import.rowStatus.invalid': 'Si sahihi',
       'vendor.import.rowStatus.needs_review': 'Inahitaji kuhakikiwa',
-      'vendor.import.rowStatus.valid': 'Sahihi',
+      'vendor.import.rowStatus.valid':
+          'Tayari',
       'vendor.import.rowStatus.failed': 'Imeshindikana',
       'vendor.import.rowError': 'Safu mlalo hii haikuweza kuingizwa.',
       'vendor.import.issue.generic': 'Safu mlalo hii ina tatizo.',
@@ -16085,7 +16119,7 @@ class FFLocale extends ChangeNotifier {
       'vendor.import.confirm.excludeFixed':
           'Safu mlalo zinazohitaji kuhakikiwa hazijajumuishwa.',
       'vendor.import.confirm.products':
-          'Bidhaa zilizoingizwa huundwa zikiwa zimesitishwa na zinasubiri idhini ya FitFlex. Hakuna kinachouzwa hadi urejeshe kila bidhaa kwenye Bidhaa.',
+          'Bidhaa zilizoingizwa huundwa zikiwa zimesitishwa, zinasubiri idhini. Bado hazijaanza kuuzwa. Rudisha kila bidhaa kwenye programu ya FitFlex, sehemu ya Bidhaa, ili kuichapisha; idhini ya FitFlex bado inahitajika.',
       'vendor.import.confirm.inventory':
           'Kila safu mlalo huweka Stock ya bidhaa yenye SKU hiyo. Inarekodiwa kwenye historia ya Stock.',
       'vendor.import.confirm.profile':
@@ -16105,7 +16139,9 @@ class FFLocale extends ChangeNotifier {
       'vendor.import.paused.busy':
           'FitFlex ina shughuli nyingi za uingizaji. Maendeleo yako yamehifadhiwa. Gusa Endelea kuingiza baada ya muda mfupi.',
       'vendor.import.paused.rate':
-          'Maombi ni mengi kwa sasa. Maendeleo yako yamehifadhiwa. Gusa Endelea kuingiza baada ya dakika moja.',
+          'Maombi ni mengi kwa sasa. Maendeleo yako yamehifadhiwa. Gusa Endelea kuingiza baada ya muda mfupi.',
+      'vendor.import.paused.rateIn':
+          'Maombi ni mengi mno. Maendeleo yako yamehifadhiwa. Jaribu tena baada ya sekunde {n}.',
       'vendor.import.paused.network':
           'Muunganisho umekatika. Maendeleo yako yamehifadhiwa. Gusa Endelea kuingiza ukiwa na intaneti.',
       'vendor.import.result.applied': 'Uingizaji umekamilika',
@@ -16113,18 +16149,21 @@ class FFLocale extends ChangeNotifier {
       'vendor.import.result.imported': 'Zilizoingizwa',
       'vendor.import.result.failed': 'Zilizoshindikana',
       'vendor.import.result.notImported': 'Ambazo hazikuingizwa',
-      'vendor.import.result.skipped': 'Zilizorukwa',
       'vendor.import.result.products':
-          'Bidhaa zilizoingizwa zimesitishwa na zinasubiri idhini ya FitFlex. Fungua Bidhaa, hakiki kila moja kisha uirejeshe ili iuzwe.',
+          'Bidhaa zilizoingizwa zimesitishwa na zinasubiri idhini ya FitFlex. Bado hazijaanza kuuzwa. Fungua Bidhaa kwenye programu ya FitFlex na urudishe kila bidhaa ili kuichapisha. Idhini ya FitFlex bado inahitajika.',
       'vendor.import.result.inventory':
           'Hesabu za Stock zimetumika na kurekodiwa kwenye historia ya Stock.',
       'vendor.import.result.profile':
           'Sehemu tupu za wasifu zimejazwa. Hakuna kilichochapishwa.',
       'vendor.import.result.viewProducts': 'Nenda kwenye Bidhaa',
-      'vendor.import.result.retry': 'Jaribu tena zilizoshindikana',
+      'vendor.import.result.retry':
+          'Jaribu tena safu mlalo zilizoshindikana',
       'vendor.import.result.newImport': 'Uingizaji mpya',
       'vendor.import.result.rowsTitle': 'Safu mlalo za kuhakiki',
-      'vendor.import.errorsCsv': 'Pakua faili ya makosa',
+      'vendor.import.errorsCsv':
+          'Pakua faili ya matatizo',
+      'vendor.import.errorsCsv.help':
+          'Faili hii inaorodhesha matatizo yaliyopatikana safu mlalo zilipohakikiwa. Safu mlalo zilizoshindikana wakati wa kuingiza zimeorodheshwa kwenye skrini hii.',
       'vendor.import.expired.title': 'Uingizaji huu umekwisha muda',
       'vendor.import.discard': 'Futa uingizaji',
       'vendor.import.discard.title': 'Ufute uingizaji huu?',
@@ -16158,6 +16197,8 @@ class FFLocale extends ChangeNotifier {
       'vendor.import.field.businessHours': 'Saa za kazi',
       'vendor.import.field.other': 'Sehemu nyingine',
       'vendor.import.err.generic': 'Kuna tatizo. Jaribu tena.',
+      'vendor.import.err.unexpected':
+          'Kuna tatizo lisilotarajiwa. Jaribu tena.',
       'vendor.import.err.network':
           'Hakuna muunganisho na FitFlex. Angalia intaneti yako kisha ujaribu tena.',
       'vendor.import.err.server':
