@@ -37,6 +37,7 @@ class VendorTools {
     this.vat = false,
     this.vatInForce,
     this.reports = false,
+    this.refunds = false,
     this.canSeeOrderMoney = false,
     this.suspended = false,
     this.fromCache = false,
@@ -107,6 +108,16 @@ class VendorTools {
   /// Exactly `true`, else the tab stays "Payments" with no Reports.
   final bool reports;
 
+  /// S7: making, undoing and sharing refunds on walk-in sales
+  /// (VENDOR_REFUNDS). Exactly `true`, else off. Refunds live on walk-in
+  /// sales, so screens also need [walkInSales] (see [refundsOn]). Refunds
+  /// already made stay readable with this off.
+  final bool refunds;
+
+  /// Refund items / Undo may be offered: walk-in sales and refunds both on
+  /// (spec §0.2, fail closed).
+  bool get refundsOn => walkInSales && refunds;
+
   /// S6: this person may see commission and payouts (the vendor, admin
   /// staff, staff with `payments`): the "App sales after commission"
   /// report. Exactly `true`, else hidden.
@@ -141,6 +152,7 @@ class VendorTools {
             ? options['vatInForce'] as bool
             : null,
         reports: options['reports'] == true,
+        refunds: options['refunds'] == true,
         canSeeOrderMoney: options['canSeeOrderMoney'] == true,
         fromCache: fromCache,
       );
@@ -304,6 +316,9 @@ const _labelledReasons = {
   'release',
   'sale',
   'sale_void',
+  // S7: a refund put units back; its undo took them out again.
+  'refund_restock',
+  'refund_revert',
 };
 
 /// The words for a ledger row's reason; never the raw code.

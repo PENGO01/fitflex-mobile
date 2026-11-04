@@ -1030,6 +1030,16 @@ class CustomersReportBody extends StatelessWidget {
             ],
           ),
         ),
+        // S7: balance taken off pay-later sales by refunds (not money).
+        if (numAt(data, 'refundedOffTzs') != 0)
+          Padding(
+            padding: const EdgeInsets.only(top: FFTokens.spacingXs),
+            child: ReportNote(
+              fillIn(t('vendor.reports.cust.refundedOff'), {
+                'amount': reportMoney(numAt(data, 'refundedOffTzs')),
+              }),
+            ),
+          ),
         if (aging != null) ...[
           _gap,
           ReportCard(
@@ -1083,6 +1093,9 @@ class MethodsReportBody extends StatelessWidget {
         limit == null ? l : l.take(limit!).toList();
     final byYou = cut(listAt(data, 'byYou'));
     final via = cut(listAt(data, 'viaFitFlex'));
+    // S7: money paid back on refunds, its own group (never summed with
+    // money in; no share).
+    final paidBack = cut(listAt(data, 'paidBack'));
     Widget group(
       String title,
       List<Map<String, dynamic>> rows,
@@ -1116,7 +1129,167 @@ class MethodsReportBody extends StatelessWidget {
           'paymentMethod',
           false,
         ),
+        if (paidBack.isNotEmpty) ...[
+          const SizedBox(height: FFTokens.spacingSm),
+          Column(
+            key: const Key('reports-methods-paid-back'),
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                t('vendor.reports.methods.paidBack'),
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+              for (final r in paidBack)
+                ReportRow(
+                  label: limit == null
+                      ? '${t(methodKey(r['method']?.toString()))} · ${reportPlural(context, 'vendor.reports.countTimes', numAt(r, 'count'))}'
+                      : t(methodKey(r['method']?.toString())),
+                  value: reportMoney(numAt(r, 'amountTzs')),
+                ),
+            ],
+          ),
+        ],
       ],
+    );
+  }
+}
+
+// ── Refunds (S7 §2.11, S6 §8.5) ──────────────────────────────────────────
+
+/// The Refunds report: totals, then one row per credit note and per undo
+/// (Undone rows negative), oldest first. Rows open the refund for people
+/// who may read it ([onOpen]).
+class RefundsReportBody extends StatelessWidget {
+  const RefundsReportBody({super.key, required this.data, this.onOpen});
+
+  final Map<String, dynamic> data;
+  final ValueChanged<String>? onOpen;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.tr;
+    final lang = reportLang(context);
+    final totals = mapAt(data, 'totals');
+    final rows = listAt(data, 'rows');
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        FFCard(
+          key: const Key('reports-refunds-totals'),
+          child: ReportFigureGrid(
+            figures: [
+              ReportFigure(
+                label: t('vendor.reports.refunds.count'),
+                value: reportCount(numAt(totals, 'count')),
+                large: true,
+              ),
+              ReportFigure(
+                label: t('vendor.reports.refunds.amount'),
+                value: reportMoney(numAt(totals, 'amountTzs')),
+                large: true,
+              ),
+              ReportFigure(
+                label: t('vendor.reports.refunds.paidBack'),
+                value: reportMoney(numAt(totals, 'paidOutTzs')),
+              ),
+              ReportFigure(
+                label: t('vendor.reports.refunds.offBalances'),
+                value: reportMoney(numAt(totals, 'balanceReducedTzs')),
+              ),
+              ReportFigure(
+                label: t('vendor.reports.refunds.restocked'),
+                value: reportCount(numAt(totals, 'restockedUnits')),
+              ),
+              ReportFigure(
+                label: t('vendor.reports.refunds.undoneCount'),
+                value: reportCount(numAt(totals, 'revertedCount')),
+              ),
+            ],
+          ),
+        ),
+        ReportNote(t('vendor.refunds.moneyNotice')),
+        _gap,
+        for (final r in rows) _row(context, r, lang),
+      ],
+    );
+  }
+
+  Widget _row(BuildContext context, Map<String, dynamic> r, String lang) {
+    final t = context.tr;
+    final theme = Theme.of(context);
+    final undo = r['type']?.toString() == 'revert';
+    final id = r['refundId']?.toString() ?? '';
+    final day = parseDay(r['date']);
+    final date = day == null ? '—' : dayInWords(day, lang);
+    final type = t(
+      undo
+          ? 'vendor.reports.refunds.type.revert'
+          : 'vendor.reports.refunds.type.refund',
+    );
+    final method = r['method'] == null
+        ? null
+        : t(methodKey(r['method']?.toString()));
+    final details = [
+      date,
+      '${r['saleNumber'] ?? ''}',
+      if (numAt(r, 'paidOutTzs') != 0)
+        '${t('vendor.reports.refunds.paidBack')} ${reportMoney(numAt(r, 'paidOutTzs'))}',
+      ?method,
+      reportPlural(
+        context,
+        'vendor.reports.refunds.unitsBack',
+        numAt(r, 'restockedUnits'),
+      ),
+    ].join(' · ');
+    final open = onOpen;
+    final body = FFCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            spacing: FFTokens.spacingSm,
+            children: [
+              Text('${r['number'] ?? ''}', style: theme.textTheme.titleSmall),
+              Text(
+                reportMoney(numAt(r, 'amountTzs')),
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontFeatures: const [FontFeature.tabularFigures()],
+                ),
+              ),
+            ],
+          ),
+          Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: FFBadge(
+              label: type,
+              tone: undo ? FFBadgeTone.gray : FFBadgeTone.info,
+            ),
+          ),
+          Text(details, style: theme.textTheme.bodySmall),
+        ],
+      ),
+    );
+    return Padding(
+      key: Key('reports-refund-row-$id-${r['type']}'),
+      padding: const EdgeInsets.only(bottom: FFTokens.spacingSm),
+      child: Semantics(
+        container: true,
+        button: open != null,
+        onTap: open == null || id.isEmpty ? null : () => open(id),
+        label: [
+          '${r['number'] ?? ''}',
+          type,
+          reportMoney(numAt(r, 'amountTzs')),
+          details,
+        ].join(', '),
+        excludeSemantics: true,
+        child: InkWell(
+          onTap: open == null || id.isEmpty ? null : () => open(id),
+          borderRadius: BorderRadius.circular(FFTokens.radiusLg),
+          child: body,
+        ),
+      ),
     );
   }
 }

@@ -1123,7 +1123,11 @@ void main() {
       await openExport(tester);
       // Every section this owner may see has a CSV row, plus the PDF.
       for (final s in ReportSection.values) {
-        expect(find.byKey(Key('reports-export-${s.api}')), findsOneWidget);
+        // S7: Refunds needs the refunds tool (off here).
+        expect(
+          find.byKey(Key('reports-export-${s.api}')),
+          s == ReportSection.refunds ? findsNothing : findsOneWidget,
+        );
       }
       expect(find.byKey(const Key('reports-export-pdf')), findsOneWidget);
       expect(find.text('Downloads use English.'), findsOneWidget);

@@ -140,6 +140,15 @@ class VendorDocumentView extends StatelessWidget {
       'paid' => ('vendor.doc.statusPaid', FFBadgeTone.success),
       'pay_later' => ('vendor.doc.statusPayLater', FFBadgeTone.brand),
       'paid_in_full' => ('vendor.doc.statusPaidInFull', FFBadgeTone.success),
+      // S7: a sale fully refunded, or a pay-later balance a credit note
+      // settled (fitflex-functions#318).
+      'refunded' => ('vendor.doc.statusRefunded', FFBadgeTone.gray),
+      'settled_by_credit_note' => (
+        'vendor.doc.statusSettledByCreditNote',
+        FFBadgeTone.success,
+      ),
+      // S7: a credit note that stands (an undone one reads Cancelled).
+      'issued' => ('vendor.doc.statusIssued', FFBadgeTone.info),
       'cancelled' when orderCancelled => (
         cancelledDay == null
             ? 'vendor.doc.orderCancelledBadge'

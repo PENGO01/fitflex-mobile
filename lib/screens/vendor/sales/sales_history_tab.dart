@@ -15,7 +15,8 @@ import '../../../shared/i18n.dart';
 import '../stock/stock_history_page.dart' show stockRangePickerTheme;
 import '../stock/stock_options.dart';
 import '../customers/customer_models.dart' show customerDisplayName;
-import '../customers/customer_profile_page.dart' show saleKindBadges;
+import '../customers/customer_profile_page.dart'
+    show saleBadgeText, saleKindBadges, saleStatusBadges;
 import '../customers/customers_widgets.dart' show owedHomeRoute, intOf;
 import 'offline_sale_queue.dart';
 import 'receipt_data.dart';
@@ -415,6 +416,20 @@ class VendorSalesTabState extends State<VendorSalesTab> {
                 ],
               ),
             ),
+            // S7: refunds made in the range (minus undos) and the net.
+            if (((s['refundTzs'] as num?) ?? 0) > 0)
+              Text(
+                fillIn(context.tr('vendor.sales.refundsLine'), {
+                  'amount': formatCurrency(s['refundTzs'] as num),
+                  'net': formatCurrency(
+                    (s['netTzs'] as num?) ??
+                        ((s['totalTzs'] as num?) ?? 0) -
+                            (s['refundTzs'] as num),
+                  ),
+                }),
+                key: const Key('sales-summary-refunds'),
+                style: theme.textTheme.bodySmall,
+              ),
             if (discounts > 0)
               MoneyRow(
                 context.tr('vendor.sales.discountsGiven'),
@@ -556,15 +571,8 @@ class VendorSalesTabState extends State<VendorSalesTab> {
               'status': status,
             }),
             ?customer,
-            if (s['kind'] == 'credit') ...[
-              context.tr('vendor.sales.payLaterBadge'),
-              if (!voided)
-                (s['balanceTzs'] as num? ?? 0) > 0
-                    ? fillIn(context.tr('vendor.sales.owesBadge'), {
-                        'amount': formatCurrency(s['balanceTzs'] as num),
-                      })
-                    : context.tr('vendor.sales.paidOffBadge'),
-            ],
+            // Pay later, Refunded / Owes / Settled / Paid off, Part refunded.
+            for (final b in saleStatusBadges(s)) saleBadgeText(context, b),
             if (late) context.tr('vendor.sales.offlineBadge'),
             if (override) context.tr('vendor.sales.overrideBadge'),
           ].join(', '),
