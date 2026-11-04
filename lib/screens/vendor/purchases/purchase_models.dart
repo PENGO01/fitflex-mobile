@@ -391,7 +391,7 @@ String purchaseErrorText(
       return t('vendor.purchases.err.alreadyVoided');
     case 'duplicate_supplier':
       return fill('vendor.purchases.err.duplicateSupplier', {
-        'name': name ?? '',
+        'name': duplicateSupplierOf(b, typedName: name).name,
       });
     case 'received_on_out_of_range' ||
         'due_date_out_of_range' ||
@@ -451,6 +451,17 @@ String purchaseLoadErrorKey(Object e) {
     return 'vendor.purchases.noAccess';
   }
   return 'vendor.purchases.failed';
+}
+
+/// The supplier a 409 duplicate_supplier points at (UAT L-4): the server's
+/// `existing {id, name}` (functions#330), else `supplierId` and the name as
+/// typed (older servers).
+({String? id, String name}) duplicateSupplierOf(Map body, {String? typedName}) {
+  final existing = body['existing'] is Map ? body['existing'] as Map : const {};
+  return (
+    id: strOf(existing['id']) ?? strOf(body['supplierId']),
+    name: strOf(existing['name']) ?? typedName?.trim() ?? '',
+  );
 }
 
 // ── text share (spec §6; Q-4: no S5 document) ───────────────────────────

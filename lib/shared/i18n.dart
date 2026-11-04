@@ -7570,6 +7570,9 @@ class FFLocale extends ChangeNotifier {
       'vendor.purchases.costChangesOne': 'Cost price changes for {n} item',
       'vendor.suppliers.boughtOne': 'Bought {amount} in {n} delivery · paid {paid}',
       'vendor.purchases.lastCostNoSupplier': 'Last time: {amount}, {date}',
+      'vendor.purchases.qtyForValue': 'Quantity received for {name}, {qty}',
+      'vendor.purchases.unitCostForValue':
+          'Unit cost for {name}, Tanzanian shillings, {amount}',
       'vendor.stock.grn': 'Delivery {number}',
       'vendor.reports.methods.paidToSuppliers': 'Paid to suppliers (by you)',
       'vendor.purchases.tab': 'Purchases',
@@ -15492,6 +15495,9 @@ class FFLocale extends ChangeNotifier {
       'vendor.purchases.costChangesOne': 'Bei ya kununua inabadilika kwa bidhaa {n}',
       'vendor.suppliers.boughtOne': 'Umenunua {amount} kwa mzigo {n} · umelipa {paid}',
       'vendor.purchases.lastCostNoSupplier': 'Mara ya mwisho: {amount}, {date}',
+      'vendor.purchases.qtyForValue': 'Idadi iliyopokelewa ya {name}, {qty}',
+      'vendor.purchases.unitCostForValue':
+          'Bei ya kununua kwa kimoja ya {name}, shilingi za Tanzania, {amount}',
       'vendor.stock.grn': 'Mzigo {number}',
       'vendor.reports.methods.paidToSuppliers':
           'Uliyowalipa wasambazaji (wewe)',

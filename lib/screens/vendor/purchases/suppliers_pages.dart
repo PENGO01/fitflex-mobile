@@ -358,6 +358,9 @@ class _SupplierFormPageState extends State<SupplierFormPage> {
   String? _problem;
   String? _duplicateId;
 
+  /// The existing supplier's own name (UAT L-4), for the message and link.
+  String? _duplicateName;
+
   bool get _editing => widget.supplierId != null;
 
   @override
@@ -467,11 +470,13 @@ class _SupplierFormPageState extends State<SupplierFormPage> {
       final t = context.tr;
       switch (e.code) {
         case 'duplicate_supplier':
+          final dup = duplicateSupplierOf(b, typedName: _c['name']!.text);
           _errors['name'] = fillIn(
             t('vendor.purchases.err.duplicateSupplier'),
-            {'name': _c['name']!.text.trim()},
+            {'name': dup.name},
           );
-          _duplicateId = strOf(b['supplierId']);
+          _duplicateId = dup.id;
+          _duplicateName = dup.name;
         case 'name_required' || 'name_too_long':
           _errors['name'] = t('vendor.suppliers.nameRequired');
         case 'invalid_phone':
@@ -570,7 +575,7 @@ class _SupplierFormPageState extends State<SupplierFormPage> {
                         child: FFButton(
                           key: const Key('supplier-form-open-duplicate'),
                           label: fillIn(t('vendor.suppliers.open'), {
-                            'name': _c['name']!.text.trim(),
+                            'name': _duplicateName ?? _c['name']!.text.trim(),
                           }),
                           variant: FFButtonVariant.ghost,
                           visualDensity: VisualDensity.standard,
