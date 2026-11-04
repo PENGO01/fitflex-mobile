@@ -41,6 +41,8 @@ import 'customers/customers_tab.dart';
 import 'customers/customers_widgets.dart';
 import 'documents/document_models.dart'
     show TaxProfile, VatCodeOption, ratePctText, vatCodesOf;
+import 'import/import_access.dart' show importEntryShown;
+import 'import/import_entry.dart';
 import 'settings/tax_details_page.dart' show vendorTaxRoute;
 import 'orders/vendor_order_card.dart';
 import 'purchases/purchase_models.dart' show refreshVendorAccess;
@@ -2169,6 +2171,8 @@ class _VendorHomePageState extends State<VendorHomePage> {
                   ),
           ),
         if (_taxEntryShown) _taxEntry(),
+        // Smart import: only with the tool on and the `import` permission.
+        if (importEntryShown(context, _tools)) const VendorImportEntryTile(),
         // Which offers they get in the app and by push — the same page
         // members and trainers use. Staff without this tab reach it from
         // the inbox.
