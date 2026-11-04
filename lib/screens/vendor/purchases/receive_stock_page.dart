@@ -18,7 +18,8 @@ import '../../../shared/network/browser_online.dart';
 import '../../../shared/vendor_purchase_draft_store.dart';
 import '../customers/customer_models.dart' show addDaysTo, formatDay;
 import '../sales/receipt_data.dart' show eatDateTime;
-import '../sales/sale_models.dart' show paymentMethodKey, stockVariants;
+import '../sales/sale_models.dart'
+    show paymentMethodKey, pluralKey, stockVariants;
 import '../stock/stock_options.dart';
 import 'purchase_draft_controller.dart';
 import 'purchase_models.dart';
@@ -77,7 +78,25 @@ class _ReceiveStockPageState extends State<ReceiveStockPage> {
   }
 
   void _redraw() {
-    if (mounted) setState(() {});
+    if (!mounted) return;
+    _syncLineFields();
+    setState(() {});
+  }
+
+  /// UAT H-1: the draft holds every typed quantity and unit cost (written on
+  /// each change, never on blur) and is the source of truth: a line field
+  /// whose text no longer says what the draft holds is put back. Run from
+  /// the draft's listener, never during build.
+  void _syncLineFields() {
+    for (final l in _draft.lines) {
+      _controllersFor(l);
+      final qty = _qty[l.key]!;
+      if ((int.tryParse(qty.text) ?? 0) != l.qty) qty.text = '${l.qty}';
+      final cost = _cost[l.key]!;
+      if (int.tryParse(cost.text) != l.unitCostTzs) {
+        cost.text = l.unitCostTzs == null ? '' : '${l.unitCostTzs}';
+      }
+    }
   }
 
   @override
@@ -606,9 +625,17 @@ class _ReceiveStockPageState extends State<ReceiveStockPage> {
     );
   }
 
-  Widget _list(List<Widget> children) => ListView(
+  /// UAT H-1: the form is one non-lazy scroll view. A ListView builds only
+  /// what is near the screen, so a line scrolled away while its field had
+  /// focus was detached (on Flutter web its typed value came back empty).
+  /// Here every line stays mounted, keyed by its line id.
+  Widget _list(List<Widget> children) => SingleChildScrollView(
+    key: const Key('purchase-form'),
     padding: const EdgeInsets.all(FFTokens.spacingLg),
-    children: children,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: children,
+    ),
   );
 
   List<Widget> _draftAlert() {
@@ -849,7 +876,6 @@ class _ReceiveStockPageState extends State<ReceiveStockPage> {
                 ),
               ],
             ),
-            Text(t('vendor.purchases.qty'), style: theme.textTheme.labelLarge),
             Row(
               children: [
                 stepButton(
@@ -864,8 +890,9 @@ class _ReceiveStockPageState extends State<ReceiveStockPage> {
                       'purchase-line-qty-${l.productId}-${l.variant ?? ''}',
                     ),
                     controller: _qty[l.key],
-                    semanticsLabel: fillIn(t('vendor.purchases.qtyValue'), {
-                      'qty': l.qty,
+                    // UAT M-1: a real label (read with the value).
+                    label: t('vendor.purchases.qty'),
+                    semanticsLabel: fillIn(t('vendor.purchases.qtyFor'), {
                       'name': name,
                     }),
                     keyboardType: TextInputType.number,
@@ -901,11 +928,15 @@ class _ReceiveStockPageState extends State<ReceiveStockPage> {
               ],
               helperText: l.last == null
                   ? null
+                  : l.last!.supplierName == null
+                  // UAT L-2: never "from No supplier".
+                  ? fillIn(t('vendor.purchases.lastCostNoSupplier'), {
+                      'amount': formatCurrency(l.last!.unitCostTzs),
+                      'date': formatDay(l.last!.receivedOn, locale: lang),
+                    })
                   : fillIn(t('vendor.purchases.lastCost'), {
                       'amount': formatCurrency(l.last!.unitCostTzs),
-                      'supplier':
-                          l.last!.supplierName ??
-                          t('vendor.purchases.noSupplier'),
+                      'supplier': l.last!.supplierName,
                       'date': formatDay(l.last!.receivedOn, locale: lang),
                     }),
               errorText: _cost[l.key]!.text.isNotEmpty && !l.costOk
@@ -1197,7 +1228,8 @@ class _ReceiveStockPageState extends State<ReceiveStockPage> {
                   leftTzs: d.leftTzs,
                   earliest: d.receivedDay,
                   latest: latestDue,
-                  firstNumber: d.paysNow ? 2 : 1,
+                  // Numbered from 1, as the portal does (UAT).
+                  firstNumber: 1,
                   onChanged: d.changed,
                 ),
                 Align(
@@ -1380,10 +1412,16 @@ class _ConfirmDialogState extends State<_ConfirmDialog> {
         key: const Key('purchase-confirm'),
         title: Text(
           supplier == null
-              ? fillIn(t('vendor.purchases.confirmTitleNoSupplier'), {
-                  'units': d.units,
-                })
-              : fillIn(t('vendor.purchases.confirmTitle'), {
+              ? fillIn(
+                  t(
+                    pluralKey(
+                      'vendor.purchases.confirmTitleNoSupplier',
+                      d.units,
+                    ),
+                  ),
+                  {'units': d.units},
+                )
+              : fillIn(t(pluralKey('vendor.purchases.confirmTitle', d.units)), {
                   'units': d.units,
                   'supplier': supplier,
                 }),
@@ -1413,7 +1451,12 @@ class _ConfirmDialogState extends State<_ConfirmDialog> {
                 Text(plan, key: const Key('purchase-confirm-plan')),
               ],
               if (changes > 0)
-                Text(fillIn(t('vendor.purchases.costChanges'), {'n': changes})),
+                Text(
+                  fillIn(
+                    t(pluralKey('vendor.purchases.costChanges', changes)),
+                    {'n': changes},
+                  ),
+                ),
               if (_saving) ...[
                 const SizedBox(height: FFTokens.spacingSm),
                 Semantics(
@@ -1582,7 +1625,10 @@ class _ProductPickerState extends State<_ProductPicker> {
       subtitle: Text(
         [
           if (variants.isNotEmpty)
-            fillIn(t('vendor.purchases.variantCount'), {'n': variants.length}),
+            fillIn(
+              t(pluralKey('vendor.purchases.variantCount', variants.length)),
+              {'n': variants.length},
+            ),
           fillIn(t('vendor.purchases.inStockN'), {'n': intOfP(p['stock'])}),
         ].join(' · '),
       ),

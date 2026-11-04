@@ -9,6 +9,7 @@ import '../../../app_scope.dart';
 import '../../../shared/api_client.dart';
 import '../../../shared/components/components.dart';
 import '../../../shared/design_tokens.dart';
+import '../../../shared/formatters.dart' show formatDayMonth, formatTimeOfDay;
 import '../../../shared/i18n.dart';
 import '../../../shared/tone_theme.dart';
 import '../orders/vendor_order_card.dart';
@@ -606,11 +607,11 @@ class _StockHistoryPageState extends State<StockHistoryPage> {
     if (at == null) return '';
     final eat = at.toUtc().add(const Duration(hours: 3));
     final lang = FFLocaleScope.of(context).locale.languageCode;
-    try {
-      return DateFormat('d MMM, HH:mm', lang).format(eat);
-    } catch (_) {
-      return DateFormat('d MMM, HH:mm').format(eat);
-    }
+    // English 24-hour "19 Oct, 14:05"; Swahili 12-hour with the part of the
+    // day "19 Okt, 2:05 mchana" (glossary; UAT on S9).
+    final local = DateTime(eat.year, eat.month, eat.day, eat.hour, eat.minute);
+    return '${formatDayMonth(local, locale: lang)}, '
+        '${formatTimeOfDay(local, locale: lang)}';
   }
 
   Widget _rowTile(BuildContext context, Map<String, dynamic> row) {

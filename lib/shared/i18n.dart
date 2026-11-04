@@ -7560,6 +7560,16 @@ class FFLocale extends ChangeNotifier {
       'vendor.stock.reason.stock_in_void':
           'Delivery voided, out of stock again',
       'vendor.stock.note.variantGone': 'This option no longer exists',
+      'vendor.purchases.qtyFor': 'Quantity received for {name}',
+      'vendor.purchases.variantCountOne': '{n} variant',
+      'vendor.purchases.confirmTitleOne': 'Receive {units} item from {supplier}?',
+      'vendor.purchases.confirmTitleNoSupplierOne': 'Receive {units} item?',
+      'vendor.purchases.voidPaymentsOne': 'The {n} payment recorded on it ({amount}) is voided too. Get any money back from the supplier yourself.',
+      'vendor.purchases.inst.overdueOne': 'Overdue {n} day',
+      'vendor.purchases.inst.dueInOne': 'Due in {n} day',
+      'vendor.purchases.costChangesOne': 'Cost price changes for {n} item',
+      'vendor.suppliers.boughtOne': 'Bought {amount} in {n} delivery · paid {paid}',
+      'vendor.purchases.lastCostNoSupplier': 'Last time: {amount}, {date}',
       'vendor.stock.grn': 'Delivery {number}',
       'vendor.reports.methods.paidToSuppliers': 'Paid to suppliers (by you)',
       'vendor.purchases.tab': 'Purchases',
@@ -7580,7 +7590,7 @@ class FFLocale extends ChangeNotifier {
       'vendor.purchases.failed': 'Could not load purchases.',
       'vendor.purchases.noAccess':
           'You don\'t have access to purchases. Ask the owner.',
-      'vendor.purchases.unavailable': 'Purchases aren\'t available right now.',
+      'vendor.purchases.unavailable': 'Purchases are not available right now.',
       'vendor.purchases.rowLabel':
           '{number}, {supplier}, {date}, {amount}, {state}',
       'vendor.purchases.noSupplier': 'No supplier',
@@ -15472,6 +15482,16 @@ class FFLocale extends ChangeNotifier {
       'vendor.stock.reason.stock_in_void':
           'Mzigo umebatilishwa, imetolewa kwenye Stock',
       'vendor.stock.note.variantGone': 'Chaguo hili halipo tena',
+      'vendor.purchases.qtyFor': 'Idadi iliyopokelewa ya {name}',
+      'vendor.purchases.variantCountOne': 'Chaguo {n}',
+      'vendor.purchases.confirmTitleOne': 'Upokee bidhaa {units} kutoka kwa {supplier}?',
+      'vendor.purchases.confirmTitleNoSupplierOne': 'Upokee bidhaa {units}?',
+      'vendor.purchases.voidPaymentsOne': 'Malipo {n} yaliyorekodiwa ({amount}) yatabatilishwa pia. Dai pesa yako kutoka kwa msambazaji wewe mwenyewe.',
+      'vendor.purchases.inst.overdueOne': 'Imechelewa siku {n}',
+      'vendor.purchases.inst.dueInOne': 'Inadaiwa baada ya siku {n}',
+      'vendor.purchases.costChangesOne': 'Bei ya kununua inabadilika kwa bidhaa {n}',
+      'vendor.suppliers.boughtOne': 'Umenunua {amount} kwa mzigo {n} · umelipa {paid}',
+      'vendor.purchases.lastCostNoSupplier': 'Mara ya mwisho: {amount}, {date}',
       'vendor.stock.grn': 'Mzigo {number}',
       'vendor.reports.methods.paidToSuppliers':
           'Uliyowalipa wasambazaji (wewe)',
