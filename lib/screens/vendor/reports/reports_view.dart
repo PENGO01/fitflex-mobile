@@ -479,6 +479,9 @@ class VendorReportsViewState extends State<VendorReportsView> {
         // S7: money paid back, its own group.
         if (listAt(methods, 'paidBack').isNotEmpty)
           '${t('vendor.reports.methods.paidBack')}: ${[for (final r in listAt(methods, 'paidBack').take(3)) '${t(methodKey(r['method']?.toString()))} ${reportMoney(numAt(r, 'amountTzs'))}'].join(', ')}',
+        // S9: money paid to suppliers, its own group.
+        if (listAt(methods, 'paidToSuppliers').isNotEmpty)
+          '${t('vendor.reports.methods.paidToSuppliers')}: ${[for (final r in listAt(methods, 'paidToSuppliers').take(3)) '${t(methodKey(r['method']?.toString()))} ${reportMoney(numAt(r, 'amountTzs'))}'].join(', ')}',
       ].join('. '),
       onTap: () => _open(ReportSection.methods),
       child: MethodsReportBody(data: methods, limit: 3),

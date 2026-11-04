@@ -95,6 +95,7 @@ class _StockHistoryPageState extends State<StockHistoryPage> {
     final tools = await VendorToolsOptions.of(context);
     if (!mounted) return;
     _walkInSales = tools.walkInSales;
+    _purchases = tools.purchases;
     if (!tools.stockLedger) {
       context.go('/vendor/home?open=products');
       return;
@@ -258,6 +259,9 @@ class _StockHistoryPageState extends State<StockHistoryPage> {
   /// unpaid order): then say so rather than show an Orders tab without it.
   /// S3: rows of walk-in sales link to the sale (feature on + `sales`).
   bool _walkInSales = false;
+
+  /// S9: GRN numbers link to the purchase (else plain text).
+  bool _purchases = false;
 
   Future<void> _openOrder(String orderId) async {
     if (_visibleOrders == null) await _loadVisibleOrders();
@@ -625,8 +629,15 @@ class _StockHistoryPageState extends State<StockHistoryPage> {
         ? fillIn(context.tr('vendor.stock.by'), {'name': actor ?? '—'})
         : context.tr('vendor.stock.bySystem');
     final when = _when(row['createdAt']?.toString());
-    final note = stockNoteLabel(context, row['note']?.toString());
     final doc = row['document'] is Map ? row['document'] as Map : null;
+    final rawNote = stockNoteLabel(context, row['note']?.toString());
+    // S9: a stock-in row's note is its GRN number, already shown as a link.
+    final note =
+        doc != null &&
+            doc['type'] == 'purchase' &&
+            rawNote == doc['number']?.toString()
+        ? null
+        : rawNote;
     final title = variant.isEmpty ? reason : '$reason · $variant';
     // before → after, with an arrow icon (not a "→" glyph: on web it shows
     // as a box until a fallback font loads).
@@ -722,6 +733,32 @@ class _StockHistoryPageState extends State<StockHistoryPage> {
               ),
             )
           : Text(text, style: theme.textTheme.bodySmall);
+    }
+    // S9: stock received from a supplier (or its void) names its GRN; a
+    // link only with the tool on and `purchases` (spec §0.2, §0.3).
+    if (doc != null && doc['type'] == 'purchase') {
+      final purchaseId = doc['id']?.toString() ?? '';
+      final text = fillIn(context.tr('vendor.stock.grn'), {
+        'number': doc['number'] ?? '',
+      });
+      orderLink =
+          _purchases &&
+              canVendor(context, 'purchases') &&
+              RegExp(r'^[A-Za-z0-9_-]{1,64}$').hasMatch(purchaseId)
+          ? FFButton(
+              key: Key('stock-purchase-$id'),
+              label: text,
+              variant: FFButtonVariant.ghost,
+              size: FFButtonSize.sm,
+              onPressed: () => context.push(
+                '/vendor/purchases/${Uri.encodeComponent(purchaseId)}',
+              ),
+            )
+          : Text(
+              text,
+              key: Key('stock-purchase-text-$id'),
+              style: theme.textTheme.bodySmall,
+            );
     }
     final expanded = _expanded.contains(id);
     return Padding(

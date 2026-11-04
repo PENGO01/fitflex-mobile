@@ -38,6 +38,7 @@ class VendorTools {
     this.vatInForce,
     this.reports = false,
     this.refunds = false,
+    this.purchases = false,
     this.canSeeOrderMoney = false,
     this.suspended = false,
     this.fromCache = false,
@@ -118,6 +119,11 @@ class VendorTools {
   /// (spec §0.2, fail closed).
   bool get refundsOn => walkInSales && refunds;
 
+  /// S9: suppliers, receiving stock (GRN) and what is owed to suppliers
+  /// (VENDOR_TOOLS + VENDOR_STOCK_LEDGER + VENDOR_PURCHASES on the server).
+  /// Exactly `true`, else off: no Purchases view, routes go home.
+  final bool purchases;
+
   /// S6: this person may see commission and payouts (the vendor, admin
   /// staff, staff with `payments`): the "App sales after commission"
   /// report. Exactly `true`, else hidden.
@@ -153,6 +159,7 @@ class VendorTools {
             : null,
         reports: options['reports'] == true,
         refunds: options['refunds'] == true,
+        purchases: options['purchases'] == true,
         canSeeOrderMoney: options['canSeeOrderMoney'] == true,
         fromCache: fromCache,
       );
@@ -319,6 +326,9 @@ const _labelledReasons = {
   // S7: a refund put units back; its undo took them out again.
   'refund_restock',
   'refund_revert',
+  // S9: received from a supplier (a GRN), and its void.
+  'stock_in',
+  'stock_in_void',
 };
 
 /// The words for a ledger row's reason; never the raw code.
@@ -334,6 +344,9 @@ String? stockNoteLabel(BuildContext context, String? note) => switch (note) {
   'product_form' => context.tr('vendor.stock.fromProductForm'),
   'product_created' => context.tr('vendor.stock.initial'),
   'variants_tracked' => context.tr('vendor.stock.toVariants'),
+  // A sale / refund void or a GRN whose variant was removed meanwhile: the
+  // units went to (or came from) the product's own count.
+  'variant_gone' => context.tr('vendor.stock.note.variantGone'),
   _ => note,
 };
 
