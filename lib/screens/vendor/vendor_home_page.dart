@@ -1270,6 +1270,11 @@ class _VendorHomePageState extends State<VendorHomePage> {
               onDestinationSelected: (index) {
                 setState(() => _tab = sections[index]);
                 _syncAddress();
+                // UAT L-9: permissions changed meanwhile (GET /vendor/me):
+                // rebuild, so a new section (Purchases) appears at once.
+                _refreshVendorAccess().then((changed) {
+                  if (changed && mounted) setState(() {});
+                });
               },
               destinations: [
                 if (sections.contains(0))
@@ -2262,9 +2267,22 @@ class _VendorHomePageState extends State<VendorHomePage> {
   );
 
   Widget _restrictedTab() {
+    // UAT L-11: staff whose only right is `purchases` while the tool is off
+    // are told Purchases are not available, not "no permissions".
+    final purchasesOnly = _can('purchases') && !_tools.purchases;
     return ListView(
       padding: const EdgeInsets.all(FFTokens.spacingLg),
-      children: [FFEmptyState(title: context.tr('vendor.noAccess'))],
+      children: [
+        FFEmptyState(
+          key: Key(
+            purchasesOnly ? 'vendor-purchases-unavailable' : 'vendor-no-access',
+          ),
+          title: context.tr(
+            purchasesOnly ? 'vendor.purchases.unavailable' : 'vendor.noAccess',
+          ),
+          icon: purchasesOnly ? Icons.local_shipping_outlined : null,
+        ),
+      ],
     );
   }
 

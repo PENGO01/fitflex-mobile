@@ -15,7 +15,8 @@ import '../../../shared/components/components.dart';
 import '../../../shared/design_tokens.dart';
 import '../../../shared/formatters.dart';
 import '../../../shared/i18n.dart';
-import '../customers/customer_models.dart' show formatDay;
+import '../customers/customer_models.dart' show eatTodayString, formatDay;
+import '../sales/sale_models.dart' show pluralKey;
 import '../customers/customers_widgets.dart' show AgingTiles, overdueBadge;
 import '../stock/stock_options.dart';
 import 'purchase_models.dart';
@@ -334,6 +335,9 @@ class SupplierFormPage extends StatefulWidget {
 }
 
 class _SupplierFormPageState extends State<SupplierFormPage> {
+  /// UAT L-6: the last try got no answer: the button says Try again.
+  bool _netFailed = false;
+
   static const _fields = [
     'name',
     'phone',
@@ -430,6 +434,7 @@ class _SupplierFormPageState extends State<SupplierFormPage> {
     setState(() {
       _problem = null;
       _duplicateId = null;
+      _netFailed = false;
     });
     if (!_check()) {
       setState(() {});
@@ -486,7 +491,10 @@ class _SupplierFormPageState extends State<SupplierFormPage> {
           _problem = purchaseErrorText(t, e, where: 'supplier');
       }
     } catch (_) {
-      if (mounted) _problem = context.tr('vendor.purchases.offlineWrite');
+      if (mounted) {
+        _problem = context.tr('vendor.purchases.offlineWrite');
+        _netFailed = true;
+      }
     }
     if (mounted) setState(() => _saving = false);
   }
@@ -587,7 +595,9 @@ class _SupplierFormPageState extends State<SupplierFormPage> {
                   const SizedBox(height: FFTokens.spacingMd),
                   FFButton(
                     key: const Key('supplier-form-save'),
-                    label: t('vendor.suppliers.save'),
+                    label: _netFailed
+                        ? t('common.retry')
+                        : t('vendor.suppliers.save'),
                     fullWidth: true,
                     loading: _saving,
                     onPressed: _save,
@@ -920,11 +930,28 @@ class _SupplierProfilePageState extends State<SupplierProfilePage> {
                   trailing: intOfP(i['daysOverdue']) > 0
                       ? overdueBadge(
                           context,
-                          label: fillIn(t('vendor.purchases.inst.overdue'), {
-                            'n': intOfP(i['daysOverdue']),
-                          }),
+                          label: fillIn(
+                            t(
+                              pluralKey(
+                                'vendor.purchases.inst.overdue',
+                                intOfP(i['daysOverdue']),
+                              ),
+                            ),
+                            {'n': intOfP(i['daysOverdue'])},
+                          ),
                         )
-                      : null,
+                      // UAT L-2: "Due in N days" as on the purchase detail.
+                      : Text(
+                          dueText(
+                            t,
+                            '${i['dueDate']}',
+                            d['asOf']?.toString() ?? eatTodayString(),
+                          ),
+                          key: Key(
+                            'supplier-open-due-${i['purchaseId']}-${i['seq']}',
+                          ),
+                          style: theme.textTheme.bodySmall,
+                        ),
                   onTap: purchaseIdPattern.hasMatch('${i['purchaseId']}')
                       ? () => _go(purchaseRoute('${i['purchaseId']}'))
                       : null,
@@ -936,11 +963,19 @@ class _SupplierProfilePageState extends State<SupplierProfilePage> {
       const SizedBox(height: FFTokens.spacingMd),
       FFSectionTitle(t('vendor.purchases.listTitle')),
       Text(
-        fillIn(t('vendor.suppliers.bought'), {
-          'amount': formatCurrency(intOfP(totals['purchasedTzs'])),
-          'n': intOfP(totals['purchaseCount']),
-          'paid': formatCurrency(intOfP(totals['paidTzs'])),
-        }),
+        fillIn(
+          t(
+            pluralKey(
+              'vendor.suppliers.bought',
+              intOfP(totals['purchaseCount']),
+            ),
+          ),
+          {
+            'amount': formatCurrency(intOfP(totals['purchasedTzs'])),
+            'n': intOfP(totals['purchaseCount']),
+            'paid': formatCurrency(intOfP(totals['paidTzs'])),
+          },
+        ),
         key: const Key('supplier-bought'),
         style: theme.textTheme.bodySmall,
       ),

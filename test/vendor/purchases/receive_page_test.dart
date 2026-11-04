@@ -263,7 +263,7 @@ void main() {
     await typeInto(tester, line('cost', 'p1'), '9500');
     await tapVisible(tester, find.byKey(const Key('purchase-review')));
     expect(find.byKey(const Key('purchase-confirm')), findsOneWidget);
-    expect(find.text('Receive 1 items?'), findsOneWidget);
+    expect(find.text('Receive 1 item?'), findsOneWidget);
     await tester.tap(find.byKey(const Key('purchase-confirm-save')));
     await tester.pumpAndSettle();
     expect(find.text(host.tr('vendor.purchases.err.server')), findsOneWidget);

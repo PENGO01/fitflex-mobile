@@ -12,6 +12,7 @@ import '../../../shared/formatters.dart';
 import '../../../shared/i18n.dart';
 import '../customers/customer_models.dart' show formatDay;
 import '../customers/customers_widgets.dart' show AgingTiles, overdueBadge;
+import '../sales/sale_models.dart' show pluralKey;
 import '../stock/stock_options.dart';
 import 'purchase_models.dart';
 import 'purchases_widgets.dart';
@@ -270,9 +271,10 @@ class _PayablesPageState extends State<PayablesPage> {
                   Flexible(
                     child: overdueBadge(
                       context,
-                      label: fillIn(t('vendor.customers.daysOverdue'), {
-                        'n': days,
-                      }),
+                      label: fillIn(
+                        t(pluralKey('vendor.customers.daysOverdue', days)),
+                        {'n': days},
+                      ),
                     ),
                   ),
               ],
