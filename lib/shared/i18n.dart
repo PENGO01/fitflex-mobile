@@ -7556,6 +7556,10 @@ class FFLocale extends ChangeNotifier {
       'vendor.permission.purchases': 'Suppliers and stock in',
       'vendor.permission.purchasesHint':
           'Suppliers, receiving stock, cost prices from deliveries and what you owe',
+      'vendor.permission.import':
+          'Data import',
+      'vendor.permission.importHint':
+          'Lets them add products and stock counts from a file, even without Products.',
       'vendor.stock.reason.stock_in': 'Received from supplier',
       'vendor.stock.reason.stock_in_void':
           'Delivery voided, out of stock again',
@@ -7855,6 +7859,224 @@ class FFLocale extends ChangeNotifier {
       'vendor.purchases.err.hasOthersPayments':
           'Ask the owner or an admin to void this; it has payments recorded by someone else.',
       'vendor.purchases.notFound': 'This delivery is not available.',
+      // Vendor smart import V3 (VENDOR_IMPORT): upload, results, retry, history.
+      'vendor.import.tile': 'Import business data',
+      'vendor.import.tileSubtitle':
+          'Add products, stock counts or your business profile from a CSV file.',
+      'vendor.import.title': 'Import business data',
+      'vendor.import.new': 'New import',
+      'vendor.import.loading': 'Loading imports',
+      'vendor.import.more': 'Show more',
+      'vendor.import.empty.title': 'No imports yet',
+      'vendor.import.empty.body':
+          'Upload a CSV file to add many products or stock counts at once.',
+      'vendor.import.noName': 'Unnamed file',
+      'vendor.import.rowsTotal': 'Rows: {n}',
+      'vendor.import.status.mapping_required':
+          'Match columns',
+      'vendor.import.status.ready': 'Ready to import',
+      'vendor.import.status.applying': 'Importing',
+      'vendor.import.status.applied': 'Imported',
+      'vendor.import.status.partial': 'Partly imported',
+      'vendor.import.status.discarded': 'Discarded',
+      'vendor.import.status.unknown': 'Unknown status',
+      'vendor.import.status.unknownBody':
+          'This import is in a state this app does not show. Open it in the FitFlex vendor portal on a computer.',
+      'vendor.import.entity.products': 'Products',
+      'vendor.import.entity.inventory': 'Stock counts',
+      'vendor.import.entity.profile': 'Business profile',
+      'vendor.import.entity.unknown': 'Import',
+      'vendor.import.entity.products.hint':
+          'Add new products with price and stock.',
+      'vendor.import.entity.inventory.hint':
+          'Set the Stock of products you already have, by SKU.',
+      'vendor.import.entity.profile.hint':
+          'Fill the empty fields of your business profile.',
+      'vendor.import.profileOwnerOnly':
+          'Only the account holder can import the business profile.',
+      'vendor.import.noAccess': 'You do not have permission to import data.',
+      'vendor.import.needsNetwork':
+          'Imports need an internet connection. Nothing is saved on this phone to send later.',
+      'vendor.import.offline': 'No internet connection. Connect and try again.',
+      'vendor.import.step.entity': 'What are you importing?',
+      'vendor.import.step.template': 'Template (optional)',
+      'vendor.import.step.file': 'Your CSV file',
+      'vendor.import.template.body':
+          'Start from our template so the columns match. Choose its language.',
+      'vendor.import.template.english': 'English',
+      'vendor.import.template.swahili': 'Kiswahili',
+      'vendor.import.template.example': 'Include two example rows',
+      'vendor.import.template.download': 'Download template',
+      'vendor.import.file.hint':
+          'CSV file saved as UTF-8, up to {size} and {rows} rows.',
+      'vendor.import.unit.mb':
+          '{n} MB',
+      'vendor.import.unit.kb':
+          '{n} KB',
+      'vendor.import.file.pick': 'Choose CSV file',
+      'vendor.import.file.change': 'Choose another file',
+      'vendor.import.file.spreadsheet':
+          'Excel files are not supported yet. Open it and save it as CSV (UTF-8), then choose that file.',
+      'vendor.import.file.empty': 'This file is empty.',
+      'vendor.import.file.tooLarge':
+          'This file is larger than {size}. Split it into smaller files.',
+      'vendor.import.upload': 'Upload and check',
+      'vendor.import.uploading': 'Uploading',
+      'vendor.import.openExisting': 'Open that import',
+      'vendor.import.batch.title': 'Import',
+      'vendor.import.mapping.title': 'Continue on a computer',
+      'vendor.import.mapping.body':
+          'Some columns in your file need a person to confirm them before the rows can be checked. Open the FitFlex vendor portal on a computer to match the columns. This phone does not change column matches.',
+      'vendor.import.mapping.columns': 'Columns in your file',
+      'vendor.import.mapping.feeds': 'Used for: {field}',
+      'vendor.import.mapping.unused': 'Not used',
+      'vendor.import.match.exact': 'Exact match',
+      'vendor.import.match.synonym': 'Similar name',
+      'vendor.import.match.fuzzy': 'Close spelling, needs confirming',
+      'vendor.import.match.none': 'No match',
+      'vendor.import.count.valid':
+          'Ready rows',
+      'vendor.import.count.needs_review': 'Rows to review',
+      'vendor.import.count.invalid': 'Invalid rows',
+      'vendor.import.count.total': 'All rows',
+      'vendor.import.check.nothingReady':
+          'No row can be imported yet. Fix the file and upload it again.',
+      'vendor.import.rows.title': 'Rows with problems',
+      'vendor.import.rows.all': 'All problems',
+      'vendor.import.rows.failed': 'Failed rows',
+      'vendor.import.rows.loading': 'Loading rows',
+      'vendor.import.rows.more': 'Show more rows',
+      'vendor.import.rows.none': 'No rows to show.',
+      'vendor.import.rows.failedHidden':
+          'Some rows failed. Retry failed rows, or review them in the portal.',
+      'vendor.import.rowNo': 'Row {n}',
+      'vendor.import.rowStatus.invalid': 'Invalid',
+      'vendor.import.rowStatus.needs_review': 'Needs review',
+      'vendor.import.rowStatus.valid':
+          'Ready',
+      'vendor.import.rowStatus.failed': 'Failed',
+      'vendor.import.rowError': 'This row could not be imported.',
+      'vendor.import.issue.generic': 'This row has a problem.',
+      'vendor.import.confirm.summary': 'Rows to import: {n}',
+      'vendor.import.confirm.includeReview':
+          'Also import rows that need review ({n})',
+      'vendor.import.confirm.includeReviewHint':
+          'Off by default. You choose once, before the first import, and cannot change it later.',
+      'vendor.import.confirm.includeFixed':
+          'Rows that need review are included.',
+      'vendor.import.confirm.excludeFixed':
+          'Rows that need review are not included.',
+      'vendor.import.confirm.products':
+          'Imported products are created as paused, waiting for approval. They are not on sale yet. Restore each product in Products to publish it, and FitFlex approval still applies.',
+      'vendor.import.confirm.inventory':
+          'Each row sets the Stock of the product with that SKU. It is recorded in the stock history.',
+      'vendor.import.confirm.profile':
+          'Only the empty fields of your business profile are filled. Nothing is published, and your payout account is never changed.',
+      'vendor.import.confirm.start': 'Start import',
+      'vendor.import.confirm.starting': 'Importing',
+      'vendor.import.confirm.continue': 'Continue import',
+      'vendor.import.confirm.progress': 'Rows done: {done} of {total}',
+      'vendor.import.confirm.keepOpen':
+          'Keep this screen open until it finishes.',
+      'vendor.import.continue.body':
+          'This import was started and is not finished. Continue where it stopped.',
+      'vendor.import.continue.imported': 'Imported',
+      'vendor.import.continue.failed': 'Failed',
+      'vendor.import.continue.waiting': 'Waiting',
+      'vendor.import.continue.retry': 'Retry failed rows',
+      'vendor.import.paused.busy':
+          'FitFlex is busy with other imports. Your progress is saved. Tap Continue import in a moment.',
+      'vendor.import.paused.rate':
+          'Too many requests for now. Your progress is saved. Tap Continue import in a moment.',
+      'vendor.import.paused.rateIn':
+          'Too many requests. Your progress is saved. Try again in {n} seconds.',
+      'vendor.import.paused.network':
+          'The connection was lost. Your progress is saved. Tap Continue import when you are online.',
+      'vendor.import.result.applied': 'Import finished',
+      'vendor.import.result.partial': 'Import partly finished',
+      'vendor.import.result.imported': 'Imported',
+      'vendor.import.result.failed': 'Failed',
+      'vendor.import.result.notImported': 'Not imported',
+      'vendor.import.result.products':
+          'Imported products are paused and waiting for FitFlex approval. They are not on sale yet. Open Products and restore each product to publish it. FitFlex approval still applies.',
+      'vendor.import.result.inventory':
+          'Stock counts were applied and recorded in the stock history.',
+      'vendor.import.result.profile':
+          'Empty profile fields were filled. Nothing was published.',
+      'vendor.import.result.viewProducts': 'Go to Products',
+      'vendor.import.result.retry':
+          'Retry failed rows',
+      'vendor.import.result.newImport': 'New import',
+      'vendor.import.result.rowsTitle': 'Rows to check',
+      'vendor.import.errorsCsv':
+          'Download problems file',
+      'vendor.import.errorsCsv.help':
+          'The file lists the problems found when your rows were checked. Rows that failed while importing are listed on this screen.',
+      'vendor.import.expired.title': 'This import has expired',
+      'vendor.import.discard': 'Discard import',
+      'vendor.import.discard.title': 'Discard this import?',
+      'vendor.import.discard.body':
+          'The file is thrown away and you can upload it again. This cannot be undone.',
+      'vendor.import.discard.cancel': 'Keep it',
+      'vendor.import.discard.confirm': 'Discard',
+      'vendor.import.discarded': 'Import discarded',
+      'vendor.import.discarded.title': 'This import was discarded',
+      'vendor.import.discarded.body':
+          'Nothing was imported. You can upload the file again.',
+      'vendor.import.backToList': 'All imports',
+      'vendor.import.field.name': 'Name',
+      'vendor.import.field.price_tzs': 'Price (TSh)',
+      'vendor.import.field.stock': 'Stock',
+      'vendor.import.field.category': 'Category',
+      'vendor.import.field.description': 'Description',
+      'vendor.import.field.brand': 'Brand',
+      'vendor.import.field.sku': 'SKU',
+      'vendor.import.field.discount_price_tzs': 'Discount price (TSh)',
+      'vendor.import.field.cost_tzs': 'Cost (TSh)',
+      'vendor.import.field.reorder_level': 'Reorder level',
+      'vendor.import.field.image': 'Image (not imported)',
+      'vendor.import.field.quantity': 'Quantity',
+      'vendor.import.field.variant': 'Variant',
+      'vendor.import.field.businessName': 'Business name',
+      'vendor.import.field.businessCategory': 'Business category',
+      'vendor.import.field.contactNumber': 'Contact number',
+      'vendor.import.field.email': 'Email',
+      'vendor.import.field.address': 'Address',
+      'vendor.import.field.businessHours': 'Business hours',
+      'vendor.import.field.other': 'Another field',
+      'vendor.import.err.generic': 'Something went wrong. Try again.',
+      'vendor.import.err.unexpected':
+          'Something unexpected went wrong. Try again.',
+      'vendor.import.err.network':
+          'No connection to FitFlex. Check your internet and try again.',
+      'vendor.import.err.server':
+          'FitFlex could not do that right now. Try again shortly.',
+      'vendor.import.err.rateLimited': 'Too many requests. Try again shortly.',
+      'vendor.import.err.tooLarge': 'The file is too large.',
+      'vendor.import.err.tooManyRows': 'The file has too many rows.',
+      'vendor.import.err.unsupportedType':
+          'Only CSV files are supported. Save your spreadsheet as CSV (UTF-8).',
+      'vendor.import.err.encoding':
+          'The file is not UTF-8. Save it as CSV (UTF-8).',
+      'vendor.import.err.duplicate': 'This exact file was already uploaded.',
+      'vendor.import.err.busy':
+          'This import is busy right now. Try again shortly.',
+      'vendor.import.err.aborted':
+          'The request was cancelled. Tap Continue import to pick up where it stopped.',
+      'vendor.import.err.expired':
+          'This import ended more than 30 days ago and its data was cleared. Upload the file again.',
+      'vendor.import.err.notFound': 'Import not found.',
+      'vendor.import.err.notEditable': 'This import can no longer be changed.',
+      'vendor.import.err.notReady': 'This import is not ready to apply.',
+      'vendor.import.err.nothingToRetry': 'No failed rows to retry.',
+      'vendor.import.err.notDiscardable':
+          'Rows were already imported, so this import cannot be discarded.',
+      'vendor.import.err.permission': 'You do not have permission to import.',
+      'vendor.import.err.suspended': 'This vendor account is suspended.',
+      'vendor.import.err.disabled': 'Smart import is not switched on.',
+      'vendor.import.err.quota':
+          'Too many imports today or still open. Finish or discard one first.',
+      'vendor.import.err.empty': 'The file has no data rows.',
     },
     'sw': {
       'app.title': 'FitFlex',
@@ -15481,6 +15703,10 @@ class FFLocale extends ChangeNotifier {
       'vendor.permission.purchases': 'Wasambazaji na kupokea Stock',
       'vendor.permission.purchasesHint':
           'Wasambazaji, kupokea Stock, bei za kununua na madeni yako',
+      'vendor.permission.import':
+          'Kuingiza data',
+      'vendor.permission.importHint':
+          'Inawawezesha kuongeza bidhaa na hesabu za Stock kutoka kwenye faili, hata bila ruhusa ya Bidhaa.',
       'vendor.stock.reason.stock_in': 'Imepokelewa kutoka kwa msambazaji',
       'vendor.stock.reason.stock_in_void':
           'Mzigo umebatilishwa, imetolewa kwenye Stock',
@@ -15789,6 +16015,230 @@ class FFLocale extends ChangeNotifier {
           'Namba ya ankara au maelezo ni marefu mno.',
       'vendor.purchases.err.hasOthersPayments': 'Mwombe mmiliki au admin abatilishe hii; ina malipo yaliyorekodiwa na mtu mwingine.',
       'vendor.purchases.notFound': 'Mzigo huu haupatikani.',
+      // Vendor smart import V3: Swahili is a draft for native review.
+      'vendor.import.tile': 'Ingiza data ya biashara',
+      'vendor.import.tileSubtitle':
+          'Ongeza bidhaa, Stock au wasifu kutoka CSV.',
+      'vendor.import.title':
+          'Ingiza data',
+      'vendor.import.new': 'Uingizaji mpya',
+      'vendor.import.loading': 'Inapakia uingizaji',
+      'vendor.import.more': 'Onyesha zaidi',
+      'vendor.import.empty.title': 'Bado hakuna uingizaji',
+      'vendor.import.empty.body':
+          'Pakia faili ya CSV ili kuongeza bidhaa nyingi au hesabu za Stock kwa wakati mmoja.',
+      'vendor.import.noName': 'Faili isiyo na jina',
+      'vendor.import.rowsTotal': 'Safu mlalo: {n}',
+      'vendor.import.status.mapping_required':
+          'Unganisha safu wima',
+      'vendor.import.status.ready': 'Tayari kuingizwa',
+      'vendor.import.status.applying': 'Inaingizwa',
+      'vendor.import.status.applied': 'Imeingizwa',
+      'vendor.import.status.partial': 'Imeingizwa kwa sehemu',
+      'vendor.import.status.discarded': 'Imefutwa',
+      'vendor.import.status.unknown': 'Hali isiyojulikana',
+      'vendor.import.status.unknownBody':
+          'Uingizaji huu uko katika hali ambayo programu hii haionyeshi. Ufungue kwenye tovuti ya muuzaji ya FitFlex kwa kutumia kompyuta.',
+      'vendor.import.entity.products': 'Bidhaa',
+      'vendor.import.entity.inventory': 'Hesabu za Stock',
+      'vendor.import.entity.profile': 'Wasifu wa biashara',
+      'vendor.import.entity.unknown': 'Uingizaji',
+      'vendor.import.entity.products.hint':
+          'Ongeza bidhaa mpya zenye bei na Stock.',
+      'vendor.import.entity.inventory.hint':
+          'Weka Stock ya bidhaa ulizo nazo tayari, kwa SKU.',
+      'vendor.import.entity.profile.hint':
+          'Jaza sehemu tupu za wasifu wa biashara yako.',
+      'vendor.import.profileOwnerOnly':
+          'Ni mmiliki wa akaunti pekee anayeweza kuingiza wasifu wa biashara.',
+      'vendor.import.noAccess': 'Huna ruhusa ya kuingiza data.',
+      'vendor.import.needsNetwork':
+          'Kuingiza data kunahitaji intaneti. Hakuna kinachohifadhiwa kwenye simu hii ili kutumwa baadaye.',
+      'vendor.import.offline': 'Hakuna intaneti. Unganisha kisha ujaribu tena.',
+      'vendor.import.step.entity': 'Unaingiza nini?',
+      'vendor.import.step.template': 'Kiolezo (si lazima)',
+      'vendor.import.step.file': 'Faili yako ya CSV',
+      'vendor.import.template.body':
+          'Anza na kiolezo chetu ili safu wima ziendane. Chagua lugha yake.',
+      'vendor.import.template.english':
+          'English',
+      'vendor.import.template.swahili': 'Kiswahili',
+      'vendor.import.template.example': 'Jumuisha safu mlalo mbili za mfano',
+      'vendor.import.template.download': 'Pakua kiolezo',
+      'vendor.import.file.hint':
+          'Faili ya CSV iliyohifadhiwa kama UTF-8, hadi {size} na safu mlalo {rows}.',
+      'vendor.import.unit.mb':
+          '{n} MB',
+      'vendor.import.unit.kb':
+          '{n} KB',
+      'vendor.import.file.pick': 'Chagua faili ya CSV',
+      'vendor.import.file.change': 'Chagua faili nyingine',
+      'vendor.import.file.spreadsheet':
+          'Faili za Excel bado hazikubaliwi. Ifungue na uihifadhi kama CSV (UTF-8), kisha uchague faili hiyo.',
+      'vendor.import.file.empty': 'Faili hii ni tupu.',
+      'vendor.import.file.tooLarge':
+          'Faili hii ni kubwa kuliko {size}. Igawe kuwa faili ndogo zaidi.',
+      'vendor.import.upload': 'Pakia na hakiki',
+      'vendor.import.uploading': 'Inapakia',
+      'vendor.import.openExisting': 'Fungua uingizaji huo',
+      'vendor.import.batch.title': 'Uingizaji',
+      'vendor.import.mapping.title': 'Endelea kwenye kompyuta',
+      'vendor.import.mapping.body':
+          'Baadhi ya safu wima kwenye faili yako zinahitaji mtu kuzithibitisha kabla safu mlalo hazijahakikiwa. Fungua tovuti ya muuzaji ya FitFlex kwenye kompyuta ili kuunganisha safu wima. Simu hii haibadilishi miunganisho ya safu wima.',
+      'vendor.import.mapping.columns': 'Safu wima za faili yako',
+      'vendor.import.mapping.feeds': 'Inatumika kwa: {field}',
+      'vendor.import.mapping.unused': 'Haitumiki',
+      'vendor.import.match.exact': 'Inalingana kabisa',
+      'vendor.import.match.synonym': 'Jina linalofanana',
+      'vendor.import.match.fuzzy': 'Tahajia ya karibu, inahitaji kuthibitishwa',
+      'vendor.import.match.none': 'Hakuna linalolingana',
+      'vendor.import.count.valid':
+          'Safu mlalo tayari',
+      'vendor.import.count.needs_review': 'Safu mlalo za kuhakiki',
+      'vendor.import.count.invalid': 'Safu mlalo zisizo sahihi',
+      'vendor.import.count.total': 'Safu mlalo zote',
+      'vendor.import.check.nothingReady':
+          'Hakuna safu mlalo inayoweza kuingizwa bado. Sahihisha faili kisha uipakie tena.',
+      'vendor.import.rows.title': 'Safu mlalo zenye tatizo',
+      'vendor.import.rows.all': 'Matatizo yote',
+      'vendor.import.rows.failed': 'Safu mlalo zilizoshindikana',
+      'vendor.import.rows.loading': 'Inapakia safu mlalo',
+      'vendor.import.rows.more': 'Onyesha safu mlalo zaidi',
+      'vendor.import.rows.none': 'Hakuna safu mlalo za kuonyesha.',
+      'vendor.import.rows.failedHidden':
+          'Baadhi ya safu mlalo zimeshindikana. Jaribu tena safu mlalo zilizoshindikana, au zihakiki kwenye tovuti.',
+      'vendor.import.rowNo': 'Safu mlalo {n}',
+      'vendor.import.rowStatus.invalid': 'Si sahihi',
+      'vendor.import.rowStatus.needs_review': 'Inahitaji kuhakikiwa',
+      'vendor.import.rowStatus.valid':
+          'Tayari',
+      'vendor.import.rowStatus.failed': 'Imeshindikana',
+      'vendor.import.rowError': 'Safu mlalo hii haikuweza kuingizwa.',
+      'vendor.import.issue.generic': 'Safu mlalo hii ina tatizo.',
+      'vendor.import.confirm.summary': 'Safu mlalo za kuingiza: {n}',
+      'vendor.import.confirm.includeReview':
+          'Ingiza pia safu mlalo zinazohitaji kuhakikiwa ({n})',
+      'vendor.import.confirm.includeReviewHint':
+          'Imezimwa kwa chaguo-msingi. Unachagua mara moja, kabla ya uingizaji wa kwanza, na huwezi kubadilisha baadaye.',
+      'vendor.import.confirm.includeFixed':
+          'Safu mlalo zinazohitaji kuhakikiwa zimejumuishwa.',
+      'vendor.import.confirm.excludeFixed':
+          'Safu mlalo zinazohitaji kuhakikiwa hazijajumuishwa.',
+      'vendor.import.confirm.products':
+          'Bidhaa zilizoingizwa huundwa zikiwa zimesitishwa, zinasubiri idhini. Bado hazijaanza kuuzwa. Rudisha kila bidhaa kwenye programu ya FitFlex, sehemu ya Bidhaa, ili kuichapisha; idhini ya FitFlex bado inahitajika.',
+      'vendor.import.confirm.inventory':
+          'Kila safu mlalo huweka Stock ya bidhaa yenye SKU hiyo. Inarekodiwa kwenye historia ya Stock.',
+      'vendor.import.confirm.profile':
+          'Sehemu tupu pekee za wasifu wa biashara yako ndizo zinazojazwa. Hakuna kinachochapishwa, na akaunti yako ya malipo haibadilishwi kamwe.',
+      'vendor.import.confirm.start': 'Anza kuingiza',
+      'vendor.import.confirm.starting': 'Inaingiza',
+      'vendor.import.confirm.continue': 'Endelea kuingiza',
+      'vendor.import.confirm.progress':
+          'Safu mlalo zilizokamilika: {done} kati ya {total}',
+      'vendor.import.confirm.keepOpen': 'Acha skrini hii wazi hadi ikamilike.',
+      'vendor.import.continue.body':
+          'Uingizaji huu ulianza na haujakamilika. Endelea pale ulipoishia.',
+      'vendor.import.continue.imported': 'Zilizoingizwa',
+      'vendor.import.continue.failed': 'Zilizoshindikana',
+      'vendor.import.continue.waiting': 'Zinazosubiri',
+      'vendor.import.continue.retry': 'Jaribu tena safu mlalo zilizoshindikana',
+      'vendor.import.paused.busy':
+          'FitFlex ina shughuli nyingi za uingizaji. Maendeleo yako yamehifadhiwa. Gusa Endelea kuingiza baada ya muda mfupi.',
+      'vendor.import.paused.rate':
+          'Maombi ni mengi kwa sasa. Maendeleo yako yamehifadhiwa. Gusa Endelea kuingiza baada ya muda mfupi.',
+      'vendor.import.paused.rateIn':
+          'Maombi ni mengi mno. Maendeleo yako yamehifadhiwa. Jaribu tena baada ya sekunde {n}.',
+      'vendor.import.paused.network':
+          'Muunganisho umekatika. Maendeleo yako yamehifadhiwa. Gusa Endelea kuingiza ukiwa na intaneti.',
+      'vendor.import.result.applied': 'Uingizaji umekamilika',
+      'vendor.import.result.partial': 'Uingizaji umekamilika kwa sehemu',
+      'vendor.import.result.imported': 'Zilizoingizwa',
+      'vendor.import.result.failed': 'Zilizoshindikana',
+      'vendor.import.result.notImported': 'Ambazo hazikuingizwa',
+      'vendor.import.result.products':
+          'Bidhaa zilizoingizwa zimesitishwa na zinasubiri idhini ya FitFlex. Bado hazijaanza kuuzwa. Fungua Bidhaa kwenye programu ya FitFlex na urudishe kila bidhaa ili kuichapisha. Idhini ya FitFlex bado inahitajika.',
+      'vendor.import.result.inventory':
+          'Hesabu za Stock zimetumika na kurekodiwa kwenye historia ya Stock.',
+      'vendor.import.result.profile':
+          'Sehemu tupu za wasifu zimejazwa. Hakuna kilichochapishwa.',
+      'vendor.import.result.viewProducts': 'Nenda kwenye Bidhaa',
+      'vendor.import.result.retry':
+          'Jaribu tena safu mlalo zilizoshindikana',
+      'vendor.import.result.newImport': 'Uingizaji mpya',
+      'vendor.import.result.rowsTitle': 'Safu mlalo za kuhakiki',
+      'vendor.import.errorsCsv':
+          'Pakua faili ya matatizo',
+      'vendor.import.errorsCsv.help':
+          'Faili hii inaorodhesha matatizo yaliyopatikana safu mlalo zilipohakikiwa. Safu mlalo zilizoshindikana wakati wa kuingiza zimeorodheshwa kwenye skrini hii.',
+      'vendor.import.expired.title': 'Uingizaji huu umekwisha muda',
+      'vendor.import.discard': 'Futa uingizaji',
+      'vendor.import.discard.title': 'Ufute uingizaji huu?',
+      'vendor.import.discard.body':
+          'Faili inatupwa na unaweza kuipakia tena. Hili haliwezi kutenduliwa.',
+      'vendor.import.discard.cancel': 'Uuache',
+      'vendor.import.discard.confirm': 'Futa',
+      'vendor.import.discarded': 'Uingizaji umefutwa',
+      'vendor.import.discarded.title': 'Uingizaji huu umefutwa',
+      'vendor.import.discarded.body':
+          'Hakuna kilichoingizwa. Unaweza kupakia faili tena.',
+      'vendor.import.backToList': 'Uingizaji wote',
+      'vendor.import.field.name': 'Jina',
+      'vendor.import.field.price_tzs': 'Bei (TSh)',
+      'vendor.import.field.stock': 'Stock',
+      'vendor.import.field.category': 'Aina',
+      'vendor.import.field.description': 'Maelezo',
+      'vendor.import.field.brand': 'Chapa',
+      'vendor.import.field.sku': 'SKU',
+      'vendor.import.field.discount_price_tzs': 'Bei ya punguzo (TSh)',
+      'vendor.import.field.cost_tzs': 'Gharama (TSh)',
+      'vendor.import.field.reorder_level': 'Kiwango cha kuagiza',
+      'vendor.import.field.image': 'Picha (haziingizwi)',
+      'vendor.import.field.quantity': 'Idadi',
+      'vendor.import.field.variant': 'Chaguo',
+      'vendor.import.field.businessName': 'Jina la biashara',
+      'vendor.import.field.businessCategory': 'Aina ya biashara',
+      'vendor.import.field.contactNumber': 'Namba ya mawasiliano',
+      'vendor.import.field.email': 'Barua pepe',
+      'vendor.import.field.address': 'Anwani',
+      'vendor.import.field.businessHours': 'Saa za kazi',
+      'vendor.import.field.other': 'Sehemu nyingine',
+      'vendor.import.err.generic': 'Kuna tatizo. Jaribu tena.',
+      'vendor.import.err.unexpected':
+          'Kuna tatizo lisilotarajiwa. Jaribu tena.',
+      'vendor.import.err.network':
+          'Hakuna muunganisho na FitFlex. Angalia intaneti yako kisha ujaribu tena.',
+      'vendor.import.err.server':
+          'FitFlex haikuweza kufanya hivyo sasa. Jaribu tena baada ya muda mfupi.',
+      'vendor.import.err.rateLimited':
+          'Maombi mengi mno. Jaribu tena baada ya muda mfupi.',
+      'vendor.import.err.tooLarge': 'Faili ni kubwa mno.',
+      'vendor.import.err.tooManyRows': 'Faili ina safu mlalo nyingi mno.',
+      'vendor.import.err.unsupportedType':
+          'Faili za CSV pekee ndizo zinazokubaliwa. Hifadhi lahajedwali yako kama CSV (UTF-8).',
+      'vendor.import.err.encoding':
+          'Faili si UTF-8. Ihifadhi kama CSV (UTF-8).',
+      'vendor.import.err.duplicate': 'Faili hii hii ilishapakiwa.',
+      'vendor.import.err.busy':
+          'Uingizaji huu una shughuli nyingi sasa hivi. Jaribu tena baada ya muda mfupi.',
+      'vendor.import.err.aborted':
+          'Ombi lilighairiwa. Gusa Endelea kuingiza ili kuendelea pale ulipoishia.',
+      'vendor.import.err.expired':
+          'Uingizaji huu uliisha zaidi ya siku 30 zilizopita na data yake ilifutwa. Pakia faili tena.',
+      'vendor.import.err.notFound': 'Uingizaji haujapatikana.',
+      'vendor.import.err.notEditable':
+          'Uingizaji huu hauwezi kubadilishwa tena.',
+      'vendor.import.err.notReady':
+          'Uingizaji huu bado haujawa tayari kutekelezwa.',
+      'vendor.import.err.nothingToRetry':
+          'Hakuna safu mlalo zilizoshindikana za kujaribu tena.',
+      'vendor.import.err.notDiscardable':
+          'Safu mlalo zimeshaingizwa, kwa hiyo uingizaji huu hauwezi kufutwa.',
+      'vendor.import.err.permission': 'Huna ruhusa ya kuingiza.',
+      'vendor.import.err.suspended': 'Akaunti hii ya muuzaji imesimamishwa.',
+      'vendor.import.err.disabled': 'Uingizaji wa haraka haujawashwa.',
+      'vendor.import.err.quota':
+          'Uingizaji mwingi leo au bado uko wazi. Maliza au futa mmoja kwanza.',
+      'vendor.import.err.empty': 'Faili haina safu mlalo za data.',
     },
   };
 }

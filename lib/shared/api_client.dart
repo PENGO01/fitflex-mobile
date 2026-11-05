@@ -98,12 +98,14 @@ class ApiClient {
     Object? body,
     Map<String, String>? extraHeaders,
     void Function(Map<String, String> headers)? onHeaders,
+    Duration timeout = const Duration(seconds: 12),
   }) => _doRequest(
     method,
     path,
     body: body,
     extraHeaders: extraHeaders,
     onHeaders: onHeaders,
+    timeout: timeout,
     attempt: 0,
   );
 
@@ -113,6 +115,7 @@ class ApiClient {
     Object? body,
     Map<String, String>? extraHeaders,
     void Function(Map<String, String> headers)? onHeaders,
+    Duration timeout = const Duration(seconds: 12),
     required int attempt,
   }) async {
     final uri = Uri.parse('$baseUrl$path');
@@ -137,27 +140,27 @@ class ApiClient {
         case 'GET':
           res = await http
               .get(uri, headers: headers)
-              .timeout(const Duration(seconds: 12));
+              .timeout(timeout);
           break;
         case 'POST':
           res = await http
               .post(uri, headers: headers, body: encoded)
-              .timeout(const Duration(seconds: 12));
+              .timeout(timeout);
           break;
         case 'PUT':
           res = await http
               .put(uri, headers: headers, body: encoded)
-              .timeout(const Duration(seconds: 12));
+              .timeout(timeout);
           break;
         case 'PATCH':
           res = await http
               .patch(uri, headers: headers, body: encoded)
-              .timeout(const Duration(seconds: 12));
+              .timeout(timeout);
           break;
         case 'DELETE':
           res = await http
               .delete(uri, headers: headers, body: encoded)
-              .timeout(const Duration(seconds: 12));
+              .timeout(timeout);
           break;
         default:
           throw ArgumentError('Unsupported method $method');
@@ -174,6 +177,7 @@ class ApiClient {
           body: body,
           extraHeaders: extraHeaders,
           onHeaders: onHeaders,
+          timeout: timeout,
           attempt: attempt + 1,
         );
       }
@@ -2224,6 +2228,147 @@ class ApiClient {
   /// `{stockLedger: true, ...}`. Anything but `true` means "not on".
   Future<Map<String, dynamic>> vendorToolsOptions() async =>
       await _request('GET', '/vendor/tools/options');
+
+  // ── Vendor smart import V3 (VENDOR_IMPORT, fitflex-functions#326) ───────
+  // docs/design/vendor-import-v1.md. Every route needs `tools.import` (else
+  // 404 `feature_disabled`) and the staff permission `import`. Errors carry
+  // `{error, message: {en, sw}, ...extra}`.
+
+  static String _importPath(String id, [String tail = '']) =>
+      '/vendor/imports/${_seg(id)}$tail';
+
+  /// `GET /vendor/imports`: `{batches, nextCursor}`, newest first.
+  Future<Map<String, dynamic>> vendorImports({
+    int limit = 50,
+    String? cursor,
+  }) async {
+    final out = await _request(
+      'GET',
+      _withQuery('/vendor/imports', {
+        'limit': '$limit',
+        if (cursor != null && cursor.isNotEmpty) 'cursor': cursor,
+      }),
+    );
+    return out is Map ? Map<String, dynamic>.from(out) : <String, dynamic>{};
+  }
+
+  /// `GET /vendor/imports/:id`: `{batch, columns}`.
+  Future<Map<String, dynamic>> vendorImport(String id) async {
+    final out = await _request('GET', _importPath(id));
+    return out is Map ? Map<String, dynamic>.from(out) : <String, dynamic>{};
+  }
+
+  /// `POST /vendor/imports` (multipart: `entity` first, then `file`): the
+  /// CSV [bytes] as picked. Answers `{batch}`.
+  Future<Map<String, dynamic>> vendorImportUpload({
+    required String entity,
+    required List<int> bytes,
+    required String filename,
+  }) async {
+    final uri = Uri.parse('$baseUrl/vendor/imports');
+    final request = http.MultipartRequest('POST', uri)
+      ..fields['entity'] = entity
+      ..files.add(
+        http.MultipartFile.fromBytes('file', bytes, filename: filename),
+      );
+    request.headers['x-fitflex-client'] = kIdentityV2Client;
+    if (_token != null) request.headers['authorization'] = 'Bearer $_token';
+    _log.multipart('POST', uri, bytes.length);
+    final streamed = await request.send().timeout(const Duration(seconds: 60));
+    final res = await http.Response.fromStream(streamed);
+    _log.response('POST', uri, res.statusCode, res.body);
+    final ok = res.statusCode >= 200 && res.statusCode < 300;
+    final decoded = res.body.isEmpty
+        ? null
+        : ok
+        ? jsonDecode(res.body)
+        : _decodeErrorBody(res.body);
+    if (ok) {
+      return decoded is Map
+          ? Map<String, dynamic>.from(decoded)
+          : <String, dynamic>{};
+    }
+    if (res.statusCode == 401 && onUnauthorized != null) onUnauthorized!();
+    throw ApiException(res.statusCode, decoded);
+  }
+
+  /// `GET /vendor/imports/:id/preview`: `{batch, counts, rows, nextCursor}`,
+  /// problem rows first. [applyState] (`failed`) lists those rows alone.
+  Future<Map<String, dynamic>> vendorImportPreview(
+    String id, {
+    String? applyState,
+    int limit = 20,
+    String? cursor,
+  }) async {
+    final out = await _request(
+      'GET',
+      _withQuery(_importPath(id, '/preview'), {
+        'limit': '$limit',
+        if (applyState != null && applyState.isNotEmpty)
+          'applyState': applyState,
+        if (cursor != null && cursor.isNotEmpty) 'cursor': cursor,
+      }),
+    );
+    return out is Map ? Map<String, dynamic>.from(out) : <String, dynamic>{};
+  }
+
+  /// `POST /vendor/imports/:id/apply`: `{batch, processed, remaining}`. One
+  /// call works up to 200 rows and may wait for a place in the queue, so it
+  /// gets a much longer time limit than other calls (up to four queue
+  /// waits of 15 s plus the row work).
+  Future<Map<String, dynamic>> vendorImportApply(
+    String id, {
+    required bool includeNeedsReview,
+  }) async {
+    final out = await _request(
+      'POST',
+      _importPath(id, '/apply'),
+      body: {'includeNeedsReview': includeNeedsReview},
+      timeout: const Duration(seconds: 150),
+    );
+    return out is Map ? Map<String, dynamic>.from(out) : <String, dynamic>{};
+  }
+
+  /// `POST /vendor/imports/:id/retry`: same answer as apply.
+  Future<Map<String, dynamic>> vendorImportRetry(String id) async {
+    final out = await _request(
+      'POST',
+      _importPath(id, '/retry'),
+      body: const <String, dynamic>{},
+      timeout: const Duration(seconds: 150),
+    );
+    return out is Map ? Map<String, dynamic>.from(out) : <String, dynamic>{};
+  }
+
+  /// `POST /vendor/imports/:id/discard`: `{batch}`.
+  Future<Map<String, dynamic>> vendorImportDiscard(String id) async {
+    final out = await _request(
+      'POST',
+      _importPath(id, '/discard'),
+      body: const <String, dynamic>{},
+    );
+    return out is Map ? Map<String, dynamic>.from(out) : <String, dynamic>{};
+  }
+
+  /// `GET /vendor/imports/:id/errors.csv` as a file (signed in; a plain link
+  /// carries no token).
+  Future<({Uint8List bytes, String? fileName})> vendorImportErrorsCsv(
+    String id,
+  ) => _binary(_importPath(id, '/errors.csv'));
+
+  /// `GET /vendor/imports/template`: the blank CSV for [entity] in [lang]
+  /// (`en` | `sw`), optionally with two example rows.
+  Future<({Uint8List bytes, String? fileName})> vendorImportTemplate({
+    required String entity,
+    required String lang,
+    bool example = false,
+  }) => _binary(
+    _withQuery('/vendor/imports/template', {
+      'entity': entity,
+      'lang': lang,
+      'example': example ? '1' : '0',
+    }),
+  );
 
   // ── Vendor flash sales (Shop home Phase 2 S4, SHOP_FLASH_SALES) ───────
   // fitflex-functions docs/shop-flash-sales-api.md "Vendor endpoints".

@@ -39,6 +39,9 @@ class VendorTools {
     this.reports = false,
     this.refunds = false,
     this.purchases = false,
+    this.dataImport = false,
+    this.importMaxBytes = defaultImportMaxBytes,
+    this.importMaxRows = defaultImportMaxRows,
     this.canSeeOrderMoney = false,
     this.suspended = false,
     this.fromCache = false,
@@ -124,6 +127,21 @@ class VendorTools {
   /// Exactly `true`, else off: no Purchases view, routes go home.
   final bool purchases;
 
+  /// Smart import V3 (VENDOR_TOOLS + VENDOR_IMPORT): CSV import of
+  /// products, stock counts and the business profile, from the options
+  /// answer's `import`. Exactly `true`, else off (fail closed). The person
+  /// also needs the staff permission `import` (see `importOpen`).
+  final bool dataImport;
+
+  /// The file caps from `importLimits` (the server enforces them; the app
+  /// only checks first to save a wasted upload). Defaults when the server
+  /// sends nothing usable.
+  final int importMaxBytes;
+  final int importMaxRows;
+
+  static const defaultImportMaxBytes = 2 * 1024 * 1024;
+  static const defaultImportMaxRows = 2000;
+
   /// S6: this person may see commission and payouts (the vendor, admin
   /// staff, staff with `payments`): the "App sales after commission"
   /// report. Exactly `true`, else hidden.
@@ -160,9 +178,25 @@ class VendorTools {
         reports: options['reports'] == true,
         refunds: options['refunds'] == true,
         purchases: options['purchases'] == true,
+        dataImport: options['import'] == true,
+        importMaxBytes: _positiveInt(
+          options['importLimits'],
+          'maxBytes',
+          defaultImportMaxBytes,
+        ),
+        importMaxRows: _positiveInt(
+          options['importLimits'],
+          'maxRows',
+          defaultImportMaxRows,
+        ),
         canSeeOrderMoney: options['canSeeOrderMoney'] == true,
         fromCache: fromCache,
       );
+}
+
+int _positiveInt(Object? limits, String key, int fallback) {
+  final v = limits is Map ? limits[key] : null;
+  return v is num && v > 0 ? v.toInt() : fallback;
 }
 
 class _Cached {
