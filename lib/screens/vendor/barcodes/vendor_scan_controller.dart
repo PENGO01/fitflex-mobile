@@ -265,6 +265,7 @@ class VendorScanController extends ChangeNotifier {
     bool Function()? online,
     DateTime Function()? now,
     this.debounce = const Duration(milliseconds: 1500),
+    this.offlineOnNetworkError = false,
   }) : _index = index,
        _online = online ?? (() => true),
        _now = now ?? DateTime.now;
@@ -274,6 +275,11 @@ class VendorScanController extends ChangeNotifier {
   final bool Function() _online;
   final DateTime Function() _now;
   final Duration debounce;
+
+  /// The POS (offline-capable, §7): a lookup that gets no answer (the
+  /// network dropped after the list loaded) is "not in the saved list", not
+  /// "Try again" (UAT L-2).
+  final bool offlineOnNetworkError;
 
   String? _lastKey;
   DateTime? _lastAt;
@@ -368,7 +374,12 @@ class VendorScanController extends ChangeNotifier {
       return _refusal(e, code);
     } catch (_) {
       // No answer: nothing is remembered, so Try again looks it up again.
-      return ScanOutcome(ScanOutcomeKind.lookupFailed, code);
+      return ScanOutcome(
+        offlineOnNetworkError
+            ? ScanOutcomeKind.notFoundOffline
+            : ScanOutcomeKind.lookupFailed,
+        code,
+      );
     } finally {
       _busy = false;
       _looking = null;
