@@ -4,6 +4,6 @@
 "NSLocationAlwaysAndWhenInUseUsageDescription" = "FitFlex hutumia mahali ulipo pale tu unapotumia app, kukuonyesha gym zilizo karibu nawe na njia za kufika huko, na kuweka gym yako kwenye ramani. Haifuatilii mahali ulipo chinichini.";
 "NSMotionUsageDescription" = "FitFlex huhesabu hatua zako kufuatilia malengo na changamoto za shughuli zako.";
 "NSContactsUsageDescription" = "FitFlex hufungua mawasiliano yako ili uchague rafiki na umtafute kwenye FitFlex. Namba au barua pepe unayochagua ndiyo pekee inayotafutwa. Orodha yako ya mawasiliano haipakiwi.";
-"NSCameraUsageDescription" = "FitFlex hutumia kamera yako kuchanganua misimbo ya QR ya kuingia gym na kupiga picha unazochagua kuongeza, kama picha za wasifu, gym na uthibitisho.";
+"NSCameraUsageDescription" = "FitFlex hutumia kamera yako kuchanganua misimbo ya QR ya kuingia gym, kuskani misimbopau ya bidhaa ukiuza kwenye FitFlex, na kupiga picha unazochagua kuongeza, kama picha za wasifu, gym na uthibitisho.";
 "NSPhotoLibraryUsageDescription" = "FitFlex hufungua picha zako ili uchague za kupakia, kama picha za wasifu, gym, bidhaa na nyaraka za uthibitisho.";
 "NSPhotoLibraryAddUsageDescription" = "FitFlex huhifadhi picha kwenye maktaba yako ya picha pale tu unapochagua, kama kadi ya matokeo ya tukio lako.";

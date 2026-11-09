@@ -55,7 +55,8 @@ class ScanMatch {
     discountPriceTzs: (m['discountPriceTzs'] as num?)?.toInt(),
     stock: (m['stock'] as num?)?.toInt() ?? 0,
     status: m['status']?.toString() ?? 'active',
-    approvalStatus: m['approvalStatus']?.toString() ?? 'pending',
+    // Absent: as list rows read it (approved).
+    approvalStatus: m['approvalStatus']?.toString() ?? 'approved',
     sku: m['sku']?.toString(),
     matchedBy: m['matchedBy']?.toString() ?? 'barcode',
   );
@@ -167,13 +168,22 @@ class ProductCodeIndex {
     if (hit != null) return [ScanMatch.fromProduct(hit.$1, variant: hit.$2)];
     final sku = _bySku[raw.trim().toLowerCase()];
     if (sku != null && sku.isNotEmpty) {
+      // As the server: by name, then id, at most 10 (B-9).
       final rows = [...sku]
-        ..sort(
-          (a, b) => (a['name']?.toString() ?? '').compareTo(
+        ..sort((a, b) {
+          final byName = (a['name']?.toString() ?? '').compareTo(
             b['name']?.toString() ?? '',
-          ),
-        );
-      return [for (final p in rows) ScanMatch.fromProduct(p, matchedBy: 'sku')];
+          );
+          return byName != 0
+              ? byName
+              : (a['id']?.toString() ?? '').compareTo(
+                  b['id']?.toString() ?? '',
+                );
+        });
+      return [
+        for (final p in rows.take(maxSkuMatches))
+          ScanMatch.fromProduct(p, matchedBy: 'sku'),
+      ];
     }
     return _learned[key] ?? const [];
   }

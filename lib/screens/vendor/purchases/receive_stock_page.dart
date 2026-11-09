@@ -383,6 +383,19 @@ class _ReceiveStockPageState extends State<ReceiveStockPage> {
   /// Scanning is offered: barcodes and purchases both on (§0.2).
   bool get _barcodesOn => _tools.barcodes && _tools.purchases;
 
+  /// Barcodes went off on the server (lookup 404, or a save that left the
+  /// codes out): the panel closes and the tools are asked again, so the
+  /// scan icon goes.
+  void _barcodesWentOff() {
+    setState(() {
+      _scanOpen = false;
+      _scanNotice = null;
+    });
+    VendorToolsOptions.of(context, refresh: true).then((tools) {
+      if (mounted) setState(() => _tools = tools);
+    });
+  }
+
   void _openScan() {
     if (_scan == null || _suspended) return;
     setState(() {
@@ -417,10 +430,7 @@ class _ReceiveStockPageState extends State<ReceiveStockPage> {
     if (outcome == null || !mounted) return false;
     if (outcome.kind == ScanOutcomeKind.featureOff) {
       FFSnack.info(context, context.tr('vendor.barcodes.unavailable'));
-      setState(() {
-        _scanOpen = false;
-        _scanNotice = null;
-      });
+      _barcodesWentOff();
       return false;
     }
     if (outcome.kind == ScanOutcomeKind.suspended) {
@@ -471,6 +481,12 @@ class _ReceiveStockPageState extends State<ReceiveStockPage> {
         ScanNotice.warning(fillIn(t('vendor.scan.archived'), {'name': m.name})),
       );
       return false;
+    }
+    // A product only the lookup knows: load the list so its variants are
+    // complete before choosing one.
+    if (_productOf(m.productId) == null && m.product == null) {
+      await _loadProducts();
+      if (!mounted) return false;
     }
     final p = _productOf(m.productId) ?? m.asProduct;
     var variant = m.variant;
@@ -526,7 +542,7 @@ class _ReceiveStockPageState extends State<ReceiveStockPage> {
         qty: qty,
         productId: line.productId,
         variant: line.variant,
-        message: fillIn(context.tr('vendor.scan.addedLine'), {
+        message: fillIn(context.tr(pluralKey('vendor.scan.addedLine', qty)), {
           'name': label,
           'qty': qty,
         }),
@@ -564,6 +580,10 @@ class _ReceiveStockPageState extends State<ReceiveStockPage> {
       scan.release();
     }
     if (res == null || !mounted) return;
+    if (res.barcodesOff) {
+      _barcodesWentOff();
+      return;
+    }
     if (res.inUseBy != null) {
       scan.resetDebounce();
       await _onScanCode(code, typed: true);

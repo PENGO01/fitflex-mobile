@@ -1,6 +1,8 @@
 // Vendor tools · S8: the pieces every scanning screen shares — the result
 // row (§4.3), the unknown-code actions (§4.6), the several-matches chooser
 // (§4.5), the feedback (§4.3) and "Add this code to a product" (§4.6).
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
@@ -11,6 +13,7 @@ import '../../../shared/components/components.dart';
 import '../../../shared/design_tokens.dart';
 import '../../../shared/formatters.dart';
 import '../../../shared/i18n.dart';
+import '../sales/sale_models.dart' show pluralKey;
 import '../stock/stock_options.dart';
 import 'barcode_rules.dart';
 import 'vendor_scan_controller.dart';
@@ -67,6 +70,15 @@ class ScanNotice {
   final bool offline;
 }
 
+/// The server's `message: {en, sw}` in the app's language, if it sent one.
+String? serverMessage(BuildContext context, Object? body) {
+  final m = body is Map ? body['message'] : null;
+  if (m is! Map) return null;
+  final lang = FFLocaleScope.of(context).locale.languageCode;
+  final text = m[lang] ?? m['en'];
+  return text is String && text.trim().isNotEmpty ? text : null;
+}
+
 /// Haptic + polite announcement for an outcome (§4.3; no sound in v1).
 void scanFeedback(BuildContext context, ScanNoticeKind kind, String message) {
   switch (kind) {
@@ -107,7 +119,9 @@ ScanNotice? noticeFor(
       t('vendor.scan.notProduct'),
     ),
     ScanOutcomeKind.rateLimited => ScanNotice.warning(
-      fillIn(t('vendor.scan.rateLimited'), {'s': outcome.seconds ?? 60}),
+      fillIn(t(pluralKey('vendor.scan.rateLimited', outcome.seconds ?? 60)), {
+        's': outcome.seconds ?? 60,
+      }),
     ),
     ScanOutcomeKind.lookupFailed => ScanNotice.failed(
       t('vendor.scan.lookupFailed'),
@@ -432,7 +446,17 @@ Future<ScanMatch?> singleMatch(
 
 /// What "Add this code to a product" ended with.
 class AddCodeResult {
-  const AddCodeResult({this.product, this.variant, this.inUseBy});
+  const AddCodeResult({
+    this.product,
+    this.variant,
+    this.inUseBy,
+    this.barcodesOff = false,
+  });
+
+  /// Barcodes went off on the server (404 feature_disabled, or a 200 that
+  /// left the codes out): the screen closes its scanner and asks for the
+  /// tools again.
+  final bool barcodesOff;
 
   /// The saved product (the PUT answer) when the code was added.
   final Map<String, dynamic>? product;
@@ -508,14 +532,18 @@ Future<AddCodeResult?> addCodeToProduct(
       ],
     }, productId: picked['id']?.toString());
     if (!context.mounted) return null;
+    if (!saved.containsKey('barcodes')) {
+      // 200 without `barcodes`: the flag went off and the code was ignored.
+      // Never "code added".
+      FFSnack.error(context, t('vendor.barcodes.unavailable'));
+      unawaited(VendorToolsOptions.of(context, refresh: true));
+      return const AddCodeResult(barcodesOff: true);
+    }
     FFSnack.success(
       context,
       fillIn(t('vendor.scan.codeAdded'), {'name': name}),
     );
-    return AddCodeResult(
-      product: saved.isEmpty ? picked : saved,
-      variant: variant,
-    );
+    return AddCodeResult(product: saved, variant: variant);
   } on ApiException catch (e) {
     if (!context.mounted) return null;
     final body = e.body is Map ? e.body as Map : const {};
@@ -535,6 +563,14 @@ Future<AddCodeResult?> addCodeToProduct(
     }
     if (e.status == 404 && e.code == 'feature_disabled') {
       FFSnack.error(context, t('vendor.barcodes.unavailable'));
+      unawaited(VendorToolsOptions.of(context, refresh: true));
+      return const AddCodeResult(barcodesOff: true);
+    }
+    if (e.code == 'save_conflict') {
+      FFSnack.error(
+        context,
+        serverMessage(context, body) ?? t('vendor.barcodes.err.saveConflict'),
+      );
       return null;
     }
     final key = barcodeErrorKey(e.code, reason: body['reason']?.toString());

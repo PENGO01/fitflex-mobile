@@ -20,6 +20,7 @@ class FakeScanCamera implements VendorScanCamera {
   int starts = 0;
   int stops = 0;
   bool disposed = false;
+  @override
   bool running = false;
 
   /// The camera "sees" [raw].

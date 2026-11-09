@@ -909,6 +909,10 @@ class _VendorHomePageState extends State<VendorHomePage> {
     final api = AppScope.of(context).api;
     final productId = product?['id']?.toString();
     var current = product;
+    // S8: a new product was saved without its codes (barcodes went off).
+    var codesDropped = false;
+    // S8: an edit saved without its codes (the form stayed open).
+    var editSaved = false;
     final saved = await showFFSheet<bool>(
       context,
       title: context.tr(
@@ -921,6 +925,11 @@ class _VendorHomePageState extends State<VendorHomePage> {
         stockLedger: true,
         canSeeCost: _tools.canSeeCost,
         barcodesOn: _tools.barcodes,
+        onBarcodesOff: ({required created}) {
+          codesDropped = created;
+          editSaved = !created;
+          unawaited(_askToolsAgain());
+        },
         vatCodes: _vatCodes,
         describeError: _saveFailedText,
         onSave: (body) => api.vendorSaveProduct(body, productId: productId),
@@ -941,8 +950,21 @@ class _VendorHomePageState extends State<VendorHomePage> {
               },
       ),
     );
-    if (saved != true || !mounted) return;
-    FFSnack.success(context, context.tr('vendor.productSaved'));
+    if (!mounted) return;
+    if (saved != true) {
+      // An edit whose codes were refused was still saved: show it.
+      if (editSaved) await _refresh();
+      return;
+    }
+    if (codesDropped) {
+      FFSnack.warning(
+        context,
+        '${context.tr('vendor.barcodes.unavailable')} '
+        '${context.tr('vendor.barcodes.notSavedNew')}',
+      );
+    } else {
+      FFSnack.success(context, context.tr('vendor.productSaved'));
+    }
     await _refresh();
   }
 
@@ -1003,6 +1025,7 @@ class _VendorHomePageState extends State<VendorHomePage> {
       if (outcome == null || !mounted) return;
       if (outcome.kind == ScanOutcomeKind.featureOff) {
         FFSnack.info(context, context.tr('vendor.barcodes.unavailable'));
+        unawaited(_askToolsAgain());
         unawaited(_refresh());
         return;
       }
@@ -1083,6 +1106,7 @@ class _VendorHomePageState extends State<VendorHomePage> {
           products: _products,
         );
         if (res == null || !mounted) return;
+        if (res.barcodesOff) return;
         if (res.inUseBy != null) {
           await _scanFindProduct(code: code);
           return;
@@ -1114,6 +1138,20 @@ class _VendorHomePageState extends State<VendorHomePage> {
   /// another. A whole-product code on a product with variants asks which
   /// variant first (no product-level adjustment when variants exist).
   Future<void> _scannedProductActions(ScanMatch m) async {
+    // A product only the lookup knows: load the list so its variants are
+    // complete (the lookup sends untracked variant names as null).
+    if (m.product == null &&
+        !_products.any((p) => p['id']?.toString() == m.productId)) {
+      try {
+        final rows = await AppScope.of(context).api.vendorProducts();
+        if (!mounted) return;
+        setState(
+          () => _products = rows.whereType<Map<String, dynamic>>().toList(),
+        );
+      } catch (_) {
+        // The lookup's answer stands.
+      }
+    }
     final product =
         _products
             .where((p) => p['id']?.toString() == m.productId)
@@ -2633,6 +2671,7 @@ Future<bool> openNewProductWithCode(
   List<VatCodeOption>? vatCodes,
 }) async {
   final api = AppScope.of(context).api;
+  var codesDropped = false;
   final saved = await showFFSheet<bool>(
     context,
     title: context.tr('vendor.addProduct'),
@@ -2644,10 +2683,22 @@ Future<bool> openNewProductWithCode(
       initialBarcodes: [code],
       vatCodes: vatCodes,
       onSave: (body) => api.vendorSaveProduct(body),
+      onBarcodesOff: ({required created}) {
+        codesDropped = true;
+        unawaited(VendorToolsOptions.of(context, refresh: true));
+      },
     ),
   );
   if (saved == true && context.mounted) {
-    FFSnack.success(context, context.tr('vendor.productSaved'));
+    if (codesDropped) {
+      FFSnack.warning(
+        context,
+        '${context.tr('vendor.barcodes.unavailable')} '
+        '${context.tr('vendor.barcodes.notSavedNew')}',
+      );
+    } else {
+      FFSnack.success(context, context.tr('vendor.productSaved'));
+    }
   }
   return saved == true;
 }
@@ -2670,6 +2721,7 @@ class VendorProductForm extends StatefulWidget {
     this.canSeeCost = false,
     this.barcodesOn = false,
     this.initialBarcodes = const [],
+    this.onBarcodesOff,
     this.onSave,
     this.onAdjust,
     this.describeError,
@@ -2709,8 +2761,14 @@ class VendorProductForm extends StatefulWidget {
   final List<String> initialBarcodes;
 
   /// Ledger on: saves the body; the form stays open (values kept) when it
-  /// throws, and closes with `true` when it succeeds.
-  final Future<void> Function(Map<String, dynamic> body)? onSave;
+  /// throws, and closes with `true` when it succeeds. Resolves with the
+  /// saved product when there is one (S8 reads its `barcodes`).
+  final Future<Object?> Function(Map<String, dynamic> body)? onSave;
+
+  /// S8: the save went through but the server left the barcodes out
+  /// (barcodes were switched off after the form opened). An edit stays open
+  /// with the codes kept and says so; a new product closes ([created]).
+  final void Function({required bool created})? onBarcodesOff;
 
   /// Ledger on: opens "Adjust stock" for the product (variant null) or one
   /// variant, resolving with the product's counts `{stock, variants}`. The
@@ -2777,6 +2835,14 @@ class _VendorProductFormState extends State<VendorProductForm> {
   VariantDraft? _codeFor;
 
   bool get _creating => widget.product == null;
+
+  /// S8: the Barcodes section shows (and `barcodes` is sent) only for a new
+  /// product or a loaded row that carries `barcodes`. A row without the key
+  /// (loaded while barcodes were off) has unknown codes, and sending a list
+  /// would replace them (security review M-2).
+  bool get _barcodesShown =>
+      widget.barcodesOn &&
+      (_creating || widget.product!.containsKey('barcodes'));
 
   /// The stock the form loaded (sent as `stockSeen` with a changed stock).
   int get _stockLoaded => (widget.product?['stock'] as num?)?.toInt() ?? 0;
@@ -3025,7 +3091,7 @@ class _VendorProductFormState extends State<VendorProductForm> {
         withCost: widget.canSeeCost,
       ),
       // S8: the whole list (never inside a variant), only with the tool on.
-      if (widget.barcodesOn)
+      if (_barcodesShown)
         'barcodes': [
           for (final c in _codes)
             {
@@ -3049,8 +3115,25 @@ class _VendorProductFormState extends State<VendorProductForm> {
       }
     });
     try {
-      await save(body);
-      if (mounted) Navigator.pop(context, true);
+      final saved = await save(body);
+      if (!mounted) return;
+      if (body.containsKey('barcodes') &&
+          saved is Map &&
+          !saved.containsKey('barcodes')) {
+        // Saved, but the server ignored the codes: barcodes went off.
+        widget.onBarcodesOff?.call(created: _creating);
+        if (!_creating) {
+          setState(() {
+            _saving = false;
+            _barcodesError =
+                '${context.tr('vendor.barcodes.unavailable')} '
+                '${context.tr('vendor.barcodes.notSaved')}';
+          });
+          _bringIntoView(_barcodesKey);
+          return;
+        }
+      }
+      Navigator.pop(context, true);
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -3118,6 +3201,10 @@ class _VendorProductFormState extends State<VendorProductForm> {
           _codes[i].error = text;
           _bringIntoView(_barcodesKey);
           return context.tr('vendor.form.fixErrors');
+        case 'save_conflict':
+          // The server's own words when it sends them, else ours.
+          return serverMessage(context, body) ??
+              context.tr('vendor.barcodes.err.saveConflict');
         case 'too_many_barcodes':
           _barcodesError = fillIn(context.tr('vendor.barcodes.err.tooMany'), {
             'max': body['max'] ?? maxBarcodesPerProduct,
@@ -3852,9 +3939,15 @@ class _VendorProductFormState extends State<VendorProductForm> {
             child: Padding(
               padding: const EdgeInsets.only(top: FFTokens.spacingXs),
               child: Text(
-                fillIn(t('vendor.barcodes.removedWithVariant'), {
-                  'n': _removedWithVariant,
-                }),
+                fillIn(
+                  t(
+                    pluralKey(
+                      'vendor.barcodes.removedWithVariant',
+                      _removedWithVariant,
+                    ),
+                  ),
+                  {'n': _removedWithVariant},
+                ),
                 key: const Key('vendor-barcodes-removed-with-variant'),
                 style: theme.textTheme.bodySmall,
               ),
@@ -4033,7 +4126,7 @@ class _VendorProductFormState extends State<VendorProductForm> {
               else
                 reorder,
               ..._middleFields(),
-              if (widget.barcodesOn) _barcodesSection(),
+              if (_barcodesShown) _barcodesSection(),
               VariantRowsEditor(
                 key: _variantsKey,
                 rows: _variantRows,

@@ -258,4 +258,50 @@ void main() {
     ]);
     expect(m.label, 'Gloves (M)');
   });
+
+  test('lookup approvalStatus absent → approved, as list rows', () {
+    final m = ScanMatch.fromLookup({
+      'productId': 'p1',
+      'name': 'X',
+      'stock': 1,
+    });
+    expect(m.approvalStatus, 'approved');
+  });
+
+  test('SKU matches: at most 10, by name then id, as the server', () async {
+    final many = [
+      for (var i = 11; i >= 0; i--)
+        _p(
+          'id$i',
+          i < 2 ? 'Aaa' : 'Band ${i.toString().padLeft(2, '0')}',
+          sku: 'BAND',
+        ),
+    ];
+    final c = VendorScanController(index: () => ProductCodeIndex(many));
+    final o = (await c.handle('band'))!;
+    expect(o.matches, hasLength(10));
+    expect(o.matches.first.name, 'Aaa');
+    expect(o.matches.last.name, 'Band 09');
+    // Same name: by id.
+    expect(o.matches.where((m) => m.name == 'Aaa').map((m) => m.productId), [
+      'id0',
+      'id1',
+    ]);
+  });
+
+  test('L5: check-in tokens and gym codes never reach the lookup', () async {
+    final c = make();
+    for (final raw in [
+      'usr_abc123.29512345.AbCdEf_-12345678',
+      'fitflex:gym:gym_1:abcdefghijklmnopqrstuv',
+      'FITFLEX:GYM:gym_1:x',
+    ]) {
+      expect(
+        (await c.handle(raw, typed: true))!.kind,
+        ScanOutcomeKind.notProduct,
+        reason: raw,
+      );
+    }
+    expect(looked, isEmpty);
+  });
 }

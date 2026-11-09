@@ -43,6 +43,9 @@ abstract class VendorScanCamera {
   /// Raw values of detected codes.
   Stream<String> get codes;
 
+  /// The camera is running now.
+  bool get running;
+
   Widget preview();
   Future<void> start();
   Future<void> stop();
@@ -95,6 +98,8 @@ class MobileVendorScanCamera implements VendorScanCamera {
   ValueListenable<bool?> get torch => _torch;
   @override
   Stream<String> get codes => _codes.stream;
+  @override
+  bool get running => _ctl.value.isRunning;
 
   void _sync() {
     final v = _ctl.value;
@@ -337,7 +342,9 @@ class VendorScanPanelState extends State<VendorScanPanel>
   void _syncCamera() {
     if (!mounted) return;
     if (!_wantsCamera) {
-      unawaited(_camera?.stop());
+      // A stop asked for while the camera is starting happens once the start
+      // has finished (security review L2).
+      if (!_starting) unawaited(_camera?.stop());
       return;
     }
     var camera = _camera;
@@ -351,23 +358,41 @@ class VendorScanPanelState extends State<VendorScanPanel>
       camera.torch.addListener(_redraw);
       _codes = camera.codes.listen((raw) => _submit(raw, typed: false));
     }
-    unawaited(camera.start());
+    unawaited(_startCamera(camera));
+  }
+
+  bool _starting = false;
+
+  /// Starts [camera] unless it is running or starting; stops it again if the
+  /// panel stopped wanting it meanwhile. Only a start that was still wanted
+  /// records success or failure for this device.
+  Future<void> _startCamera(VendorScanCamera camera) async {
+    if (_starting || camera.running) return;
+    _starting = true;
+    try {
+      await camera.start();
+    } finally {
+      _starting = false;
+    }
+    if (!mounted || !identical(_camera, camera)) return;
+    if (!_wantsCamera) {
+      await camera.stop();
+      return;
+    }
+    final status = camera.status.value;
+    if (status == VendorCameraStatus.active) {
+      unawaited(VendorScanMemory.remember(widget.memoryScope, false));
+    } else if (status != VendorCameraStatus.starting) {
+      unawaited(VendorScanMemory.remember(widget.memoryScope, true));
+    }
+    _redraw();
   }
 
   void _redraw() {
     if (mounted) setState(() {});
   }
 
-  void _onStatus() {
-    final s = _camera?.status.value;
-    if (s == null) return;
-    if (s == VendorCameraStatus.active) {
-      unawaited(VendorScanMemory.remember(widget.memoryScope, false));
-    } else if (s != VendorCameraStatus.starting) {
-      unawaited(VendorScanMemory.remember(widget.memoryScope, true));
-    }
-    _redraw();
-  }
+  void _onStatus() => _redraw();
 
   void _dropCamera() {
     final camera = _camera;

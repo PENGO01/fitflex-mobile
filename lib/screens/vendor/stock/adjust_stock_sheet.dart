@@ -21,6 +21,7 @@ import '../../../shared/components/components.dart';
 import '../../../shared/design_tokens.dart';
 import '../../../shared/i18n.dart';
 import '../barcodes/scan_widgets.dart';
+import '../sales/sale_models.dart' show pluralKey;
 import '../barcodes/vendor_scan_controller.dart';
 import '../barcodes/vendor_scan_panel.dart';
 import 'stock_options.dart';
@@ -319,7 +320,9 @@ class _AdjustStockSheetState extends State<AdjustStockSheet> {
       () => _countNotice = ScanNotice.added(
         name: _variant == null ? name : '$name ($_variant)',
         qty: n,
-        message: fillIn(context.tr('vendor.scan.countedOne'), {'n': n}),
+        message: fillIn(context.tr(pluralKey('vendor.scan.counted', n)), {
+          'n': n,
+        }),
       ),
     );
   }

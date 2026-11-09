@@ -38,8 +38,11 @@ Future<PageHost> openForm(
   bool barcodesOn = true,
   Map<String, dynamic>? product,
   Object? Function(Map<String, dynamic> body)? onSave,
+  Map<String, dynamic>? Function(Map<String, dynamic> body)? respond,
+  List<bool>? offs,
   String lang = 'en',
 }) async {
+  final offCalls = offs ?? <bool>[];
   final form = VendorProductForm(
     product: product ?? gloves(),
     stockLedger: true,
@@ -49,7 +52,10 @@ Future<PageHost> openForm(
       sent.add(body);
       final error = onSave?.call(body);
       if (error != null) throw error;
+      // The saved product as the server answers (null: not modelled).
+      return respond?.call(body);
     },
+    onBarcodesOff: ({required created}) => offCalls.add(created),
   );
   final host = await pumpPage(
     tester,
@@ -180,9 +186,7 @@ void main() {
       // Remove L (stock 0): its code goes with it.
       await tapVisible(tester, find.byKey(const Key('variant-remove-1')));
       expect(
-        find.text(
-          host.tr('vendor.barcodes.removedWithVariant').replaceAll('{n}', '1'),
-        ),
+        find.text(host.tr('vendor.barcodes.removedWithVariantOne')),
         findsOneWidget,
       );
       await save(tester);
@@ -303,4 +307,141 @@ void main() {
     expect(add.dy, greaterThan(forField.dy));
     expect(tester.takeException(), isNull);
   });
+
+  // ── review round (#285) ──────────────────────────────────────────────
+
+  apiTest('M-1 edit: 200 without barcodes → form stays, codes kept, says so', (
+    tester,
+    api,
+  ) async {
+    final sent = <Map<String, dynamic>>[];
+    final offs = <bool>[];
+    final host = await openForm(
+      tester,
+      api,
+      sent,
+      offs: offs,
+      respond: (body) => {...gloves()}..remove('barcodes'),
+    );
+    await addCode(tester, 'NEW-1');
+    await save(tester);
+    expect(sent.single['barcodes'], isNotEmpty);
+    expect(offs, [false]);
+    expect(find.byKey(const Key('vendor-product-save')), findsOneWidget);
+    expect(find.byKey(const Key('vendor-barcode-row-NEW-1')), findsOneWidget);
+    expect(
+      find.text(
+        '${host.tr('vendor.barcodes.unavailable')} ${host.tr('vendor.barcodes.notSaved')}',
+      ),
+      findsOneWidget,
+    );
+  });
+
+  apiTest('M-1 create: 200 without barcodes → closes, caller told (created)', (
+    tester,
+    api,
+  ) async {
+    final sent = <Map<String, dynamic>>[];
+    final offs = <bool>[];
+    await openFormNew(tester, api, sent, offs);
+    expect(offs, [true]);
+    expect(find.byKey(const Key('vendor-product-save')), findsNothing);
+  });
+
+  apiTest('M-1: a 200 that carries barcodes closes the form as usual', (
+    tester,
+    api,
+  ) async {
+    final sent = <Map<String, dynamic>>[];
+    final offs = <bool>[];
+    await openForm(tester, api, sent, offs: offs, respond: (_) => gloves());
+    await save(tester);
+    expect(offs, isEmpty);
+    expect(find.byKey(const Key('vendor-product-save')), findsNothing);
+  });
+
+  apiTest('M-2: a loaded row without `barcodes` → no section, nothing sent', (
+    tester,
+    api,
+  ) async {
+    final sent = <Map<String, dynamic>>[];
+    await openForm(tester, api, sent, product: gloves()..remove('barcodes'));
+    expect(find.byKey(const Key('vendor-barcodes')), findsNothing);
+    await save(tester);
+    expect(sent.single.containsKey('barcodes'), isFalse);
+  });
+
+  apiTest(
+    '409 save_conflict: the server message in the app language, else ours',
+    (tester, api) async {
+      final sent = <Map<String, dynamic>>[];
+      var body = <String, dynamic>{
+        'error': 'save_conflict',
+        'message': {
+          'en': 'Changed elsewhere. Try again.',
+          'sw': 'Imebadilishwa kwingine. Jaribu tena.',
+        },
+      };
+      final host = await openForm(
+        tester,
+        api,
+        sent,
+        lang: 'sw',
+        onSave: (_) => ApiException(409, body),
+      );
+      await save(tester);
+      expect(find.text('Imebadilishwa kwingine. Jaribu tena.'), findsOneWidget);
+      body = {'error': 'save_conflict'};
+      await save(tester);
+      expect(
+        find.text(host.tr('vendor.barcodes.err.saveConflict')),
+        findsOneWidget,
+      );
+    },
+  );
+}
+
+/// A new product (the create form) with one typed code; the save answers
+/// a product without `barcodes`.
+Future<void> openFormNew(
+  WidgetTester tester,
+  RecordingApi api,
+  List<Map<String, dynamic>> sent,
+  List<bool> offs,
+) async {
+  final form = VendorProductForm(
+    stockLedger: true,
+    canSeeCost: true,
+    barcodesOn: true,
+    initialBarcodes: const ['5012345678900'],
+    onSave: (body) async {
+      sent.add(body);
+      return {'id': 'p9', 'name': body['name']};
+    },
+    onBarcodesOff: ({required created}) => offs.add(created),
+  );
+  await pumpPage(
+    tester,
+    api,
+    Builder(
+      builder: (context) => ElevatedButton(
+        onPressed: () => showFFSheet<bool>(context, title: 'New', child: form),
+        child: const Text('OPEN'),
+      ),
+    ),
+    user: owner,
+    size: const Size(420, 2600),
+  );
+  await tester.tap(find.text('OPEN'));
+  await tester.pumpAndSettle();
+  await typeInto(
+    tester,
+    find.byKey(const Key('vendor-product-name')),
+    'Shaker',
+  );
+  await typeInto(tester, find.byKey(const Key('vendor-product-price')), '9000');
+  await save(tester);
+  expect(sent.single['barcodes'], [
+    {'code': '5012345678900'},
+  ]);
 }

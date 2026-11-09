@@ -102,4 +102,11 @@ void main() {
     );
     expect(barcodesOf({'name': 'no key (flag off)'}), isEmpty);
   });
+
+  test('L5: check-in tokens and fitflex:gym: codes are not product codes', () {
+    expect(isNotProductCode('usr_1.29512345.AbCdEfGhIjKl_-12'), isTrue);
+    expect(isNotProductCode('fitflex:gym:gym_1:sig'), isTrue);
+    // A real Code 128 with dots is still a product code.
+    expect(isNotProductCode('AB.12.CD'), isFalse);
+  });
 }

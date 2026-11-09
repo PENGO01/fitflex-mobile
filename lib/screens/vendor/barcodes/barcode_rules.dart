@@ -17,6 +17,9 @@ const barcodeMaxLength = 48;
 const maxBarcodesPerProduct = 20;
 const lookupCodeMaxLength = 100;
 
+/// The lookup returns at most this many SKU matches (B-9).
+const maxSkuMatches = 10;
+
 final _printable = RegExp(r'^[\x21-\x7E]+$');
 final _digits = RegExp(r'^\d+$');
 
@@ -88,11 +91,19 @@ bool looksLikeCode(String text) {
       _printable.hasMatch(t);
 }
 
-/// B-11: a FitFlex event ticket, a member check-in token or a URL (longer
-/// than 48) is not a product code.
+/// A member / trainer check-in QR token: `<id>.<digits>.<16 base64url>`
+/// (the server's src/auth/qr-token.mjs).
+final _checkInToken = RegExp(r'^[^.\s]+\.\d+\.[A-Za-z0-9_-]{16}$');
+
+/// B-11 (+ security review L5): a FitFlex event ticket, a member / trainer
+/// check-in token, a gym's printed `fitflex:gym:` code, or anything longer
+/// than 48 (URLs) is not a product code and is never looked up.
 bool isNotProductCode(String raw) {
   final t = raw.trim();
-  return isEventTicketPayload(t) || t.length > barcodeMaxLength;
+  return isEventTicketPayload(t) ||
+      t.toLowerCase().startsWith('fitflex:gym:') ||
+      _checkInToken.hasMatch(t) ||
+      t.length > barcodeMaxLength;
 }
 
 /// The i18n key for a code problem (client check or server error).

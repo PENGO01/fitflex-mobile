@@ -150,6 +150,8 @@ const _cachedProductFields = [
   'priceTzs',
   'discountPriceTzs',
   'status',
+  // S8: an approved product in the cache stays approved offline.
+  'approvalStatus',
   'stock',
 ];
 

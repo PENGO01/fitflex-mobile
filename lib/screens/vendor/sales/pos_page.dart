@@ -469,6 +469,19 @@ class _PosPageState extends State<PosPage> {
     _codeIndex = ProductCodeIndex(rows);
   }
 
+  /// Barcodes went off on the server (lookup 404, or a save that left the
+  /// codes out): the panel closes and the tools are asked again, so the
+  /// scan icon goes.
+  void _barcodesWentOff() {
+    setState(() {
+      _scanOpen = false;
+      _scanNotice = null;
+    });
+    VendorToolsOptions.of(context, refresh: true).then((tools) {
+      if (mounted) setState(() => _tools = tools);
+    });
+  }
+
   void _openScan() {
     if (_blocked || _scan == null) return;
     setState(() {
@@ -504,13 +517,8 @@ class _PosPageState extends State<PosPage> {
     final outcome = await scan.handle(raw, typed: typed);
     if (outcome == null || !mounted) return false;
     if (outcome.kind == ScanOutcomeKind.featureOff) {
-      // Barcodes went off on the server: the panel closes; the icon goes at
-      // the next options load.
       FFSnack.info(context, context.tr('vendor.barcodes.unavailable'));
-      setState(() {
-        _scanOpen = false;
-        _scanNotice = null;
-      });
+      _barcodesWentOff();
       return false;
     }
     final notice = noticeFor(context, outcome);
@@ -530,6 +538,12 @@ class _PosPageState extends State<PosPage> {
         ScanNotice.warning(fillIn(t('vendor.scan.archived'), {'name': m.name})),
       );
       return false;
+    }
+    // A product only the lookup knows (added on another device): load the
+    // list so its variants are complete before choosing one (online only).
+    if (_product(m.productId) == null && m.product == null && !_offline) {
+      await _loadProducts();
+      if (!mounted) return false;
     }
     final p = _product(m.productId) ?? m.asProduct;
     final name = p['name']?.toString() ?? m.name;
@@ -618,6 +632,10 @@ class _PosPageState extends State<PosPage> {
       scan.release();
     }
     if (res == null || !mounted) return;
+    if (res.barcodesOff) {
+      _barcodesWentOff();
+      return;
+    }
     if (res.inUseBy != null) {
       // Someone else just added it: look the code up again.
       scan.resetDebounce();
