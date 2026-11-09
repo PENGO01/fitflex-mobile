@@ -31,9 +31,10 @@ class ScanNotice {
     this.variant,
   }) : kind = ScanNoticeKind.added,
        code = null,
-       offline = false;
+       offline = false,
+       waitSeconds = null;
 
-  const ScanNotice.warning(this.message)
+  const ScanNotice.warning(this.message, {this.waitSeconds})
     : kind = ScanNoticeKind.warning,
       name = null,
       qty = 0,
@@ -50,7 +51,8 @@ class ScanNotice {
        name = null,
        qty = 0,
        productId = null,
-       variant = null;
+       variant = null,
+       waitSeconds = null;
 
   const ScanNotice.failed(this.message, {this.code})
     : kind = ScanNoticeKind.failed,
@@ -58,7 +60,8 @@ class ScanNotice {
       qty = 0,
       productId = null,
       variant = null,
-      offline = false;
+      offline = false,
+      waitSeconds = null;
 
   final ScanNoticeKind kind;
   final String message;
@@ -68,6 +71,63 @@ class ScanNotice {
   final String? variant;
   final String? code;
   final bool offline;
+
+  /// 429: the wait in seconds; the message counts down and clears (UAT L-3).
+  final int? waitSeconds;
+}
+
+/// "Too many scans. Wait {s} seconds." counting down once a second; calls
+/// [onDone] when the wait is over (and then shows nothing). Read out once:
+/// its accessible label stays the first message, not every tick.
+class RateLimitAlert extends StatefulWidget {
+  const RateLimitAlert({super.key, required this.seconds, this.onDone});
+
+  final int seconds;
+  final VoidCallback? onDone;
+
+  @override
+  State<RateLimitAlert> createState() => _RateLimitAlertState();
+}
+
+class _RateLimitAlertState extends State<RateLimitAlert> {
+  late int _left = widget.seconds;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 1), (t) {
+      if (!mounted) return;
+      setState(() => _left -= 1);
+      if (_left <= 0) {
+        t.cancel();
+        widget.onDone?.call();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  String _text(int s) =>
+      fillIn(context.tr(pluralKey('vendor.scan.rateLimited', s)), {'s': s});
+
+  @override
+  Widget build(BuildContext context) {
+    if (_left <= 0) return const SizedBox.shrink();
+    return Semantics(
+      label: _text(widget.seconds),
+      excludeSemantics: true,
+      child: FFAlert(
+        key: const Key('scan-rate-limited'),
+        message: _text(_left),
+        tone: FFAlertTone.warning,
+      ),
+    );
+  }
 }
 
 /// The server's `message: {en, sw}` in the app's language, if it sent one.
@@ -122,6 +182,7 @@ ScanNotice? noticeFor(
       fillIn(t(pluralKey('vendor.scan.rateLimited', outcome.seconds ?? 60)), {
         's': outcome.seconds ?? 60,
       }),
+      waitSeconds: outcome.seconds ?? 60,
     ),
     ScanOutcomeKind.lookupFailed => ScanNotice.failed(
       t('vendor.scan.lookupFailed'),
@@ -148,7 +209,11 @@ class ScanResultRow extends StatelessWidget {
     this.onUndo,
     this.onRetry,
     this.actions,
+    this.onWaitOver,
   });
+
+  /// A 429 wait ended: the screen clears the row.
+  final VoidCallback? onWaitOver;
 
   final ScanNotice? notice;
   final VoidCallback? onMore;
@@ -218,7 +283,7 @@ class ScanResultRow extends StatelessWidget {
                       IconButton(
                         key: const Key('scan-result-less'),
                         style: iconStyle,
-                        tooltip: fillIn(t('vendor.purchases.oneFewer'), {
+                        tooltip: fillIn(t('vendor.scan.oneFewerScanned'), {
                           'name': name,
                         }),
                         icon: const Icon(Icons.remove),
@@ -228,7 +293,7 @@ class ScanResultRow extends StatelessWidget {
                       IconButton(
                         key: const Key('scan-result-more'),
                         style: iconStyle,
-                        tooltip: fillIn(t('vendor.purchases.oneMore'), {
+                        tooltip: fillIn(t('vendor.scan.oneMoreScanned'), {
                           'name': name,
                         }),
                         icon: const Icon(Icons.add),
@@ -252,11 +317,18 @@ class ScanResultRow extends StatelessWidget {
           ),
         );
       case ScanNoticeKind.warning:
-        body = FFAlert(
-          key: const Key('scan-warning'),
-          message: n.message,
-          tone: FFAlertTone.warning,
-        );
+        final wait = n.waitSeconds;
+        body = wait != null
+            ? RateLimitAlert(
+                key: ObjectKey(n),
+                seconds: wait,
+                onDone: onWaitOver,
+              )
+            : FFAlert(
+                key: const Key('scan-warning'),
+                message: n.message,
+                tone: FFAlertTone.warning,
+              );
       case ScanNoticeKind.unknown:
         body = Column(
           key: const Key('scan-unknown'),

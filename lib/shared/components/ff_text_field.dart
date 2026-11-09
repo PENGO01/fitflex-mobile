@@ -24,6 +24,7 @@ class FFTextField extends StatelessWidget {
     this.suffixIcon,
     this.textInputAction,
     this.onFieldSubmitted,
+    this.onEditingComplete,
     this.autofillHints,
     this.maxLength,
     this.inputFormatters,
@@ -60,6 +61,13 @@ class FFTextField extends StatelessWidget {
   final Widget? suffixIcon;
   final TextInputAction? textInputAction;
   final ValueChanged<String>? onFieldSubmitted;
+
+  /// Runs on Enter / the keyboard's action key, before [onFieldSubmitted].
+  /// When set, the field is NOT unfocused on submit (Flutter's default for
+  /// done/search/go). Fields that take one entry after another (barcode
+  /// scanners) pass a no-op so focus never leaves them; on Flutter web with
+  /// semantics on, a blur + requestFocus moved focus off the labelled input.
+  final VoidCallback? onEditingComplete;
   final Iterable<String>? autofillHints;
   final int? maxLength;
   final List<TextInputFormatter>? inputFormatters;
@@ -103,6 +111,7 @@ class FFTextField extends StatelessWidget {
       onChanged: onChanged,
       textInputAction: textInputAction,
       onFieldSubmitted: onFieldSubmitted,
+      onEditingComplete: onEditingComplete,
       autofillHints: autofillHints,
       maxLength: maxLength,
       inputFormatters: inputFormatters,
