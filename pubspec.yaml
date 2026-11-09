@@ -42,7 +42,10 @@ dependencies:
   firebase_auth: ^6.4.0
   google_sign_in: ^7.2.0
   go_router: ^14.8.1
-  mobile_scanner: ^6.0.2
+  # Pinned (S8 security review L3): the web build ships the ZXing version
+  # this release expects (web/vendor/zxing-library-0.21.3, see
+  # lib/shared/barcode_library.dart). Upgrade both together.
+  mobile_scanner: 6.0.11
   flutter_map: ^7.0.2
   latlong2: ^0.9.1
   image_picker: ^1.1.2

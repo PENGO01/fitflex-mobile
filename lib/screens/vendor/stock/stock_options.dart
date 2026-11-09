@@ -39,6 +39,7 @@ class VendorTools {
     this.reports = false,
     this.refunds = false,
     this.purchases = false,
+    this.barcodes = false,
     this.dataImport = false,
     this.importMaxBytes = defaultImportMaxBytes,
     this.importMaxRows = defaultImportMaxRows,
@@ -127,6 +128,12 @@ class VendorTools {
   /// Exactly `true`, else off: no Purchases view, routes go home.
   final bool purchases;
 
+  /// S8: barcodes on products, scanning in the POS, Receive stock and the
+  /// Products tab (VENDOR_TOOLS + VENDOR_STOCK_LEDGER + VENDOR_BARCODES on
+  /// the server). Exactly `true`, else off (fail closed): no scan buttons,
+  /// no Barcodes section, Enter in the POS search as before (SKU).
+  final bool barcodes;
+
   /// Smart import V3 (VENDOR_TOOLS + VENDOR_IMPORT): CSV import of
   /// products, stock counts and the business profile, from the options
   /// answer's `import`. Exactly `true`, else off (fail closed). The person
@@ -178,6 +185,7 @@ class VendorTools {
         reports: options['reports'] == true,
         refunds: options['refunds'] == true,
         purchases: options['purchases'] == true,
+        barcodes: options['barcodes'] == true,
         dataImport: options['import'] == true,
         importMaxBytes: _positiveInt(
           options['importLimits'],
