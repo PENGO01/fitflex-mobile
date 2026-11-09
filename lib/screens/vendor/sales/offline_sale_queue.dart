@@ -140,6 +140,8 @@ enum SalesSyncPause {
 }
 
 /// The product fields the POS keeps for offline use. Never cost price.
+/// S8 (§7, overrides the S3 §6.1 allowlist): also the product's barcodes,
+/// `[{code, variant}]` only, so a scan matches offline.
 const _cachedProductFields = [
   'id',
   'name',
@@ -148,6 +150,8 @@ const _cachedProductFields = [
   'priceTzs',
   'discountPriceTzs',
   'status',
+  // S8: an approved product in the cache stays approved offline.
+  'approvalStatus',
   'stock',
 ];
 
@@ -161,6 +165,15 @@ Map<String, dynamic> cacheableProduct(Map<String, dynamic> p) {
       for (final v in (p['variants'] as List? ?? []).whereType<Map>())
         {'name': v['name'], if (v['stock'] is num) 'stock': v['stock']},
     ],
+    if (p['barcodes'] is List)
+      'barcodes': [
+        for (final b in (p['barcodes'] as List).whereType<Map>())
+          if (b['code'] is String)
+            {
+              'code': b['code'],
+              'variant': b['variant'] is String ? b['variant'] : null,
+            },
+      ],
   };
 }
 

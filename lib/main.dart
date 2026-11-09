@@ -13,6 +13,7 @@ import 'router.dart';
 import 'screens/account_recovery.dart';
 import 'shared/api_client.dart';
 import 'shared/auth_state.dart';
+import 'shared/barcode_library.dart';
 import 'shared/events/event_claim_link.dart';
 import 'shared/friend_invites.dart';
 import 'shared/hero_images/hero_image_store.dart';
@@ -48,6 +49,9 @@ Future<void> main() async {
   if (claimLink != null) showEventClaimWithoutToken();
 
   WidgetsFlutterBinding.ensureInitialized();
+  // Web: scan pages load the pinned barcode library from this app's own
+  // origin, not unpkg (vendor tools S8, Q-3).
+  useBundledBarcodeLibrary();
   if (linkToken != null) {
     await PendingOrgInvite.save(linkToken);
   } else {
