@@ -456,6 +456,8 @@ class _AdjustStockSheetState extends State<AdjustStockSheet> {
           _changed = true;
           _clientRef = null;
           _quantity.clear();
+          // S8 UAT L-6: the count starts over, and so does its scan notice.
+          _countNotice = null;
         });
         _refocusQuantity = true;
         _announce(context.tr('vendor.stock.changed'));
@@ -767,6 +769,7 @@ class _AdjustStockSheetState extends State<AdjustStockSheet> {
                     }),
                     result: ScanResultRow(
                       notice: _countNotice,
+                      onWaitOver: () => setState(() => _countNotice = null),
                       onMore: _busy ? null : () => _countBy(1),
                       onLess: _busy ? null : () => _countBy(-1),
                     ),

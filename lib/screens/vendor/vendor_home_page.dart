@@ -1053,16 +1053,19 @@ class _VendorHomePageState extends State<VendorHomePage> {
         builder: (sheet) => Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Semantics(
-              liveRegion: true,
-              child: FFAlert(
-                key: const Key('products-scan-problem'),
-                message: notice.message,
-                tone: notice.kind == ScanNoticeKind.failed
-                    ? FFAlertTone.error
-                    : FFAlertTone.warning,
+            if (notice.waitSeconds != null)
+              RateLimitAlert(seconds: notice.waitSeconds!)
+            else
+              Semantics(
+                liveRegion: true,
+                child: FFAlert(
+                  key: const Key('products-scan-problem'),
+                  message: notice.message,
+                  tone: notice.kind == ScanNoticeKind.failed
+                      ? FFAlertTone.error
+                      : FFAlertTone.warning,
+                ),
               ),
-            ),
             if (notice.kind == ScanNoticeKind.unknown)
               UnknownCodeActions(
                 code: code,
@@ -3863,6 +3866,8 @@ class _VendorProductFormState extends State<VendorProductForm> {
         if (_codeFieldError != null) setState(() => _codeFieldError = null);
       },
       onFieldSubmitted: (_) => _addCode(),
+      // Keep focus here for the next code (UAT L-1): no unfocus on Enter.
+      onEditingComplete: () {},
       suffixIcon: IconButton(
         key: const Key('vendor-barcode-scan'),
         style: IconButton.styleFrom(
@@ -4034,8 +4039,15 @@ class _VendorProductFormState extends State<VendorProductForm> {
                 onPressed: _saving
                     ? null
                     : () => setState(() {
+                        final hadError = _codes[i].error != null;
                         _codes.removeAt(i);
                         _barcodesError = null;
+                        // UAT L-5: the row the server refused is gone, so
+                        // is the "fix the errors" banner by Save (unless
+                        // another row still has one).
+                        if (hadError && !_codes.any((c) => c.error != null)) {
+                          _saveError = null;
+                        }
                       }),
               ),
             ],

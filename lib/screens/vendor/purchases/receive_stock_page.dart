@@ -618,6 +618,12 @@ class _ReceiveStockPageState extends State<ReceiveStockPage> {
     final notice = _scanNotice;
     return ScanResultRow(
       notice: notice,
+      // UAT L-3: the 429 message clears when the wait is over.
+      onWaitOver: () {
+        if (mounted && identical(_scanNotice, notice)) {
+          setState(() => _scanNotice = null);
+        }
+      },
       onMore: () => _stepScanned(1),
       onLess: () => _stepScanned(-1),
       onUndo: _undoable ? () => _stepScanned(-1, undo: true) : null,

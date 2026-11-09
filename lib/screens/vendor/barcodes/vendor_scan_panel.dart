@@ -550,6 +550,8 @@ class VendorScanPanelState extends State<VendorScanPanel>
                   textInputAction: TextInputAction.search,
                   autofocus: true,
                   onFieldSubmitted: (_) => _find(),
+                  // Keep focus here for the next code (UAT L-1): no unfocus on Enter.
+                  onEditingComplete: () {},
                 ),
               ),
               const SizedBox(width: FFTokens.spacingSm),

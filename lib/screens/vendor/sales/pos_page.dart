@@ -137,8 +137,10 @@ class _PosPageState extends State<PosPage> {
     _scan = VendorScanController(
       index: () => _codeIndex,
       lookup: apiScanLookup(AppScope.of(context).api),
-      // Offline (§7): the saved product list only.
+      // Offline (§7): the saved product list only; a lookup that gets no
+      // answer counts as offline too (UAT L-2).
       online: () => !_offline,
+      offlineOnNetworkError: true,
     );
     _session = session..attach();
     await session.load();
@@ -672,6 +674,12 @@ class _PosPageState extends State<PosPage> {
     final notice = _scanNotice;
     return ScanResultRow(
       notice: notice,
+      // UAT L-3: the 429 message clears when the wait is over.
+      onWaitOver: () {
+        if (mounted && identical(_scanNotice, notice)) {
+          setState(() => _scanNotice = null);
+        }
+      },
       onMore: () => _stepScanned(1),
       onLess: () => _stepScanned(-1),
       onUndo: _undoable ? () => _stepScanned(-1, undo: true) : null,
@@ -1272,6 +1280,8 @@ class _PosPageState extends State<PosPage> {
             autofocus: _wide,
             textInputAction: TextInputAction.search,
             onFieldSubmitted: (_) => _enterInSearch(),
+            // Keep focus here for the next code (UAT L-1): no unfocus on Enter.
+            onEditingComplete: () {},
             // S3 §2.1 reserved this slot for S8.
             suffixIcon: _barcodesOn
                 ? IconButton(
