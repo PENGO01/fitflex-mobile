@@ -7,6 +7,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:fitflexmobile/screens/vendor/customers/customer_profile_page.dart'
+    show saleStatusBadges;
 import 'package:fitflexmobile/screens/vendor/documents/document_models.dart';
 import 'package:fitflexmobile/screens/vendor/documents/document_view.dart';
 import 'package:fitflexmobile/screens/vendor/reports/report_models.dart';
@@ -83,6 +85,35 @@ void main() {
       expect(find.byKey(const Key('sale-detail-refunds')), findsNothing);
       await tapVisible(tester, refund);
       expect(find.text('ROUTE-REFUND sal_1'), findsOneWidget);
+    });
+
+    apiTest('credit sale cleared by a credit note: Settled by credit note, '
+        'like the list (UAT D2)', (tester, api) async {
+      final sale = refundSale(
+        kind: 'credit',
+        balanceTzs: 0,
+        wheyRefunded: 1,
+        wheyRefundedTzs: 3333,
+      )..['balanceReducedTzs'] = 3333;
+      for (final lang in ['en', 'sw']) {
+        final host = await pumpSale(tester, api, sale: sale, lang: lang);
+        for (final k in [
+          'vendor.doc.statusSettledByCreditNote',
+          'vendor.refunds.badgePartial',
+        ]) {
+          expect(find.text(host.tr(k)), findsOneWidget, reason: '$lang $k');
+        }
+        expect(find.text(host.tr('vendor.sales.paidOffBadge')), findsNothing);
+        // Same keys, same order as the list's rule.
+        expect(
+          [for (final b in saleStatusBadges(sale)) b.key],
+          [
+            'vendor.sales.payLaterBadge',
+            'vendor.doc.statusSettledByCreditNote',
+            'vendor.refunds.badgePartial',
+          ],
+        );
+      }
     });
 
     apiTest('part refunded: badge, totals, card; Void hidden', (
