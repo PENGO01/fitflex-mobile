@@ -16,6 +16,9 @@ import '../../../shared/formatters.dart';
 import '../../../shared/i18n.dart';
 import '../../../shared/network/browser_online.dart';
 import '../../../shared/vendor_purchase_draft_store.dart';
+import '../barcodes/scan_widgets.dart';
+import '../barcodes/vendor_scan_controller.dart';
+import '../barcodes/vendor_scan_panel.dart';
 import '../customers/customer_models.dart' show addDaysTo, formatDay;
 import '../sales/receipt_data.dart' show eatDateTime;
 import '../sales/sale_models.dart'
@@ -24,6 +27,7 @@ import '../stock/stock_options.dart';
 import 'purchase_draft_controller.dart';
 import 'purchase_models.dart';
 import 'purchases_widgets.dart';
+import '../vendor_home_page.dart' show openNewProductWithCode;
 
 class ReceiveStockPage extends StatefulWidget {
   const ReceiveStockPage({super.key, this.supplierId, this.now});
@@ -69,6 +73,18 @@ class _ReceiveStockPageState extends State<ReceiveStockPage> {
   final _paymentKey = GlobalKey();
   final Map<String, GlobalKey> _lineKeys = {};
 
+  // ── S8: barcodes ──
+  /// Every product loaded (archived too): an archived product's code says
+  /// "archived" instead of "unknown".
+  List<Map<String, dynamic>> _allRows = [];
+  ProductCodeIndex _codeIndex = ProductCodeIndex.empty();
+  VendorScanController? _scan;
+  bool _scanOpen = false;
+  ScanNotice? _scanNotice;
+  DraftLine? _lastLine;
+  bool _undoable = false;
+  final _scanButtonFocus = FocusNode();
+
   @override
   void initState() {
     super.initState();
@@ -106,6 +122,8 @@ class _ReceiveStockPageState extends State<ReceiveStockPage> {
     // A pending debounced save still runs (the draft stays on the device).
     unawaited(_draft.saveNow());
     _draft.dispose();
+    _scan?.dispose();
+    _scanButtonFocus.dispose();
     for (final c in [
       _invoiceRef,
       _note,
@@ -129,6 +147,10 @@ class _ReceiveStockPageState extends State<ReceiveStockPage> {
       ..addListener(_redraw);
     final stored = await VendorPurchaseDraftStore.load(key);
     if (!mounted) return;
+    _scan = VendorScanController(
+      index: () => _codeIndex,
+      lookup: apiScanLookup(AppScope.of(context).api),
+    );
     setState(() {
       _tools = tools;
       _ready = true;
@@ -147,6 +169,8 @@ class _ReceiveStockPageState extends State<ReceiveStockPage> {
     try {
       final rows = await AppScope.of(context).api.vendorProducts();
       if (!mounted) return;
+      _allRows = rows.whereType<Map>().map(Map<String, dynamic>.from).toList();
+      _codeIndex = ProductCodeIndex(_allRows);
       setState(() {
         _products = rows.whereType<Map>().map(Map<String, dynamic>.from).where((
           p,
@@ -326,9 +350,14 @@ class _ReceiveStockPageState extends State<ReceiveStockPage> {
         suspended: _suspended,
         added: {for (final l in _draft.lines) l.key},
         onRetry: _loadProducts,
+        scan: _barcodesOn,
       ),
     );
     if (picked == null || !mounted) return;
+    if (picked.scan) {
+      _openScan();
+      return;
+    }
     final p = picked.product;
     final existing = _draft.lineOf(p['id'].toString(), picked.variant);
     if (existing != null) {
@@ -347,6 +376,281 @@ class _ReceiveStockPageState extends State<ReceiveStockPage> {
     _applyPrefill(line);
     setState(() {});
     await _refreshLineHints();
+  }
+
+  // ── S8: scanning items in (spec §5.2) ──────────────────────────────────
+
+  /// Scanning is offered: barcodes and purchases both on (§0.2).
+  bool get _barcodesOn => _tools.barcodes && _tools.purchases;
+
+  /// Barcodes went off on the server (lookup 404, or a save that left the
+  /// codes out): the panel closes and the tools are asked again, so the
+  /// scan icon goes.
+  void _barcodesWentOff() {
+    setState(() {
+      _scanOpen = false;
+      _scanNotice = null;
+    });
+    VendorToolsOptions.of(context, refresh: true).then((tools) {
+      if (mounted) setState(() => _tools = tools);
+    });
+  }
+
+  void _openScan() {
+    if (_scan == null || _suspended) return;
+    setState(() {
+      _scanOpen = true;
+      _scanNotice = null;
+    });
+  }
+
+  void _closeScan() {
+    if (!_scanOpen) return;
+    setState(() {
+      _scanOpen = false;
+      _scanNotice = null;
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _scanButtonFocus.requestFocus();
+    });
+  }
+
+  void _showScanNotice(ScanNotice notice) {
+    setState(() {
+      _scanNotice = notice;
+      _undoable = false;
+    });
+    scanFeedback(context, notice.kind, notice.message);
+  }
+
+  Future<bool> _onScanCode(String raw, {required bool typed}) async {
+    final scan = _scan;
+    if (scan == null) return false;
+    final outcome = await scan.handle(raw, typed: typed);
+    if (outcome == null || !mounted) return false;
+    if (outcome.kind == ScanOutcomeKind.featureOff) {
+      FFSnack.info(context, context.tr('vendor.barcodes.unavailable'));
+      _barcodesWentOff();
+      return false;
+    }
+    if (outcome.kind == ScanOutcomeKind.suspended) {
+      setState(() => _suspended = true);
+    }
+    final notice = noticeFor(context, outcome);
+    if (notice != null) {
+      _showScanNotice(notice);
+      return false;
+    }
+    final match = await singleMatch(context, scan, outcome.matches);
+    if (match == null || !mounted) return false;
+    return _receiveScanned(match);
+  }
+
+  Future<String?> _chooseVariant(Map<String, dynamic> p) {
+    final t = context.tr;
+    return showFFSheet<String>(
+      context,
+      title: '${p['name']} · ${t('vendor.purchases.chooseVariant')}',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (final v in stockVariants(p))
+            Builder(
+              builder: (sheet) => ListTile(
+                key: Key('purchase-scan-variant-${v.name}'),
+                minTileHeight: 56,
+                title: Text(v.name),
+                subtitle: Text(
+                  fillIn(t('vendor.purchases.inStockN'), {'n': v.stock}),
+                ),
+                onTap: () => Navigator.of(sheet).pop(v.name),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  /// A match: a new line (qty 1, the S9 unit cost prefill) or +1 on the
+  /// line for that product and variant.
+  Future<bool> _receiveScanned(ScanMatch m) async {
+    final t = context.tr;
+    if (m.archived) {
+      // S9 P-2: archived products are not received.
+      _showScanNotice(
+        ScanNotice.warning(fillIn(t('vendor.scan.archived'), {'name': m.name})),
+      );
+      return false;
+    }
+    // A product only the lookup knows: load the list so its variants are
+    // complete before choosing one.
+    if (_productOf(m.productId) == null && m.product == null) {
+      await _loadProducts();
+      if (!mounted) return false;
+    }
+    final p = _productOf(m.productId) ?? m.asProduct;
+    var variant = m.variant;
+    if (variant == null && stockVariants(p).isNotEmpty) {
+      HapticFeedback.selectionClick();
+      final scan = _scan!..hold();
+      try {
+        variant = await _chooseVariant(p);
+      } finally {
+        scan.release();
+      }
+      if (variant == null || !mounted) return false;
+    }
+    final id = p['id'].toString();
+    var line = _draft.lineOf(id, variant);
+    if (line != null) {
+      if (line.qty >= purchaseMaxQty) return false;
+      _draft.setQty(line, line.qty + 1);
+    } else {
+      if (_draft.lines.length >= purchaseMaxLines) return false;
+      line = _draft.add(
+        DraftLine(
+          productId: id,
+          variant: variant,
+          name: p['name']?.toString() ?? m.name,
+        ),
+      );
+      _controllersFor(line);
+      _fillFromProduct(line);
+      _applyPrefill(line);
+      unawaited(_refreshLineHints());
+    }
+    _lastLine = line;
+    _scanLineNotice(undoable: true);
+    scanFeedback(context, ScanNoticeKind.added, _scanNotice!.message);
+    final focus = line;
+    WidgetsBinding.instance.addPostFrameCallback((_) => _focusLine(focus));
+    return true;
+  }
+
+  void _scanLineNotice({required bool undoable}) {
+    final line = _lastLine;
+    if (line == null) return;
+    final present = _draft.lines.contains(line);
+    final label = line.variant == null
+        ? line.name
+        : '${line.name} (${line.variant})';
+    final qty = present ? line.qty : 0;
+    setState(() {
+      _undoable = undoable && present;
+      _scanNotice = ScanNotice.added(
+        name: label,
+        qty: qty,
+        productId: line.productId,
+        variant: line.variant,
+        message: fillIn(context.tr(pluralKey('vendor.scan.addedLine', qty)), {
+          'name': label,
+          'qty': qty,
+        }),
+      );
+    });
+  }
+
+  /// −/+ on the result row, and Undo (the last scan's +1). One fewer of a
+  /// single item removes the line.
+  void _stepScanned(int delta, {bool undo = false}) {
+    final line = _lastLine;
+    if (line == null) return;
+    if (!_draft.lines.contains(line)) {
+      if (delta > 0) {
+        final again = _draft.add(line..qty = 1);
+        _controllersFor(again);
+        _applyPrefill(again);
+      }
+    } else if (line.qty + delta < 1) {
+      _removeLine(line);
+    } else if (line.qty + delta <= purchaseMaxQty) {
+      _draft.setQty(line, line.qty + delta);
+    }
+    _scanLineNotice(undoable: !undo && _undoable);
+  }
+
+  Future<void> _addCodeHere(String code) async {
+    final scan = _scan;
+    if (scan == null) return;
+    scan.hold();
+    AddCodeResult? res;
+    try {
+      res = await addCodeToProduct(context, code: code, products: _allRows);
+    } finally {
+      scan.release();
+    }
+    if (res == null || !mounted) return;
+    if (res.barcodesOff) {
+      _barcodesWentOff();
+      return;
+    }
+    if (res.inUseBy != null) {
+      scan.resetDebounce();
+      await _onScanCode(code, typed: true);
+      return;
+    }
+    await _loadProducts();
+    if (!mounted) return;
+    final saved = Map<String, dynamic>.from(res.product!);
+    setState(() => _scanNotice = null);
+    await _receiveScanned(
+      ScanMatch.fromProduct(
+        _productOf(saved['id'].toString()) ?? saved,
+        variant: res.variant,
+      ),
+    );
+  }
+
+  Future<void> _newProductWithCode(String code) async {
+    final scan = _scan;
+    scan?.hold();
+    try {
+      await openNewProductWithCode(context, code: code, tools: _tools);
+    } finally {
+      scan?.release();
+    }
+    if (!mounted) return;
+    setState(() => _scanNotice = null);
+    await _loadProducts();
+  }
+
+  Widget _scanResult() {
+    final notice = _scanNotice;
+    return ScanResultRow(
+      notice: notice,
+      // UAT L-3: the 429 message clears when the wait is over.
+      onWaitOver: () {
+        if (mounted && identical(_scanNotice, notice)) {
+          setState(() => _scanNotice = null);
+        }
+      },
+      onMore: () => _stepScanned(1),
+      onLess: () => _stepScanned(-1),
+      onUndo: _undoable ? () => _stepScanned(-1, undo: true) : null,
+      onRetry: notice?.code == null
+          ? null
+          : () => _onScanCode(notice!.code!, typed: true),
+      actions: notice?.kind == ScanNoticeKind.unknown
+          ? UnknownCodeActions(
+              code: notice!.code!,
+              canManage: canVendor(context, 'products'),
+              offline: notice.offline,
+              onAddToProduct: () => _addCodeHere(notice.code!),
+              onCreateProduct: () => _newProductWithCode(notice.code!),
+              onSearchByName: () {
+                setState(() {
+                  _scanOpen = false;
+                  _scanNotice = null;
+                });
+                _addItem();
+              },
+              onScanAgain: () {
+                _scan?.resetDebounce();
+                setState(() => _scanNotice = null);
+              },
+            )
+          : null,
+    );
   }
 
   void _focusLine(DraftLine l) {
@@ -543,9 +847,15 @@ class _ReceiveStockPageState extends State<ReceiveStockPage> {
   Widget build(BuildContext context) {
     final t = context.tr;
     return PopScope(
-      canPop: !_draft.hasContent,
+      // S8: back closes the scan panel first, then S9's leave dialog.
+      canPop: !_draft.hasContent && !_scanOpen,
       onPopInvokedWithResult: (didPop, _) {
-        if (!didPop) _leave();
+        if (didPop) return;
+        if (_scanOpen) {
+          _closeScan();
+        } else {
+          _leave();
+        }
       },
       child: Scaffold(
         appBar: AppBar(
@@ -554,7 +864,7 @@ class _ReceiveStockPageState extends State<ReceiveStockPage> {
             key: const Key('purchase-close'),
             tooltip: t('vendor.purchases.close'),
             icon: const Icon(Icons.close),
-            onPressed: _leave,
+            onPressed: _scanOpen ? _closeScan : _leave,
           ),
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -798,6 +1108,24 @@ class _ReceiveStockPageState extends State<ReceiveStockPage> {
     final t = context.tr;
     return [
       FFSectionTitle(t('vendor.purchases.items')),
+      if (_barcodesOn && _scanOpen && _scan != null)
+        Padding(
+          padding: const EdgeInsets.only(bottom: FFTokens.spacingSm),
+          child: Align(
+            alignment: AlignmentDirectional.topStart,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 640),
+              child: VendorScanPanel(
+                key: const Key('purchase-scan-panel'),
+                controller: _scan!,
+                memoryScope: vendorScanScope(context),
+                onCode: _onScanCode,
+                onClose: _closeScan,
+                result: _scanResult(),
+              ),
+            ),
+          ),
+        ),
       if (_draft.lines.isEmpty)
         FFEmptyState(
           key: const Key('purchase-no-items'),
@@ -805,16 +1133,31 @@ class _ReceiveStockPageState extends State<ReceiveStockPage> {
           icon: Icons.inventory_2_outlined,
         ),
       for (final l in _draft.lines) _lineCard(l),
-      Align(
-        alignment: AlignmentDirectional.centerStart,
-        child: FFButton(
-          key: const Key('purchase-add-item'),
-          label: t('vendor.purchases.addItem'),
-          icon: Icons.add,
-          variant: FFButtonVariant.ghost,
-          visualDensity: VisualDensity.standard,
-          onPressed: _draft.lines.length >= purchaseMaxLines ? null : _addItem,
-        ),
+      Wrap(
+        spacing: FFTokens.spacingSm,
+        runSpacing: FFTokens.spacingXs,
+        children: [
+          FFButton(
+            key: const Key('purchase-add-item'),
+            label: t('vendor.purchases.addItem'),
+            icon: Icons.add,
+            variant: FFButtonVariant.ghost,
+            visualDensity: VisualDensity.standard,
+            onPressed: _draft.lines.length >= purchaseMaxLines
+                ? null
+                : _addItem,
+          ),
+          if (_barcodesOn && !_scanOpen)
+            FFButton(
+              key: const Key('purchase-scan'),
+              label: t('vendor.scan.scanItems'),
+              icon: Icons.qr_code_scanner,
+              variant: FFButtonVariant.ghost,
+              visualDensity: VisualDensity.standard,
+              focusNode: _scanButtonFocus,
+              onPressed: _suspended ? null : _openScan,
+            ),
+        ],
       ),
       const SizedBox(height: FFTokens.spacingMd),
     ];
@@ -1518,9 +1861,13 @@ class _ConfirmDialogState extends State<_ConfirmDialog> {
 // ── pickers ──────────────────────────────────────────────────────────────
 
 class _Picked {
-  _Picked(this.product, this.variant);
+  _Picked(this.product, this.variant) : scan = false;
+
+  /// S8: the scan icon in the search field was tapped.
+  _Picked.scan() : product = const {}, variant = null, scan = true;
   final Map<String, dynamic> product;
   final String? variant;
+  final bool scan;
 }
 
 /// Search by name or SKU over the vendor's products (spec §4.3); tracked
@@ -1533,7 +1880,11 @@ class _ProductPicker extends StatefulWidget {
     required this.added,
     required this.onRetry,
     this.suspended = false,
+    this.scan = false,
   });
+
+  /// S8: a scan icon in the search field (barcodes on).
+  final bool scan;
 
   final List<Map<String, dynamic>> products;
   final bool failed;
@@ -1603,6 +1954,18 @@ class _ProductPickerState extends State<_ProductPicker> {
           label: t('vendor.purchases.searchProducts'),
           prefixIcon: const Icon(Icons.search),
           onChanged: (_) => setState(() {}),
+          suffixIcon: widget.scan
+              ? IconButton(
+                  key: const Key('purchase-picker-scan'),
+                  style: IconButton.styleFrom(
+                    minimumSize: const Size(48, 48),
+                    visualDensity: VisualDensity.standard,
+                  ),
+                  tooltip: t('vendor.scan.open'),
+                  icon: const Icon(Icons.qr_code_scanner),
+                  onPressed: () => Navigator.of(context).pop(_Picked.scan()),
+                )
+              : null,
         ),
         if (widget.failed)
           FFErrorState(

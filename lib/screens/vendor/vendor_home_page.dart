@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import '../../shared/inbox/inbox_pages.dart';
 import '../member/member_message_settings_page.dart';
@@ -37,6 +38,10 @@ import '../../shared/widgets/persona_switcher.dart';
 import '../../shared/widgets/terms_agreement.dart';
 import '../pin_flows.dart';
 import '../../shared/shop_checkout.dart';
+import 'barcodes/barcode_rules.dart';
+import 'barcodes/scan_widgets.dart';
+import 'barcodes/vendor_scan_controller.dart';
+import 'barcodes/vendor_scan_panel.dart';
 import 'customers/customers_tab.dart';
 import 'customers/customers_widgets.dart';
 import 'documents/document_models.dart'
@@ -904,6 +909,10 @@ class _VendorHomePageState extends State<VendorHomePage> {
     final api = AppScope.of(context).api;
     final productId = product?['id']?.toString();
     var current = product;
+    // S8: a new product was saved without its codes (barcodes went off).
+    var codesDropped = false;
+    // S8: an edit saved without its codes (the form stayed open).
+    var editSaved = false;
     final saved = await showFFSheet<bool>(
       context,
       title: context.tr(
@@ -915,6 +924,12 @@ class _VendorHomePageState extends State<VendorHomePage> {
         showFlashSale: _tools.flashSales,
         stockLedger: true,
         canSeeCost: _tools.canSeeCost,
+        barcodesOn: _tools.barcodes,
+        onBarcodesOff: ({required created}) {
+          codesDropped = created;
+          editSaved = !created;
+          unawaited(_askToolsAgain());
+        },
         vatCodes: _vatCodes,
         describeError: _saveFailedText,
         onSave: (body) => api.vendorSaveProduct(body, productId: productId),
@@ -935,8 +950,21 @@ class _VendorHomePageState extends State<VendorHomePage> {
               },
       ),
     );
-    if (saved != true || !mounted) return;
-    FFSnack.success(context, context.tr('vendor.productSaved'));
+    if (!mounted) return;
+    if (saved != true) {
+      // An edit whose codes were refused was still saved: show it.
+      if (editSaved) await _refresh();
+      return;
+    }
+    if (codesDropped) {
+      FFSnack.warning(
+        context,
+        '${context.tr('vendor.barcodes.unavailable')} '
+        '${context.tr('vendor.barcodes.notSavedNew')}',
+      );
+    } else {
+      FFSnack.success(context, context.tr('vendor.productSaved'));
+    }
     await _refresh();
   }
 
@@ -959,8 +987,296 @@ class _VendorHomePageState extends State<VendorHomePage> {
     if (result != null) _applyAdjusted(result);
   }
 
-  Future<void> _openHistory(Map<String, dynamic> product) async {
-    await context.push('/vendor/products/${product['id']}/stock');
+  // ── S8: find a product by scanning (spec §5.3) ──────────────────────────
+
+  /// Barcodes on and `products` (the ledger is implied on the server).
+  bool get _barcodesOn => _tools.barcodes && _can('products');
+
+  Widget _scanEntry() => Padding(
+    padding: const EdgeInsets.only(bottom: FFTokens.spacingSm),
+    child: Align(
+      alignment: AlignmentDirectional.centerStart,
+      child: FFButton(
+        key: const Key('products-scan'),
+        label: context.tr('vendor.scan.findProduct'),
+        icon: Icons.qr_code_scanner,
+        variant: FFButtonVariant.secondary,
+        visualDensity: VisualDensity.standard,
+        onPressed: _busy ? null : _scanFindProduct,
+      ),
+    ),
+  );
+
+  Future<void> _scanFindProduct({String? code}) async {
+    final raw =
+        code ??
+        await scanOneCode(
+          context,
+          title: context.tr('vendor.scan.findProduct'),
+          memoryScope: vendorScanScope(context),
+        );
+    if (raw == null || !mounted) return;
+    final controller = VendorScanController(
+      index: () => ProductCodeIndex(_products),
+      lookup: apiScanLookup(AppScope.of(context).api),
+    );
+    try {
+      final outcome = await controller.handle(raw, typed: true);
+      if (outcome == null || !mounted) return;
+      if (outcome.kind == ScanOutcomeKind.featureOff) {
+        FFSnack.info(context, context.tr('vendor.barcodes.unavailable'));
+        unawaited(_askToolsAgain());
+        unawaited(_refresh());
+        return;
+      }
+      final notice = noticeFor(context, outcome);
+      if (notice != null) {
+        scanFeedback(context, notice.kind, notice.message);
+        await _scanProblem(notice, raw);
+        return;
+      }
+      final match = await singleMatch(context, controller, outcome.matches);
+      if (match == null || !mounted) return;
+      scanFeedback(context, ScanNoticeKind.added, match.label);
+      await _scannedProductActions(match);
+    } finally {
+      controller.dispose();
+    }
+  }
+
+  /// A code that matched nothing (or failed): what can be done (§4.6).
+  Future<void> _scanProblem(ScanNotice notice, String code) async {
+    final action = await showFFSheet<String>(
+      context,
+      title: context.tr('vendor.scan.findProduct'),
+      child: Builder(
+        builder: (sheet) => Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (notice.waitSeconds != null)
+              RateLimitAlert(seconds: notice.waitSeconds!)
+            else
+              Semantics(
+                liveRegion: true,
+                child: FFAlert(
+                  key: const Key('products-scan-problem'),
+                  message: notice.message,
+                  tone: notice.kind == ScanNoticeKind.failed
+                      ? FFAlertTone.error
+                      : FFAlertTone.warning,
+                ),
+              ),
+            if (notice.kind == ScanNoticeKind.unknown)
+              UnknownCodeActions(
+                code: code,
+                canManage: _can('products'),
+                onAddToProduct: () => Navigator.of(sheet).pop('add'),
+                onCreateProduct: () => Navigator.of(sheet).pop('create'),
+                onScanAgain: () => Navigator.of(sheet).pop('again'),
+              )
+            else
+              Padding(
+                padding: const EdgeInsets.only(top: FFTokens.spacingXs),
+                child: FFButton(
+                  key: const Key('scan-again'),
+                  label: sheet.tr(
+                    notice.kind == ScanNoticeKind.failed
+                        ? 'common.retry'
+                        : 'vendor.scan.again',
+                  ),
+                  variant: FFButtonVariant.ghost,
+                  fullWidth: true,
+                  visualDensity: VisualDensity.standard,
+                  onPressed: () => Navigator.of(sheet).pop(
+                    notice.kind == ScanNoticeKind.failed ? 'retry' : 'again',
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+    if (!mounted) return;
+    switch (action) {
+      case 'again':
+        await _scanFindProduct();
+      case 'retry':
+        await _scanFindProduct(code: code);
+      case 'add':
+        final res = await addCodeToProduct(
+          context,
+          code: code,
+          products: _products,
+        );
+        if (res == null || !mounted) return;
+        if (res.barcodesOff) return;
+        if (res.inUseBy != null) {
+          await _scanFindProduct(code: code);
+          return;
+        }
+        await _refresh();
+        if (!mounted) return;
+        final saved = res.product!;
+        await _scannedProductActions(
+          ScanMatch.fromProduct(
+            _products.firstWhere(
+              (p) => p['id']?.toString() == saved['id']?.toString(),
+              orElse: () => Map<String, dynamic>.from(saved),
+            ),
+            variant: res.variant,
+          ),
+        );
+      case 'create':
+        final created = await openNewProductWithCode(
+          context,
+          code: code,
+          tools: _tools,
+          vatCodes: _vatCodes,
+        );
+        if (created && mounted) await _refresh();
+    }
+  }
+
+  /// The product action sheet: Count / Adjust / History / Edit / Scan
+  /// another. A whole-product code on a product with variants asks which
+  /// variant first (no product-level adjustment when variants exist).
+  Future<void> _scannedProductActions(ScanMatch m) async {
+    // A product only the lookup knows: load the list so its variants are
+    // complete (the lookup sends untracked variant names as null).
+    if (m.product == null &&
+        !_products.any((p) => p['id']?.toString() == m.productId)) {
+      try {
+        final rows = await AppScope.of(context).api.vendorProducts();
+        if (!mounted) return;
+        setState(
+          () => _products = rows.whereType<Map<String, dynamic>>().toList(),
+        );
+      } catch (_) {
+        // The lookup's answer stands.
+      }
+    }
+    final product =
+        _products
+            .where((p) => p['id']?.toString() == m.productId)
+            .firstOrNull ??
+        m.asProduct;
+    final tracked = trackedVariants(product);
+    String? variant = m.variant;
+    final archived = (product['status'] ?? m.status) == 'archived';
+    final listed =
+        (product['status'] ?? 'active') == 'active' &&
+        (product['approvalStatus'] ?? 'approved') == 'approved';
+    final picked = await showFFSheet<(String, String?)>(
+      context,
+      title: m.name,
+      child: StatefulBuilder(
+        builder: (sheet, setSheet) {
+          final t = sheet.tr;
+          final needsVariant = tracked.isNotEmpty && variant == null;
+          final stock = variant == null
+              ? (product['stock'] as num?)?.toInt() ?? 0
+              : tracked
+                        .where((v) => v.name == variant)
+                        .map((v) => v.stock)
+                        .firstOrNull ??
+                    m.stock;
+          Widget action(String id, String key, IconData icon) => Padding(
+            padding: const EdgeInsets.only(top: FFTokens.spacingXs),
+            child: FFButton(
+              key: Key('products-scan-$id'),
+              label: t(key),
+              icon: icon,
+              variant: FFButtonVariant.secondary,
+              fullWidth: true,
+              visualDensity: VisualDensity.standard,
+              onPressed: () => Navigator.of(sheet).pop((id, variant)),
+            ),
+          );
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (variant != null)
+                Text(
+                  '${m.name} ($variant)',
+                  style: Theme.of(sheet).textTheme.titleSmall,
+                ),
+              Text(
+                fillIn(t('vendor.scan.stockNow'), {'n': formatStock(stock)}),
+                key: const Key('products-scan-stock'),
+              ),
+              Wrap(
+                spacing: FFTokens.spacingXs,
+                children: [
+                  if (archived)
+                    FFBadge(
+                      label: t('vendor.scan.archivedBadge'),
+                      tone: FFBadgeTone.gray,
+                    )
+                  else if (!listed)
+                    FFBadge(label: t('vendor.purchases.notListed')),
+                ],
+              ),
+              if (tracked.isNotEmpty && m.variant == null)
+                Padding(
+                  padding: const EdgeInsets.only(top: FFTokens.spacingSm),
+                  child: FFDropdownField<String>(
+                    key: const Key('products-scan-variant'),
+                    value: variant,
+                    isExpanded: true,
+                    label: t('vendor.stock.variantLabel'),
+                    items: [
+                      for (final v in tracked)
+                        DropdownMenuItem(
+                          value: v.name,
+                          child: Text(
+                            '${v.name} · ${formatStock(v.stock)}',
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                    ],
+                    onChanged: (v) => setSheet(() => variant = v),
+                  ),
+                ),
+              if (!archived && !needsVariant) ...[
+                action('count', 'vendor.scan.countStock', Icons.fact_check),
+                action('adjust', 'vendor.scan.adjustStock', Icons.tune),
+              ],
+              action('history', 'vendor.scan.history', Icons.history),
+              action('edit', 'vendor.scan.edit', Icons.edit_outlined),
+              action('another', 'vendor.scan.another', Icons.qr_code_scanner),
+            ],
+          );
+        },
+      ),
+    );
+    if (picked == null || !mounted) return;
+    final (id, chosen) = picked;
+    switch (id) {
+      case 'count' || 'adjust':
+        final result = await openAdjustStock(
+          context,
+          product: product,
+          variant: chosen,
+          initialReason: id == 'count' ? 'count' : null,
+        );
+        if (result != null) _applyAdjusted(result);
+      case 'history':
+        await _openHistory(product, variant: chosen);
+      case 'edit':
+        await _editProduct(product);
+      case 'another':
+        await _scanFindProduct();
+    }
+  }
+
+  Future<void> _openHistory(
+    Map<String, dynamic> product, {
+    String? variant,
+  }) async {
+    await context.push(
+      '/vendor/products/${product['id']}/stock'
+      '${variant == null ? '' : '?variant=${Uri.encodeQueryComponent(variant)}'}',
+    );
     if (!mounted) return;
     // Quietly, so the list keeps its filter and scroll position.
     try {
@@ -1436,6 +1752,7 @@ class _VendorHomePageState extends State<VendorHomePage> {
     final lead = [
       if (_heroOn(0)) ..._productsLead(),
       if (_merch) _merchEntry(),
+      if (_barcodesOn) _scanEntry(),
     ];
     if (_products.isEmpty) {
       return ListView(
@@ -2347,6 +2664,57 @@ class _VendorHomePageState extends State<VendorHomePage> {
   }
 }
 
+/// S8 "New product with this code" (§4.6): the product form (create, with
+/// the stock ledger, as the Products tab opens it) with [code] already in
+/// its Barcodes list. True when the product was saved.
+Future<bool> openNewProductWithCode(
+  BuildContext context, {
+  required String code,
+  required VendorTools tools,
+  List<VatCodeOption>? vatCodes,
+}) async {
+  final api = AppScope.of(context).api;
+  var codesDropped = false;
+  final saved = await showFFSheet<bool>(
+    context,
+    title: context.tr('vendor.addProduct'),
+    child: VendorProductForm(
+      showTargets: tools.productTargets,
+      stockLedger: true,
+      canSeeCost: tools.canSeeCost,
+      barcodesOn: true,
+      initialBarcodes: [code],
+      vatCodes: vatCodes,
+      onSave: (body) => api.vendorSaveProduct(body),
+      onBarcodesOff: ({required created}) {
+        codesDropped = true;
+        unawaited(VendorToolsOptions.of(context, refresh: true));
+      },
+    ),
+  );
+  if (saved == true && context.mounted) {
+    if (codesDropped) {
+      FFSnack.warning(
+        context,
+        '${context.tr('vendor.barcodes.unavailable')} '
+        '${context.tr('vendor.barcodes.notSavedNew')}',
+      );
+    } else {
+      FFSnack.success(context, context.tr('vendor.productSaved'));
+    }
+  }
+  return saved == true;
+}
+
+/// One code in the form's Barcodes list (S8 §5.4). [variant] is the form's
+/// variant row (so a rename carries the code along); null = whole product.
+class _CodeEntry {
+  _CodeEntry(this.code, this.variant);
+  final String code;
+  VariantDraft? variant;
+  String? error;
+}
+
 class VendorProductForm extends StatefulWidget {
   const VendorProductForm({
     super.key,
@@ -2354,6 +2722,9 @@ class VendorProductForm extends StatefulWidget {
     this.showTargets = false,
     this.stockLedger = false,
     this.canSeeCost = false,
+    this.barcodesOn = false,
+    this.initialBarcodes = const [],
+    this.onBarcodesOff,
     this.onSave,
     this.onAdjust,
     this.describeError,
@@ -2383,9 +2754,24 @@ class VendorProductForm extends StatefulWidget {
   /// Cost price is shown and sent only when this is true.
   final bool canSeeCost;
 
+  /// S8 (`tools.barcodes`): the Barcodes section, and `barcodes` (the whole
+  /// list) on save. Off: neither is shown or sent. Ledger form only (the
+  /// server needs the stock ledger for barcodes).
+  final bool barcodesOn;
+
+  /// S8: codes already in the list of a new product ("New product with
+  /// this code"), for the whole product.
+  final List<String> initialBarcodes;
+
   /// Ledger on: saves the body; the form stays open (values kept) when it
-  /// throws, and closes with `true` when it succeeds.
-  final Future<void> Function(Map<String, dynamic> body)? onSave;
+  /// throws, and closes with `true` when it succeeds. Resolves with the
+  /// saved product when there is one (S8 reads its `barcodes`).
+  final Future<Object?> Function(Map<String, dynamic> body)? onSave;
+
+  /// S8: the save went through but the server left the barcodes out
+  /// (barcodes were switched off after the form opened). An edit stays open
+  /// with the codes kept and says so; a new product closes ([created]).
+  final void Function({required bool created})? onBarcodesOff;
 
   /// Ledger on: opens "Adjust stock" for the product (variant null) or one
   /// variant, resolving with the product's counts `{stock, variants}`. The
@@ -2440,7 +2826,26 @@ class _VendorProductFormState extends State<VendorProductForm> {
   /// "Age group": empty means all ages.
   final Set<String> _ageBands = {};
 
+  // S8: the Barcodes section.
+  final List<_CodeEntry> _codes = [];
+  final _codeField = TextEditingController();
+  final _codeFocus = FocusNode();
+  final _barcodesKey = GlobalKey();
+  String? _codeFieldError;
+  String? _barcodesError;
+  int _removedWithVariant = 0;
+  // The variant the next code is for; null = whole product.
+  VariantDraft? _codeFor;
+
   bool get _creating => widget.product == null;
+
+  /// S8: the Barcodes section shows (and `barcodes` is sent) only for a new
+  /// product or a loaded row that carries `barcodes`. A row without the key
+  /// (loaded while barcodes were off) has unknown codes, and sending a list
+  /// would replace them (security review M-2).
+  bool get _barcodesShown =>
+      widget.barcodesOn &&
+      (_creating || widget.product!.containsKey('barcodes'));
 
   /// The stock the form loaded (sent as `stockSeen` with a changed stock).
   int get _stockLoaded => (widget.product?['stock'] as num?)?.toInt() ?? 0;
@@ -2483,6 +2888,20 @@ class _VendorProductFormState extends State<VendorProductForm> {
     for (final v in (product?['variants'] as List? ?? []).whereType<Map>()) {
       _variantRows.add(VariantDraft.stored(v));
     }
+    for (final b in barcodesOf(product)) {
+      final row = b.variant == null
+          ? null
+          : _variantRows.where((r) => r.original == b.variant).firstOrNull;
+      // A code of a variant the product no longer has is not live (B-6).
+      if (b.variant != null && row == null) continue;
+      _codes.add(_CodeEntry(b.code, row));
+    }
+    for (final code in widget.initialBarcodes) {
+      final check = validateBarcode(code);
+      if (check.ok && !_codes.any((c) => codeKey(c.code) == check.key)) {
+        _codes.add(_CodeEntry(check.code, null));
+      }
+    }
     final images = (product?['images'] as List?)?.whereType<String>().toList();
     _image = images?.firstOrNull;
     _secondImage = images != null && images.length > 1 ? images[1] : null;
@@ -2516,6 +2935,8 @@ class _VendorProductFormState extends State<VendorProductForm> {
     _variants.dispose();
     _cost.dispose();
     _reorder.dispose();
+    _codeField.dispose();
+    _codeFocus.dispose();
     for (final row in _variantRows) {
       row.dispose();
     }
@@ -2672,6 +3093,16 @@ class _VendorProductFormState extends State<VendorProductForm> {
         creating: _creating,
         withCost: widget.canSeeCost,
       ),
+      // S8: the whole list (never inside a variant), only with the tool on.
+      if (_barcodesShown)
+        'barcodes': [
+          for (final c in _codes)
+            {
+              'code': c.code,
+              if (c.variant != null && _variantRows.contains(c.variant))
+                'variant': c.variant!.trimmedName,
+            },
+        ],
     };
   }
 
@@ -2679,10 +3110,33 @@ class _VendorProductFormState extends State<VendorProductForm> {
     final body = _ledgerBody();
     final save = widget.onSave;
     if (body == null || save == null) return;
-    setState(() => _saving = true);
+    setState(() {
+      _saving = true;
+      _barcodesError = null;
+      for (final c in _codes) {
+        c.error = null;
+      }
+    });
     try {
-      await save(body);
-      if (mounted) Navigator.pop(context, true);
+      final saved = await save(body);
+      if (!mounted) return;
+      if (body.containsKey('barcodes') &&
+          saved is Map &&
+          !saved.containsKey('barcodes')) {
+        // Saved, but the server ignored the codes: barcodes went off.
+        widget.onBarcodesOff?.call(created: _creating);
+        if (!_creating) {
+          setState(() {
+            _saving = false;
+            _barcodesError =
+                '${context.tr('vendor.barcodes.unavailable')} '
+                '${context.tr('vendor.barcodes.notSaved')}';
+          });
+          _bringIntoView(_barcodesKey);
+          return;
+        }
+      }
+      Navigator.pop(context, true);
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -2730,6 +3184,36 @@ class _VendorProductFormState extends State<VendorProductForm> {
           return context.tr('vendor.variant.stockMixed');
         case 'cost_forbidden':
           return context.tr('vendor.costForbidden');
+        // S8: a code the server refused is shown on its row (nothing saved).
+        case 'barcode_in_use' ||
+            'invalid_barcode' ||
+            'invalid_check_digit' ||
+            'duplicate_barcode' ||
+            'barcode_variant_not_found':
+          final text = fillIn(
+            context.tr(
+              e.code == 'barcode_in_use'
+                  ? barcodeInUseKey(body)
+                  : barcodeErrorKey(e.code, reason: body['reason']?.toString()),
+            ),
+            {'name': body['name'] ?? '', 'variant': body['variant'] ?? ''},
+          );
+          final key = codeKey(body['code']?.toString());
+          final i = _codes.indexWhere((c) => codeKey(c.code) == key);
+          if (i < 0) return text;
+          _codes[i].error = text;
+          _bringIntoView(_barcodesKey);
+          return context.tr('vendor.form.fixErrors');
+        case 'save_conflict':
+          // The server's own words when it sends them, else ours.
+          return serverMessage(context, body) ??
+              context.tr('vendor.barcodes.err.saveConflict');
+        case 'too_many_barcodes':
+          _barcodesError = fillIn(context.tr('vendor.barcodes.err.tooMany'), {
+            'max': body['max'] ?? maxBarcodesPerProduct,
+          });
+          _bringIntoView(_barcodesKey);
+          return context.tr('vendor.form.fixErrors');
         case 'stock_changed':
           // Stock moved since the form opened: show the new counts.
           final current = (body['currentStock'] as num?)?.toInt();
@@ -3287,6 +3771,303 @@ class _VendorProductFormState extends State<VendorProductForm> {
     );
   }
 
+  // ── S8: Barcodes (spec §5.4) ─────────────────────────────────────────
+
+  /// A variant removed in the form takes its codes with it (B-6); a rename
+  /// keeps them (they point at the row).
+  void _dropCodesOfRemovedVariants() {
+    final before = _codes.length;
+    _codes.removeWhere(
+      (c) => c.variant != null && !_variantRows.contains(c.variant),
+    );
+    final removed = before - _codes.length;
+    if (removed > 0) _removedWithVariant = removed;
+    if (_codeFor != null && !_variantRows.contains(_codeFor)) _codeFor = null;
+  }
+
+  void _addCode() {
+    final t = context.tr;
+    final check = validateBarcode(_codeField.text);
+    String? error;
+    if (!check.ok) {
+      error = t(barcodeErrorKey(check.error, reason: check.reason));
+    } else if (_codes.any((c) => codeKey(c.code) == check.key)) {
+      error = t('vendor.barcodes.err.duplicate');
+    } else if (_codes.length >= maxBarcodesPerProduct) {
+      error = fillIn(t('vendor.barcodes.err.tooMany'), {
+        'max': maxBarcodesPerProduct,
+      });
+    }
+    if (error != null) {
+      // The field keeps its value; the error is read out (assertive).
+      setState(() => _codeFieldError = error);
+      SemanticsService.sendAnnouncement(
+        View.of(context),
+        error,
+        Directionality.of(context),
+        assertiveness: Assertiveness.assertive,
+      );
+      _codeFocus.requestFocus();
+      return;
+    }
+    setState(() {
+      _codes.add(
+        _CodeEntry(
+          check.code,
+          _codeFor != null && _variantRows.contains(_codeFor) ? _codeFor : null,
+        ),
+      );
+      _codeField.clear();
+      _codeFieldError = null;
+      _barcodesError = null;
+      _removedWithVariant = 0;
+      _saveError = null;
+    });
+    _codeFocus.requestFocus();
+  }
+
+  Future<void> _scanIntoField() async {
+    final code = await scanOneCode(
+      context,
+      title: context.tr('vendor.scan.open'),
+      memoryScope: vendorScanScope(context),
+    );
+    if (code == null || !mounted) return;
+    setState(() {
+      _codeField.text = code;
+      _codeFieldError = null;
+    });
+    _codeFocus.requestFocus();
+  }
+
+  String _codeForLabel(VariantDraft? row) => row == null
+      ? context.tr('vendor.barcodes.wholeProduct')
+      : row.trimmedName;
+
+  Widget _barcodesSection() {
+    final t = context.tr;
+    final theme = Theme.of(context);
+    final named = [
+      for (final r in _variantRows)
+        if (r.trimmedName.isNotEmpty) r,
+    ];
+    final forIndex = _codeFor == null ? -1 : named.indexOf(_codeFor!);
+    final field = FFTextField(
+      key: const Key('vendor-barcode-field'),
+      controller: _codeField,
+      focusNode: _codeFocus,
+      enabled: !_saving,
+      label: t('vendor.barcodes.field'),
+      // No autocorrect; letters allowed. Enter adds (USB scanners).
+      keyboardType: TextInputType.visiblePassword,
+      textInputAction: TextInputAction.done,
+      errorText: _codeFieldError,
+      onChanged: (_) {
+        if (_codeFieldError != null) setState(() => _codeFieldError = null);
+      },
+      onFieldSubmitted: (_) => _addCode(),
+      // Keep focus here for the next code (UAT L-1): no unfocus on Enter.
+      onEditingComplete: () {},
+      suffixIcon: IconButton(
+        key: const Key('vendor-barcode-scan'),
+        style: IconButton.styleFrom(
+          minimumSize: const Size(48, 48),
+          visualDensity: VisualDensity.standard,
+        ),
+        tooltip: t('vendor.scan.open'),
+        icon: const Icon(Icons.qr_code_scanner),
+        onPressed: _saving ? null : _scanIntoField,
+      ),
+    );
+    final add = FFButton(
+      key: const Key('vendor-barcode-add'),
+      label: t('vendor.barcodes.add'),
+      icon: Icons.add,
+      variant: FFButtonVariant.secondary,
+      visualDensity: VisualDensity.standard,
+      onPressed: _saving ? null : _addCode,
+    );
+    final forField = named.isEmpty
+        ? null
+        : FFDropdownField<int>(
+            // Rebuilt when the options change (the field keeps its first
+            // value otherwise).
+            key: ValueKey(
+              'vendor-barcode-for-${named.map((r) => r.trimmedName).join('|')}-$forIndex',
+            ),
+            value: forIndex,
+            isExpanded: true,
+            label: t('vendor.barcodes.for'),
+            items: [
+              DropdownMenuItem(
+                value: -1,
+                child: Text(
+                  t('vendor.barcodes.wholeProduct'),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              for (var i = 0; i < named.length; i++)
+                DropdownMenuItem(
+                  value: i,
+                  child: Text(
+                    named[i].trimmedName,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+            ],
+            onChanged: (i) =>
+                setState(() => _codeFor = i == null || i < 0 ? null : named[i]),
+          );
+    final sw = FFLocaleScope.of(context).locale.languageCode == 'sw';
+    final stack = sw || MediaQuery.textScalerOf(context).scale(1) >= 1.3;
+    return Column(
+      key: _barcodesKey,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          t('vendor.barcodes.title'),
+          key: const Key('vendor-barcodes'),
+          style: theme.textTheme.titleSmall,
+        ),
+        Text(t('vendor.barcodes.help'), style: theme.textTheme.bodySmall),
+        const SizedBox(height: FFTokens.spacingXs),
+        if (_codes.isEmpty)
+          Text(
+            t('vendor.barcodes.none'),
+            key: const Key('vendor-barcodes-none'),
+            style: theme.textTheme.bodyMedium,
+          ),
+        for (var i = 0; i < _codes.length; i++) _codeRow(i),
+        if (_removedWithVariant > 0)
+          Semantics(
+            liveRegion: true,
+            child: Padding(
+              padding: const EdgeInsets.only(top: FFTokens.spacingXs),
+              child: Text(
+                fillIn(
+                  t(
+                    pluralKey(
+                      'vendor.barcodes.removedWithVariant',
+                      _removedWithVariant,
+                    ),
+                  ),
+                  {'n': _removedWithVariant},
+                ),
+                key: const Key('vendor-barcodes-removed-with-variant'),
+                style: theme.textTheme.bodySmall,
+              ),
+            ),
+          ),
+        const SizedBox(height: FFTokens.spacingSm),
+        field,
+        const SizedBox(height: FFTokens.spacingSm),
+        if (forField == null)
+          Align(alignment: AlignmentDirectional.centerStart, child: add)
+        else if (stack) ...[
+          forField,
+          const SizedBox(height: FFTokens.spacingSm),
+          Align(alignment: AlignmentDirectional.centerStart, child: add),
+        ] else
+          Row(
+            children: [
+              Expanded(child: forField),
+              const SizedBox(width: FFTokens.spacingSm),
+              add,
+            ],
+          ),
+        if (_barcodesError != null)
+          Semantics(
+            liveRegion: true,
+            child: Padding(
+              padding: const EdgeInsets.only(top: FFTokens.spacingXs),
+              child: FFAlert(
+                key: const Key('vendor-barcodes-error'),
+                message: _barcodesError!,
+                tone: FFAlertTone.error,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _codeRow(int i) {
+    final t = context.tr;
+    final theme = Theme.of(context);
+    final c = _codes[i];
+    final forLabel = _codeForLabel(c.variant);
+    return Column(
+      key: Key('vendor-barcode-row-${c.code}'),
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 56),
+          child: Row(
+            children: [
+              Expanded(
+                child: Semantics(
+                  container: true,
+                  label: fillIn(t('vendor.barcodes.rowLabel'), {
+                    'code': spokenCode(c.code),
+                    'for': forLabel,
+                  }),
+                  excludeSemantics: true,
+                  child: Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: c.code,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            fontFamily: 'JetBrains Mono',
+                            fontFeatures: const [FontFeature.tabularFigures()],
+                          ),
+                        ),
+                        TextSpan(text: ' · $forLabel'),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              IconButton(
+                key: Key('vendor-barcode-remove-${c.code}'),
+                style: IconButton.styleFrom(
+                  minimumSize: const Size(48, 48),
+                  visualDensity: VisualDensity.standard,
+                ),
+                tooltip: fillIn(t('vendor.barcodes.remove'), {'code': c.code}),
+                icon: const Icon(Icons.close),
+                onPressed: _saving
+                    ? null
+                    : () => setState(() {
+                        final hadError = _codes[i].error != null;
+                        _codes.removeAt(i);
+                        _barcodesError = null;
+                        // UAT L-5: the row the server refused is gone, so
+                        // is the "fix the errors" banner by Save (unless
+                        // another row still has one).
+                        if (hadError && !_codes.any((c) => c.error != null)) {
+                          _saveError = null;
+                        }
+                      }),
+              ),
+            ],
+          ),
+        ),
+        if (c.error != null)
+          Semantics(
+            liveRegion: true,
+            child: Text(
+              c.error!,
+              key: Key('vendor-barcode-error-${c.code}'),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.error,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
   /// [children] with a small token gap between each.
   List<Widget> _spaced(List<Widget> children) => [
     for (var i = 0; i < children.length; i++) ...[
@@ -3357,6 +4138,7 @@ class _VendorProductFormState extends State<VendorProductForm> {
               else
                 reorder,
               ..._middleFields(),
+              if (_barcodesShown) _barcodesSection(),
               VariantRowsEditor(
                 key: _variantsKey,
                 rows: _variantRows,
@@ -3368,6 +4150,7 @@ class _VendorProductFormState extends State<VendorProductForm> {
                 onChanged: () => setState(() {
                   _variantErrors = const {};
                   _saveError = null;
+                  _dropCodesOfRemovedVariants();
                 }),
                 onAdjust: widget.onAdjust == null ? null : _adjust,
               ),

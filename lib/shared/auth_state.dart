@@ -12,6 +12,7 @@ import 'partner_details.dart';
 import 'pending_friend_invite.dart';
 import 'pending_org_invite.dart';
 import 'push_service.dart';
+import 'vendor_pos_device_cache.dart';
 import 'vendor_purchase_draft_store.dart';
 
 /// Global session state. In a larger app this would be DI'd via Riverpod/Provider.
@@ -597,6 +598,9 @@ class AuthState extends ChangeNotifier {
       await EventsCache.clearAll();
       // S9: an unfinished Receive stock form holds cost figures.
       await VendorPurchaseDraftStore.clearAll();
+      // S8 L1: the POS product list (with barcodes) and receipt header kept
+      // for offline selling. Queued sales stay so they still sync.
+      await clearVendorPosDeviceCache();
     }
     // Partner date of birth: the session copy and the device-side prompt
     // counts are not the next person's (security review L1/L2).

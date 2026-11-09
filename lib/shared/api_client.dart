@@ -2222,6 +2222,16 @@ class ApiClient {
     body: data,
   );
 
+  /// Vendor tools · S8: this vendor's products with a scanned or typed
+  /// code (barcode first, else exact SKU): `{code, codeKey, matches}`.
+  /// 404 feature_disabled while barcodes are off; 429 rate_limited
+  /// `{retryAfterSeconds}`.
+  Future<Map<String, dynamic>> vendorProductLookup(String code) async =>
+      await _request(
+        'GET',
+        '/vendor/products/lookup?code=${Uri.encodeQueryComponent(code.trim())}',
+      );
+
   // ── Vendor tools (stock ledger, S1) ─────────────────────────────────────
 
   /// Which vendor tools this server has switched on, e.g.
