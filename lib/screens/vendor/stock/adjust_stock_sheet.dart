@@ -20,6 +20,9 @@ import '../../../shared/api_client.dart';
 import '../../../shared/components/components.dart';
 import '../../../shared/design_tokens.dart';
 import '../../../shared/i18n.dart';
+import '../barcodes/scan_widgets.dart';
+import '../barcodes/vendor_scan_controller.dart';
+import '../barcodes/vendor_scan_panel.dart';
 import 'stock_options.dart';
 
 /// How the sheet ended when it did not save.
@@ -152,6 +155,17 @@ class _AdjustStockSheetState extends State<AdjustStockSheet> {
   /// `purchases`).
   bool _purchasesHint = false;
 
+  // S8 (§5.3): "Count by scanning" in Counted (barcodes on).
+  bool _barcodes = false;
+  bool _countScanOpen = false;
+  ScanNotice? _countNotice;
+  List<Map<String, dynamic>> _rows = const [];
+  late final VendorScanController _countScan = VendorScanController(
+    index: () => ProductCodeIndex(_rows.isEmpty ? [_product] : _rows),
+    lookup: apiScanLookup(AppScope.of(context).api),
+  );
+  bool _countScanUsed = false;
+
   String get _productId => widget.product['id']?.toString() ?? '';
 
   List<({String name, int stock})> get _variants => trackedVariants(_product);
@@ -174,6 +188,7 @@ class _AdjustStockSheetState extends State<AdjustStockSheet> {
     _quantity.dispose();
     _note.dispose();
     _quantityFocus.dispose();
+    if (_countScanUsed) _countScan.dispose();
     super.dispose();
   }
 
@@ -183,9 +198,11 @@ class _AdjustStockSheetState extends State<AdjustStockSheet> {
       if (mounted && tools.purchases && canVendor(context, 'purchases')) {
         setState(() => _purchasesHint = true);
       }
+      if (mounted && tools.barcodes) setState(() => _barcodes = true);
     });
     try {
       final rows = await AppScope.of(context).api.vendorProducts();
+      _rows = rows.whereType<Map>().map(Map<String, dynamic>.from).toList();
       final fresh = rows.whereType<Map>().firstWhere(
         (p) => p['id']?.toString() == _productId,
         orElse: () => const {},
@@ -245,6 +262,67 @@ class _AdjustStockSheetState extends State<AdjustStockSheet> {
       !_insufficient &&
       // Other needs a note before it can be saved.
       (_reason != 'other' || _note.text.trim().isNotEmpty);
+
+  // ── S8: count by scanning ────────────────────────────────────────────
+
+  /// Each scan of this product's code (the chosen variant's, or a
+  /// whole-product code) adds 1 to Counted; another product's code changes
+  /// nothing and says whose it is.
+  Future<bool> _onCountCode(String raw, {required bool typed}) async {
+    final outcome = await _countScan.handle(raw, typed: typed);
+    if (outcome == null || !mounted) return false;
+    final t = context.tr;
+    if (outcome.kind == ScanOutcomeKind.featureOff) {
+      setState(() => _countScanOpen = false);
+      return false;
+    }
+    final notice = noticeFor(context, outcome);
+    if (notice != null) {
+      _countSay(notice);
+      return false;
+    }
+    final mine = outcome.matches.where((m) => m.productId == _productId);
+    final m = mine.isNotEmpty ? mine.first : outcome.matches.first;
+    final variants = _variants;
+    final fits =
+        m.productId == _productId &&
+        (m.variant == null ||
+            m.variant == _variant ||
+            (_variant == null && variants.any((v) => v.name == m.variant)));
+    if (!fits) {
+      _countSay(
+        ScanNotice.warning(
+          fillIn(t('vendor.scan.otherProduct'), {'name': m.label}),
+        ),
+      );
+      return false;
+    }
+    if (_variant == null && m.variant != null) _variant = m.variant;
+    _countBy(1);
+    scanFeedback(context, ScanNoticeKind.added, _countNotice!.message);
+    return true;
+  }
+
+  void _countSay(ScanNotice notice) {
+    setState(() => _countNotice = notice);
+    scanFeedback(context, notice.kind, notice.message);
+  }
+
+  /// Scans add to what is typed in Counted.
+  void _countBy(int delta) {
+    final next = (_qty ?? 0) + delta;
+    _quantity.text = '${next < 0 ? 0 : next}';
+    _edited();
+    final n = _qty ?? 0;
+    final name = widget.product['name']?.toString() ?? '';
+    setState(
+      () => _countNotice = ScanNotice.added(
+        name: _variant == null ? name : '$name ($_variant)',
+        qty: n,
+        message: fillIn(context.tr('vendor.scan.countedOne'), {'n': n}),
+      ),
+    );
+  }
 
   /// Anything the vendor changes makes this a new entry.
   void _edited() {
@@ -672,6 +750,40 @@ class _AdjustStockSheetState extends State<AdjustStockSheet> {
                 onChanged: (_) => _edited(),
               ),
               _preview(context, kind, current),
+              if (_barcodes && kind == 'count') ...[
+                const SizedBox(height: FFTokens.spacingXs),
+                if (_countScanOpen)
+                  VendorScanPanel(
+                    key: const Key('adjust-count-panel'),
+                    controller: _countScan,
+                    memoryScope: vendorScanScope(context),
+                    onCode: _onCountCode,
+                    onClose: () => setState(() {
+                      _countScanOpen = false;
+                      _countNotice = null;
+                    }),
+                    result: ScanResultRow(
+                      notice: _countNotice,
+                      onMore: _busy ? null : () => _countBy(1),
+                      onLess: _busy ? null : () => _countBy(-1),
+                    ),
+                  )
+                else
+                  FFButton(
+                    key: const Key('adjust-count-scan'),
+                    label: context.tr('vendor.scan.countByScan'),
+                    icon: Icons.qr_code_scanner,
+                    variant: FFButtonVariant.ghost,
+                    fullWidth: true,
+                    visualDensity: VisualDensity.standard,
+                    onPressed: _busy
+                        ? null
+                        : () => setState(() {
+                            _countScanUsed = true;
+                            _countScanOpen = true;
+                          }),
+                  ),
+              ],
             ],
             const SizedBox(height: FFTokens.spacingSm),
             FFTextField(

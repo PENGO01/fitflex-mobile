@@ -15,6 +15,10 @@ import '../../../shared/components/components.dart';
 import '../../../shared/design_tokens.dart';
 import '../../../shared/formatters.dart';
 import '../../../shared/i18n.dart';
+import '../barcodes/barcode_rules.dart';
+import '../barcodes/scan_widgets.dart';
+import '../barcodes/vendor_scan_controller.dart';
+import '../barcodes/vendor_scan_panel.dart';
 import '../customers/customer_models.dart';
 import '../customers/customer_picker.dart';
 import '../customers/customers_widgets.dart';
@@ -24,6 +28,7 @@ import 'payment_sheet.dart';
 import 'receipt_data.dart';
 import 'sale_models.dart';
 import 'sales_widgets.dart';
+import '../vendor_home_page.dart' show openNewProductWithCode;
 
 /// The cart, saved to the device on every change (spec §2.5).
 class PosCartController extends ChangeNotifier {
@@ -79,6 +84,19 @@ class _PosPageState extends State<PosPage> {
   // Move focus to the flagged line's stepper once it is on screen.
   bool _focusFlagged = false;
 
+  // ── S8: barcodes ──
+  /// Every product loaded (archived too), for matching codes: an archived
+  /// product's code says "archived" instead of "unknown".
+  List<Map<String, dynamic>> _allProducts = [];
+  ProductCodeIndex _codeIndex = ProductCodeIndex.empty();
+  VendorScanController? _scan;
+  bool _scanOpen = false;
+  ScanNotice? _scanNotice;
+  // The line the last scan added to (for −/+ and Undo).
+  ({String productId, String? variant})? _lastScanned;
+  bool _undoable = false;
+  final _scanButtonFocus = FocusNode();
+
   bool get _wide => MediaQuery.sizeOf(context).width >= 900;
 
   /// Selling is off: staff disabled, or the business is suspended (the
@@ -88,7 +106,11 @@ class _PosPageState extends State<PosPage> {
   @override
   void initState() {
     super.initState();
-    _search.addListener(() => setState(() {}));
+    _search.addListener(() {
+      // Typing again replaces an unknown-code message under the field.
+      if (!_scanOpen && _search.text.isNotEmpty) _scanNotice = null;
+      setState(() {});
+    });
     WidgetsBinding.instance.addPostFrameCallback((_) => _start());
   }
 
@@ -98,6 +120,8 @@ class _PosPageState extends State<PosPage> {
     _cart.dispose();
     _search.dispose();
     _searchFocus.dispose();
+    _scan?.dispose();
+    _scanButtonFocus.dispose();
     for (final f in _lineFocus.values) {
       f.dispose();
     }
@@ -110,6 +134,12 @@ class _PosPageState extends State<PosPage> {
     _tools = tools;
     final session = SalesSession.of(context);
     if (session == null) return;
+    _scan = VendorScanController(
+      index: () => _codeIndex,
+      lookup: apiScanLookup(AppScope.of(context).api),
+      // Offline (§7): the saved product list only.
+      online: () => !_offline,
+    );
     _session = session..attach();
     await session.load();
     // Kept "suspended" from an earlier visit: ask the server whether that
@@ -138,6 +168,7 @@ class _PosPageState extends State<PosPage> {
     if (!mounted) return;
     if (cached != null && cached.products.isNotEmpty) {
       setState(() {
+        _setAll(cached.products);
         _products = _sellable(cached.products);
         _cachedAt = cached.cachedAt;
         _loading = false;
@@ -288,6 +319,7 @@ class _PosPageState extends State<PosPage> {
       await _session?.saveProducts(products);
       if (!mounted) return;
       setState(() {
+        _setAll(products);
         _products = _sellable(products);
         _fresh = true;
         _cachedAt = DateTime.now().toUtc().toIso8601String();
@@ -384,7 +416,14 @@ class _PosPageState extends State<PosPage> {
     _add(p, variant, name);
   }
 
-  void _add(Map<String, dynamic> p, String? variant, String name) {
+  /// Adds one; false at the stock limit (a snack says so). A scan gives its
+  /// own feedback ([fromScan]).
+  bool _add(
+    Map<String, dynamic> p,
+    String? variant,
+    String name, {
+    bool fromScan = false,
+  }) {
     final available = _stockFor(p, variant);
     var added = false;
     _cart.update(
@@ -401,11 +440,14 @@ class _PosPageState extends State<PosPage> {
       final text = fillIn(context.tr('vendor.pos.onlyLeft'), {'n': available});
       FFSnack.info(context, text);
       _announce(text);
-      return;
+      return false;
     }
     _clearFlag();
-    HapticFeedback.selectionClick();
-    _announce(fillIn(context.tr('vendor.pos.added'), {'name': name}));
+    if (!fromScan) {
+      HapticFeedback.selectionClick();
+      _announce(fillIn(context.tr('vendor.pos.added'), {'name': name}));
+    }
+    return true;
   }
 
   void _clearFlag() {
@@ -416,6 +458,254 @@ class _PosPageState extends State<PosPage> {
       });
     }
   }
+
+  // ── S8: scanning (spec §5.1) ───────────────────────────────────────────
+
+  /// Scanning is offered: barcodes and walk-in sales both on (§0.2).
+  bool get _barcodesOn => _tools.barcodes && _tools.walkInSales;
+
+  void _setAll(List<Map<String, dynamic>> rows) {
+    _allProducts = rows;
+    _codeIndex = ProductCodeIndex(rows);
+  }
+
+  void _openScan() {
+    if (_blocked || _scan == null) return;
+    setState(() {
+      _scanOpen = true;
+      _scanNotice = null;
+    });
+  }
+
+  void _closeScan() {
+    if (!_scanOpen) return;
+    setState(() {
+      _scanOpen = false;
+      _scanNotice = null;
+    });
+    // Focus goes back to the scan icon that opened it (§9).
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _scanButtonFocus.requestFocus();
+    });
+  }
+
+  void _showScanNotice(ScanNotice notice) {
+    setState(() {
+      _scanNotice = notice;
+      _undoable = false;
+    });
+    scanFeedback(context, notice.kind, notice.message);
+  }
+
+  /// The panel's (and Enter's) handler: true when something was added.
+  Future<bool> _onScanCode(String raw, {required bool typed}) async {
+    final scan = _scan;
+    if (scan == null || _blocked) return false;
+    final outcome = await scan.handle(raw, typed: typed);
+    if (outcome == null || !mounted) return false;
+    if (outcome.kind == ScanOutcomeKind.featureOff) {
+      // Barcodes went off on the server: the panel closes; the icon goes at
+      // the next options load.
+      FFSnack.info(context, context.tr('vendor.barcodes.unavailable'));
+      setState(() {
+        _scanOpen = false;
+        _scanNotice = null;
+      });
+      return false;
+    }
+    final notice = noticeFor(context, outcome);
+    if (notice != null) {
+      _showScanNotice(notice);
+      return false;
+    }
+    final match = await singleMatch(context, scan, outcome.matches);
+    if (match == null || !mounted) return false;
+    return _addScanned(match);
+  }
+
+  Future<bool> _addScanned(ScanMatch m) async {
+    final t = context.tr;
+    if (m.archived) {
+      _showScanNotice(
+        ScanNotice.warning(fillIn(t('vendor.scan.archived'), {'name': m.name})),
+      );
+      return false;
+    }
+    final p = _product(m.productId) ?? m.asProduct;
+    final name = p['name']?.toString() ?? m.name;
+    var variant = m.variant;
+    if (variant == null && needsVariant(p)) {
+      if (_shownLeft(p) <= 0) {
+        _showScanNotice(
+          ScanNotice.warning(
+            fillIn(t('vendor.scan.outOfStock'), {'name': name}),
+          ),
+        );
+        return false;
+      }
+      // Whole-product code on a product with variants: which one (§4.4).
+      HapticFeedback.selectionClick();
+      final scan = _scan!..hold();
+      try {
+        variant = await _pickVariant(p);
+      } finally {
+        scan.release();
+      }
+      if (variant == null || !mounted) return false;
+    }
+    final label = variant == null ? name : '$name ($variant)';
+    if (_available(p, variant) <= 0) {
+      _showScanNotice(
+        ScanNotice.warning(
+          fillIn(t('vendor.scan.outOfStock'), {'name': label}),
+        ),
+      );
+      return false;
+    }
+    if (!_add(p, variant, name, fromScan: true)) return false;
+    final id = p['id'].toString();
+    _lastScanned = (productId: id, variant: variant);
+    _scanAddedNotice(label, undoable: true);
+    scanFeedback(context, ScanNoticeKind.added, _scanNotice!.message);
+    return true;
+  }
+
+  void _scanAddedNotice(String label, {required bool undoable}) {
+    final last = _lastScanned;
+    if (last == null) return;
+    final qty = _cart.cart.qtyOf(last.productId, last.variant);
+    setState(() {
+      _undoable = undoable && qty > 0;
+      _scanNotice = ScanNotice.added(
+        name: label,
+        qty: qty,
+        productId: last.productId,
+        variant: last.variant,
+        message: fillIn(context.tr('vendor.scan.added'), {
+          'name': label,
+          'qty': qty,
+        }),
+      );
+    });
+  }
+
+  /// −/+ on the result row, and Undo (the last scan's +1).
+  void _stepScanned(int delta, {bool undo = false}) {
+    final last = _lastScanned;
+    final notice = _scanNotice;
+    if (last == null || notice == null) return;
+    final line = _cart.cart.lineOf(last.productId, last.variant);
+    if (line == null) {
+      if (delta > 0) {
+        final p = _product(last.productId);
+        if (p == null) return;
+        _add(p, last.variant, p['name']?.toString() ?? '');
+      }
+    } else {
+      _step(line, delta);
+    }
+    _scanAddedNotice(notice.name ?? '', undoable: !undo && _undoable);
+  }
+
+  Future<void> _addCodeHere(String code) async {
+    final scan = _scan;
+    if (scan == null) return;
+    scan.hold();
+    AddCodeResult? res;
+    try {
+      res = await addCodeToProduct(context, code: code, products: _allProducts);
+    } finally {
+      scan.release();
+    }
+    if (res == null || !mounted) return;
+    if (res.inUseBy != null) {
+      // Someone else just added it: look the code up again.
+      scan.resetDebounce();
+      await _onScanCode(code, typed: true);
+      return;
+    }
+    final saved = Map<String, dynamic>.from(res.product!);
+    setState(() {
+      final rows = [
+        for (final p in _allProducts)
+          p['id']?.toString() == saved['id']?.toString() ? saved : p,
+      ];
+      _setAll(rows);
+      _products = _sellable(rows);
+      _scanNotice = null;
+    });
+    await _addScanned(ScanMatch.fromProduct(saved, variant: res.variant));
+  }
+
+  Future<void> _newProductWithCode(String code) async {
+    final scan = _scan;
+    scan?.hold();
+    try {
+      await openNewProductWithCode(context, code: code, tools: _tools);
+    } finally {
+      scan?.release();
+    }
+    if (!mounted) return;
+    setState(() => _scanNotice = null);
+    await _loadProducts();
+  }
+
+  Widget _scanResult() {
+    final notice = _scanNotice;
+    return ScanResultRow(
+      notice: notice,
+      onMore: () => _stepScanned(1),
+      onLess: () => _stepScanned(-1),
+      onUndo: _undoable ? () => _stepScanned(-1, undo: true) : null,
+      onRetry: notice?.code == null
+          ? null
+          : () => _onScanCode(notice!.code!, typed: true),
+      actions: notice?.kind == ScanNoticeKind.unknown
+          ? UnknownCodeActions(
+              code: notice!.code!,
+              canManage: canVendor(context, 'products'),
+              offline: notice.offline,
+              onAddToProduct: () => _addCodeHere(notice.code!),
+              onCreateProduct: () => _newProductWithCode(notice.code!),
+              onSearchByName: () {
+                setState(() {
+                  _scanOpen = false;
+                  _scanNotice = null;
+                });
+                _search.clear();
+                _searchFocus.requestFocus();
+              },
+              onScanAgain: () {
+                _scan?.resetDebounce();
+                setState(() => _scanNotice = null);
+              },
+            )
+          : null,
+    );
+  }
+
+  Widget _scanPanel() => Padding(
+    padding: const EdgeInsets.fromLTRB(
+      FFTokens.spacingLg,
+      0,
+      FFTokens.spacingLg,
+      FFTokens.spacingSm,
+    ),
+    child: Align(
+      alignment: AlignmentDirectional.topStart,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 640),
+        child: VendorScanPanel(
+          key: const Key('pos-scan-panel'),
+          controller: _scan!,
+          memoryScope: vendorScanScope(context),
+          onCode: _onScanCode,
+          onClose: _closeScan,
+          result: _scanResult(),
+        ),
+      ),
+    ),
+  );
 
   Future<String?> _pickVariant(Map<String, dynamic> p) => showFFSheet<String>(
     context,
@@ -852,6 +1142,10 @@ class _PosPageState extends State<PosPage> {
   // ── layout ──────────────────────────────────────────────────────────────
 
   void _back() {
+    if (_scanOpen) {
+      _closeScan();
+      return;
+    }
     if (context.canPop()) {
       context.pop();
     } else {
@@ -862,39 +1156,46 @@ class _PosPageState extends State<PosPage> {
   @override
   Widget build(BuildContext context) {
     final session = _session;
-    return Scaffold(
-      appBar: AppBar(
-        leading: BackButton(onPressed: _back),
-        title: Text(context.tr('vendor.pos.title')),
-        actions: [
-          ListenableBuilder(
-            listenable: _cart,
-            builder: (context, _) => PopupMenuButton<String>(
-              key: const Key('pos-more'),
-              tooltip: context.tr('vendor.pos.more'),
-              style: IconButton.styleFrom(
-                minimumSize: const Size(48, 48),
-                visualDensity: VisualDensity.standard,
-              ),
-              onSelected: (v) {
-                if (v == 'clear') _clearSale();
-              },
-              itemBuilder: (_) => [
-                PopupMenuItem(
-                  key: const Key('pos-clear'),
-                  value: 'clear',
-                  enabled: !_cart.cart.isEmpty,
-                  child: Text(context.tr('vendor.pos.clearSale')),
+    // S8: system back / Esc closes the scan panel first.
+    return PopScope(
+      canPop: !_scanOpen,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _closeScan();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          leading: BackButton(onPressed: _back),
+          title: Text(context.tr('vendor.pos.title')),
+          actions: [
+            ListenableBuilder(
+              listenable: _cart,
+              builder: (context, _) => PopupMenuButton<String>(
+                key: const Key('pos-more'),
+                tooltip: context.tr('vendor.pos.more'),
+                style: IconButton.styleFrom(
+                  minimumSize: const Size(48, 48),
+                  visualDensity: VisualDensity.standard,
                 ),
-              ],
+                onSelected: (v) {
+                  if (v == 'clear') _clearSale();
+                },
+                itemBuilder: (_) => [
+                  PopupMenuItem(
+                    key: const Key('pos-clear'),
+                    value: 'clear',
+                    enabled: !_cart.cart.isEmpty,
+                    child: Text(context.tr('vendor.pos.clearSale')),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
+        body: !_ready || session == null
+            ? const Center(child: FFSpinner())
+            : _body(session),
+        bottomNavigationBar: !_ready || _wide ? null : _cartBar(),
       ),
-      body: !_ready || session == null
-          ? const Center(child: FFSpinner())
-          : _body(session),
-      bottomNavigationBar: !_ready || _wide ? null : _cartBar(),
     );
   }
 
@@ -953,8 +1254,39 @@ class _PosPageState extends State<PosPage> {
             autofocus: _wide,
             textInputAction: TextInputAction.search,
             onFieldSubmitted: (_) => _enterInSearch(),
+            // S3 §2.1 reserved this slot for S8.
+            suffixIcon: _barcodesOn
+                ? IconButton(
+                    key: const Key('pos-scan'),
+                    focusNode: _scanButtonFocus,
+                    style: IconButton.styleFrom(
+                      minimumSize: const Size(48, 48),
+                      visualDensity: VisualDensity.standard,
+                    ),
+                    tooltip: context.tr('vendor.scan.open'),
+                    icon: const Icon(Icons.qr_code_scanner),
+                    onPressed: _blocked
+                        ? null
+                        : _scanOpen
+                        ? _closeScan
+                        : _openScan,
+                  )
+                : null,
           ),
         ),
+        if (_barcodesOn && _scanOpen && _scan != null)
+          _scanPanel()
+        else if (_barcodesOn && _scanNotice != null)
+          // Enter in search: the unknown-code message under the field.
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              FFTokens.spacingLg,
+              0,
+              FFTokens.spacingLg,
+              FFTokens.spacingSm,
+            ),
+            child: _scanResult(),
+          ),
         Expanded(child: _productList()),
       ],
     );
@@ -1009,14 +1341,31 @@ class _PosPageState extends State<PosPage> {
   }
 
   /// Enter in search (web; also USB scanners): add the one match, or the
-  /// exact SKU match.
+  /// exact SKU match. S8 (barcodes on): an exact code match wins first;
+  /// with no local match, text that looks like a code is looked up.
   void _enterInSearch() {
-    final q = _search.text.trim().toLowerCase();
+    final raw = _search.text.trim();
+    final q = raw.toLowerCase();
     if (q.isEmpty) return;
+    if (_barcodesOn) {
+      final code = _codeIndex.barcodeMatch(raw);
+      if (code != null) {
+        _search.clear();
+        _searchFocus.requestFocus();
+        _addScanned(code);
+        return;
+      }
+    }
     final sku = _products
         .where((p) => (p['sku']?.toString().toLowerCase() ?? '') == q)
         .toList();
     final matches = sku.length == 1 ? sku : _matches;
+    if (_barcodesOn && matches.isEmpty && looksLikeCode(raw)) {
+      _search.clear();
+      _searchFocus.requestFocus();
+      _onScanCode(raw, typed: true);
+      return;
+    }
     if (matches.length != 1) return;
     final p = matches.single;
     if (_shownLeft(p) <= 0) return;
