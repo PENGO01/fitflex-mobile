@@ -2,6 +2,8 @@
 // Pure Dart (no Flutter imports) so the ordering rule is unit-testable:
 // monthly summaries must run from the CURRENT month backwards.
 
+import '../../../shared/ff_datetime.dart';
+
 class OwnerInvoice {
   const OwnerInvoice({
     required this.id,
@@ -42,26 +44,11 @@ class OwnerInvoice {
 
   bool get isPaid => status == 'paid';
 
-  static const _months = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ];
-
   /// e.g. "March 2026" — falls back to the invoice id when undated.
   String get monthLabel {
     final d = monthAnchor;
     if (d == null) return id;
-    return '${_months[d.month - 1]} ${d.year}';
+    return monthAndYear(d.year, d.month);
   }
 }
 

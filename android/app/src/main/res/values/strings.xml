@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Notification channel shown in the phone's notification settings. -->
+    <string name="channel_messages_name">Messages</string>
+    <string name="channel_messages_description">Messages from your gym and FitFlex</string>
+</resources>

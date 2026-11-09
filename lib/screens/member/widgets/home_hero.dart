@@ -76,7 +76,9 @@ class MemberHomeHero extends StatelessWidget {
           ? 'member.goodAfternoon'
           : 'member.goodEvening',
     );
-    final name = data.me?.user.resolvedName;
+    final name = data.me == null
+        ? null
+        : data.me!.user.knownName ?? context.tr('member.nameFallback');
     final eyebrow = name == null || name.isEmpty
         ? greeting
         : '$greeting, $name';

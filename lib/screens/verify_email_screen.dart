@@ -10,6 +10,7 @@ import '../shared/components/components.dart';
 import '../shared/design_tokens.dart';
 import '../shared/firebase_auth_service.dart';
 import '../shared/i18n.dart';
+import '../shared/auth_error_message.dart';
 
 /// Shown when the backend answers a sign-in with
 /// `409 email_verification_required`: the email matches a FitFlex profile
@@ -94,7 +95,9 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
         _startOver();
         return;
       }
-      setState(() => _notice = e.message ?? e.code);
+      setState(
+        () => _notice = authErrorMessage(FFLocaleScope.of(context), e.code),
+      );
     } on ApiException catch (e) {
       if (!mounted) return;
       setState(() {

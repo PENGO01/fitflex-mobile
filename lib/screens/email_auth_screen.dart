@@ -15,6 +15,7 @@ import '../shared/photo_hero_flag.dart';
 import '../shared/pin_credentials.dart';
 import 'account_recovery.dart';
 import 'pin_flows.dart';
+import '../shared/auth_error_message.dart';
 
 enum EmailAuthMode { signIn, signUp }
 
@@ -282,7 +283,7 @@ class _EmailAuthScreenState extends State<EmailAuthScreen> {
       case 'network-request-failed':
         return context.tr('auth.networkError');
       default:
-        return e.message ?? e.code;
+        return authErrorMessage(FFLocaleScope.of(context), e.code);
     }
   }
 

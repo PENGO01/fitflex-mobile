@@ -14,6 +14,7 @@ import '../shared/firebase_auth_service.dart';
 import '../shared/i18n.dart';
 import 'email_auth_screen.dart';
 import 'pin_flows.dart';
+import '../shared/auth_error_message.dart';
 
 /// Independent account-creation entry point, reached only from the
 /// sign-in screen's "Create account" link. Kept separate from
@@ -102,7 +103,7 @@ class _SignUpScreenState extends State<SignUpScreen>
       case 'network-request-failed':
         return context.tr('auth.networkError');
       default:
-        return e.message ?? e.code;
+        return authErrorMessage(FFLocaleScope.of(context), e.code);
     }
   }
 

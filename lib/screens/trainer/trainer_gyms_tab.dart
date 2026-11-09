@@ -299,9 +299,9 @@ class TrainerGymsTabState extends State<TrainerGymsTab> {
       'free': context.tr('trainerPass.filterFree'),
       'pass': context.tr('trainerPass.filterPass'),
       'plan': context.tr('trainerPass.filterPlan'),
-      'standard': 'Standard',
-      'midtier': 'Mid-Range',
-      'premium': 'Premium',
+      'standard': tierLabel(context, 'standard'),
+      'midtier': tierLabel(context, 'midtier'),
+      'premium': tierLabel(context, 'premium'),
     };
     return LayoutBuilder(
       builder: (context, constraints) => CustomScrollView(

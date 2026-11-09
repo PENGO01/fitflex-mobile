@@ -282,7 +282,7 @@ class _OwnerQrScannerPageState extends State<OwnerQrScannerPage> {
                     name:
                         member['publicId']?.toString() ??
                         member['userCode']?.toString() ??
-                        'Member',
+                        context.tr('member.nameFallback'),
                     src: member['photoUrl']?.toString(),
                     size: FFAvatarSize.lg,
                   ),
@@ -295,7 +295,7 @@ class _OwnerQrScannerPageState extends State<OwnerQrScannerPage> {
                           member['publicId']?.toString() ??
                               member['userCode']?.toString() ??
                               member['id']?.toString() ??
-                              'Member',
+                              context.tr('member.nameFallback'),
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                       ],

@@ -4,7 +4,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 
 import '../../app_scope.dart';
 import '../api_error_message.dart';
@@ -47,7 +46,10 @@ String _when(BuildContext context, DateTime? at) {
   final sameDay =
       at.year == now.year && at.month == now.month && at.day == now.day;
   return sameDay
-      ? DateFormat('HH:mm').format(at)
+      ? formatTimeOfDay(
+          at,
+          locale: FFLocaleScope.of(context).locale.languageCode,
+        )
       : formatDayMonth(
           at,
           locale: FFLocaleScope.of(context).locale.languageCode,

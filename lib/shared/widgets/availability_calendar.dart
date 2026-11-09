@@ -5,6 +5,7 @@ import '../design_tokens.dart';
 import '../tone_theme.dart';
 import '../i18n.dart';
 import '../models.dart';
+import '../formatters.dart';
 
 /// `2099-05-04` → `Mon 4 May` (localized short names).
 String formatScheduleDate(BuildContext context, String isoDate) {
@@ -241,7 +242,7 @@ class _AvailabilityCalendarState extends State<AvailabilityCalendar> {
             icon: Icons.person_outline,
             title: s.memberName ?? context.tr('trainer.member'),
             subtitle:
-                '${s.slot}–${_slotEnd(s.slot)}'
+                '${context.localSlotTime(s.slot)}–${context.localSlotTime(_slotEnd(s.slot))}'
                 '${s.bookingStatus == 'payment_pending' ? ' · ${context.tr('cal.awaitingPayment')}' : ''}',
             onTap: () {},
           ),
@@ -406,7 +407,7 @@ class _SlotTile extends StatelessWidget {
       button: onTap != null,
       selected: selected,
       label:
-          '${formatScheduleDate(context, day.date)} ${slot.slot}–${_slotEnd(slot.slot)}, $state',
+          '${formatScheduleDate(context, day.date)} ${context.localSlotTime(slot.slot)}–${context.localSlotTime(_slotEnd(slot.slot))}, $state',
       child: InkWell(
         key: Key('calendar-slot-${day.date}-${slot.slot}'),
         onTap: onTap,

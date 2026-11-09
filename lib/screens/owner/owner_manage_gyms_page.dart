@@ -10,6 +10,7 @@ import '../../shared/widgets/gym_form_page.dart';
 import '../../shared/widgets/payout_owner_marker.dart';
 import 'owner_shell.dart';
 import '../member/widgets/gym_filters.dart';
+import '../../shared/wire_labels.dart';
 
 /// Owner — manage gyms grid view with add / edit / delete.
 class OwnerManageGymsPage extends StatelessWidget {
@@ -311,9 +312,13 @@ class _OwnerGymGridCard extends StatelessWidget {
                     children: [
                       FFPill(label: tierLabel(context, tierKeyOf(gym['tier']))),
                       FFPill(
-                        label:
-                            gym['status']?.toString() ??
-                            context.tr('ownerReg.status_active'),
+                        label: switch (gym['status']?.toString()) {
+                          null || 'active' => context.tr(
+                            'ownerReg.status_active',
+                          ),
+                          'inactive' => context.tr('ownerReg.status_inactive'),
+                          final status => statusLabel(context, status),
+                        },
                       ),
                     ],
                   ),

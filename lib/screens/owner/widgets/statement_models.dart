@@ -1,6 +1,8 @@
 // Gym statements as the owner sees them (GET /owner/settlements).
 // Pure Dart (no Flutter imports) so parsing is unit-testable.
 
+import '../../../shared/ff_datetime.dart';
+
 class OwnerStatement {
   const OwnerStatement({
     required this.id,
@@ -69,7 +71,7 @@ class OwnerStatement {
     final year = parts.length >= 2 ? int.tryParse(parts[0]) : null;
     final month = parts.length >= 2 ? int.tryParse(parts[1]) : null;
     if (year == null || month == null || month < 1 || month > 12) return id;
-    return '${statementMonths[month - 1]} $year';
+    return monthAndYear(year, month);
   }
 }
 
@@ -155,21 +157,6 @@ class OwnerStatementDetail {
       );
 }
 
-const statementMonths = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
-];
-
 /// "3 Oct" from "2026-10-03" (already an East Africa Time day).
 String statementDay(String date) {
   final parts = date.split('-');
@@ -177,5 +164,5 @@ String statementDay(String date) {
   final month = int.tryParse(parts[1]);
   final day = int.tryParse(parts[2].substring(0, parts[2].length.clamp(0, 2)));
   if (month == null || day == null || month < 1 || month > 12) return date;
-  return '$day ${statementMonths[month - 1].substring(0, 3)}';
+  return '$day ${shortMonthName(month)}';
 }

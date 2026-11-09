@@ -3,6 +3,7 @@ import 'package:geolocator/geolocator.dart';
 
 import '../gps_source.dart';
 import '../run_metrics.dart';
+import '../../i18n.dart';
 
 /// GPS through geolocator. On Android it runs as a foreground service with
 /// an ongoing notification, so a run keeps recording with the screen off.
@@ -46,7 +47,7 @@ class GeolocatorGpsSource implements GpsSource {
           foregroundNotificationConfig: ForegroundNotificationConfig(
             notificationTitle: notificationTitle,
             notificationText: notificationText,
-            notificationChannelName: 'Run recording',
+            notificationChannelName: FFLocale.text('run.channelName'),
             enableWakeLock: true,
             setOngoing: true,
           ),

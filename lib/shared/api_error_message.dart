@@ -94,14 +94,19 @@ String apiErrorMessage(
       ? body['error'] as String
       : _firstReason(body);
   if (reason != null && reason.isNotEmpty) {
+    // A reason the app has no translation for is English text from the
+    // server: English readers still see it, Swahili readers get the generic
+    // message for the status instead of English inside a Swahili sentence.
     final translated =
         _timedReason(locale, reason, exception.body) ??
         _detailedReason(locale, reason, exception.body) ??
         _knownReason(locale, reason) ??
-        _humanize(reason);
-    return locale
-        .t('error.requestDeclined')
-        .replaceFirst('{reason}', translated);
+        (locale.locale.languageCode == 'en' ? _humanize(reason) : null);
+    if (translated != null) {
+      return locale
+          .t('error.requestDeclined')
+          .replaceFirst('{reason}', translated);
+    }
   }
 
   final key = switch (exception.status) {

@@ -21,6 +21,7 @@ import 'partner/verification/partner_progress_actions.dart';
 import 'partner/verification/verification_models.dart';
 import 'partner/verification/verification_repository.dart';
 import 'email_auth_screen.dart';
+import '../shared/auth_error_message.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({
@@ -132,7 +133,7 @@ class _AuthScreenState extends State<AuthScreen>
       case 'network-request-failed':
         return context.tr('auth.networkError');
       default:
-        return e.message ?? e.code;
+        return authErrorMessage(FFLocaleScope.of(context), e.code);
     }
   }
 

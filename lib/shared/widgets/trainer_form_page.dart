@@ -306,7 +306,7 @@ class _TrainerFormPageState extends State<TrainerFormPage> {
                   FFDropdownField<String>(
                     width: 116,
                     value: _currency,
-                    label: 'Currency',
+                    label: context.tr('common.currency'),
                     items: [
                       DropdownMenuItem(
                         value: 'TZS',

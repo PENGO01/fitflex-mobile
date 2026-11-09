@@ -349,7 +349,7 @@ class _SessionCard extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             [
-              '${booking['date']} · ${booking['slot']}',
+              '${booking['date']} · ${context.localSlotTime('${booking['slot']}')}',
               ?gym,
               formatCurrency(booking['amountTzs'] as num? ?? 0),
             ].join(' · '),
@@ -540,11 +540,15 @@ class _RefundRequestSheetState extends State<_RefundRequestSheet> {
 
   String _paymentLabel(Map<String, dynamic> p) {
     final what = paymentProductLabel(context, PaymentRequest.fromJson(p));
-    final day = (p['decidedAt'] ?? p['requestedAt'] ?? '').toString();
+    // The member's own day, in the app language ("19 Okt 2026").
+    final day = context.localDate(
+      p['decidedAt'] ?? p['requestedAt'],
+      fallback: '',
+    );
     return [
       formatCurrency(p['amountTzs'] as num? ?? 0),
       if (what.isNotEmpty) what,
-      if (day.length >= 10) day.substring(0, 10),
+      if (day.isNotEmpty) day,
     ].join(' · ');
   }
 

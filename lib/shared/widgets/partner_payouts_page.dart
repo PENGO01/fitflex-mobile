@@ -291,7 +291,7 @@ class _PartnerPayoutDetailPageState extends State<PartnerPayoutDetailPage> {
       title: Text(l['memberName']?.toString() ?? context.tr('payouts.member')),
       subtitle: Text(
         [
-          '${l['date']}${l['slot'] != null ? ' · ${l['slot']}' : ''}',
+          '${l['date']}${l['slot'] != null ? ' · ${context.localSlotTime('${l['slot']}')}' : ''}',
           context.tr(
             l['basis'] == 'completed'
                 ? 'payouts.basis.completed'
