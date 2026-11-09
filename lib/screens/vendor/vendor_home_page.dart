@@ -41,6 +41,8 @@ import 'customers/customers_tab.dart';
 import 'customers/customers_widgets.dart';
 import 'documents/document_models.dart'
     show TaxProfile, VatCodeOption, ratePctText, vatCodesOf;
+import 'import/import_access.dart' show importEntryShown;
+import 'import/import_entry.dart';
 import 'settings/tax_details_page.dart' show vendorTaxRoute;
 import 'orders/vendor_order_card.dart';
 import 'purchases/purchase_models.dart' show refreshVendorAccess;
@@ -2169,6 +2171,8 @@ class _VendorHomePageState extends State<VendorHomePage> {
                   ),
           ),
         if (_taxEntryShown) _taxEntry(),
+        // Smart import: only with the tool on and the `import` permission.
+        if (importEntryShown(context, _tools)) const VendorImportEntryTile(),
         // Which offers they get in the app and by push — the same page
         // members and trainers use. Staff without this tab reach it from
         // the inbox.
@@ -2321,6 +2325,7 @@ class _VendorHomePageState extends State<VendorHomePage> {
         orgType: 'vendor',
         vendorSales: _tools.walkInSales,
         vendorPurchases: _tools.purchases,
+        vendorImport: _tools.dataImport,
       );
       if (mounted) await _refresh();
       return;
@@ -2333,6 +2338,7 @@ class _VendorHomePageState extends State<VendorHomePage> {
         walkInSales: _tools.walkInSales,
         customersTool: _tools.customers,
         purchasesTool: _tools.purchases,
+        importTool: _tools.dataImport,
       ),
     );
     if (result == null || !mounted) return;
@@ -3665,7 +3671,13 @@ class VendorStaffForm extends StatefulWidget {
     this.walkInSales = false,
     this.customersTool = false,
     this.purchasesTool = false,
+    this.importTool = false,
   });
+
+  /// Smart import: offer the `import` permission (only while the tool is
+  /// on). It lets staff create products and stock counts from a file even
+  /// without `products`.
+  final bool importTool;
 
   /// S9: offer the `purchases` permission (only while the tool is on).
   final bool purchasesTool;
@@ -3727,6 +3739,7 @@ class _VendorStaffFormState extends State<VendorStaffForm> {
       'payments',
       'staff',
       if (widget.purchasesTool) 'purchases',
+      if (widget.importTool) 'import',
     ];
     return SafeArea(
       child: Padding(
@@ -3808,6 +3821,8 @@ class _VendorStaffFormState extends State<VendorStaffForm> {
                       ? Text(context.tr('vendor.permission.customersHint'))
                       : permission == 'purchases'
                       ? Text(context.tr('vendor.permission.purchasesHint'))
+                      : permission == 'import'
+                      ? Text(context.tr('vendor.permission.importHint'))
                       : null,
                   onChanged: (selected) => setState(() {
                     if (selected == true) {

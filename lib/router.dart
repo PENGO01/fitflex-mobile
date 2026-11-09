@@ -100,6 +100,7 @@ import 'screens/vendor/purchases/purchase_models.dart' show purchaseIdPattern;
 import 'screens/vendor/purchases/purchases_hub.dart' show PurchasesListPage;
 import 'screens/vendor/purchases/receive_stock_page.dart';
 import 'screens/vendor/purchases/suppliers_pages.dart';
+import 'screens/vendor/import/import_routes.dart';
 import 'screens/vendor/settings/tax_details_page.dart';
 import 'screens/vendor/reports/report_models.dart'
     show ReportSection, reportsHomeRoute;
@@ -735,6 +736,9 @@ GoRouter buildRouter(AuthState auth) {
               _vendorDocumentsPath.hasMatch(loc) ||
               _vendorReportsPath.hasMatch(loc) ||
               _vendorPurchasesPath.hasMatch(loc) ||
+              // Smart import: pending vendors may already load their
+              // products from a file (they stay paused until approved).
+              vendorImportPath.hasMatch(loc) ||
               _inboxPath.hasMatch(loc) ||
               // Their own home photo and logo (spec §41.3: allowed while
               // pending).
@@ -1171,6 +1175,9 @@ GoRouter buildRouter(AuthState auth) {
           );
         },
       ),
+      // Vendor smart import (V3): history, new import, one import. Each page
+      // checks `tools.import` and the `import` permission itself.
+      vendorImportRoutes(),
       // Vendor documents and VAT (S5). Each page checks its feature
       // (`documents` / `vat`) and permission itself.
       GoRoute(
