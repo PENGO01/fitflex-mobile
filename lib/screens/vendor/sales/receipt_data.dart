@@ -82,6 +82,7 @@ class ReceiptData {
     this.customerForgotten = false,
     this.dueDate,
     this.balanceTzs = 0,
+    this.balanceReducedTzs = 0,
     this.paidAtSaleTzs,
     this.allocations = const [],
     this.invoiceNumber,
@@ -140,6 +141,9 @@ class ReceiptData {
   /// Pay later: due day (YYYY-MM-DD) and what is still owed now.
   final String? dueDate;
   final int balanceTzs;
+
+  /// S7: what active refunds took off a pay-later balance.
+  final int balanceReducedTzs;
 
   /// Paid at the counter (later customer payments excluded).
   final int? paidAtSaleTzs;
@@ -266,6 +270,7 @@ class ReceiptData {
       customerForgotten: person(sale['customer'])?['forgotten'] == true,
       dueDate: _str(sale['dueDate']),
       balanceTzs: _int(sale['balanceTzs']),
+      balanceReducedTzs: _int(sale['balanceReducedTzs']),
       paidAtSaleTzs: sale['paidAtSaleTzs'] == null
           ? null
           : _int(sale['paidAtSaleTzs']),

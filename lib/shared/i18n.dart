@@ -7193,6 +7193,8 @@ class FFLocale extends ChangeNotifier {
       'error.reason.rawTextTooLong': 'That text is too long',
       'events.review.unavailable': 'That ticket is no longer available',
       'events.review.problems': 'This order can\'t be placed yet',
+      'error.reason.phoneInUse':
+          'This phone number is already used by another account. Use a different number.',
       'error.reason.partnerUnder18':
           'You must be 18 or older to be a Trainer or gym owner.',
       'error.reason.personalDetailsUnavailable':
@@ -15423,6 +15425,8 @@ class FFLocale extends ChangeNotifier {
       'error.reason.rawTextTooLong': 'Maandishi hayo ni marefu mno',
       'events.review.unavailable': 'Tiketi hiyo haipatikani tena',
       'events.review.problems': 'Oda hii haiwezi kuwekwa bado',
+      'error.reason.phoneInUse':
+          'Namba hii ya simu tayari inatumiwa na akaunti nyingine. Tumia namba tofauti.',
       'error.reason.partnerUnder18':
           'Lazima uwe na miaka 18 au zaidi kuwa trainer au mmiliki wa gym.',
       'error.reason.personalDetailsUnavailable':

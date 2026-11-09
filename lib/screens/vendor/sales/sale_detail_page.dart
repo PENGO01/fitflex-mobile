@@ -16,6 +16,8 @@ import '../../../shared/design_tokens.dart';
 import '../../../shared/i18n.dart';
 import '../../../shared/formatters.dart';
 import '../../../shared/network/browser_online.dart';
+import '../customers/customer_profile_page.dart'
+    show saleBadgeText, saleStatusBadges;
 import '../customers/customers_widgets.dart';
 import '../customers/payment_sheets.dart';
 import '../documents/document_entry.dart';
@@ -411,17 +413,21 @@ class _SaleDetailPageState extends State<SaleDetailPage> {
                             label: context.tr('vendor.sales.offlineBadge'),
                             tone: FFBadgeTone.gray,
                           ),
-                        if (!data.voided && data.refundState != 'none')
+                        // The ONE badge rule the sales list shares; the receipt
+                        // below already carries the Pay later badge.
+                        for (final b in saleStatusBadges({
+                          'kind': data.kind,
+                          'status': data.status,
+                          'balanceTzs': data.balanceTzs,
+                          'balanceReducedTzs': data.balanceReducedTzs,
+                          'refundState': data.refundState,
+                        }).where((b) => b.key != 'vendor.sales.payLaterBadge'))
                           FFBadge(
-                            key: const Key('sale-detail-refund-badge'),
-                            label: context.tr(
-                              data.refundState == 'full'
-                                  ? 'vendor.refunds.badgeFull'
-                                  : 'vendor.refunds.badgePartial',
-                            ),
-                            tone: data.refundState == 'full'
-                                ? FFBadgeTone.gray
-                                : FFBadgeTone.info,
+                            key: b.key.startsWith('vendor.refunds.')
+                                ? const Key('sale-detail-refund-badge')
+                                : null,
+                            label: saleBadgeText(context, b),
+                            tone: b.tone,
                             wrap: true,
                           ),
                       ],
