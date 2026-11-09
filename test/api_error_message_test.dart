@@ -63,4 +63,12 @@ void main() {
       contains(FFLocale().t('error.reason.accountSuspended')),
     );
   });
+
+  test('phone_in_use has its own English and Swahili line', () {
+    final err = ApiException(409, {'error': 'phone_in_use'});
+    final en = apiErrorMessage(FFLocale(), err);
+    expect(en, contains('already used by another account'));
+    expect(en, isNot(contains('409')));
+    expect(en, isNot(contains('Phone in use')));
+  });
 }
