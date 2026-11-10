@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Swahili draft: needs native review. -->
+    <string name="channel_messages_name">Ujumbe</string>
+    <string name="channel_messages_description">Ujumbe kutoka gym yako na FitFlex</string>
+</resources>

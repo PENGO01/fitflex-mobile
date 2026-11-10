@@ -85,7 +85,9 @@ class _MemberHomeTabState extends State<MemberHomeTab> {
   Widget build(BuildContext context) {
     final data = MemberDataScope.of(context);
     final me = data.me;
-    final displayName = me?.user.resolvedName ?? context.tr('home.welcome');
+    final displayName = me == null
+        ? context.tr('home.welcome')
+        : me.user.knownName ?? context.tr('member.nameFallback');
     final now = widget.now ?? DateTime.now();
     final picks = _presentationOrder(
       pickHomeCards(data, now, lat: _userLat, lng: _userLng),

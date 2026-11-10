@@ -1,10 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'ff_datetime.dart';
+
 /// Lightweight i18n provider with English + Swahili.
 /// All user-facing strings live here.
 class FFLocale extends ChangeNotifier {
+  FFLocale() {
+    useDateLanguage(_locale.languageCode);
+    _active = this;
+  }
+
   static const prefsKey = 'ff.locale';
+  static FFLocale? _active;
+
+  /// Text for [key] in the app's language, for code with no BuildContext
+  /// (model fallbacks, platform notification settings). Widgets use
+  /// `context.tr`.
+  static String text(String key) => active.t(key);
+
+  /// The app's locale, for the same context-free code.
+  static FFLocale get active => _active ?? FFLocale();
 
   Locale _locale = const Locale('en');
   Locale get locale => _locale;
@@ -12,6 +28,8 @@ class FFLocale extends ChangeNotifier {
   void set(Locale l) {
     if (_supported.contains(l.languageCode)) {
       _locale = l;
+      // Dates and day/month names follow the app language too.
+      useDateLanguage(l.languageCode);
       notifyListeners();
       _save();
     }
@@ -26,6 +44,7 @@ class FFLocale extends ChangeNotifier {
           _supported.contains(saved) &&
           saved != _locale.languageCode) {
         _locale = Locale(saved);
+        useDateLanguage(saved);
         notifyListeners();
       }
     } catch (_) {
@@ -46,7 +65,7 @@ class FFLocale extends ChangeNotifier {
     final lang = _supported.contains(_locale.languageCode)
         ? _locale.languageCode
         : 'en';
-    return (_messages[lang] ?? const {})[key] ?? _messages['en']![key] ?? key;
+    return tIn(lang, key);
   }
 
   /// The line for [key] in [lang], whatever language is active. For
@@ -8169,6 +8188,47 @@ class FFLocale extends ChangeNotifier {
       'vendor.scan.camera.unsupported': 'This device can\'t scan here. Type the code or use a USB scanner.',
       'vendor.scan.camera.insecure': 'The camera works only on a secure (https) page. Type the code instead.',
       'vendor.scan.camera.error': 'The camera couldn\'t start. Try again, or type the code.',
+      // Structural localization (mobile#62): account and enquiry statuses, sign-in
+      // errors, name fallbacks, nationality list, run channel name.
+      'wire.status.pending': 'Pending',
+      'wire.status.pending_verification': 'Pending verification',
+      'wire.status.open': 'Open',
+      'wire.status.resolved': 'Resolved',
+      'wire.status.closed': 'Closed',
+      'wire.status.answered': 'Answered',
+      'wire.status.cancelled': 'Cancelled',
+      'wire.status.draft': 'Draft',
+      'wire.status.published': 'Published',
+      'wire.status.suspended': 'Suspended',
+      'wire.status.active': 'Active',
+      'wire.status.inactive': 'Inactive',
+      'wire.status.approved': 'Approved',
+      'wire.status.rejected': 'Rejected',
+      'wire.status.expired': 'Expired',
+      'auth.tooManyRequests': 'Too many attempts. Wait a moment and try again.',
+      'auth.userDisabled':
+          'This account has been disabled. Contact FitFlex for help.',
+      'auth.signInAgain': 'You are signed out. Sign in again, then retry.',
+      'auth.googleFailed': 'Could not sign in with Google. Try again.',
+      'auth.genericError': 'Something went wrong. Try again.',
+      'common.currency': 'Currency',
+      'common.owner': 'Owner',
+      'social.memberName': 'FitFlex member',
+      'run.channelName': 'Run recording',
+      'kyc.country.TZ': 'Tanzania',
+      'kyc.country.KE': 'Kenya',
+      'kyc.country.UG': 'Uganda',
+      'kyc.country.RW': 'Rwanda',
+      'kyc.country.BI': 'Burundi',
+      'kyc.country.CD': 'DR Congo',
+      'kyc.country.ZM': 'Zambia',
+      'kyc.country.MW': 'Malawi',
+      'kyc.country.MZ': 'Mozambique',
+      'kyc.country.ZA': 'South Africa',
+      'kyc.country.NG': 'Nigeria',
+      'kyc.country.GB': 'United Kingdom',
+      'kyc.country.US': 'United States',
+      'kyc.country.IN': 'India',
     },
     'sw': {
       'app.title': 'FitFlex',
@@ -16423,6 +16483,48 @@ class FFLocale extends ChangeNotifier {
       'vendor.scan.camera.unsupported': 'Kifaa hiki hakiwezi kuskani hapa. Andika msimbo au tumia skana ya USB.',
       'vendor.scan.camera.insecure': 'Kamera inafanya kazi kwenye ukurasa salama (https) tu. Andika msimbo badala yake.',
       'vendor.scan.camera.error': 'Imeshindikana kuwasha kamera. Jaribu tena, au andika msimbo.',
+      // Structural localization (mobile#62). TODO(sw-review): Swahili drafts
+      // pending native review.
+      'wire.status.pending': 'Inasubiri',
+      'wire.status.pending_verification': 'Inasubiri uthibitisho',
+      'wire.status.open': 'Wazi',
+      'wire.status.resolved': 'Imetatuliwa',
+      'wire.status.closed': 'Imefungwa',
+      'wire.status.answered': 'Imejibiwa',
+      'wire.status.cancelled': 'Imeghairiwa',
+      'wire.status.draft': 'Rasimu',
+      'wire.status.published': 'Imechapishwa',
+      'wire.status.suspended': 'Imesimamishwa',
+      'wire.status.active': 'Inatumika',
+      'wire.status.inactive': 'Haitumiki',
+      'wire.status.approved': 'Imeidhinishwa',
+      'wire.status.rejected': 'Imekataliwa',
+      'wire.status.expired': 'Imeisha muda',
+      'auth.tooManyRequests':
+          'Umejaribu mara nyingi. Subiri kidogo kisha ujaribu tena.',
+      'auth.userDisabled':
+          'Akaunti hii imezuiwa. Wasiliana na FitFlex kwa msaada.',
+      'auth.signInAgain': 'Hujaingia. Ingia tena kisha ujaribu.',
+      'auth.googleFailed': 'Imeshindikana kuingia kwa Google. Jaribu tena.',
+      'auth.genericError': 'Imeshindikana. Jaribu tena.',
+      'common.currency': 'Sarafu',
+      'common.owner': 'Mmiliki',
+      'social.memberName': 'Mwanachama wa FitFlex',
+      'run.channelName': 'Kurekodi mbio',
+      'kyc.country.TZ': 'Tanzania',
+      'kyc.country.KE': 'Kenya',
+      'kyc.country.UG': 'Uganda',
+      'kyc.country.RW': 'Rwanda',
+      'kyc.country.BI': 'Burundi',
+      'kyc.country.CD': 'Kongo (DRC)',
+      'kyc.country.ZM': 'Zambia',
+      'kyc.country.MW': 'Malawi',
+      'kyc.country.MZ': 'Msumbiji',
+      'kyc.country.ZA': 'Afrika Kusini',
+      'kyc.country.NG': 'Nigeria',
+      'kyc.country.GB': 'Uingereza',
+      'kyc.country.US': 'Marekani',
+      'kyc.country.IN': 'India',
     },
   };
 }

@@ -182,8 +182,11 @@ class ActivityOriginLabel extends StatelessWidget {
             DataOrigin.device => (
               Icons.watch_outlined,
               context.tr('origin.device'),
-              a.deviceName ??
-                  context.tr('origin.platform.${a.devicePlatform!.wire}'),
+              // Phone steps are saved with this English name; show it in
+              // the app language.
+              a.deviceName == null || a.deviceName == phoneStepsDeviceName
+                  ? context.tr('origin.platform.${a.devicePlatform!.wire}')
+                  : a.deviceName,
             ),
             DataOrigin.fitflex => (
               Icons.bolt_outlined,

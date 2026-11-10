@@ -6,6 +6,7 @@ import '../../shared/design_tokens.dart';
 import '../../shared/formatters.dart';
 import '../../shared/i18n.dart';
 import 'widgets/statement_models.dart';
+import '../../shared/ff_datetime.dart';
 
 FFBadgeTone statementTone(String status) => switch (status) {
   'paid' => FFBadgeTone.success,
@@ -265,7 +266,7 @@ class _OwnerStatementPageState extends State<OwnerStatementPage> {
   // Paid dates are shown in East Africa Time, like the statement periods.
   String _date(DateTime at) {
     final eat = at.toUtc().add(const Duration(hours: 3));
-    return '${eat.day} ${statementMonths[eat.month - 1].substring(0, 3)} ${eat.year}';
+    return '${eat.day} ${shortMonthName(eat.month)} ${eat.year}';
   }
 }
 

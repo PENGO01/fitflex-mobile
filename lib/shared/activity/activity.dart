@@ -8,6 +8,10 @@
 library;
 
 /// What kind of movement an activity was. Wire values are snake_case.
+/// The device name saved with steps counted by the phone itself. It is
+/// stored data, so it stays as is; screens show it in the app language.
+const phoneStepsDeviceName = 'This phone';
+
 enum ActivityType {
   walking('walking'),
   running('running'),

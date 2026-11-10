@@ -208,7 +208,7 @@ class PhoneSteps extends ChangeNotifier {
             // A day's total, dated at the start of that local day.
             'startedAt': d.day.toUtc().toIso8601String(),
             'steps': d.steps,
-            'deviceName': 'This phone',
+            'deviceName': phoneStepsDeviceName,
           },
       ]);
     } catch (e) {
@@ -307,7 +307,7 @@ List<Activity> withPhoneSteps(
     distanceKm: estimateWalkKm(steps, heightCm),
     devicePlatform: DevicePlatform.phoneSensor,
     externalId: base?.externalId ?? 'steps:$key',
-    deviceName: base?.deviceName ?? 'This phone',
+    deviceName: base?.deviceName ?? phoneStepsDeviceName,
   );
 
   // Server phone records saved before distances existed.

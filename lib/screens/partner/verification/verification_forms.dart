@@ -438,7 +438,10 @@ class _PersonFormPageState extends State<PersonFormPage> {
             ),
             items: [
               for (final e in countries.entries)
-                DropdownMenuItem(value: e.key, child: Text(e.value)),
+                DropdownMenuItem(
+                  value: e.key,
+                  child: Text(context.tr('kyc.country.${e.key}')),
+                ),
             ],
             validator: (v) =>
                 vendor && v == null ? context.tr('kyc.required') : null,

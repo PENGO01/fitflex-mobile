@@ -115,6 +115,21 @@ String formatTimeOfDay(DateTime d, {String locale = 'en'}) {
   return '${_two(d.hour)}:${_two(d.minute)}';
 }
 
+/// A time slot the server sends as "HH:mm" (session and availability
+/// slots): English shows it as given ("17:30"); Swahili reads "5:30 jioni"
+/// like [formatTimeOfDay]. Anything that is not a time is returned unchanged.
+String formatSlotTime(String hhmm, {String locale = 'en'}) {
+  if (locale != 'sw') return hhmm;
+  final parts = hhmm.split(':');
+  if (parts.length < 2) return hhmm;
+  final h = int.tryParse(parts[0]);
+  final m = int.tryParse(parts[1]);
+  if (h == null || m == null || h < 0 || h > 23 || m < 0 || m > 59) {
+    return hhmm;
+  }
+  return formatTimeOfDay(DateTime(2000, 1, 1, h, m), locale: locale);
+}
+
 /// "19 Oct 2026, 01:30" (sw "19 Okt 2026, 1:30 usiku") on the member's
 /// clock, or [fallback].
 String formatDateTime(
@@ -169,6 +184,11 @@ extension FFDateFormatting on BuildContext {
 
   String localTimeOfDay(DateTime value) => formatTimeOfDay(
     localDateTime(value) ?? value,
+    locale: FFLocaleScope.of(this).locale.languageCode,
+  );
+
+  String localSlotTime(String hhmm) => formatSlotTime(
+    hhmm,
     locale: FFLocaleScope.of(this).locale.languageCode,
   );
 

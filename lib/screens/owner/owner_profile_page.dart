@@ -75,7 +75,10 @@ class _OwnerProfilePageState extends State<OwnerProfilePage> {
     final user = (ownerData?.me?['user'] as Map?) ?? appAuth.user ?? {};
     final displayName =
         ownerData?.displayName ??
-        (user['displayName'] ?? user['email'] ?? user['phone'] ?? 'Owner')
+        (user['displayName'] ??
+                user['email'] ??
+                user['phone'] ??
+                context.tr('common.owner'))
             .toString();
     final email = user['email']?.toString() ?? '';
     final phone = user['phone']?.toString() ?? '';

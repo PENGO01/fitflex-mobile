@@ -7,6 +7,8 @@
 /// their groups; the member can change or switch it off.
 library;
 
+import 'i18n.dart';
+
 /// Who one activity is shared with. `null` everywhere means private.
 class ShareWith {
   const ShareWith({
@@ -130,7 +132,7 @@ class SocialPerson {
     final u = (username ?? '').trim();
     if (u.isNotEmpty) return '@$u';
     return (displayName ?? '').trim().isEmpty
-        ? 'FitFlex member'
+        ? FFLocale.text('social.memberName')
         : displayName!.trim();
   }
 
@@ -338,7 +340,7 @@ class GroupMember {
     final u = (username ?? '').trim();
     if (u.isNotEmpty) return '@$u';
     return (displayName ?? '').trim().isEmpty
-        ? 'FitFlex member'
+        ? FFLocale.text('social.memberName')
         : displayName!.trim();
   }
 

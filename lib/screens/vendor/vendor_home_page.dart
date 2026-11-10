@@ -66,6 +66,7 @@ import 'sales/offline_sale_queue.dart';
 import 'sales/sale_models.dart' show pluralKey;
 import 'sales/sales_history_tab.dart';
 import 'sales/sales_widgets.dart';
+import '../../shared/wire_labels.dart';
 
 /// Bottom padding for vendor lists: the extended FAB (56) plus margins.
 const vendorFabClearance = 96.0;
@@ -2317,7 +2318,9 @@ class _VendorHomePageState extends State<VendorHomePage> {
                   messages.isEmpty ? '' : messages.first['message'].toString(),
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
-                Text('${context.tr('vendor.status')}: ${enquiry['status']}'),
+                Text(
+                  '${context.tr('vendor.status')}: ${statusLabel(context, enquiry['status']?.toString(), fallback: '-')}',
+                ),
                 if (messages.length > 1)
                   Text(
                     '${context.tr('vendor.reply')}: ${messages.last['message']}',
@@ -2408,7 +2411,7 @@ class _VendorHomePageState extends State<VendorHomePage> {
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               Text(
-                '${context.tr('vendor.status')}: ${_profile['status'] ?? 'draft'}',
+                '${context.tr('vendor.status')}: ${statusLabel(context, _profile['status']?.toString() ?? 'draft')}',
               ),
               Text(_profile['description']?.toString() ?? ''),
               const SizedBox(height: FFTokens.spacingSm),

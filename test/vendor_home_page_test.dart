@@ -819,7 +819,11 @@ void main() {
       final host = await _pump(tester, api);
       await _tab(tester, 'enquiries');
       expect(find.text('Is the mat available in blue?'), findsOneWidget);
-      expect(find.text('${host.tr('vendor.status')}: open'), findsOneWidget);
+      // The server's code is shown as a label, not raw (mobile#62).
+      expect(
+        find.text('${host.tr('vendor.status')}: ${host.tr('wire.status.open')}'),
+        findsOneWidget,
+      );
       expect(
         find.text('${host.tr('vendor.reply')}: Checking stock'),
         findsOneWidget,
@@ -894,7 +898,11 @@ void main() {
       _seed(api, profile: {'status': 'draft'});
       final host = await _pump(tester, api);
       expect(find.text(host.tr('vendor.profileIncomplete')), findsOneWidget);
-      expect(find.text('${host.tr('vendor.status')}: draft'), findsOneWidget);
+      // The server's code is shown as a label, not raw (mobile#62).
+      expect(
+        find.text('${host.tr('vendor.status')}: ${host.tr('wire.status.draft')}'),
+        findsOneWidget,
+      );
       expect(find.byKey(const Key('vendor-edit-profile')), findsOneWidget);
       // No product list / FAB on this tab.
       expect(find.byKey(const Key('vendor-add-product')), findsNothing);
