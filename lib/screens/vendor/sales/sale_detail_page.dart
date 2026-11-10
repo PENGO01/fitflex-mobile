@@ -26,7 +26,7 @@ import '../documents/document_share_sheet.dart' show showDocumentLinksSheet;
 import '../stock/stock_options.dart';
 import 'offline_sale_queue.dart';
 import 'receipt_data.dart';
-import 'receipt_page.dart';
+import 'receipt_files.dart';
 import 'refunds/refund_models.dart';
 import 'refunds/refund_page.dart';
 import 'sale_models.dart';
@@ -255,16 +255,22 @@ class _SaleDetailPageState extends State<SaleDetailPage> {
 
   Future<void> _share(ReceiptData data, String lang) async {
     if (_tools.documents) {
-      return openSaleShareSheet(context, data: data, lang: lang, tools: _tools);
+      return openSaleShareSheet(
+        context,
+        data: data,
+        lang: lang,
+        tools: _tools,
+        tin: _taxIds.tin,
+        vrn: _taxIds.vrn,
+      );
     }
-    final locale = FFLocaleScope.of(context);
-    String t(String key) => locale.tIn(lang, key);
-    await shareReceipt(
-      receiptShareText(data, t, lang),
-      [
-        ?data.business,
-        fillIn(t('vendor.pos.receiptNo'), {'number': data.number}),
-      ].join(' '),
+    // Sale extras #3 (AC-31): the same rows as the receipt page.
+    await showReceiptShareSheet(
+      context,
+      data: data,
+      lang: lang,
+      tin: _taxIds.tin,
+      vrn: _taxIds.vrn,
     );
   }
 

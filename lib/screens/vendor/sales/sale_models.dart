@@ -28,6 +28,32 @@ const referenceRequiredMethods = {
   'bank',
 };
 
+/// Sale extras §1.3: the methods whose reference the SALE sheet requires.
+/// With `referenceOptional` on, none (cash references are kept too); off,
+/// today's rule. Customer payments, refunds and purchases keep
+/// [referenceRequiredMethods] (Q-1).
+Set<String> saleReferenceRequired({required bool referenceOptional}) =>
+    referenceOptional ? const <String>{} : referenceRequiredMethods;
+
+/// Characters the server refuses in a payment reference: Unicode control
+/// characters (`\p{Cc}`: U+0000–U+001F, U+007F and U+0080–U+009F, e.g. NEL
+/// U+0085), newlines included. Stripped as the seller types or pastes.
+final referenceControlChars = RegExp(r'[\x00-\x1F\x7F-\x9F]');
+
+/// A reference as it is sent: control characters removed, trimmed.
+String cleanReference(String raw) =>
+    raw.replaceAll(referenceControlChars, ' ').trim();
+
+/// Sale extras §2.1 (Q-5): what kind of customer this purchase was from,
+/// in the order the pills show them. Stored on the sale, never printed on
+/// a receipt.
+const saleCustomerTypes = ['new', 'returning', 'walk_in', 'online', 'other'];
+
+/// The i18n key naming a customer type; null for anything unknown (the raw
+/// code is never shown).
+String? customerTypeKey(String? type) =>
+    saleCustomerTypes.contains(type) ? 'vendor.customerType.$type' : null;
+
 const maxQtyPerLine = 1000;
 const maxSaleLines = 100;
 const maxSalePayments = 10;
@@ -202,7 +228,11 @@ class PosCart {
     this.replacesClientRef,
     this.keepSoldAt = false,
     this.customerId,
-  }) : lines = lines ?? [];
+    String? customerType,
+  }) : lines = lines ?? [],
+       customerType = saleCustomerTypes.contains(customerType)
+           ? customerType
+           : null;
 
   final List<PosLine> lines;
   int saleDiscountTzs;
@@ -226,6 +256,18 @@ class PosCart {
 
   /// The customer's name for the chip, in memory only (never in [toJson]).
   String? customerName;
+
+  /// Sale extras: the customer type (one of [saleCustomerTypes]) or null.
+  /// Not personal data: kept in the draft and the queued body (§2.7).
+  String? customerType;
+
+  /// Sets or clears the type. It is part of the server's fingerprint, so a
+  /// different type is a new key at the next Complete.
+  void setCustomerType(String? type) {
+    final next = saleCustomerTypes.contains(type) ? type : null;
+    if (next != customerType) clientRef = null;
+    customerType = next;
+  }
 
   /// S4: what the chosen customer already owes (people with `customers`
   /// only), for the pay-later warning. In memory only.
@@ -326,6 +368,7 @@ class PosCart {
     replacesClientRef = null;
     keepSoldAt = false;
     setCustomer(null);
+    customerType = null;
   }
 
   /// Fixes the key and the sale time (once) and returns the request body.
@@ -337,6 +380,10 @@ class PosCart {
   ///
   /// S4: `customerId` when a customer is attached. A pay-later sale passes
   /// [creditDueDate] (kind `credit`); it is never queued.
+  ///
+  /// Sale extras: `customerType` only when set, so a sale without one has
+  /// the same body (and server fingerprint) as before. Never a name or a
+  /// phone: the queue stores this body as it is.
   Map<String, dynamic> requestBody(
     List<Map<String, dynamic>> payments, {
     bool queued = false,
@@ -355,6 +402,7 @@ class PosCart {
       'payments': payments,
       if (trimmed.isNotEmpty) 'note': trimmed,
       'customerId': ?customerId,
+      'customerType': ?customerType,
       if (creditDueDate != null) ...{
         'kind': 'credit',
         'dueDate': creditDueDate,
@@ -382,6 +430,7 @@ class PosCart {
     if (keepSoldAt) 'keepSoldAt': true,
     // The id only: never the customer's name or phone (A-02, spec §8).
     'customerId': ?customerId,
+    'customerType': ?customerType,
   };
 
   static PosCart fromJson(Object? raw) {
@@ -397,6 +446,7 @@ class PosCart {
       replacesClientRef: raw['replacesClientRef']?.toString(),
       keepSoldAt: raw['keepSoldAt'] == true,
       customerId: raw['customerId']?.toString(),
+      customerType: raw['customerType']?.toString(),
     );
   }
 
@@ -433,27 +483,47 @@ class PosCart {
       keepSoldAt: true,
       replacesClientRef: replaces,
       customerId: body['customerId']?.toString(),
+      customerType: body['customerType']?.toString(),
     );
   }
 }
 
 /// One payment row in the payment sheet.
 class PaymentRow {
-  PaymentRow({this.method, this.amountTzs = 0, this.reference = ''});
+  PaymentRow({
+    this.method,
+    this.amountTzs = 0,
+    this.reference = '',
+    this.referenceOptional = false,
+  });
   String? method;
   int amountTzs;
   String reference;
 
-  bool get needsReference =>
-      method != null && referenceRequiredMethods.contains(method);
-  bool get referenceMissing => needsReference && reference.trim().isEmpty;
+  /// Sale extras #1: every method may carry a reference (cash too) and
+  /// none needs one. Off: today's rule (§1.5, an older server).
+  final bool referenceOptional;
 
-  Map<String, dynamic> toRequest() => {
-    'method': method,
-    'amountTzs': amountTzs,
-    if (method != 'cash' && reference.trim().isNotEmpty)
-      'reference': reference.trim(),
-  };
+  bool get needsReference =>
+      method != null &&
+      saleReferenceRequired(
+        referenceOptional: referenceOptional,
+      ).contains(method);
+  bool get referenceMissing =>
+      needsReference && cleanReference(reference).isEmpty;
+
+  /// Whether this row's reference is sent: never for cash unless
+  /// [referenceOptional].
+  bool get sendsReference => method != 'cash' || referenceOptional;
+
+  Map<String, dynamic> toRequest() {
+    final ref = cleanReference(reference);
+    return {
+      'method': method,
+      'amountTzs': amountTzs,
+      if (sendsReference && ref.isNotEmpty) 'reference': ref,
+    };
+  }
 }
 
 /// Where a set of payment rows stands against a total (mirrors the server:

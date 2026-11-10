@@ -15,6 +15,7 @@ import '../../../shared/components/components.dart';
 import '../../../shared/design_tokens.dart';
 import '../../../shared/formatters.dart';
 import '../../../shared/i18n.dart';
+import '../../../shared/network/browser_online.dart';
 import '../barcodes/barcode_rules.dart';
 import '../barcodes/scan_widgets.dart';
 import '../barcodes/vendor_scan_controller.dart';
@@ -26,6 +27,7 @@ import '../stock/stock_options.dart';
 import 'offline_sale_queue.dart';
 import 'payment_sheet.dart';
 import 'receipt_data.dart';
+import 'sale_customer_section.dart';
 import 'sale_models.dart';
 import 'sales_widgets.dart';
 import '../vendor_home_page.dart' show openNewProductWithCode;
@@ -158,6 +160,16 @@ class _PosPageState extends State<PosPage> {
       FFSnack.info(context, context.tr('vendor.pos.draftKept'));
     }
     // S4: the draft keeps the customer's id only; its name is asked again.
+    // Sale extras: a type kept from when the section was on is not sent
+    // while it is off (nothing hidden goes with a sale) — unless the draft
+    // was already being sent (it has a clientRef): changing the type would
+    // mean a new key and a possible duplicate, and the server stores the
+    // type whatever the flag says.
+    if (draft?.customerType != null &&
+        draft?.clientRef == null &&
+        !_tools.saleCustomerDetailsOn) {
+      _cart.update((c) => c.setCustomerType(null));
+    }
     final customerId = draft?.customerId;
     if (customerId != null) {
       if (!_customersOn) {
@@ -213,6 +225,44 @@ class _PosPageState extends State<PosPage> {
   }
 
   void _removeCustomer() => _cart.update((c) => c.setCustomer(null));
+
+  /// Sale extras #2: the payment sheet's Customer section, when on. Name
+  /// and mobile use the S4 customer calls (customers on, online); the
+  /// cart keeps the customer's id and the type only.
+  SaleCustomerSetup? _customerSetup() {
+    if (!_tools.saleCustomerDetailsOn) return null;
+    final api = AppScope.of(context).api;
+    final seesMoney = canVendor(context, 'customers');
+    return SaleCustomerSetup(
+      namesAllowed: _customersOn,
+      online: () => !_offline && BrowserOnline.instance.value,
+      customer: () =>
+          (id: _cart.cart.customerId, name: _cart.cart.customerName),
+      type: () => _cart.cart.customerType,
+      setType: (t) => _cart.update((c) => c.setCustomerType(t)),
+      link: (id, name, row) {
+        if (name.isNotEmpty) CustomerRepository.remember(context, id, name);
+        _cart.update(
+          (c) => c.setCustomer(
+            id,
+            name: name.isEmpty ? null : name,
+            owedTzs: seesMoney ? intOf(row['owedTzs']) : null,
+            overdueTzs: seesMoney ? intOf(row['overdueTzs']) : null,
+          ),
+        );
+      },
+      unlink: _removeCustomer,
+      pickCustomer: _pickCustomer,
+      search: (q) async {
+        final res = await api.vendorCustomers(q: q, limit: 10);
+        return [
+          for (final r in (res['customers'] as List? ?? []).whereType<Map>())
+            Map<String, dynamic>.from(r),
+        ];
+      },
+      create: (body) => api.vendorCreateCustomer(body),
+    );
+  }
 
   PayLaterSetup? _payLaterSetup() {
     if (!_payLaterOn) return null;
@@ -845,6 +895,8 @@ class _PosPageState extends State<PosPage> {
         totalTzs: _cart.cart.totals.totalTzs,
         submit: _submit,
         payLater: _payLaterSetup(),
+        referenceOptional: _tools.saleReferenceOptionalOn,
+        customerDetails: _customerSetup(),
         onAction: (action) {
           if (action == 'recordToday') _recordToday();
         },

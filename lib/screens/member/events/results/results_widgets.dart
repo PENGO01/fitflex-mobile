@@ -1,10 +1,8 @@
 import 'dart:math' as math;
 import 'dart:typed_data';
-import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../../app_scope.dart';
@@ -15,6 +13,10 @@ import '../../../../shared/events/event_medal.dart';
 import '../../../../shared/events/event_result.dart';
 import '../../../../shared/events/events_cache.dart';
 import '../../../../shared/i18n.dart';
+
+// capturePng moved to lib/shared (vendor receipts use it too); kept
+// exported here so the medal and reward pages are unchanged.
+export '../../../../shared/capture_png.dart' show capturePng;
 
 /// The stage chip of a result: always a word (never colour alone), with a
 /// tone that matches how official the result is (spec §10.3, §10.6).
@@ -455,18 +457,6 @@ class EventShareActions {
   /// Opens the support mailbox with the art id (the "Report this image"
   /// route). Tests replace it.
   static Future<bool> Function(Uri uri) openMail = (uri) async => false;
-}
-
-/// Renders the widget under [boundaryKey] to a PNG (3x the card size).
-Future<Uint8List?> capturePng(GlobalKey boundaryKey) async {
-  final ctx = boundaryKey.currentContext;
-  if (ctx == null) return null;
-  final box = ctx.findRenderObject();
-  if (box is! RenderRepaintBoundary) return null;
-  final image = await box.toImage(pixelRatio: 3);
-  final data = await image.toByteData(format: ui.ImageByteFormat.png);
-  image.dispose();
-  return data?.buffer.asUint8List();
 }
 
 /// The picture shared for a medal: art, medal name, event and category, and
