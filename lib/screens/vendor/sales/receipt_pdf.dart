@@ -38,8 +38,10 @@ class ReceiptPrintRow {
   String toString() => amount == null ? text : '$text  $amount';
 }
 
-/// The heading of a receipt file: the invoice or receipt number, or the
-/// provisional line of a sale still queued on this device.
+/// The heading of a receipt file: the invoice or receipt number, or, for a
+/// sale still queued on this device, the same heading as the on-screen
+/// receipt (`ReceiptView`): "Receipt", followed by "Waiting to sync" and
+/// the temporary ref (UAT D5: the image and the PDF read the same).
 String receiptFileHeading(ReceiptData r, String Function(String) t) {
   String fill(String key, Map<String, Object?> v) {
     var out = t(key);
@@ -47,9 +49,7 @@ String receiptFileHeading(ReceiptData r, String Function(String) t) {
     return out;
   }
 
-  if (r.queued || r.number == null) {
-    return fill('vendor.pos.shareProvisional', {'ref': r.tempRef ?? ''});
-  }
+  if (r.queued || r.number == null) return t('vendor.documents.receipt');
   if (r.credit && r.invoiceNumber != null) {
     return '${t('vendor.doc.invoice')} ${r.invoiceNumber}';
   }
@@ -86,8 +86,17 @@ List<ReceiptPrintRow> receiptPrintRows(
         fill('vendor.doc.saleRef', {'number': r.number}),
         style: muted,
       ),
-    if (r.queued)
+    if (r.queued) ...[
+      ReceiptPrintRow(
+        t('vendor.pos.waitingSync'),
+        style: ReceiptRowStyle.strong,
+      ),
+      ReceiptPrintRow(
+        fill('vendor.pos.tempRef', {'ref': r.tempRef ?? ''}),
+        style: muted,
+      ),
       ReceiptPrintRow(t('vendor.pos.waitingSyncBody'), style: muted),
+    ],
   ];
   final when = eatDateTime(r.soldAt, locale: lang);
   if (when.isNotEmpty) rows.add(ReceiptPrintRow(when, style: muted));

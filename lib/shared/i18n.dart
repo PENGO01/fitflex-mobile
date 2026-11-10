@@ -5052,6 +5052,8 @@ class FFLocale extends ChangeNotifier {
       'vendor.pos.cust.search': 'Search customers',
       'vendor.pos.cust.offline':
           'Name and mobile need a connection. You can still choose the customer type.',
+      'vendor.pos.cust.offlineTyped':
+          "No connection: the name and mobile you typed won't be saved with this sale. You can still choose the customer type.",
       'vendor.pos.cust.saveFailed':
           "Couldn't save the customer. Try again, or complete the sale without them.",
       'vendor.pos.cust.completeWithout': 'Complete without customer',
@@ -13322,6 +13324,8 @@ class FFLocale extends ChangeNotifier {
       'vendor.pos.cust.search': 'Tafuta wateja',
       'vendor.pos.cust.offline':
           'Jina na namba ya simu vinahitaji intaneti. Bado unaweza kuchagua aina ya mteja.',
+      'vendor.pos.cust.offlineTyped':
+          'Hakuna intaneti: jina na namba ya simu ulizoandika havitahifadhiwa kwenye mauzo haya. Bado unaweza kuchagua aina ya mteja.',
       'vendor.pos.cust.saveFailed':
           'Imeshindikana kuhifadhi mteja. Jaribu tena, au kamilisha mauzo bila mteja.',
       'vendor.pos.cust.completeWithout': 'Kamilisha bila mteja',

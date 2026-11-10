@@ -18,6 +18,8 @@ import 'package:fitflexmobile/screens/vendor/sales/receipt_files.dart';
 import 'package:fitflexmobile/screens/vendor/sales/receipt_page.dart';
 import 'package:fitflexmobile/screens/vendor/sales/receipt_pdf.dart';
 import 'package:fitflexmobile/screens/vendor/sales/sale_detail_page.dart';
+import 'package:fitflexmobile/screens/vendor/sales/sales_widgets.dart'
+    show ReceiptView;
 import 'package:fitflexmobile/shared/i18n.dart';
 import 'package:fitflexmobile/shared/network/browser_online.dart';
 
@@ -379,10 +381,19 @@ void main() {
         'receipt-pending-20261019-1100.pdf',
       ]);
       expect(f.jobs.first.data.queued, isTrue);
-      // The provisional heading (no number yet).
+      // The queued heading (no number yet), as on screen (UAT D5).
+      expect(receiptFileHeading(f.jobs.first.data, f.jobs.first.t), 'Receipt');
       expect(
-        receiptFileHeading(f.jobs.first.data, f.jobs.first.t),
-        contains('ABCDEF'),
+        receiptPrintRows(
+          f.jobs.first.data,
+          f.jobs.first.t,
+          'en',
+        ).map((r) => r.text),
+        containsAllInOrder([
+          'Receipt',
+          'Waiting to sync',
+          'Temporary ref ABCDEF',
+        ]),
       );
     });
   });
@@ -469,6 +480,73 @@ void main() {
       expect(png!.sublist(0, 4), [137, 80, 78, 71]);
       final width = ByteData.sublistView(png!, 16, 20).getUint32(0);
       expect(width, 1080);
+    });
+  });
+
+  group('UAT D5: queued heading, image and PDF the same', () {
+    final locale = FFLocale();
+    ReceiptData queued() => ReceiptData.fromQueued(
+      {
+        'clientRef': 'sale_q_00abcdef',
+        'soldAt': '2026-10-19T08:00:00.000Z',
+        'lines': [],
+        'payments': [],
+      },
+      const {'business': 'Dar Gear'},
+    );
+
+    for (final lang in ['en', 'sw']) {
+      testWidgets('$lang: the PDF heads with the on-screen (image) wording', (
+        tester,
+      ) async {
+        String t(String k) => locale.tIn(lang, k);
+        final data = queued();
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: SingleChildScrollView(
+                child: ReceiptView(data: data, t: t, lang: lang),
+              ),
+            ),
+          ),
+        );
+        // The image is this widget drawn off-screen (renderReceiptImage).
+        final onScreen = tester
+            .widget<Text>(find.byKey(const Key('sales-receipt-number')))
+            .data;
+        expect(onScreen, t('vendor.documents.receipt'));
+        expect(receiptFileHeading(data, t), onScreen);
+        final rows = receiptPrintRows(data, t, lang).map((r) => r.text);
+        expect(
+          rows,
+          containsAllInOrder([
+            onScreen,
+            t('vendor.pos.waitingSync'),
+            t('vendor.pos.tempRef').replaceAll('{ref}', 'ABCDEF'),
+            t('vendor.pos.waitingSyncBody'),
+          ]),
+        );
+        // The chip and the ref on screen carry the same words.
+        expect(find.text(t('vendor.pos.waitingSync')), findsOneWidget);
+        expect(
+          find.text(t('vendor.pos.tempRef').replaceAll('{ref}', 'ABCDEF')),
+          findsOneWidget,
+        );
+        final provisional = t('vendor.pos.shareProvisional').split('{')[0];
+        expect(rows.join('\n'), isNot(contains(provisional)));
+      });
+    }
+
+    test('a recorded sale keeps its number heading', () {
+      final data = ReceiptData.fromSale(saleWithExtras());
+      expect(
+        receiptFileHeading(data, (k) => locale.tIn('en', k)),
+        'Receipt R-000001',
+      );
+      expect(
+        receiptFileHeading(data, (k) => locale.tIn('sw', k)),
+        'Risiti R-000001',
+      );
     });
   });
 }

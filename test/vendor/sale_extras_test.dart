@@ -15,6 +15,7 @@ import 'package:fitflexmobile/screens/vendor/sales/pos_page.dart';
 import 'package:fitflexmobile/screens/vendor/sales/sale_customer_section.dart';
 import 'package:fitflexmobile/screens/vendor/sales/sale_models.dart';
 import 'package:fitflexmobile/screens/vendor/stock/stock_options.dart';
+import 'package:fitflexmobile/shared/components/components.dart' show FFPill;
 import 'package:fitflexmobile/shared/i18n.dart';
 import 'package:fitflexmobile/shared/network/browser_online.dart';
 
@@ -759,6 +760,307 @@ void main() {
       final body = saleBody(api);
       expect(body['clientRef'], 'sale_kept0001');
       expect(body['customerType'], 'walk_in');
+    });
+  });
+
+  group('UAT fixes 1110', () {
+    bool pillOn(WidgetTester tester, String t) =>
+        tester.widget<FFPill>(find.byKey(Key('pos-cust-type-$t'))).filled;
+
+    /// The lookup answers after [latency], as a real server does, so the
+    /// "looking" frame is drawn before the answer arrives (the UAT case).
+    void slowLookup(
+      RecordingApi api, {
+      Duration latency = const Duration(milliseconds: 300),
+    }) {
+      api.onCall('GET /vendor/customers', (r) async {
+        await Future<void>.delayed(latency);
+        final q = Uri.splitQueryString(r.query)['q'] ?? '';
+        return {
+          'customers': [
+            if (q == '712345678')
+              customerRow('cus_asha', 'Asha', phone: '+255712345678', owed: 0),
+          ],
+          'nextCursor': null,
+          'asOf': '2026-11-10',
+        };
+      });
+    }
+
+    /// Types [text] one character at a time, [gap] apart (normal typing),
+    /// with frames only: no taps, no pumpAndSettle.
+    Future<void> typeSlowly(
+      WidgetTester tester,
+      Finder f,
+      String text, {
+      Duration gap = const Duration(milliseconds: 150),
+    }) async {
+      for (var i = 1; i <= text.length; i++) {
+        await tester.enterText(f, text.substring(0, i));
+        await tester.pump(gap);
+      }
+    }
+
+    apiTest('D1: a mobile match shows at once, with Returning and a live '
+        'region, at normal typing speed', (tester, api) async {
+      seed(api);
+      slowLookup(api);
+      await pumpPos(tester, api);
+      await openPayment(tester);
+      await expandCustomer(tester);
+      final mobile = find.byKey(const Key('pos-cust-mobile'));
+      await tester.ensureVisible(mobile);
+      await tester.pump();
+      await typeSlowly(tester, mobile, '0712345678');
+      // The debounce (400 ms) fires: the lookup starts and "looking" is
+      // drawn; then the answer arrives. Frames only, no interaction.
+      await tester.pump(const Duration(milliseconds: 400));
+      expect(find.byKey(const Key('pos-cust-looking')), findsOneWidget);
+      await tester.pump(const Duration(milliseconds: 300));
+      await tester.pump();
+      expect(find.text('Already a customer: Asha'), findsOneWidget);
+      expect(find.byKey(const Key('pos-cust-mobile')), findsNothing);
+      expect(find.byKey(const Key('pos-cust-name')), findsNothing);
+      expect(pillOn(tester, 'returning'), isTrue);
+      expect(find.text('Asha · Returning'), findsOneWidget);
+      // Announced: the match line sits in a live region.
+      expect(
+        find.ancestor(
+          of: find.byKey(const Key('pos-cust-matched')),
+          matching: find.byWidgetPredicate(
+            (w) => w is Semantics && w.properties.liveRegion == true,
+          ),
+        ),
+        findsOneWidget,
+      );
+    });
+
+    apiTest('D1: a name typed while the lookup runs is kept, not lost', (
+      tester,
+      api,
+    ) async {
+      seed(api);
+      slowLookup(api);
+      await pumpPos(tester, api);
+      await openPayment(tester);
+      await expandCustomer(tester);
+      final mobile = find.byKey(const Key('pos-cust-mobile'));
+      final name = find.byKey(const Key('pos-cust-name'));
+      await tester.ensureVisible(mobile);
+      await tester.pump();
+      await typeSlowly(tester, mobile, '0712345678');
+      // The lookup starts (debounce), then Name is typed while it runs.
+      await tester.pump(const Duration(milliseconds: 260));
+      expect(find.byKey(const Key('pos-cust-looking')), findsOneWidget);
+      await typeSlowly(
+        tester,
+        name,
+        'Ba',
+        gap: const Duration(milliseconds: 100),
+      );
+      await tester.pump(const Duration(milliseconds: 300));
+      await tester.pump();
+      expect(find.text('Already a customer: Asha'), findsOneWidget);
+      // The match is not this person: removing it brings the typed name
+      // back (the mobile was the match, so it is not refilled).
+      await tapVisible(tester, find.byKey(const Key('pos-cust-remove')));
+      expect(
+        tester
+            .widget<EditableText>(
+              find.descendant(
+                of: find.byKey(const Key('pos-cust-name')),
+                matching: find.byType(EditableText),
+              ),
+            )
+            .controller
+            .text,
+        'Ba',
+      );
+      expect(
+        tester
+            .widget<EditableText>(
+              find.descendant(
+                of: find.byKey(const Key('pos-cust-mobile')),
+                matching: find.byType(EditableText),
+              ),
+            )
+            .controller
+            .text,
+        isEmpty,
+      );
+    });
+
+    apiTest('D2: choosing from Search customers pre-selects Returning', (
+      tester,
+      api,
+    ) async {
+      seed(api);
+      await pumpPos(tester, api);
+      await openPayment(tester);
+      await expandCustomer(tester);
+      await typeMobile(tester, '0755 000 111');
+      await tapVisible(tester, find.byKey(const Key('pos-cust-search')));
+      await tapVisible(tester, find.byKey(const Key('picker-row-cus_1')));
+      expect(find.text('Already a customer: Juma Mussa'), findsOneWidget);
+      expect(pillOn(tester, 'returning'), isTrue);
+      // The seller can change it.
+      await tapVisible(tester, find.byKey(const Key('pos-cust-type-online')));
+      await tapVisible(tester, find.byKey(const Key('pos-complete')));
+      final body = saleBody(api);
+      expect(body['customerId'], 'cus_1');
+      expect(body['customerType'], 'online');
+    });
+
+    apiTest('D2: a type chosen by hand is kept when picking a customer', (
+      tester,
+      api,
+    ) async {
+      seed(api);
+      await pumpPos(tester, api);
+      await openPayment(tester);
+      await expandCustomer(tester);
+      await tapVisible(tester, find.byKey(const Key('pos-cust-type-walk_in')));
+      await tapVisible(tester, find.byKey(const Key('pos-cust-search')));
+      await tapVisible(tester, find.byKey(const Key('picker-row-cus_1')));
+      expect(pillOn(tester, 'walk_in'), isTrue);
+      expect(pillOn(tester, 'returning'), isFalse);
+    });
+
+    apiTest('D3: removing an auto-matched customer clears the auto type; '
+        'a new customer next goes as New', (tester, api) async {
+      seed(api);
+      api.onCall(
+        'POST /vendor/customers',
+        (_) => {
+          'customer': {'id': 'cus_new', 'name': 'Neema'},
+        },
+      );
+      await pumpPos(tester, api);
+      await openPayment(tester);
+      await expandCustomer(tester);
+      await typeMobile(tester, '0712 345 678');
+      expect(pillOn(tester, 'returning'), isTrue);
+      await tapVisible(tester, find.byKey(const Key('pos-cust-remove')));
+      expect(pillOn(tester, 'returning'), isFalse);
+      expect(
+        tester
+            .widget<EditableText>(
+              find.descendant(
+                of: find.byKey(const Key('pos-cust-name')),
+                matching: find.byType(EditableText),
+              ),
+            )
+            .controller
+            .text,
+        isEmpty,
+      );
+      await typeInto(tester, find.byKey(const Key('pos-cust-name')), 'Neema');
+      await tapVisible(tester, find.byKey(const Key('pos-complete')));
+      final body = saleBody(api);
+      expect(body['customerId'], 'cus_new');
+      expect(body['customerType'], 'new');
+    });
+
+    apiTest('D3: a type picked by hand stays when the match is removed', (
+      tester,
+      api,
+    ) async {
+      seed(api);
+      await pumpPos(tester, api);
+      await openPayment(tester);
+      await expandCustomer(tester);
+      await tapVisible(tester, find.byKey(const Key('pos-cust-type-online')));
+      await typeMobile(tester, '0712 345 678');
+      expect(find.text('Already a customer: Asha'), findsOneWidget);
+      expect(pillOn(tester, 'online'), isTrue);
+      await tapVisible(tester, find.byKey(const Key('pos-cust-remove')));
+      expect(pillOn(tester, 'online'), isTrue);
+    });
+
+    apiTest('D3: Returning picked by hand after the match also stays', (
+      tester,
+      api,
+    ) async {
+      seed(api);
+      await pumpPos(tester, api);
+      await openPayment(tester);
+      await expandCustomer(tester);
+      await typeMobile(tester, '0712 345 678');
+      // Tap off and on again: now the seller's own choice.
+      await tapVisible(
+        tester,
+        find.byKey(const Key('pos-cust-type-returning')),
+      );
+      await tapVisible(
+        tester,
+        find.byKey(const Key('pos-cust-type-returning')),
+      );
+      await tapVisible(tester, find.byKey(const Key('pos-cust-remove')));
+      expect(pillOn(tester, 'returning'), isTrue);
+    });
+
+    apiTest('D4: typed details then offline: warned, summary drops the name', (
+      tester,
+      api,
+    ) async {
+      seed(api);
+      api.onCall(
+        'POST /vendor/sales',
+        (_) => throw http.ClientException('offline'),
+      );
+      final host = await pumpPos(tester, api);
+      await openPayment(tester);
+      await expandCustomer(tester);
+      await tapVisible(tester, find.byKey(const Key('pos-cust-type-walk_in')));
+      await typeInto(
+        tester,
+        find.byKey(const Key('pos-cust-name')),
+        'Lost Connection',
+      );
+      expect(find.text('Lost Connection · Walk-in'), findsOneWidget);
+      BrowserOnline.debugSet(false);
+      await tester.pumpAndSettle();
+      final warning = host.tr('vendor.pos.cust.offlineTyped');
+      expect(find.text(warning), findsOneWidget);
+      expect(find.text('Lost Connection · Walk-in'), findsNothing);
+      expect(find.text('Walk-in'), findsWidgets);
+      // Collapsed, the warning still shows.
+      await expandCustomer(tester);
+      expect(find.text(warning), findsOneWidget);
+      await tapVisible(tester, find.byKey(const Key('pos-complete')));
+      await tester.pumpAndSettle();
+      final prefs = await SharedPreferences.getInstance();
+      final queued =
+          (jsonDecode(prefs.getString(queueKey)!) as List).single as Map;
+      expect(queued['body']['customerType'], 'walk_in');
+      expect(jsonEncode(queued), isNot(contains('Lost Connection')));
+    });
+
+    apiTest('D4: offline with nothing typed: the plain offline line only', (
+      tester,
+      api,
+    ) async {
+      seed(api);
+      final host = await pumpPos(tester, api);
+      BrowserOnline.debugSet(false);
+      await openPayment(tester);
+      await expandCustomer(tester);
+      expect(find.text(host.tr('vendor.pos.cust.offline')), findsOneWidget);
+      expect(find.text(host.tr('vendor.pos.cust.offlineTyped')), findsNothing);
+    });
+
+    test('D4: the warning is in both languages', () {
+      final en = FFLocale();
+      final sw = FFLocale()..set(const Locale('sw'));
+      expect(en.t('vendor.pos.cust.offlineTyped'), contains("won't be saved"));
+      expect(
+        sw.t('vendor.pos.cust.offlineTyped'),
+        isNot('vendor.pos.cust.offlineTyped'),
+      );
+      expect(
+        sw.t('vendor.pos.cust.offlineTyped'),
+        isNot(en.t('vendor.pos.cust.offlineTyped')),
+      );
     });
   });
 }

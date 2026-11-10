@@ -127,6 +127,12 @@ class SaleCustomerController extends ChangeNotifier {
   bool namesOff = false;
 
   final _refs = _Refs();
+
+  /// The type this section chose on its own (Returning for a match or a
+  /// picked customer, New for a created one; Q-6). Removing that customer
+  /// undoes it; a type the seller picked by hand is never undone (UAT D3).
+  String? _autoType;
+
   Timer? _debounce;
   int _ask = 0;
   bool _disposed = false;
@@ -138,6 +144,14 @@ class SaleCustomerController extends ChangeNotifier {
 
   /// Offline note: customers on but no connection.
   bool get showOffline => setup.namesAllowed && !namesOff && !setup.online();
+
+  /// A name or mobile typed and not (yet) a linked customer.
+  bool get hasTyped =>
+      !linked && (name.text.trim().isNotEmpty || mobile.text.trim().isNotEmpty);
+
+  /// Offline with something typed: it will not be saved with this sale
+  /// (§2.7: never queued), so the seller is told (UAT D4).
+  bool get typedWontSave => showOffline && hasTyped;
 
   void _changed() {
     if (!_disposed) notifyListeners();
@@ -154,9 +168,18 @@ class SaleCustomerController extends ChangeNotifier {
   }
 
   void chooseType(String type) {
-    // Tapping the chosen one again clears it.
+    // Tapping the chosen one again clears it. Either way it is now the
+    // seller's own choice.
+    _autoType = null;
     setup.setType(setup.type() == type ? null : type);
     _changed();
+  }
+
+  /// Pre-selects [type] when the seller has not chosen one (Q-6).
+  void _autoSetType(String type) {
+    if (setup.type() != null) return;
+    setup.setType(type);
+    _autoType = type;
   }
 
   void nameChanged(String _) {
@@ -226,17 +249,22 @@ class SaleCustomerController extends ChangeNotifier {
 
   void _linkMatch(Map<String, dynamic> row) {
     final stored = row['name']?.toString().trim() ?? '';
-    // The stored name wins; the typed one is dropped (§2.1).
+    // The stored name wins; the typed one is ignored (§2.1): its field is
+    // replaced by the match line. It stays in memory only, so removing a
+    // wrong match gives back what was typed (UAT D1); it is never sent.
     setup.link(row['id'].toString(), stored, row);
-    if (setup.type() == null) setup.setType('returning');
-    _clearTyped();
+    _autoSetType('returning');
+    _clearTyped(keepName: true);
+    // UAT D1: _clearTyped moves _ask on, so lookup()'s finally does not
+    // notify; rebuild now so the match line (a live region) shows at once.
+    _changed();
   }
 
-  void _clearTyped() {
+  void _clearTyped({bool keepName = false}) {
     _debounce?.cancel();
     _ask++;
     looking = false;
-    name.clear();
+    if (!keepName) name.clear();
     mobile.clear();
     nameError = null;
     mobileError = null;
@@ -246,12 +274,20 @@ class SaleCustomerController extends ChangeNotifier {
   /// "Remove {name} from this sale".
   void remove() {
     setup.unlink();
+    // UAT D3: a type this section chose for that customer goes with it.
+    if (_autoType != null && setup.type() == _autoType) setup.setType(null);
+    _autoType = null;
     _changed();
   }
 
   Future<void> search() async {
     await setup.pickCustomer();
-    if (linked) _clearTyped();
+    if (_disposed) return;
+    if (linked) {
+      // UAT D2 (Q-6): an existing customer pre-selects Returning.
+      _autoSetType('returning');
+      _clearTyped(keepName: true);
+    }
     _changed();
   }
 
@@ -327,7 +363,7 @@ class SaleCustomerController extends ChangeNotifier {
         stored == null || stored.isEmpty ? n : stored,
         {...Map<String, dynamic>.from(c), 'owedTzs': 0, 'overdueTzs': 0},
       );
-      if (setup.type() == null) setup.setType('new');
+      _autoSetType('new');
       _clearTyped();
       _changed();
       return true;
@@ -411,7 +447,9 @@ class SaleCustomerSection extends StatelessWidget {
     final linkedName = c.linked
         ? (setup.customer().name ?? context.tr('vendor.pos.customer.selected'))
         : null;
-    final typedName = c.name.text.trim();
+    // UAT D4: a name that cannot be saved (offline) is not shown as if it
+    // were on the sale.
+    final typedName = c.namesShown ? c.name.text.trim() : '';
     final who = typeOnly
         ? null
         : linkedName ?? (typedName.isEmpty ? null : typedName);
@@ -462,6 +500,20 @@ class SaleCustomerSection extends StatelessWidget {
               ),
             ),
           ),
+          // UAT D4: shown open or closed, so the seller sees it before
+          // completing.
+          if (!typeOnly && c.typedWontSave) ...[
+            const SizedBox(height: FFTokens.spacingSm),
+            Semantics(
+              container: true,
+              liveRegion: true,
+              child: FFAlert(
+                key: const Key('pos-cust-offline-typed'),
+                message: context.tr('vendor.pos.cust.offlineTyped'),
+                tone: FFAlertTone.warning,
+              ),
+            ),
+          ],
           if (c.expanded) ...[
             const SizedBox(height: FFTokens.spacingSm),
             Text(
@@ -497,6 +549,8 @@ class SaleCustomerSection extends StatelessWidget {
   List<Widget> _details(BuildContext context, TextStyle? muted) {
     final c = controller;
     if (c.showOffline) {
+      // The typed-details warning above already says it.
+      if (c.typedWontSave) return const [];
       return [
         const SizedBox(height: FFTokens.spacingSm),
         Semantics(
