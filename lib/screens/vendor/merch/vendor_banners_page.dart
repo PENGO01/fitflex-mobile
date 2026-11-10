@@ -13,6 +13,7 @@ import '../../../shared/formatters.dart';
 import '../../../shared/i18n.dart';
 import '../stock/stock_options.dart';
 import 'banner_models.dart';
+import 'merch_back_button.dart';
 
 /// The vendor's Promotions page (`/vendor/merch`, Shop home Phase 2 S1):
 /// their banner proposals by state, with Edit / Withdraw / Send for
@@ -321,6 +322,7 @@ class _VendorBannersPageState extends State<VendorBannersPage> {
     }
     return Scaffold(
       appBar: AppBar(
+        leading: const MerchBackButton(),
         // Long Swahili at 130% wraps to a second line instead of "…".
         toolbarHeight: math.max(
           kToolbarHeight,

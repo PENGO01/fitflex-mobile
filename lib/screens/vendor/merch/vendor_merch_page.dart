@@ -6,6 +6,7 @@ import '../../../shared/components/components.dart';
 import '../../../shared/design_tokens.dart';
 import '../../../shared/i18n.dart';
 import '../stock/stock_options.dart';
+import 'merch_back_button.dart';
 import 'vendor_banners_page.dart';
 import 'vendor_flash_sales_page.dart';
 
@@ -71,6 +72,7 @@ class _VendorMerchPageState extends State<VendorMerchPage> {
     final both = tools != null && tools.banners && tools.flashSales;
     return Scaffold(
       appBar: AppBar(
+        leading: const MerchBackButton(),
         // Long Swahili at 130% wraps to a second line instead of "…".
         toolbarHeight: math.max(
           kToolbarHeight,
