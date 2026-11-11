@@ -228,7 +228,9 @@ class FFTokens {
   // photo pixel, so it holds for any photo. Owner 2026-10-20 ("lighter"):
   // the scrim is local. A band behind the status bar and app bar, the photo
   // clear in between, and a ramp into a dark zone that holds all text.
-  static const Color heroScrim = darkBg;
+  // Deeper than the page black so hero text keeps >= 13.2:1 over a
+  // pure-white pixel at the 86% text zone (13.9:1).
+  static const Color heroScrim = Color(0xFF020303);
 
   /// Behind the status bar, app bar icons and logo (no other text): held
   /// over the bar, then faded out. 0.46 is the lowest value that keeps
@@ -642,6 +644,9 @@ ThemeData buildDarkTheme() {
     // between the focused and unfocused fill.
     floatingActionButtonTheme: FloatingActionButtonThemeData(
       focusColor: FFTokens.onVolt.withValues(alpha: 0.45),
+      shape: _ffPill,
+      elevation: 2,
+      highlightElevation: 4,
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
@@ -1003,6 +1008,15 @@ ThemeData buildTheme() {
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ButtonStyle(side: ffFocusRing(ffFocusRingLight)),
+    ),
+    // Ink pill with white content; a 24% white overlay marks focus.
+    floatingActionButtonTheme: FloatingActionButtonThemeData(
+      backgroundColor: primary,
+      foregroundColor: onPrimary,
+      focusColor: Colors.white.withValues(alpha: 0.24),
+      shape: _ffPill,
+      elevation: 2,
+      highlightElevation: 4,
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(

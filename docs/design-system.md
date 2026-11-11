@@ -117,6 +117,6 @@ FFErrorState(onRetry: _load);
 
 ## Proposed: light system
 
-A proposed restyle (light and dark) is documented in
-`docs/design/light-system/README.md`. It is a proposal: the tokens above are
-still the ones in use.
+The light system (light and dark) is documented in
+`docs/design/light-system/README.md`, including what changed in the theme and
+the shared components.

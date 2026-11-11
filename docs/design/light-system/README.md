@@ -1,13 +1,14 @@
-# FitFlex light system (proposal)
+# FitFlex light system
 
-A proposed look for the app, in light and dark, from Godliving (design).
-This pull request changes no screen and no behaviour. It adds this document,
-the brand assets beside it, and one unused token file
-(`lib/shared/design_tokens_next.dart`) so the values can be reviewed before
-any screen moves.
+A new look for the app, in light and dark, from Godliving (design).
 
-The full set of screens (12 screens, light and dark) is on a design canvas
-that Godliving can share.
+This branch applies it through the shared theme and components, so every
+screen picks it up: colours, buttons, chips, cards, tabs, badges, alerts,
+inputs, sheets and the bottom bar. No screen's behaviour, text or navigation
+changes. Brand assets and the token reference sit beside this file.
+
+The full set of drawn screens (12 screens, light and dark) is on a design
+canvas that Godliving can share.
 
 ## The idea in five rules
 
@@ -26,7 +27,8 @@ that Godliving can share.
 
 ## Tokens
 
-Values live in `lib/shared/design_tokens_next.dart` (`FFNext`).
+Values live in `FFTokens` (`lib/shared/design_tokens.dart`) and the two
+theme builders there.
 
 | Role | Light | Dark |
 | --- | --- | --- |
@@ -127,35 +129,55 @@ gym owner and seller. All in both modes.
 Not drawn yet: the inner screens for each partner role, gym detail, checkout,
 and empty and error states.
 
-## Suggested migration
+## What this branch changes
 
-Each slice is one pull request and can ship alone.
+| Area | Where | Change |
+| --- | --- | --- |
+| Colours, both themes | `buildTheme()`, `buildDarkTheme()`, `FFTokens` | The values in the tables above. `onSurfaceVariant` is now set, so secondary text is muted in both themes. |
+| Status colours | `FFToneTheme` | New light and dark palettes; no visible outline. |
+| Buttons | button themes, `FFButton` | Pills, semibold sentence-case labels. Heights unchanged (40, 48, 52). |
+| Cards | `cardTheme`, `FFCard` | Radius 20, no border. |
+| Chips | `chipTheme`, `FFFilterChip` | Pills; selected is the primary fill (solid) or Volt (tint). |
+| Tabs | `FFSegmented` | Solid primary thumb on a pill track. |
+| Tiles, empty and error states | `FFStatTile`, `FFMetricCard`, `FFActionTile`, `FFEmptyState`, `FFErrorState` | No outlines; round icon wells. |
+| Bottom bar | `navigationBarTheme` | Selected tab in a Volt pill, label bold. |
+| Inputs | `inputDecorationTheme` | Radius 16; borders still >= 3:1. |
+| Sheets and dialogs | sheet and dialog themes | Page colour with a 28 top radius, so cards inside keep their edges. |
+| Member pass | `PassSummaryCard` | The Volt card while the pass is active; warning states keep the normal card. |
+| Splash | `kinetic_splash.dart` | Near-black with Volt instead of navy and teal. |
 
-1. **Colours.** Move the `FFNext` values into `buildTheme()` and
-   `buildDarkTheme()`. This will fail the tests that pin today's colours
-   (for example `test/v2_tokens_qa_test.dart` and
-   `test/phase_a_design_qa_test.dart`); they need new expected values in the
-   same pull request.
-2. **Shape.** Full radius on `FFButton`, `FFFilterChip`, `FFSegmented`;
-   radius 20 and no border on `FFCard`.
-3. **Type.** Bundle Onest (four weights) and switch `FFTokens.fontSans`.
-   Check Swahili strings for truncation; Onest is slightly wider than Inter.
-4. **New pieces.** Pass card, offer carousel, the Africa motif as a bundled
-   asset, the wordmark on the loading screen.
-5. **Photos.** Replace hero images with licensed black-and-white photos, one
-   `LICENSES.md` row each.
+Not changed: the Inter typeface, button heights, screen layouts, the photo
+heroes and footer (still behind their flags, still off), the app icon.
+
+Next steps, each its own pull request:
+
+1. Screen layouts: per-screen arrangement from the design canvas (lead with
+   the lime card, grouped list rows, solid headers).
+2. Type: bundle Onest and switch `FFTokens.fontSans`; check Swahili strings.
+3. Photos: licensed black-and-white photos, one `LICENSES.md` row each.
+4. Brand: wordmark on the loading screen, new app icon.
+
+## Review helpers
+
+- `test/design_screens_test.dart` boots each role from the recorded fixtures
+  in light and dark and saves a picture of every tab. It is skipped unless
+  run with `--dart-define=DESIGN_SHOTS=true --update-goldens`.
+- `.github/workflows/design-check.yml` runs analyze, the full suite and the
+  screenshots on the fork. It is a review helper and should be dropped
+  before merging.
 
 ## Open questions for review
 
-- Is retiring Inter for Onest acceptable this close to launch, or should
-  slice 3 wait?
+- The app's first-run theme is dark (`ThemeNotifier`). The design is light
+  first; should new installs start in light?
+- Is retiring Inter for Onest acceptable this close to launch?
 - The light theme's brand green (`brand500`, `#067647`) is replaced by ink
   (`#0E2A22`) as the primary fill. Anything in the portal that must stay in
   step?
 - Dark mode moves from navy (`#020617`) to near-black (`#090A0A`).
 
-## Not verified
+## Verification
 
-This proposal was prepared without a Flutter toolchain, so `flutter analyze`
-and `flutter test` have not been run on the branch. The only Dart added is a
-file of constants that nothing imports.
+Prepared without a local Flutter toolchain. `flutter analyze`, the full
+`flutter test` suite and the screenshots run in GitHub Actions on the fork
+(`design-check.yml`).
