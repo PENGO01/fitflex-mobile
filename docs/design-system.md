@@ -114,3 +114,9 @@ FFErrorState(onRetry: _load);
   headings. Long Swahili labels must not overflow: use `maxLines` and
   `overflow`, and avoid fixed widths.
 - Check new UI in light and dark.
+
+## Proposed: light system
+
+A proposed restyle (light and dark) is documented in
+`docs/design/light-system/README.md`. It is a proposal: the tokens above are
+still the ones in use.
