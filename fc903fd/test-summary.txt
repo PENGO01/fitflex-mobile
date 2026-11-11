@@ -1,0 +1,5 @@
+00:33 +270 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_test.dart: Scrim rule (§5.2) contrast over a pure-white pixel (§5.2 table) [E]
+09:13 +4638 ~9 -1: Some tests failed.
+
+Failing tests:
+  /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_test.dart: Scrim rule (§5.2) contrast over a pure-white pixel (§5.2 table)
