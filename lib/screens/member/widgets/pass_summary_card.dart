@@ -11,6 +11,9 @@ import '../member_shell.dart';
 import '../../../shared/photo_hero_flag.dart';
 import 'pass_state.dart';
 
+/// Built once: it does not depend on the context.
+final ThemeData _voltCardTheme = buildVoltCardTheme();
+
 class PassSummaryCard extends StatelessWidget {
   const PassSummaryCard({super.key, required this.data});
 
@@ -46,7 +49,6 @@ class PassSummaryCard extends StatelessWidget {
         onRetry: () => _retry(context),
       );
     }
-    final theme = Theme.of(context);
     final state = passStateFor(data);
     final sub = data.subscription;
     final pending = data.pendingPayment;
@@ -87,6 +89,44 @@ class PassSummaryCard extends StatelessWidget {
       status = null;
     }
 
+    // Light system: a healthy, active pass is the screen's one Volt card.
+    // Act-soon, pending and ended states stay on the normal card with their
+    // warning colours. The content is built with the inner context so it
+    // takes the Volt card's colours.
+    final volt = state == PassState.active;
+    final card = Builder(
+      builder: (context) => _card(
+        context,
+        state: state,
+        title: title,
+        status: status,
+        pendingAside: pendingAside,
+        hasPass: hasPass,
+        directDaysLeft: directDaysLeft,
+        directProgress: directProgress,
+      ),
+    );
+    if (!volt) return card;
+    return Theme(
+      key: const Key('pass-summary-volt'),
+      data: _voltCardTheme,
+      child: card,
+    );
+  }
+
+  Widget _card(
+    BuildContext context, {
+    required PassState state,
+    required String title,
+    required String? status,
+    required PaymentRequest? pendingAside,
+    required bool hasPass,
+    required int? directDaysLeft,
+    required double? directProgress,
+  }) {
+    final theme = Theme.of(context);
+    final sub = data.subscription;
+    final pending = data.pendingPayment;
     return FFCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

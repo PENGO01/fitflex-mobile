@@ -32,8 +32,7 @@ class FFStatTile extends StatelessWidget {
       padding: const EdgeInsets.all(FFTokens.spacingMd),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
-        border: Border.all(color: theme.colorScheme.outlineVariant),
-        borderRadius: BorderRadius.circular(FFTokens.radiusLg),
+        borderRadius: BorderRadius.circular(FFTokens.radiusXl),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

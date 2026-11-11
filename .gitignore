@@ -33,3 +33,5 @@ android/app/google-services.json
 ios/Runner/GoogleService-Info.plist
 build
 .dart_tool
+# Design review screenshots (test/design_screens_test.dart)
+test/design_shots/

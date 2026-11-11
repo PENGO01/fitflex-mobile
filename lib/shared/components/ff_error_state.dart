@@ -32,8 +32,7 @@ class FFErrorState extends StatelessWidget {
         vertical: FFTokens.spacing2xl,
       ),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest,
-        border: Border.all(color: theme.colorScheme.outline),
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(FFTokens.radiusXl),
       ),
       child: Semantics(

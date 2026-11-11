@@ -307,9 +307,7 @@ class _ShopBannerCarouselState extends State<ShopBannerCarousel> {
                 backgroundColor: WidgetStatePropertyAll(
                   Colors.white.withValues(alpha: 0.9),
                 ),
-                foregroundColor: const WidgetStatePropertyAll(
-                  Color(0xFF0F172A),
-                ),
+                foregroundColor: const WidgetStatePropertyAll(FFTokens.ink),
               )
             : shopIconButtonStyle(),
         tooltip: context.tr(label),

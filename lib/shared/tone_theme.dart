@@ -24,9 +24,8 @@ class FFToneColors {
       );
 }
 
-/// Theme-aware tone palette. Light mode uses pale tints with dark text; dark
-/// mode uses the tone blended at ~16% over the dark surface with light text,
-/// so badges and alerts no longer glow as pastel blocks on the dark canvas.
+/// Theme-aware tone palette. Light mode uses soft tints with dark text; dark
+/// mode uses the tone blended at ~16% over the charcoal card with light text.
 /// Every fg/bg pair is >= 4.5:1.
 ///
 /// Read with `FFToneTheme.of(context)`; falls back to the palette for the
@@ -51,95 +50,98 @@ class FFToneTheme extends ThemeExtension<FFToneTheme> {
   final FFToneColors warning;
   final FFToneColors info;
 
+  // Light system (docs/design/light-system): soft fills with no visible
+  // outline (border = bg). Every fg/bg pair is >= 5.3:1.
   static const light = FFToneTheme(
     neutral: FFToneColors(
-      bg: Color(0xFFF2F4F7),
-      fg: Color(0xFF475467),
-      border: Color(0xFFEAECF0),
-      dot: Color(0xFF98A2B3),
+      bg: Color(0xFFE9ECEA),
+      fg: Color(0xFF4A5852),
+      border: Color(0xFFE9ECEA),
+      dot: Color(0xFF8A928D),
     ),
     gray: FFToneColors(
-      bg: Color(0xFFF2F4F7),
-      fg: Color(0xFF344054),
-      border: Color(0xFFEAECF0),
-      dot: Color(0xFF667085),
+      bg: Color(0xFFE9ECEA),
+      fg: Color(0xFF3A4642),
+      border: Color(0xFFE9ECEA),
+      dot: Color(0xFF5B6B64),
     ),
+    // Brand is a pale Volt with forest ink: "active", "valid", "paid".
     brand: FFToneColors(
-      bg: Color(0xFFEDFDF3),
-      fg: Color(0xFF085D3A),
-      border: Color(0xFFAAF4CF),
-      dot: Color(0xFF067647),
+      bg: Color(0xFFEEF8CF),
+      fg: Color(0xFF0E2A22),
+      border: Color(0xFFEEF8CF),
+      dot: Color(0xFF7FA800),
     ),
     success: FFToneColors(
-      bg: Color(0xFFF0FDF9),
-      fg: Color(0xFF125D56),
-      border: Color(0xFF99F6E0),
-      dot: Color(0xFF0E9384),
+      bg: Color(0xFFE4F2E7),
+      fg: Color(0xFF1D5B34),
+      border: Color(0xFFE4F2E7),
+      dot: Color(0xFF2E8B4F),
     ),
     danger: FFToneColors(
-      bg: Color(0xFFFEF3F2),
-      fg: Color(0xFFB42318),
-      border: Color(0xFFFECDCA),
-      dot: Color(0xFFDC2626),
+      bg: Color(0xFFFBE4E1),
+      fg: Color(0xFFB3261E),
+      border: Color(0xFFFBE4E1),
+      dot: Color(0xFFD92D20),
     ),
     warning: FFToneColors(
-      bg: Color(0xFFFFFAEB),
-      fg: Color(0xFFB54708),
-      border: Color(0xFFFEDF89),
+      bg: Color(0xFFFCEFD6),
+      fg: Color(0xFF9A4A00),
+      border: Color(0xFFFCEFD6),
       dot: Color(0xFFF79009),
     ),
     info: FFToneColors(
-      bg: Color(0xFFEFF8FF),
-      fg: Color(0xFF175CD3),
-      border: Color(0xFFB2DDFF),
-      dot: Color(0xFF1570EF),
+      bg: Color(0xFFE2ECFA),
+      fg: Color(0xFF2858A0),
+      border: Color(0xFFE2ECFA),
+      dot: Color(0xFF2E90FA),
     ),
   );
 
+  // Dark: the tone at 16% over the charcoal card, light text, no outline.
+  // Every fg/bg pair is >= 7.9:1.
   static const dark = FFToneTheme(
     neutral: FFToneColors(
-      bg: Color(0xFF1E293B),
-      fg: Color(0xFFCBD5E1),
-      border: Color(0xFF334155),
-      dot: Color(0xFF94A3B8),
+      bg: Color(0xFF2C2F2D),
+      fg: Color(0xFFD5DAD6),
+      border: Color(0xFF2C2F2D),
+      dot: Color(0xFFA3ABA6),
     ),
     gray: FFToneColors(
-      bg: Color(0xFF162438),
-      fg: Color(0xFFCDD5DF),
-      border: Color(0xFF1F3350),
-      dot: Color(0xFF8899AA),
+      bg: Color(0xFF1F2221),
+      fg: Color(0xFFD5DAD6),
+      border: Color(0xFF1F2221),
+      dot: Color(0xFF8A928D),
     ),
-    // Volt family (Design System V2): the dark theme's primary is Volt, so
-    // brand badges/dots follow it instead of a second, emerald primary.
-    // bg = Volt 12% over slate-900, border = Volt 25% over slate-900.
+    // Volt family: the dark theme's primary is Volt.
     brand: FFToneColors(
-      bg: Color(0xFF25312E),
+      bg: Color(0xFF323A1E),
       fg: Color(0xFFC8F04A),
-      border: Color(0xFF3D4D32),
+      border: Color(0xFF323A1E),
       dot: Color(0xFFC8F04A),
     ),
     success: FFToneColors(
-      bg: Color(0xFF0F2B38),
-      fg: Color(0xFF5FE9D0),
-      border: Color(0xFF0F3F47),
-      dot: Color(0xFF15B79E),
+      bg: Color(0xFF1C3024),
+      fg: Color(0xFF8EE0A8),
+      border: Color(0xFF1C3024),
+      dot: Color(0xFF3FB56B),
     ),
     danger: FFToneColors(
-      bg: Color(0xFF331E2C),
+      bg: Color(0xFF381E1B),
       fg: Color(0xFFFDA29B),
-      border: Color(0xFF57252E),
+      border: Color(0xFF381E1B),
       dot: Color(0xFFF97066),
     ),
     warning: FFToneColors(
-      bg: Color(0xFF342A25),
+      bg: Color(0xFF392A14),
       fg: Color(0xFFFEC84B),
-      border: Color(0xFF593E20),
+      border: Color(0xFF392A14),
       dot: Color(0xFFF79009),
     ),
     info: FFToneColors(
-      bg: Color(0xFF142A4B),
+      bg: Color(0xFF192A3A),
       fg: Color(0xFF84CAFF),
-      border: Color(0xFF193E6C),
+      border: Color(0xFF192A3A),
       dot: Color(0xFF2E90FA),
     ),
   );

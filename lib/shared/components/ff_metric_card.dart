@@ -74,8 +74,7 @@ class FFMetricCard extends StatelessWidget {
               height: 44,
               decoration: BoxDecoration(
                 color: theme.colorScheme.surfaceContainerHighest,
-                border: Border.all(color: theme.colorScheme.outline),
-                borderRadius: BorderRadius.circular(FFTokens.radiusXl),
+                borderRadius: BorderRadius.circular(FFTokens.radiusFull),
               ),
               child: Center(child: icon),
             ),

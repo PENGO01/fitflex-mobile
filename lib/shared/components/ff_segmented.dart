@@ -83,7 +83,7 @@ class FFSegmented extends StatelessWidget {
       style: theme.textTheme.labelLarge?.copyWith(
         fontSize: compact ? _compactFontSize : null,
         color: selected
-            ? theme.colorScheme.onSurface
+            ? theme.colorScheme.onPrimary
             : theme.colorScheme.onSurfaceVariant,
         fontWeight: selected ? FontWeight.w700 : null,
       ),
@@ -101,7 +101,7 @@ class FFSegmented extends StatelessWidget {
           type: MaterialType.transparency,
           child: InkWell(
             onTap: () => onChanged(opt.$1),
-            borderRadius: BorderRadius.circular(FFTokens.radiusMd),
+            borderRadius: BorderRadius.circular(FFTokens.radiusFull),
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: FFTokens.spacingXs),
               child: AnimatedContainer(
@@ -112,13 +112,13 @@ class FFSegmented extends StatelessWidget {
                   horizontal: compact ? _compactPadding : _optionPadding,
                   vertical: FFTokens.spacingSm + 2,
                 ),
-                // Same tint as the selected bottom-nav tab. The track is the
-                // card colour, so a card-coloured pill wouldn't show.
+                // Light system: a solid primary thumb (ink on light, Volt on
+                // dark) on a card-coloured pill track.
                 decoration: BoxDecoration(
                   color: selected
-                      ? theme.colorScheme.primary.withValues(alpha: 0.18)
+                      ? theme.colorScheme.primary
                       : Colors.transparent,
-                  borderRadius: BorderRadius.circular(FFTokens.radiusMd),
+                  borderRadius: BorderRadius.circular(FFTokens.radiusFull),
                 ),
                 child: text,
               ),
@@ -164,8 +164,8 @@ class FFSegmented extends StatelessWidget {
       // height is tappable.
       padding: const EdgeInsets.symmetric(horizontal: FFTokens.spacingXs),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(FFTokens.radiusLg),
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(FFTokens.radiusFull),
       ),
       child: LayoutBuilder(
         builder: (context, constraints) {

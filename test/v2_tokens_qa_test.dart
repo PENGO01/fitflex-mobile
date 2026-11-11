@@ -93,7 +93,7 @@ void main() {
   group('keyboard focus on filled buttons', () {
     for (final entry in {
       'dark': (buildDarkTheme(), FFTokens.darkBg),
-      'light': (buildTheme(), const Color(0xFFEEF2F7)),
+      'light': (buildTheme(), FFTokens.lightGround),
     }.entries) {
       test('${entry.key}: 2px outside ring, >= 3:1 on the ground', () {
         final (theme, ground) = entry.value;

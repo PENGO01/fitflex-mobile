@@ -9,7 +9,7 @@ import 'ff_spinner.dart';
 enum FFButtonVariant { primary, secondary, ghost, destructive, onPhoto }
 
 /// Height step of an [FFButton]. `sm` is 40dp tall but still has a 48dp hit
-/// area; `md` and `lg` are 48 and 52dp.
+/// area; `md` and `lg` are 48 and 52dp. Every size is a pill.
 enum FFButtonSize { sm, md, lg }
 
 /// The standard button. Wraps the themed Filled / Outlined / Text buttons so

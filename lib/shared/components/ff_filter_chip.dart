@@ -20,7 +20,7 @@ enum FFFilterChipTone {
   /// Selected fills with the primary colour (tier and specialty rows).
   solid,
 
-  /// Selected gets a light primary tint and a primary border (panel options).
+  /// Selected fills with Volt and ink text (panel options).
   tint,
 }
 
@@ -98,7 +98,8 @@ class _FFFilterChipState extends State<FFFilterChip> {
     final ring = dark ? ffFocusRingDark : ffFocusRingLight;
     final solid = widget.tone == FFFilterChipTone.solid;
     final sel = widget.selected;
-    final radius = solid ? FFTokens.radiusXl : FFTokens.radiusMd;
+    // Light system: every chip is a pill.
+    const radius = FFTokens.radiusFull;
 
     final Color fill;
     final Color border;
@@ -108,9 +109,9 @@ class _FFFilterChipState extends State<FFFilterChip> {
       border = sel ? cs.primary : cs.outline;
       fg = sel ? cs.onPrimary : cs.onSurface;
     } else {
-      fill = sel ? cs.primary.withValues(alpha: 0.1) : cs.surface;
-      border = sel ? cs.primary : cs.outline;
-      fg = sel ? cs.primary : cs.onSurface;
+      fill = sel ? FFTokens.volt : cs.surface;
+      border = sel ? FFTokens.volt : cs.outline;
+      fg = sel ? FFTokens.onVolt : cs.onSurface;
     }
 
     final text = Text(
@@ -130,8 +131,8 @@ class _FFFilterChipState extends State<FFFilterChip> {
       key: const Key('ff-filter-chip-pill'),
       duration: const Duration(milliseconds: 100),
       padding: solid
-          ? const EdgeInsets.symmetric(horizontal: 14, vertical: 6)
-          : const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          ? const EdgeInsets.symmetric(horizontal: 16, vertical: 8)
+          : const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: fill,
         border: Border.all(color: border),

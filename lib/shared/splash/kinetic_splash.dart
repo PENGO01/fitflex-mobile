@@ -12,10 +12,11 @@ const bool kSplashAnimation = bool.fromEnvironment(
   defaultValue: !bool.fromEnvironment('MOCK_AUTH'),
 );
 
-const _bg0 = Color(0xFF04080F);
-const _bg1 = Color(0xFF0A1424);
-const _teal = Color(0xFF14B8A6);
-const _sky = Color(0xFF38BDF8);
+// Light system dark mode: near-black ground, Volt accents.
+const _bg0 = Color(0xFF090A0A);
+const _bg1 = Color(0xFF151716);
+const _teal = Color(0xFFC8F04A); // Volt
+const _sky = Color(0xFFE6F7A8); // pale Volt
 
 /// Total length of the logo animation, in seconds.
 const double kSplashLogoSeconds = 1.9;
@@ -275,7 +276,7 @@ class KineticLogo extends StatelessWidget {
             // Rim light so the navy pin reads on the dark background.
             ColorFiltered(
               colorFilter: const ColorFilter.mode(
-                Color(0xFFAAD7FF),
+                Color(0xFFE6F7A8),
                 BlendMode.srcATop,
               ),
               child: layer('logo-pin', opacity: pinOp * 0.55, blurSigma: 3),

@@ -1,0 +1,74 @@
+name: Design check
+
+# Fork-only helper for the light-system branch: analyze, test and screenshot
+# every role in light and dark, then save the results to the design/results
+# branch for review. Remove before merging upstream.
+on:
+  push:
+    branches: ['design/light-system-*']
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.2'
+          channel: stable
+          cache: true
+
+      - name: Prepare
+        run: |
+          echo "API_BASE=http://fixtures.local" > .env
+          flutter pub get
+
+      - name: Analyze
+        id: analyze
+        continue-on-error: true
+        run: flutter analyze > analyze.txt 2>&1
+
+      - name: Test
+        id: test
+        continue-on-error: true
+        run: flutter test --reporter expanded > test.txt 2>&1
+
+      - name: Screens
+        id: shots
+        continue-on-error: true
+        run: |
+          flutter test test/design_screens_test.dart \
+            --dart-define=DESIGN_SHOTS=true --update-goldens > shots.txt 2>&1
+
+      - name: Save results to design/results
+        if: ${{ !cancelled() }}
+        run: |
+          set -e
+          sha="${GITHUB_SHA::7}"
+          out="/tmp/out/$sha"
+          mkdir -p "$out"
+          cp analyze.txt test.txt shots.txt "$out/" || true
+          grep -E "\[E\]|Some tests failed|All tests passed|^[0-9]+:[0-9]+ \+[0-9]+" test.txt | tail -n 300 > "$out/test-summary.txt" || true
+          cp -r test/design_shots "$out/shots" || true
+          {
+            echo "commit=$GITHUB_SHA"
+            echo "analyze=${{ steps.analyze.outcome }}"
+            echo "test=${{ steps.test.outcome }}"
+            echo "shots=${{ steps.shots.outcome }}"
+          } > "$out/summary.txt"
+          git config user.name "design-check"
+          git config user.email "design-check@users.noreply.github.com"
+          if git fetch --depth=1 origin design/results 2>/dev/null; then
+            git checkout -q -B results FETCH_HEAD
+          else
+            git checkout -q --orphan results
+            git rm -rfq .
+          fi
+          rm -rf "$sha" && cp -r "$out" "./$sha"
+          git add "$sha"
+          git commit -qm "Design check results for $sha"
+          git push -q origin HEAD:design/results

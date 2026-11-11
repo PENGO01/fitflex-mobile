@@ -65,49 +65,52 @@ class FFTokens {
   static const Color warning700 = Color(0xFFB54708);
 
   // ── Foreground / text ── (dark-mode values)
-  static const Color fgPrimary = Color(0xFFF1F5F9);
-  static const Color fgSecondary = Color(0xFFCBD5E1);
-  static const Color fgTertiary = Color(0xFFAAB4C4);
-  static const Color fgQuaternary = Color(0xFF94A3B8);
-  static const Color fgDisabled = Color(0xFF55677A);
-  static const Color fgBrand = Color(0xFF17B26A);
+  static const Color fgPrimary = Color(0xFFF4F5F2);
+  static const Color fgSecondary = Color(0xFFD5DAD6);
+  static const Color fgTertiary = Color(0xFFBAC1BC);
+  static const Color fgQuaternary = Color(0xFFA3ABA6);
+  static const Color fgDisabled = Color(0xFF5E6662);
+  static const Color fgBrand = Color(0xFFC8F04A);
 
   // Legacy aliases
   static const Color text = fgPrimary;
   static const Color textMuted = fgQuaternary;
 
   // ── Background / surface ── (dark-mode values)
-  static const Color bgPrimary = Color(0xFF020617);
-  static const Color bgSecondary = Color(0xFF0F172A);
-  static const Color bgTertiary = Color(0xFF0F172A);
+  static const Color bgPrimary = Color(0xFF090A0A);
+  static const Color bgSecondary = Color(0xFF151716);
+  static const Color bgTertiary = Color(0xFF1F2221);
 
   // Legacy aliases
   static const Color surface = bgPrimary;
   static const Color surface2 = bgSecondary;
 
   // Form-control boundaries, >= 3:1 against their surface (WCAG 1.4.11).
-  static const Color inputBorderLight = Color(0xFF858D9D);
-  static const Color inputBorderDark = Color(0xFF64748B);
+  static const Color inputBorderLight = Color(0xFF7F8A84);
+  static const Color inputBorderDark = Color(0xFF6E7672);
 
   // ── Borders ── (dark-mode values)
-  static const Color borderPrimary = Color(0xFF1E293B);
-  static const Color borderSecondary = Color(0xFF1E293B);
+  static const Color borderPrimary = Color(0xFF2A2E2C);
+  static const Color borderSecondary = Color(0xFF2A2E2C);
 
   // Legacy alias
   static const Color border = borderSecondary;
 
   // ── Gray scale ── (dark-mode values)
-  static const Color gray100 = Color(0xFF162438);
-  static const Color gray200 = Color(0xFF1F3350);
-  static const Color gray500 = Color(0xFF8899AA);
-  static const Color gray700 = Color(0xFFCDD5DF);
+  static const Color gray100 = Color(0xFF1F2221);
+  static const Color gray200 = Color(0xFF2A2E2C);
+  static const Color gray500 = Color(0xFF8A928D);
+  static const Color gray700 = Color(0xFFD5DAD6);
 
   // ── Radii ──
   static const double radiusXs = 6;
   static const double radiusSm = 8;
   static const double radiusMd = 12;
   static const double radiusLg = 16;
-  static const double radiusXl = 24;
+  static const double radiusXl = 20;
+
+  /// Hero cards (the pass) and sheet tops.
+  static const double radius2xl = 24;
   static const double radiusFull = 999;
 
   // ── Spacing ──
@@ -167,12 +170,22 @@ class FFTokens {
     ),
   ];
 
-  // ── Dark mode surfaces (login-flow screens) ──
-  // FitFlex Africa design system: slate-950 canvas, slate-900 cards,
-  // slate-800 hairline borders.
-  static const Color darkBg = Color(0xFF020617);
-  static const Color darkSurface = Color(0xFF0F172A);
-  static const Color darkBorder = Color(0xFF1E293B);
+  // ── Dark mode surfaces ──
+  // Light system (docs/design/light-system): a near-black page, charcoal
+  // cards, a lighter "raised" step for chips and image tiles, and a hairline
+  // used only between list rows.
+  static const Color darkBg = Color(0xFF090A0A);
+  static const Color darkSurface = Color(0xFF151716);
+  static const Color darkRaised = Color(0xFF1F2221);
+  static const Color darkBorder = Color(0xFF2A2E2C);
+
+  // ── Light mode surfaces (light system) ──
+  // A sage page, white cards, a raised step for chips and image tiles inside
+  // cards, and forest ink for text and the primary fill.
+  static const Color lightGround = Color(0xFFF1F3EE);
+  static const Color lightRaised = Color(0xFFEEF1EA);
+  static const Color lightLine = Color(0xFFE3E7E0);
+  static const Color ink = Color(0xFF0E2A22);
 
   // ── Vibrant brand green (dark-mode CTA + selection state) ──
   static const Color brandVibrant = Color(0xFF17B26A);
@@ -181,7 +194,7 @@ class FFTokens {
   // Volt is the member-app accent on the Pulse (dark) theme: primary CTAs,
   // selection and focus. Always pair it with [onVolt] text (15.4:1).
   static const Color volt = Color(0xFFC8F04A);
-  static const Color onVolt = Color(0xFF020617);
+  static const Color onVolt = ink; // 11.7:1 on Volt
   // Fuel is the warm "act soon" accent (expiring passes, streak heat).
   // [fuel] for light surfaces, [fuelOnDark] for text/icons on dark.
   static const Color fuel = Color(0xFFB8452C);
@@ -199,15 +212,15 @@ class FFTokens {
   static const Color qrBackground = Color(0xFFFFFFFF);
 
   // ── Map markers ──
-  // Pins sit on light map tiles in both themes; brand-600 green (#067647)
-  // is >= 5:1 on white/near-white tiles. Paired with a white halo.
-  static const Color mapPin = brand500;
+  // Pins sit on light map tiles in both themes; forest ink is >= 13:1 on
+  // white/near-white tiles. Paired with a white halo.
+  static const Color mapPin = ink;
   static const Color mapPinHalo = Color(0xFFFFFFFF);
 
   // ── On-dark text ──
-  static const Color darkFgPrimary = Color(0xFFF1F5F9); // slate-100
-  static const Color darkFgSecondary = Color(0xFFCBD5E1); // slate-300
-  static const Color darkFgMuted = Color(0xFF94A3B8); // slate-400
+  static const Color darkFgPrimary = Color(0xFFF4F5F2); // 18.1:1 on darkBg
+  static const Color darkFgSecondary = Color(0xFFD5DAD6);
+  static const Color darkFgMuted = Color(0xFFA3ABA6); // 7.7:1 on darkSurface
 
   // ── Photo hero (docs/design/photo-hero-screens.md §3.3, §5) ──
   // The hero is an always-dark island: a photo under a slate-950 scrim with
@@ -308,7 +321,7 @@ class FFTokens {
   static Color get heroChipFuelFill => heroScrim.withValues(alpha: 0.4);
 
   /// Shown before the photo decodes, under high contrast and on failure.
-  static const Color heroPlaceholder = Color(0xFF0B192C);
+  static const Color heroPlaceholder = Color(0xFF151716);
 
   /// Partner logo plate on a band (spec §40.2): 40 tall, at most 120 wide,
   /// 6px side padding, the logo inside 108 x 28.
@@ -364,13 +377,11 @@ class FFTokens {
   static const Color roleVendor = Color(0xFFA855F7);
 
   // ── Muted text on light grounds ──
-  // slate-600: 7.0:1 on the #EEF2F7 page, 7.6:1 on white.
-  static const Color lightFgMuted = Color(0xFF475569);
+  // 5.0:1 on the sage page, 5.6:1 on white.
+  static const Color lightFgMuted = Color(0xFF5B6B64);
 
   /// Muted secondary text (struck-through prices, hints) for the current
-  /// theme: slate-600 on light, slate-400 on dark (6.96:1 on slate-900).
-  /// The themes leave `onSurfaceVariant` unset, so it falls back to the
-  /// full-strength text colour; use this instead.
+  /// theme. Matches `colorScheme.onSurfaceVariant` in both themes.
   static Color mutedText(BuildContext context) =>
       Theme.of(context).brightness == Brightness.dark
       ? darkFgMuted
@@ -402,12 +413,25 @@ WidgetStateProperty<BorderSide?> ffFocusRing(Color color) =>
 /// Focus ring colour on the dark ground (slate-100 on slate-950: 17:1).
 const Color ffFocusRingDark = FFTokens.darkFgPrimary;
 
-/// Focus ring colour on the light ground (slate-900 on #EEF2F7: 15:1).
-const Color ffFocusRingLight = Color(0xFF0F172A);
+/// Focus ring colour on the light ground (forest ink on sage: 13.7:1).
+const Color ffFocusRingLight = FFTokens.ink;
+
+/// Shared shapes of the light system: every button and chip is a pill.
+const OutlinedBorder _ffPill = StadiumBorder();
+
+/// Button label: sentence case, semibold, no extra tracking.
+const TextStyle _ffButtonLabel = TextStyle(
+  fontFamily: FFTokens.fontSans,
+  fontWeight: FontWeight.w600,
+  fontSize: 15,
+  letterSpacing: 0,
+);
 
 ThemeData buildDarkTheme() {
   const bg = FFTokens.darkBg;
   const surface = FFTokens.darkSurface;
+  const raised = FFTokens.darkRaised;
+  const muted = FFTokens.darkFgMuted;
   const onSurface = FFTokens.darkFgPrimary;
   const primary = FFTokens.volt;
   const bord = FFTokens.darkBorder;
@@ -425,9 +449,10 @@ ThemeData buildDarkTheme() {
       onSecondary: FFTokens.onVolt,
       surface: surface,
       onSurface: onSurface,
-      surfaceContainerHighest: surface,
-      surfaceContainerLow: Color(0xFF0F1E2E),
-      outlineVariant: Color(0xFF1E293B),
+      onSurfaceVariant: muted,
+      surfaceContainerHighest: raised,
+      surfaceContainerLow: Color(0xFF121413),
+      outlineVariant: bord,
       outline: bord,
       error: FFTokens.errorOnDark,
       onError: Colors.black,
@@ -548,38 +573,42 @@ ThemeData buildDarkTheme() {
     navigationBarTheme: NavigationBarThemeData(
       backgroundColor: surface,
       elevation: 0,
+      height: 72,
       surfaceTintColor: Colors.transparent,
-      indicatorColor: primary.withValues(alpha: 0.18),
+      // The selected tab sits in a Volt pill in both themes.
+      indicatorColor: FFTokens.volt,
+      indicatorShape: _ffPill,
       iconTheme: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.selected)) {
-          return const IconThemeData(color: primary);
+          return const IconThemeData(color: FFTokens.onVolt);
         }
-        return const IconThemeData(color: FFTokens.darkFgMuted);
+        return const IconThemeData(color: muted);
       }),
       labelTextStyle: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.selected)) {
           return const TextStyle(
             fontFamily: FFTokens.fontSans,
-            color: primary,
+            color: onSurface,
             fontSize: 11,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w700,
           );
         }
         return const TextStyle(
           fontFamily: FFTokens.fontSans,
-          color: FFTokens.darkFgMuted,
+          color: muted,
           fontSize: 11,
+          fontWeight: FontWeight.w500,
         );
       }),
     ),
     // ── Card ──────────────────────────────────────────────────────────────────
+    // White (light) or charcoal (dark) on the page; no border, no shadow.
     cardTheme: CardThemeData(
       color: surface,
       elevation: 0,
       surfaceTintColor: Colors.transparent,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(FFTokens.radiusXl),
-        side: const BorderSide(color: bord),
       ),
     ),
     // ── Buttons ───────────────────────────────────────────────────────────────
@@ -588,20 +617,18 @@ ThemeData buildDarkTheme() {
         backgroundColor: primary,
         foregroundColor: FFTokens.onVolt,
         // Disabled sits on the card colour, never grey-on-Volt.
-        disabledBackgroundColor: surface,
+        disabledBackgroundColor: raised,
         disabledForegroundColor: FFTokens.darkFgMuted,
         // No colour tween: otherwise the label fades grey -> onVolt over
         // Volt for 200ms when a button becomes enabled.
         animationDuration: Duration.zero,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(FFTokens.radiusMd),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        shape: _ffPill,
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         textStyle: const TextStyle(
           fontFamily: FFTokens.fontSans,
-          fontWeight: FontWeight.w800,
+          fontWeight: FontWeight.w600,
           fontSize: 15,
-          letterSpacing: 0.5,
+          letterSpacing: 0,
         ),
       ).copyWith(side: ffFocusRing(ffFocusRingDark)),
     ),
@@ -618,16 +645,19 @@ ThemeData buildDarkTheme() {
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
-        foregroundColor: FFTokens.darkFgSecondary,
-        side: const BorderSide(color: bord),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(FFTokens.radiusMd),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        foregroundColor: onSurface,
+        side: const BorderSide(color: onSurface, width: 1.5),
+        shape: _ffPill,
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+        textStyle: _ffButtonLabel,
       ),
     ),
     textButtonTheme: TextButtonThemeData(
-      style: TextButton.styleFrom(foregroundColor: primary),
+      style: TextButton.styleFrom(
+        foregroundColor: primary,
+        shape: _ffPill,
+        textStyle: _ffButtonLabel,
+      ),
     ),
     // ── Input ─────────────────────────────────────────────────────────────────
     inputDecorationTheme: InputDecorationTheme(
@@ -645,23 +675,23 @@ ThemeData buildDarkTheme() {
       suffixIconColor: FFTokens.darkFgMuted,
       prefixIconColor: FFTokens.darkFgMuted,
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(FFTokens.radiusMd),
+        borderRadius: BorderRadius.circular(FFTokens.radiusLg),
         borderSide: const BorderSide(color: FFTokens.inputBorderDark),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(FFTokens.radiusMd),
+        borderRadius: BorderRadius.circular(FFTokens.radiusLg),
         borderSide: const BorderSide(color: FFTokens.inputBorderDark),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(FFTokens.radiusMd),
+        borderRadius: BorderRadius.circular(FFTokens.radiusLg),
         borderSide: const BorderSide(color: primary, width: 2),
       ),
       errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(FFTokens.radiusMd),
+        borderRadius: BorderRadius.circular(FFTokens.radiusLg),
         borderSide: const BorderSide(color: FFTokens.errorOnDark),
       ),
       focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(FFTokens.radiusMd),
+        borderRadius: BorderRadius.circular(FFTokens.radiusLg),
         borderSide: const BorderSide(color: FFTokens.errorOnDark, width: 2),
       ),
     ),
@@ -671,7 +701,7 @@ ThemeData buildDarkTheme() {
     // colour), so an empty bar still reads as a bar.
     progressIndicatorTheme: const ProgressIndicatorThemeData(
       color: primary,
-      linearTrackColor: Color(0xFF334155),
+      linearTrackColor: Color(0xFF3A3F3C),
     ),
     iconTheme: const IconThemeData(color: FFTokens.darkFgMuted),
     listTileTheme: const ListTileThemeData(
@@ -679,15 +709,22 @@ ThemeData buildDarkTheme() {
       iconColor: FFTokens.darkFgMuted,
       tileColor: surface,
     ),
+    // Pill chips with a hairline. Selected chips are Volt with ink text.
     chipTheme: ChipThemeData(
       backgroundColor: surface,
-      selectedColor: primary.withValues(alpha: 0.18),
+      selectedColor: FFTokens.volt,
       side: const BorderSide(color: bord),
-      labelStyle: const TextStyle(
+      shape: _ffPill,
+      labelStyle: TextStyle(
         fontFamily: FFTokens.fontSans,
-        color: onSurface,
+        fontWeight: FontWeight.w500,
+        color: WidgetStateColor.resolveWith(
+          (states) => states.contains(WidgetState.selected)
+              ? FFTokens.onVolt
+              : onSurface,
+        ),
       ),
-      checkmarkColor: primary,
+      checkmarkColor: FFTokens.onVolt,
     ),
     snackBarTheme: SnackBarThemeData(
       backgroundColor: surface,
@@ -697,24 +734,29 @@ ThemeData buildDarkTheme() {
       ),
       actionTextColor: primary,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(FFTokens.radiusMd),
+        borderRadius: BorderRadius.circular(FFTokens.radiusLg),
       ),
       behavior: SnackBarBehavior.floating,
     ),
+    // Sheets and dialogs use the page colour, so white or charcoal cards
+    // inside them keep their edges.
     bottomSheetTheme: const BottomSheetThemeData(
-      backgroundColor: surface,
+      backgroundColor: bg,
       surfaceTintColor: Colors.transparent,
+      dragHandleColor: muted,
       shape: RoundedRectangleBorder(
+        side: BorderSide(color: bord),
         borderRadius: BorderRadius.vertical(
-          top: Radius.circular(FFTokens.radiusXl),
+          top: Radius.circular(FFTokens.radius2xl + 4),
         ),
       ),
     ),
     dialogTheme: DialogThemeData(
-      backgroundColor: surface,
+      backgroundColor: bg,
       surfaceTintColor: Colors.transparent,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(FFTokens.radiusXl),
+        side: BorderSide(color: bord),
+        borderRadius: BorderRadius.circular(FFTokens.radius2xl + 4),
       ),
       titleTextStyle: const TextStyle(
         fontFamily: FFTokens.fontSans,
@@ -756,14 +798,15 @@ ThemeData buildDarkTheme() {
 }
 
 ThemeData buildTheme() {
-  // ── Light-mode palette ──
-  const bg = Color(0xFFEEF2F7);
+  // ── Light-mode palette (light system) ──
+  const bg = FFTokens.lightGround;
   const surface = Colors.white;
-  const onSurface = Color(0xFF0F172A);
-  const primary = FFTokens.brand500; // #067647, 5.7:1 on white
+  const onSurface = FFTokens.ink; // 13.7:1 on the page, 15.3:1 on white
+  const primary = FFTokens.ink; // primary fill: forest ink, white text
   const onPrimary = Colors.white;
-  const bord = Color(0xFFE2E8F0);
-  const muted = Color(0xFF64748B);
+  const bord = FFTokens.lightLine;
+  const raised = FFTokens.lightRaised;
+  const muted = FFTokens.lightFgMuted; // 5.0:1 on the page
 
   return ThemeData(
     useMaterial3: true,
@@ -778,9 +821,10 @@ ThemeData buildTheme() {
       onSecondary: onPrimary,
       surface: surface,
       onSurface: onSurface,
-      surfaceContainerHighest: surface,
-      surfaceContainerLow: Color(0xFFF2F4F7),
-      outlineVariant: Color(0xFFE2E8F0),
+      onSurfaceVariant: muted,
+      surfaceContainerHighest: raised,
+      surfaceContainerLow: bg,
+      outlineVariant: bord,
       outline: bord,
       error: FFTokens.danger,
       onError: Colors.white,
@@ -885,7 +929,7 @@ ThemeData buildTheme() {
     ),
     // ── App bar ───────────────────────────────────────────────────────────────
     appBarTheme: const AppBarTheme(
-      backgroundColor: surface,
+      backgroundColor: bg,
       foregroundColor: onSurface,
       elevation: 0,
       surfaceTintColor: Colors.transparent,
@@ -901,11 +945,14 @@ ThemeData buildTheme() {
     navigationBarTheme: NavigationBarThemeData(
       backgroundColor: surface,
       elevation: 0,
+      height: 72,
       surfaceTintColor: Colors.transparent,
-      indicatorColor: FFTokens.brand50,
+      // The selected tab sits in a Volt pill in both themes.
+      indicatorColor: FFTokens.volt,
+      indicatorShape: _ffPill,
       iconTheme: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.selected)) {
-          return const IconThemeData(color: primary);
+          return const IconThemeData(color: FFTokens.onVolt);
         }
         return const IconThemeData(color: muted);
       }),
@@ -913,26 +960,27 @@ ThemeData buildTheme() {
         if (states.contains(WidgetState.selected)) {
           return const TextStyle(
             fontFamily: FFTokens.fontSans,
-            color: primary,
+            color: onSurface,
             fontSize: 11,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w700,
           );
         }
         return const TextStyle(
           fontFamily: FFTokens.fontSans,
           color: muted,
           fontSize: 11,
+          fontWeight: FontWeight.w500,
         );
       }),
     ),
     // ── Card ──────────────────────────────────────────────────────────────────
+    // White (light) or charcoal (dark) on the page; no border, no shadow.
     cardTheme: CardThemeData(
       color: surface,
       elevation: 0,
       surfaceTintColor: Colors.transparent,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(FFTokens.radiusXl),
-        side: const BorderSide(color: bord),
       ),
     ),
     // ── Buttons ───────────────────────────────────────────────────────────────
@@ -940,17 +988,15 @@ ThemeData buildTheme() {
       style: FilledButton.styleFrom(
         backgroundColor: primary,
         foregroundColor: onPrimary,
-        disabledBackgroundColor: const Color(0xFFE4E7EC),
+        disabledBackgroundColor: bord,
         disabledForegroundColor: muted,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(FFTokens.radiusMd),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        shape: _ffPill,
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         textStyle: const TextStyle(
           fontFamily: FFTokens.fontSans,
-          fontWeight: FontWeight.w800,
+          fontWeight: FontWeight.w600,
           fontSize: 15,
-          letterSpacing: 0.5,
+          letterSpacing: 0,
           color: onPrimary,
         ),
       ).copyWith(side: ffFocusRing(ffFocusRingLight)),
@@ -961,15 +1007,18 @@ ThemeData buildTheme() {
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
         foregroundColor: onSurface,
-        side: const BorderSide(color: bord),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(FFTokens.radiusMd),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        side: const BorderSide(color: onSurface, width: 1.5),
+        shape: _ffPill,
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+        textStyle: _ffButtonLabel,
       ),
     ),
     textButtonTheme: TextButtonThemeData(
-      style: TextButton.styleFrom(foregroundColor: primary),
+      style: TextButton.styleFrom(
+        foregroundColor: primary,
+        shape: _ffPill,
+        textStyle: _ffButtonLabel,
+      ),
     ),
     // ── Input ─────────────────────────────────────────────────────────────────
     inputDecorationTheme: InputDecorationTheme(
@@ -984,23 +1033,23 @@ ThemeData buildTheme() {
       suffixIconColor: muted,
       prefixIconColor: muted,
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(FFTokens.radiusMd),
+        borderRadius: BorderRadius.circular(FFTokens.radiusLg),
         borderSide: const BorderSide(color: FFTokens.inputBorderLight),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(FFTokens.radiusMd),
+        borderRadius: BorderRadius.circular(FFTokens.radiusLg),
         borderSide: const BorderSide(color: FFTokens.inputBorderLight),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(FFTokens.radiusMd),
+        borderRadius: BorderRadius.circular(FFTokens.radiusLg),
         borderSide: const BorderSide(color: primary, width: 2),
       ),
       errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(FFTokens.radiusMd),
+        borderRadius: BorderRadius.circular(FFTokens.radiusLg),
         borderSide: const BorderSide(color: FFTokens.danger),
       ),
       focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(FFTokens.radiusMd),
+        borderRadius: BorderRadius.circular(FFTokens.radiusLg),
         borderSide: const BorderSide(color: FFTokens.danger, width: 2),
       ),
     ),
@@ -1010,7 +1059,7 @@ ThemeData buildTheme() {
     // colour), so an empty bar still reads as a bar.
     progressIndicatorTheme: const ProgressIndicatorThemeData(
       color: primary,
-      linearTrackColor: Color(0xFFCBD5E1),
+      linearTrackColor: Color(0xFFD3D9D0),
     ),
     iconTheme: const IconThemeData(color: muted),
     listTileTheme: const ListTileThemeData(
@@ -1018,15 +1067,22 @@ ThemeData buildTheme() {
       iconColor: muted,
       tileColor: surface,
     ),
+    // Pill chips with a hairline. Selected chips are Volt with ink text.
     chipTheme: ChipThemeData(
       backgroundColor: surface,
-      selectedColor: FFTokens.brand50,
+      selectedColor: FFTokens.volt,
       side: const BorderSide(color: bord),
-      labelStyle: const TextStyle(
+      shape: _ffPill,
+      labelStyle: TextStyle(
         fontFamily: FFTokens.fontSans,
-        color: onSurface,
+        fontWeight: FontWeight.w500,
+        color: WidgetStateColor.resolveWith(
+          (states) => states.contains(WidgetState.selected)
+              ? FFTokens.onVolt
+              : onSurface,
+        ),
       ),
-      checkmarkColor: primary,
+      checkmarkColor: FFTokens.onVolt,
     ),
     snackBarTheme: SnackBarThemeData(
       backgroundColor: onSurface,
@@ -1034,26 +1090,31 @@ ThemeData buildTheme() {
         fontFamily: FFTokens.fontSans,
         color: Colors.white,
       ),
-      actionTextColor: FFTokens.brand200,
+      actionTextColor: FFTokens.volt,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(FFTokens.radiusMd),
+        borderRadius: BorderRadius.circular(FFTokens.radiusLg),
       ),
       behavior: SnackBarBehavior.floating,
     ),
+    // Sheets and dialogs use the page colour, so white or charcoal cards
+    // inside them keep their edges.
     bottomSheetTheme: const BottomSheetThemeData(
-      backgroundColor: surface,
+      backgroundColor: bg,
       surfaceTintColor: Colors.transparent,
+      dragHandleColor: muted,
       shape: RoundedRectangleBorder(
+        side: BorderSide.none,
         borderRadius: BorderRadius.vertical(
-          top: Radius.circular(FFTokens.radiusXl),
+          top: Radius.circular(FFTokens.radius2xl + 4),
         ),
       ),
     ),
     dialogTheme: DialogThemeData(
-      backgroundColor: surface,
+      backgroundColor: bg,
       surfaceTintColor: Colors.transparent,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(FFTokens.radiusXl),
+        side: BorderSide.none,
+        borderRadius: BorderRadius.circular(FFTokens.radius2xl + 4),
       ),
       titleTextStyle: const TextStyle(
         fontFamily: FFTokens.fontSans,
@@ -1091,5 +1152,44 @@ ThemeData buildTheme() {
         return bord;
       }),
     ),
+  );
+}
+
+/// Theme for the one Volt card on a screen (the member's active pass).
+///
+/// The card looks the same in light and dark mode: Volt fill, forest-ink
+/// text (11.7:1), muted text 7.5:1, an ink primary button with white text,
+/// and status badges as ink pills. Wrap the card in
+/// `Theme(data: buildVoltCardTheme(), child: ...)` and build its content
+/// with the inner context.
+ThemeData buildVoltCardTheme() {
+  const ink = FFTokens.ink;
+  const inkMuted = Color(0xFF2F4A28); // 7.5:1 on Volt
+  final base = buildTheme();
+  const inkPill = FFToneColors(
+    bg: ink,
+    fg: Colors.white,
+    border: ink,
+    dot: FFTokens.volt,
+  );
+  return base.copyWith(
+    colorScheme: base.colorScheme.copyWith(
+      surface: FFTokens.volt,
+      onSurface: ink,
+      onSurfaceVariant: inkMuted,
+      primary: ink,
+      onPrimary: Colors.white,
+      outline: ink.withValues(alpha: 0.24),
+      outlineVariant: ink.withValues(alpha: 0.16),
+    ),
+    textTheme: base.textTheme.apply(bodyColor: ink, displayColor: ink),
+    extensions: <ThemeExtension<dynamic>>[
+      FFToneTheme.light.copyWith(
+        brand: inkPill,
+        success: inkPill,
+        neutral: inkPill,
+        gray: inkPill,
+      ),
+    ],
   );
 }

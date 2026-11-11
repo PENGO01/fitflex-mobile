@@ -39,8 +39,7 @@ class FFActionTile extends StatelessWidget {
               height: FFTokens.iconBox,
               decoration: BoxDecoration(
                 color: theme.colorScheme.surfaceContainerHighest,
-                border: Border.all(color: theme.colorScheme.outline),
-                borderRadius: BorderRadius.circular(FFTokens.radiusLg),
+                borderRadius: BorderRadius.circular(FFTokens.radiusFull),
               ),
               child: Icon(
                 icon,

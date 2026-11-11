@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import '../design_tokens.dart';
 
-/// Surface card matching portal's Card component.
+/// Surface card: white on the sage page (light), charcoal on black (dark).
+/// Light system: radius 20, no border, no shadow.
 class FFCard extends StatelessWidget {
   const FFCard({super.key, required this.child, this.padding, this.margin});
 
@@ -17,7 +18,6 @@ class FFCard extends StatelessWidget {
       child: Material(
         color: theme.colorScheme.surface,
         shape: RoundedRectangleBorder(
-          side: BorderSide(color: theme.colorScheme.outlineVariant),
           borderRadius: BorderRadius.circular(FFTokens.radiusXl),
         ),
         clipBehavior: Clip.antiAlias,
