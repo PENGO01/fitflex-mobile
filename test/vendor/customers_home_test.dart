@@ -282,7 +282,11 @@ void main() {
     for (final k in keys) {
       expect(sw, contains(k), reason: k);
       // Same on purpose: amounts, day ranges and "A–Z".
-      if (const {'vendor.customers.sort.name'}.contains(k)) {
+      // Sale extras: "PDF" is "PDF" in both languages (spec §7).
+      if (const {
+        'vendor.customers.sort.name',
+        'vendor.receipt.asPdf',
+      }.contains(k)) {
         continue;
       }
       expect(

@@ -5028,6 +5028,53 @@ class FFLocale extends ChangeNotifier {
       'vendor.pos.referenceOptional': 'Reference (optional)',
       'vendor.pos.referenceHint': 'From the payment SMS or card slip.',
       'vendor.pos.referenceRequired': 'Enter the transaction reference.',
+      // Sale extras (docs/design/vendor-sale-extras-1110.md §7).
+      'vendor.pos.referenceHintCash':
+          "Slip or receipt number (not the customer's phone).",
+      'vendor.pos.a11y.referenceFor': 'Reference (optional), {method}',
+      'vendor.pos.cust.section': 'Customer (optional)',
+      'vendor.pos.cust.sectionA11y': 'Customer details, optional',
+      'vendor.pos.cust.empty': 'Add name, mobile or type',
+      'vendor.pos.cust.type': 'Customer type',
+      'vendor.customerType.new': 'New',
+      'vendor.customerType.returning': 'Returning',
+      'vendor.customerType.walk_in': 'Walk-in',
+      'vendor.customerType.online': 'Online',
+      'vendor.customerType.other': 'Other',
+      'vendor.pos.cust.name': 'Customer name',
+      'vendor.pos.cust.mobile': 'Mobile number',
+      'vendor.pos.cust.mobileHint': 'e.g. 0712 345 678',
+      'vendor.pos.cust.nameNeeded': 'Add a name to save this number.',
+      'vendor.pos.cust.nameLength': 'Name must be 2 to 80 characters.',
+      'vendor.pos.cust.matched': 'Already a customer: {name}',
+      'vendor.pos.cust.manyMatches':
+          '{n} customers have this number. Search customers to choose one.',
+      'vendor.pos.cust.search': 'Search customers',
+      'vendor.pos.cust.offline':
+          'Name and mobile need a connection. You can still choose the customer type.',
+      'vendor.pos.cust.offlineTyped':
+          "No connection: the name and mobile you typed won't be saved with this sale. You can still choose the customer type.",
+      'vendor.pos.cust.saveFailed':
+          "Couldn't save the customer. Try again, or complete the sale without them.",
+      'vendor.pos.cust.completeWithout': 'Complete without customer',
+      'vendor.sales.customerTypeLine': 'Customer type: {type}',
+      'vendor.receipt.asImage': 'Image',
+      'vendor.receipt.asPdf': 'PDF',
+      'vendor.receipt.downloadImage': 'Download image',
+      'vendor.receipt.a11y.image': 'Share receipt {number} as an image',
+      'vendor.receipt.a11y.pdf': 'Share receipt {number} as a PDF',
+      'vendor.receipt.a11y.downloadImage':
+          'Download receipt {number} as an image',
+      'vendor.receipt.preparing': 'Preparing…',
+      'vendor.receipt.fileFailed':
+          "Couldn't make the file. Try again, or share as text.",
+      'vendor.receipt.tooLongImage':
+          'This receipt is too long for an image. Use PDF.',
+      'vendor.receipt.downloaded': 'Downloaded',
+      'vendor.documents.needsNumberFiles':
+          'This sale has no receipt number yet. You can share it as an image, a PDF or text.',
+      'vendor.documents.offlineFiles':
+          'Links need an internet connection. Image, PDF and text work offline.',
       'vendor.pos.addPayment': 'Add another payment',
       'vendor.pos.removePayment': 'Remove {method} payment',
       'vendor.pos.paymentRow': 'Payment {n}',
@@ -13252,6 +13299,53 @@ class FFLocale extends ChangeNotifier {
       'vendor.pos.referenceOptional': 'Namba ya muamala (si lazima)',
       'vendor.pos.referenceHint': 'Kutoka SMS ya malipo au risiti ya kadi.',
       'vendor.pos.referenceRequired': 'Weka namba ya muamala.',
+      // Sale extras (vendor-sale-extras-1110 §7). RASIMU: zinasubiri
+      // mapitio ya mzawa wa Kiswahili.
+      'vendor.pos.referenceHintCash':
+          'Namba ya risiti au kumbukumbu yako (si namba ya simu ya mteja).',
+      'vendor.pos.a11y.referenceFor': 'Namba ya muamala (si lazima), {method}',
+      'vendor.pos.cust.section': 'Mteja (si lazima)',
+      'vendor.pos.cust.sectionA11y': 'Taarifa za mteja, si lazima',
+      'vendor.pos.cust.empty': 'Ongeza jina, simu au aina',
+      'vendor.pos.cust.type': 'Aina ya mteja',
+      'vendor.customerType.new': 'Mpya',
+      'vendor.customerType.returning': 'Anayerudi',
+      'vendor.customerType.walk_in': 'Wa dukani',
+      'vendor.customerType.online': 'Mtandaoni',
+      'vendor.customerType.other': 'Nyingine',
+      'vendor.pos.cust.name': 'Jina la mteja',
+      'vendor.pos.cust.mobile': 'Namba ya simu',
+      'vendor.pos.cust.mobileHint': 'mf. 0712 345 678',
+      'vendor.pos.cust.nameNeeded': 'Weka jina ili kuhifadhi namba hii.',
+      'vendor.pos.cust.nameLength': 'Jina liwe na herufi 2 hadi 80.',
+      'vendor.pos.cust.matched': 'Tayari ni mteja: {name}',
+      'vendor.pos.cust.manyMatches':
+          'Wateja {n} wana namba hii. Tafuta wateja ili uchague mmoja.',
+      'vendor.pos.cust.search': 'Tafuta wateja',
+      'vendor.pos.cust.offline':
+          'Jina na namba ya simu vinahitaji intaneti. Bado unaweza kuchagua aina ya mteja.',
+      'vendor.pos.cust.offlineTyped':
+          'Hakuna intaneti: jina na namba ya simu ulizoandika havitahifadhiwa kwenye mauzo haya. Bado unaweza kuchagua aina ya mteja.',
+      'vendor.pos.cust.saveFailed':
+          'Imeshindikana kuhifadhi mteja. Jaribu tena, au kamilisha mauzo bila mteja.',
+      'vendor.pos.cust.completeWithout': 'Kamilisha bila mteja',
+      'vendor.sales.customerTypeLine': 'Aina ya mteja: {type}',
+      'vendor.receipt.asImage': 'Picha',
+      'vendor.receipt.asPdf': 'PDF',
+      'vendor.receipt.downloadImage': 'Pakua picha',
+      'vendor.receipt.a11y.image': 'Tuma risiti {number} kama picha',
+      'vendor.receipt.a11y.pdf': 'Tuma risiti {number} kama PDF',
+      'vendor.receipt.a11y.downloadImage': 'Pakua risiti {number} kama picha',
+      'vendor.receipt.preparing': 'Inaandaa…',
+      'vendor.receipt.fileFailed':
+          'Imeshindikana kutengeneza faili. Jaribu tena, au tuma kama maandishi.',
+      'vendor.receipt.tooLongImage':
+          'Risiti hii ni ndefu mno kwa picha. Tumia PDF.',
+      'vendor.receipt.downloaded': 'Imepakuliwa',
+      'vendor.documents.needsNumberFiles':
+          'Mauzo haya bado hayana namba ya risiti. Unaweza kuyatuma kama picha, PDF au maandishi.',
+      'vendor.documents.offlineFiles':
+          'Viungo vinahitaji intaneti. Picha, PDF na maandishi vinafanya kazi bila intaneti.',
       'vendor.pos.addPayment': 'Ongeza malipo mengine',
       'vendor.pos.removePayment': 'Ondoa malipo ya {method}',
       'vendor.pos.paymentRow': 'Malipo {n}',

@@ -7,6 +7,7 @@ import '../../../app_scope.dart';
 import '../../../shared/i18n.dart';
 import '../customers/customers_widgets.dart' show customerIdPattern;
 import '../sales/receipt_data.dart';
+import '../sales/receipt_files.dart';
 import '../stock/stock_options.dart';
 import 'document_models.dart';
 import 'document_share_sheet.dart';
@@ -40,6 +41,8 @@ Future<void> openSaleShareSheet(
   required ReceiptData data,
   required String lang,
   required VendorTools tools,
+  String? tin,
+  String? vrn,
 }) async {
   final locale = FFLocaleScope.of(context);
   final phone = data.queued
@@ -59,6 +62,15 @@ Future<void> openSaleShareSheet(
     lang: lang,
     queued: data.queued || data.id == null,
     customerPhone: phone,
+    // Sale extras #3 (Q-10): Image, and the on-device PDF when queued or
+    // offline, in the sheet's language.
+    receiptFile: (l) => ReceiptFileJob(
+      data: data,
+      lang: l,
+      t: (k) => locale.tIn(l, k),
+      tin: tin,
+      vrn: vrn,
+    ),
     shareText: (l) => receiptShareText(data, (k) => locale.tIn(l, k), l),
     shareSubject: (l) => [
       ?data.business,

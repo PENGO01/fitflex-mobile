@@ -195,6 +195,9 @@ void main() {
       expect(find.text('Payment received by Dar Gear.'), findsOneWidget);
       await tester.tap(find.byKey(const Key('sales-receipt-share')));
       await tester.pumpAndSettle();
+      // Sale extras #3: Share opens Image / PDF / Share as text.
+      await tester.tap(find.byKey(const Key('receipt-share-text')));
+      await tester.pumpAndSettle();
       expect(
         shared.single,
         contains('Provisional receipt, number to follow (ref ABCDEF)'),

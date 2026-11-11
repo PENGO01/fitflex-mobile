@@ -44,6 +44,8 @@ class VendorTools {
     this.importMaxBytes = defaultImportMaxBytes,
     this.importMaxRows = defaultImportMaxRows,
     this.canSeeOrderMoney = false,
+    this.referenceOptional = false,
+    this.saleCustomerDetails = false,
     this.suspended = false,
     this.fromCache = false,
   });
@@ -154,6 +156,24 @@ class VendorTools {
   /// report. Exactly `true`, else hidden.
   final bool canSeeOrderMoney;
 
+  /// Sale extras #1 (VENDOR_SALE_REFERENCE_OPTIONAL): every walk-in sale
+  /// payment row has an optional reference, cash included. Exactly `true`,
+  /// else today's rule (required for mobile money and bank, none for cash).
+  /// Use [saleReferenceOptionalOn] (needs [walkInSales] too).
+  final bool referenceOptional;
+
+  /// Sale extras #2 (VENDOR_SALE_CUSTOMER_DETAILS): the optional Customer
+  /// section in the payment sheet. Exactly `true`, else hidden. Use
+  /// [saleCustomerDetailsOn] (needs [walkInSales] too).
+  final bool saleCustomerDetails;
+
+  /// The sale sheet's references are optional for every method (fail
+  /// closed: a missing key, an older server, or walk-in sales off).
+  bool get saleReferenceOptionalOn => walkInSales && referenceOptional;
+
+  /// The payment sheet shows the Customer section.
+  bool get saleCustomerDetailsOn => walkInSales && saleCustomerDetails;
+
   /// The answer is the one kept on this device (the server could not be
   /// reached): ask again once the connection is back.
   final bool fromCache;
@@ -198,6 +218,8 @@ class VendorTools {
           defaultImportMaxRows,
         ),
         canSeeOrderMoney: options['canSeeOrderMoney'] == true,
+        referenceOptional: options['referenceOptional'] == true,
+        saleCustomerDetails: options['saleCustomerDetails'] == true,
         fromCache: fromCache,
       );
 }

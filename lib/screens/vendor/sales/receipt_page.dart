@@ -16,6 +16,7 @@ import '../documents/document_entry.dart';
 import '../stock/stock_options.dart';
 import 'offline_sale_queue.dart';
 import 'receipt_data.dart';
+import 'receipt_files.dart';
 import 'sales_widgets.dart';
 
 /// Shares [text] through the system share sheet. Replaceable in tests.
@@ -188,16 +189,23 @@ class _SaleReceiptPageState extends State<SaleReceiptPage> {
 
   Future<void> _share(ReceiptData data, String lang) async {
     if (_tools.documents) {
-      return openSaleShareSheet(context, data: data, lang: lang, tools: _tools);
+      return openSaleShareSheet(
+        context,
+        data: data,
+        lang: lang,
+        tools: _tools,
+        tin: _taxIds.tin,
+        vrn: _taxIds.vrn,
+      );
     }
-    final locale = FFLocaleScope.of(context);
-    String t(String key) => locale.tIn(lang, key);
-    final subject = [
-      ?data.business,
-      if (data.number != null && !data.queued)
-        fillIn(t('vendor.pos.receiptNo'), {'number': data.number}),
-    ].join(' ');
-    await shareReceipt(receiptShareText(data, t, lang), subject);
+    // Sale extras #3: Image, PDF (made on the device) and Share as text.
+    await showReceiptShareSheet(
+      context,
+      data: data,
+      lang: lang,
+      tin: _taxIds.tin,
+      vrn: _taxIds.vrn,
+    );
   }
 
   @override

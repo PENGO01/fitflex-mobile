@@ -80,6 +80,7 @@ class ReceiptData {
     this.customerId,
     this.customerName,
     this.customerForgotten = false,
+    this.customerType,
     this.dueDate,
     this.balanceTzs = 0,
     this.balanceReducedTzs = 0,
@@ -131,6 +132,11 @@ class ReceiptData {
   /// The app buyer deleted their FitFlex account (the server's
   /// `customer.forgotten`). A null name alone never means deleted.
   final bool customerForgotten;
+
+  /// Sale extras (Q-9): the customer type stored on the sale (one of
+  /// [saleCustomerTypes]) or null. Shown on the sale detail only: never on
+  /// the receipt, its text, image or PDF.
+  final String? customerType;
 
   /// The i18n key for a customer with no name: "Deleted member" when
   /// forgotten, else "FitFlex member".
@@ -268,6 +274,9 @@ class ReceiptData {
       customerId: _str(person(sale['customer'])?['id']),
       customerName: _str(person(sale['customer'])?['name']),
       customerForgotten: person(sale['customer'])?['forgotten'] == true,
+      customerType: customerTypeKey(sale['customerType']?.toString()) == null
+          ? null
+          : sale['customerType'].toString(),
       dueDate: _str(sale['dueDate']),
       balanceTzs: _int(sale['balanceTzs']),
       balanceReducedTzs: _int(sale['balanceReducedTzs']),

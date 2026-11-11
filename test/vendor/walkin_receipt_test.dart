@@ -48,6 +48,9 @@ void main() {
       expect(find.text(host.tr('vendor.pos.newSale')), findsOneWidget);
       await tester.tap(find.byKey(const Key('sales-receipt-share')));
       await tester.pumpAndSettle();
+      // Sale extras #3: Share opens Image / PDF / Share as text.
+      await tester.tap(find.byKey(const Key('receipt-share-text')));
+      await tester.pumpAndSettle();
       expect(shared.single, startsWith('Dar Gear Risiti R-000001'));
       expect(shared.single, contains('Chenji'));
       await tester.tap(find.byKey(const Key('sales-receipt-done')));

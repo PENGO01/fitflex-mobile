@@ -124,17 +124,19 @@ void main() {
   setUpAll(loadAppFonts);
 
   group('gating', () {
-    apiTest('documents off: Share sends the S3 text, no sheet, no link', (
-      tester,
-      api,
-    ) async {
-      final out = Outside()..install();
-      await pumpReceipt(tester, api, tools: docsOff);
-      await openSheet(tester);
-      expect(find.byKey(const Key('doc-share-copy')), findsNothing);
-      expect(out.shared.single, startsWith('Dar Gear'));
-      expect(api.sent('POST', '/vendor/sales/sal_1/share'), isFalse);
-    });
+    apiTest(
+      'documents off: no S5 sheet, no link; Share as text sends the S3 text',
+      (tester, api) async {
+        final out = Outside()..install();
+        await pumpReceipt(tester, api, tools: docsOff);
+        await openSheet(tester);
+        expect(find.byKey(const Key('doc-share-copy')), findsNothing);
+        // Sale extras #3: the documents-off sheet (Image, PDF, Share as text).
+        await tapVisible(tester, find.byKey(const Key('receipt-share-text')));
+        expect(out.shared.single, startsWith('Dar Gear'));
+        expect(api.sent('POST', '/vendor/sales/sal_1/share'), isFalse);
+      },
+    );
 
     apiTest('documents on: opening and closing the sheet makes no link', (
       tester,

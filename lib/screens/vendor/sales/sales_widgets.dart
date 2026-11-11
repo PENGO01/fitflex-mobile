@@ -333,6 +333,15 @@ class ReceiptView extends StatelessWidget {
                     }),
               key: const Key('sales-receipt-customer'),
             ),
+          // Sale extras (Q-9): the sale detail only, never the receipt.
+          if (audit && customerTypeKey(data.customerType) != null)
+            Text(
+              _fill('vendor.sales.customerTypeLine', {
+                'type': t(customerTypeKey(data.customerType)!),
+              }),
+              key: const Key('sale-detail-customer-type'),
+              style: muted,
+            ),
           if (data.credit)
             Align(
               alignment: AlignmentDirectional.centerStart,

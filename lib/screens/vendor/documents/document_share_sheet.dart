@@ -30,6 +30,7 @@ import '../../../shared/i18n.dart';
 import '../../../shared/network/browser_online.dart';
 import '../../../shared/pdf-open.dart';
 import '../sales/receipt_data.dart' show eatDateTime;
+import '../sales/receipt_files.dart';
 import '../sales/receipt_page.dart' show shareReceipt;
 import '../stock/stock_options.dart' show fillIn;
 import 'document_models.dart';
@@ -110,6 +111,7 @@ Future<void> showDocumentShareSheet(
   required String Function(String lang) shareSubject,
   String? customerPhone,
   bool queued = false,
+  ReceiptFileJob Function(String lang)? receiptFile,
 }) {
   final title = documentTitle(context.tr, doc);
   return showModalBottomSheet<void>(
@@ -132,6 +134,7 @@ Future<void> showDocumentShareSheet(
         customerPhone: customerPhone,
         queued: queued,
         hostContext: context,
+        receiptFile: receiptFile,
       ),
     ),
   );
@@ -160,6 +163,7 @@ class DocumentShareSheet extends StatefulWidget {
     this.customerPhone,
     this.queued = false,
     this.hostContext,
+    this.receiptFile,
   });
 
   final DocumentRef doc;
@@ -172,11 +176,16 @@ class DocumentShareSheet extends StatefulWidget {
   /// The screen under the sheet (a snack after the sheet closes).
   final BuildContext? hostContext;
 
+  /// Sale extras #3 (Q-10): a walk-in sale's receipt made on the device in
+  /// a language. Adds the Image row, and the PDF row falls back to the
+  /// on-device PDF when the sale is queued or the device is offline.
+  final ReceiptFileJob Function(String lang)? receiptFile;
+
   @override
   State<DocumentShareSheet> createState() => _DocumentShareSheetState();
 }
 
-enum _Row { whatsapp, sms, copy, pdf, pdf80, text }
+enum _Row { whatsapp, sms, copy, pdf, pdf80, text, image, localPdf }
 
 class _DocumentShareSheetState extends State<DocumentShareSheet> {
   late String _lang = widget.initialLang == 'sw' ? 'sw' : 'en';
@@ -192,6 +201,10 @@ class _DocumentShareSheetState extends State<DocumentShareSheet> {
   bool _more = false;
   int? _activeCount;
   String? _notice;
+
+  /// Sale extras #3: an on-device file could not be made.
+  bool _fileFailed = false;
+  bool _tooLong = false;
 
   @override
   void initState() {
@@ -409,6 +422,38 @@ class _DocumentShareSheetState extends State<DocumentShareSheet> {
     await shareReceipt(text, widget.shareSubject(_lang));
   }
 
+  /// Sale extras #3: the on-device image or PDF; the sheet closes once it
+  /// has been handed on.
+  Future<void> _file(_Row row) async {
+    final make = widget.receiptFile;
+    if (make == null || _busy != null) return;
+    setState(() {
+      _busy = row;
+      _fileFailed = false;
+      _pdfFailed = false;
+      _notice = null;
+    });
+    try {
+      final job = make(_lang);
+      final out = row == _Row.image
+          ? await shareReceiptImage(context, job)
+          : await shareReceiptPdf(job);
+      if (!mounted) return;
+      final host = widget.hostContext;
+      final downloaded = _t('vendor.receipt.downloaded');
+      Navigator.of(context).pop();
+      if (out == ReceiptFileResult.downloaded && host != null && host.mounted) {
+        FFSnack.info(host, downloaded);
+      }
+    } on ReceiptTooLongForImage {
+      if (mounted) setState(() => _tooLong = true);
+    } catch (_) {
+      if (mounted) setState(() => _fileFailed = true);
+    } finally {
+      if (mounted) setState(() => _busy = null);
+    }
+  }
+
   Future<void> _openLinks() async {
     await showDocumentLinksSheet(context, widget.doc);
     if (mounted) await _loadCount();
@@ -441,10 +486,24 @@ class _DocumentShareSheetState extends State<DocumentShareSheet> {
     final linkRows = idle && !widget.queued && !_offline && !_unavailable;
     final pdfRows = idle && !widget.queued && !_offline;
     final web = DocumentActions.isWeb();
+    final files = widget.receiptFile;
+    // Q-10: queued or offline, the PDF row makes the PDF on the device.
+    final localPdf = files != null && (widget.queued || _offline);
+    final imageTooLong =
+        files != null &&
+        (_tooLong || receiptTooLongForImage(files(_lang).data));
     final reason = widget.queued
-        ? _t('vendor.documents.needsNumber')
+        ? _t(
+            files != null
+                ? 'vendor.documents.needsNumberFiles'
+                : 'vendor.documents.needsNumber',
+          )
         : _offline
-        ? _t('vendor.documents.offline')
+        ? _t(
+            files != null
+                ? 'vendor.documents.offlineFiles'
+                : 'vendor.documents.offline',
+          )
         : null;
     final rows = <Widget>[
       _row(
@@ -481,9 +540,31 @@ class _DocumentShareSheetState extends State<DocumentShareSheet> {
         semantics: _a11y(
           web ? 'vendor.documents.a11y.openPdf' : 'vendor.documents.a11y.pdf',
         ),
-        row: _Row.pdf,
-        onTap: pdfRows ? () => _pdf() : null,
+        row: localPdf ? _Row.localPdf : _Row.pdf,
+        onTap: localPdf
+            ? (idle ? () => _file(_Row.localPdf) : null)
+            : pdfRows
+            ? () => _pdf()
+            : null,
       ),
+      if (files != null)
+        _row(
+          key: 'doc-share-image',
+          icon: Icons.image_outlined,
+          label: _t(
+            web ? 'vendor.receipt.downloadImage' : 'vendor.receipt.asImage',
+          ),
+          semantics: fillIn(
+            _t(
+              web
+                  ? 'vendor.receipt.a11y.downloadImage'
+                  : 'vendor.receipt.a11y.image',
+            ),
+            {'number': receiptA11yNumber(files(_lang).data)},
+          ).trim(),
+          row: _Row.image,
+          onTap: idle && !imageTooLong ? () => _file(_Row.image) : null,
+        ),
       _row(
         key: 'doc-share-text',
         icon: Icons.notes,
@@ -578,6 +659,26 @@ class _DocumentShareSheetState extends State<DocumentShareSheet> {
               ),
             ),
           ],
+          if (imageTooLong) ...[
+            const SizedBox(height: FFTokens.spacingSm),
+            Text(
+              _t('vendor.receipt.tooLongImage'),
+              key: const Key('doc-share-image-too-long'),
+              style: muted,
+            ),
+          ],
+          if (_fileFailed) ...[
+            const SizedBox(height: FFTokens.spacingSm),
+            Semantics(
+              container: true,
+              liveRegion: true,
+              child: FFAlert(
+                key: const Key('doc-share-file-failed'),
+                message: _t('vendor.receipt.fileFailed'),
+                tone: FFAlertTone.error,
+              ),
+            ),
+          ],
           if (_createFailed || _pdfFailed) ...[
             const SizedBox(height: FFTokens.spacingSm),
             Semantics(
@@ -617,7 +718,9 @@ class _DocumentShareSheetState extends State<DocumentShareSheet> {
                 _busy == null
                     ? _notice!
                     : _t(
-                        _busy == _Row.pdf || _busy == _Row.pdf80
+                        _busy == _Row.image || _busy == _Row.localPdf
+                            ? 'vendor.receipt.preparing'
+                            : _busy == _Row.pdf || _busy == _Row.pdf80
                             ? 'vendor.documents.pdfPreparing'
                             : 'vendor.documents.creating',
                       ),

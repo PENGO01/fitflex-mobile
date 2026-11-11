@@ -12,6 +12,7 @@ import '../../../shared/formatters.dart';
 import '../../../shared/i18n.dart';
 import '../customers/customer_models.dart';
 import '../stock/stock_options.dart';
+import 'sale_customer_section.dart';
 import 'sale_models.dart';
 import 'sales_widgets.dart';
 
@@ -119,10 +120,19 @@ class PaymentSheet extends StatefulWidget {
     required this.submit,
     this.onAction,
     this.payLater,
+    this.referenceOptional = false,
+    this.customerDetails,
   });
 
   final int totalTzs;
   final PaySubmit submit;
+
+  /// Sale extras #1 (`tools.walkInSales && tools.referenceOptional`): an
+  /// optional reference on every method, cash included. False: today's rule.
+  final bool referenceOptional;
+
+  /// Sale extras #2: the optional Customer section; null hides it.
+  final SaleCustomerSetup? customerDetails;
 
   /// S4 pay later; null hides it.
   final PayLaterSetup? payLater;
@@ -136,8 +146,26 @@ class PaymentSheet extends StatefulWidget {
 
 class _PaymentSheetState extends State<PaymentSheet> {
   late final List<_Row> _rows = [
-    _Row(PaymentRow(method: 'cash', amountTzs: widget.totalTzs)),
+    _Row(
+      PaymentRow(
+        method: 'cash',
+        amountTzs: widget.totalTzs,
+        referenceOptional: widget.referenceOptional,
+      ),
+    ),
   ];
+
+  /// Sale extras #2: the Customer section's state (typed name and mobile
+  /// in memory only, discarded when the sheet closes).
+  late final SaleCustomerController? _customer = widget.customerDetails == null
+      ? null
+      : (SaleCustomerController(widget.customerDetails!)
+          ..addListener(_onCustomer));
+
+  void _onCustomer() {
+    if (mounted) setState(() {});
+  }
+
   bool _saving = false;
   bool _server = false;
   String? _problem;
@@ -155,6 +183,9 @@ class _PaymentSheetState extends State<PaymentSheet> {
     for (final r in _rows) {
       r.dispose();
     }
+    _customer
+      ?..removeListener(_onCustomer)
+      ..dispose();
     super.dispose();
   }
 
@@ -289,6 +320,14 @@ class _PaymentSheetState extends State<PaymentSheet> {
       _problem = null;
       _server = false;
     });
+    // Sale extras #2 (§2.5): the typed name / mobile become a customer id
+    // first (match or create); only then is the sale sent or queued.
+    final customer = _customer;
+    if (customer != null && !await customer.prepare()) {
+      if (mounted) setState(() => _saving = false);
+      return;
+    }
+    if (!mounted) return;
     final out = await widget.submit(check.toRequest(), queue: queue);
     if (!mounted) return;
     switch (out.kind) {
@@ -378,6 +417,8 @@ class _PaymentSheetState extends State<PaymentSheet> {
                                         _Row(
                                           PaymentRow(
                                             amountTzs: check.remainingTzs,
+                                            referenceOptional:
+                                                widget.referenceOptional,
                                           ),
                                         ),
                                       ),
@@ -396,6 +437,7 @@ class _PaymentSheetState extends State<PaymentSheet> {
                       ),
                     ],
                     ..._payLaterEntry(context, check),
+                    ..._customerSection(context),
                     if (_problem != null) ...[
                       const SizedBox(height: FFTokens.spacingSm),
                       Semantics(
@@ -653,7 +695,15 @@ class _PaymentSheetState extends State<PaymentSheet> {
               onPressed: _saving
                   ? null
                   : () {
-                      setState(() => _rows.add(_Row(PaymentRow())));
+                      setState(
+                        () => _rows.add(
+                          _Row(
+                            PaymentRow(
+                              referenceOptional: widget.referenceOptional,
+                            ),
+                          ),
+                        ),
+                      );
                       _edited();
                     },
             ),
@@ -685,6 +735,7 @@ class _PaymentSheetState extends State<PaymentSheet> {
             ),
           ),
         ],
+        ..._customerSection(context, typeOnly: true),
         if (_problem != null) ...[
           const SizedBox(height: FFTokens.spacingSm),
           Semantics(
@@ -741,6 +792,52 @@ class _PaymentSheetState extends State<PaymentSheet> {
         ),
       ],
     );
+  }
+
+  /// Sale extras #2 (§2.4 item 6): the Customer card, and the "couldn't
+  /// save the customer" alert with Try again / Complete without customer.
+  List<Widget> _customerSection(BuildContext context, {bool typeOnly = false}) {
+    final c = _customer;
+    if (c == null) return const [];
+    return [
+      const SizedBox(height: FFTokens.spacingSm),
+      SaleCustomerSection(controller: c, saving: _saving, typeOnly: typeOnly),
+      if (c.saveFailed && !typeOnly) ...[
+        const SizedBox(height: FFTokens.spacingSm),
+        Semantics(
+          container: true,
+          liveRegion: true,
+          child: FFAlert(
+            key: const Key('pos-cust-save-failed'),
+            message: context.tr('vendor.pos.cust.saveFailed'),
+            tone: FFAlertTone.error,
+          ),
+        ),
+        const SizedBox(height: FFTokens.spacingSm),
+        FFButton(
+          key: const Key('pos-cust-retry'),
+          label: context.tr('common.retry'),
+          fullWidth: true,
+          visualDensity: VisualDensity.standard,
+          onPressed: _saving ? null : () => _complete(),
+        ),
+        const SizedBox(height: FFTokens.spacingSm),
+        FFButton(
+          key: const Key('pos-cust-without'),
+          label: context.tr('vendor.pos.cust.completeWithout'),
+          variant: FFButtonVariant.secondary,
+          fullWidth: true,
+          maxLines: 2,
+          visualDensity: VisualDensity.standard,
+          onPressed: _saving
+              ? null
+              : () {
+                  c.completeWithout();
+                  _complete();
+                },
+        ),
+      ],
+    ];
   }
 
   Widget? _statusLine(BuildContext context, PaymentCheck check) {
@@ -859,7 +956,11 @@ class _PaymentSheetState extends State<PaymentSheet> {
                       onTap: () {
                         if (_saving) return;
                         r.row.method = m;
-                        if (m == 'cash') r.row.reference = '';
+                        // Sale extras #1 (AC-4): with references optional,
+                        // switching to Cash keeps what was typed.
+                        if (m == 'cash' && !widget.referenceOptional) {
+                          r.row.reference = '';
+                        }
                         _edited();
                       },
                     ),
@@ -906,7 +1007,7 @@ class _PaymentSheetState extends State<PaymentSheet> {
                 ],
               ),
             ],
-            if (method != null && !cash) ...[
+            if (method != null && (!cash || widget.referenceOptional)) ...[
               const SizedBox(height: FFTokens.spacingSm),
               FFTextField(
                 key: Key('pos-reference-$index'),
@@ -916,11 +1017,25 @@ class _PaymentSheetState extends State<PaymentSheet> {
                       ? 'vendor.pos.reference'
                       : 'vendor.pos.referenceOptional',
                 ),
-                helperText: context.tr('vendor.pos.referenceHint'),
+                semanticsLabel: widget.referenceOptional
+                    ? fillIn(context.tr('vendor.pos.a11y.referenceFor'), {
+                        'method': context.tr(paymentMethodKey(method)),
+                      })
+                    : null,
+                helperText: context.tr(
+                  cash
+                      ? 'vendor.pos.referenceHintCash'
+                      : 'vendor.pos.referenceHint',
+                ),
                 errorText: showRefError
                     ? context.tr('vendor.pos.referenceRequired')
                     : null,
                 maxLength: maxPaymentReference,
+                // One line: the server refuses control characters (a
+                // pasted newline included).
+                inputFormatters: [
+                  FilteringTextInputFormatter.deny(referenceControlChars),
+                ],
                 textCapitalization: TextCapitalization.characters,
                 enabled: !_saving,
                 onChanged: (v) {

@@ -62,6 +62,9 @@ dependencies:
   share_plus: ^13.3.1
   flutter_contacts: ^2.6.0
   path_provider: ^2.1.5
+  # Receipt PDF made on the device (vendor sale extras, Q-12). Pure Dart;
+  # Inter is embedded (assets/fonts). Pinned: upgrade deliberately.
+  pdf: 3.13.1
 
 dev_dependencies:
   flutter_test:
