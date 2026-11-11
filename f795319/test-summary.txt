@@ -1,0 +1,300 @@
+08:10 +4373 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: list fetch 5 s timeout, then the saved state stays
+08:10 +4374 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: list fetch 5 s timeout, then the saved state stays
+08:10 +4375 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: list fetch 5 s timeout, then the saved state stays
+08:10 +4376 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: list fetch 5 s timeout, then the saved state stays
+08:10 +4377 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: list fetch 5 s timeout, then the saved state stays
+08:11 +4378 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: list fetch 5 s timeout, then the saved state stays
+08:11 +4379 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: list fetch 5 s timeout, then the saved state stays
+08:11 +4380 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: list fetch 5 s timeout, then the saved state stays
+08:12 +4381 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: list fetch 5 s timeout, then the saved state stays
+08:12 +4382 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: list fetch 5 s timeout, then the saved state stays
+08:12 +4383 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: list fetch 5 s timeout, then the saved state stays
+08:12 +4384 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: list fetch 5 s timeout, then the saved state stays
+08:12 +4385 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: list fetch 5 s timeout, then the saved state stays
+08:12 +4386 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: list fetch 5 s timeout, then the saved state stays
+08:12 +4387 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: list fetch 5 s timeout, then the saved state stays
+08:12 +4388 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: list fetch 5 s timeout, then the saved state stays
+08:12 +4389 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: list fetch 5 s timeout, then the saved state stays
+08:13 +4390 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: list fetch version 0 purges every saved photo
+08:13 +4391 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: list fetch a photo no longer published (unpublish) is deleted
+08:13 +4392 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: list fetch a server error or junk keeps what is saved
+08:13 +4393 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: list fetch no sign-in token is sent, to the list or the files
+08:13 +4394 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: downloads declared size over 200 KB: never requested
+08:13 +4395 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: downloads actual size over 200 KB: reading stops, nothing saved
+08:13 +4396 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: downloads Content-Length over 200 KB: refused before reading
+08:13 +4397 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: downloads a corrupt file is deleted and the bundled photo stays
+08:13 +4398 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: downloads a write failure (full disk) falls back and stops
+08:13 +4399 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: downloads at most 1.5 MB a day; the rest comes the next day
+08:13 +4400 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: downloads cache stays under 4 MB, least recently used goes first
+08:13 +4401 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: downloads Data Saver or Low Data Mode: no downloads
+08:13 +4402 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: downloads little free storage: no downloads
+08:13 +4403 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: downloads only the role's slots plus the pre-sign-in screens
+08:13 +4404 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: downloads footer pool only when the footer is on
+08:13 +4405 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: downloads saved files go through a temporary file, then a rename
+08:13 +4406 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: choosing the day's photo per slot; bundled until it is ready
+08:13 +4407 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: choosing footer never shows the top photo's scene (remote data)
+08:13 +4408 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: choosing bundled footer avoids a remote top photo of the same scene
+08:13 +4409 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: choosing all footer photos match the top: bundled footer
+08:13 +4410 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: web no disk; fetched with the same caps, used once it decodes
+08:13 +4411 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: web the browser follows the 307; an allowed final host is used
+08:13 +4412 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: web a final host not allowed: the bytes are never used
+08:13 +4413 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: web the web photo is sized to its box like a phone one
+08:13 +4414 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: redirects (phones) none followed automatically; an allowed gateway host is
+08:13 +4415 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: redirects (phones) another host (not listed) is refused, never requested
+08:13 +4416 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: redirects (phones) with no list, only the API host itself
+08:13 +4417 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: redirects (phones) a hop to http is refused, even to a listed host
+08:13 +4418 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: redirects (phones) two hops are followed; a third is refused
+08:13 +4419 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: redirects (phones) local development: an http API_BASE allows http hops only
+08:13 +4420 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: redirects (phones) the list itself is never redirected
+08:13 +4421 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: redirects (phones) address rule: ports, user info, the allow-list format
+08:13 +4422 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: redirects (phones) a refused status lets the body go
+08:13 +4423 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: deadlines and cut-offs one 30 s deadline over the whole photo, then cancelled
+08:14 +4424 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: deadlines and cut-offs a list over 256 KB: reading stops, nothing changes
+08:14 +4425 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: deadlines and cut-offs one 5 s deadline over the whole list
+08:14 +4426 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: cache folder photos live in the app cache folder (not backed up)
+08:14 +4427 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/hero_image_store_test.dart: decode test real image ok; corrupt and oversized pictures refused
+08:14 +4428 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/challenge_engine_test.dart: engine progress for every challenge type
+08:14 +4429 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/challenge_engine_test.dart: engine groups into active, completed and available
+08:14 +4430 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/challenge_engine_test.dart: engine days left and percent never shows 100 early
+08:14 +4431 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/challenge_engine_test.dart: member screens card reads like the brief
+08:14 +4432 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/challenge_engine_test.dart: member screens Challenges section shows Active, Available and Completed
+08:14 +4433 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/challenge_engine_test.dart: member screens detail: join, and a clear note on what the trainer sees
+08:15 +4434 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/challenge_engine_test.dart: member screens detail: join, and a clear note on what the trainer sees
+08:15 +4435 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/challenge_engine_test.dart: member screens detail: join, and a clear note on what the trainer sees
+08:15 +4436 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/challenge_engine_test.dart: member screens detail: join, and a clear note on what the trainer sees
+08:15 +4437 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/challenge_engine_test.dart: member screens detail: join, and a clear note on what the trainer sees
+08:15 +4438 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/challenge_engine_test.dart: member screens detail: join, and a clear note on what the trainer sees
+08:15 +4439 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/challenge_engine_test.dart: creators create a challenge, then see who joined
+08:16 +4440 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/challenge_engine_test.dart: creators trainer/gym view of a member lists shared challenge progress
+08:16 +4441 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/challenge_engine_test.dart: check-ins feed gym challenges from member data
+08:16 +4442 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/ff_snack_tones_test.dart: FFSnack error and info use the light tones
+08:16 +4443 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/ff_snack_tones_test.dart: FFSnack error and info use the dark tones
+08:17 +4444 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/device_data_architecture_test.dart: provider contract mock totals agree with the progress engine's day rules
+08:17 +4445 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/device_data_architecture_test.dart: provider contract mock newest first, inside the window
+08:17 +4446 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/device_data_architecture_test.dart: provider contract mock describes itself
+08:17 +4447 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/device_data_architecture_test.dart: provider contract api totals agree with the progress engine's day rules
+08:17 +4448 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/device_data_architecture_test.dart: provider contract api newest first, inside the window
+08:17 +4449 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/device_data_architecture_test.dart: provider contract api describes itself
+08:17 +4450 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/device_data_architecture_test.dart: provider contract API provider: sessions only, background walks aren't workouts
+08:17 +4451 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/device_data_architecture_test.dart: provider contract mock provider is marked as sample data
+08:17 +4452 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/device_data_architecture_test.dart: planned providers are unavailable and return no data until built
+08:17 +4453 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/device_data_architecture_test.dart: architecture only providers/ may use a health platform package
+08:17 +4454 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/device_data_architecture_test.dart: architecture only activity_config.dart picks a concrete provider
+08:17 +4455 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/device_data_architecture_test.dart: architecture the progress engine works on activities, not providers
+08:18 +4456 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/labels_polish_test.dart: gym tier labels codes read as words in both languages
+08:18 +4457 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/labels_polish_test.dart: gym tier labels every gym tier has English and Swahili
+08:18 +4458 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/labels_polish_test.dart: gym tier labels the gym card shows "Mid-tier", not "midtier"
+08:18 +4459 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/labels_polish_test.dart: gym tier labels pass tiers on the scanner and invitations are named
+08:18 +4460 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/labels_polish_test.dart: shop order statuses every status the server sends has English and Swahili
+08:18 +4461 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/labels_polish_test.dart: shop order statuses an unknown status falls back to a neutral label
+08:18 +4462 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/labels_polish_test.dart: shop order statuses legacy codes read like their canonical status
+08:18 +4463 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/labels_polish_test.dart: shop order statuses vendor buttons say what they do, in both languages
+08:18 +4464 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/labels_polish_test.dart: owner scan reasons gym not verified and tier not configured are explained
+08:18 +4465 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/labels_polish_test.dart: owner scan reasons an unknown reason never shows a raw key
+08:18 +4466 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/labels_polish_test.dart: owner scan reasons new scan reasons have Swahili
+08:18 +4467 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/labels_polish_test.dart: API errors from scanning operator_not_assigned_to_gym is explained, not shown as a code
+08:18 +4468 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/labels_polish_test.dart: API errors from scanning member_not_found is explained, not shown as a code
+08:18 +4469 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/labels_polish_test.dart: API errors from scanning gym_not_found is explained, not shown as a code
+08:18 +4470 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/labels_polish_test.dart: API errors from scanning tier_not_configured is explained, not shown as a code
+08:18 +4471 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/labels_polish_test.dart: API errors from scanning tier_not_available is explained, not shown as a code
+08:18 +4472 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/labels_polish_test.dart: activity copy mentions Health Connect only, not Apple Health
+08:18 +4473 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/labels_polish_test.dart: tier_not_available reads in Swahili too
+08:18 +4474 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: (setUpAll)
+08:18 +4474 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: browse shows a spinner while loading, then the catalogue
+08:19 +4475 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: browse shows a spinner while loading, then the catalogue
+08:19 +4476 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: browse shows a spinner while loading, then the catalogue
+08:19 +4477 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: browse shows a spinner while loading, then the catalogue
+08:19 +4478 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: browse shows a spinner while loading, then the catalogue
+08:19 +4479 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: browse shows a spinner while loading, then the catalogue
+08:19 +4480 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: browse shows a spinner while loading, then the catalogue
+08:19 +4481 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: browse shows a spinner while loading, then the catalogue
+08:19 +4482 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: browse shows a spinner while loading, then the catalogue
+08:19 +4483 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: browse shows a spinner while loading, then the catalogue
+08:19 +4484 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: browse shows a spinner while loading, then the catalogue
+08:19 +4485 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: browse shows a spinner while loading, then the catalogue
+08:19 +4485 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/manual_activity_log_test.dart: backend contract API log posts to /me/activities and parses the saved row
+08:19 +4486 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: browse shows a spinner while loading, then the catalogue
+08:19 +4486 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/manual_activity_log_test.dart: backend contract a rejected entry surfaces as an ApiException
+08:19 +4487 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: browse shows a spinner while loading, then the catalogue
+08:19 +4488 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: browse shows a spinner while loading, then the catalogue
+08:19 +4489 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/manual_activity_log_test.dart: Log activity page fields follow the activity type
+08:20 +4489 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: browse a product row shows brand, effective price, rating and stock
+08:20 +4490 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/manual_activity_log_test.dart: Log activity page fields follow the activity type
+08:20 +4490 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: browse an empty catalogue shows the empty message
+08:20 +4491 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/manual_activity_log_test.dart: Log activity page fields follow the activity type
+08:20 +4491 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: browse a failed load says so with Try again (not "no products")
+08:20 +4492 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/manual_activity_log_test.dart: Log activity page fields follow the activity type
+08:20 +4492 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: browse promoted products appear in a Featured section
+08:20 +4493 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/manual_activity_log_test.dart: Log activity page fields follow the activity type
+08:20 +4493 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: search, filter and sort typing in search narrows the list by name and brand
+08:21 +4494 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/manual_activity_log_test.dart: Log activity page fields follow the activity type
+08:21 +4494 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: search, filter and sort category chips filter, All categories clears
+08:21 +4495 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: search, filter and sort category chips filter, All categories clears
+08:21 +4496 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/manual_activity_log_test.dart: Log activity page required duration is checked before anything is sent
+08:21 +4496 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: search, filter and sort delivery and promotions chips toggle their filters
+08:21 +4497 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/manual_activity_log_test.dart: Log activity page required duration is checked before anything is sent
+08:21 +4497 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: search, filter and sort sorting reorders the list
+08:21 +4498 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: search, filter and sort sorting reorders the list
+08:22 +4499 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: search, filter and sort sorting reorders the list
+08:22 +4500 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/manual_activity_log_test.dart: Log activity page server and network errors keep the form and explain
+08:22 +4500 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: search, filter and sort the filters sheet applies brand and price range, and clears
+08:22 +4501 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: search, filter and sort the filters sheet applies brand and price range, and clears
+08:22 +4502 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: search, filter and sort the filters sheet applies brand and price range, and clears
+08:22 +4503 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: search, filter and sort the filters sheet applies brand and price range, and clears
+08:22 +4504 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/manual_activity_log_test.dart: from a gym visit: the date picker keeps to its 48 hours
+08:22 +4504 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: cart adding shows quantity and the checkout total; remove undoes
+08:23 +4505 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/manual_activity_log_test.dart: from a gym visit: the date picker keeps to its 48 hours
+08:23 +4505 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: cart out of stock cannot be added and quantity stops at stock
+08:23 +4506 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: cart out of stock cannot be added and quantity stops at stock
+08:23 +4507 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: cart saving for later counts the item and removes it from the cart
+08:23 +4508 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: product detail fetches the detail and shows description, vendor and reviews
+08:23 +4509 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: product detail falls back to the catalogue record when the detail fails
+08:23 +4510 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: product detail add to cart keeps the sheet; closing shows the checkout button
+08:23 +4511 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: product detail an out-of-stock product cannot be added or bought
+08:24 +4512 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: product detail buy now adds the product and opens checkout
+08:24 +4513 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/date_formatters_test.dart: formatDate / formatDateTime a late-evening UTC instant is the next day in EAT
+08:24 +4514 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: product detail chat with vendor sends a trimmed enquiry; empty sends nothing
+08:24 +4515 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: product detail chat with vendor sends a trimmed enquiry; empty sends nothing
+08:24 +4516 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: product detail chat with vendor sends a trimmed enquiry; empty sends nothing
+08:24 +4517 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: product detail chat with vendor sends a trimmed enquiry; empty sends nothing
+08:24 +4518 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: product detail chat with vendor sends a trimmed enquiry; empty sends nothing
+08:24 +4519 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: product detail chat with vendor sends a trimmed enquiry; empty sends nothing
+08:24 +4520 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: product detail chat with vendor sends a trimmed enquiry; empty sends nothing
+08:24 +4521 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: product detail chat with vendor sends a trimmed enquiry; empty sends nothing
+08:24 +4522 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/date_formatters_test.dart: member check-in list shows the local date and time, not ISO
+08:24 +4522 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: product detail visit store opens the storefront; a failure shows an error
+08:24 +4523 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/date_formatters_test.dart: member check-in list shows the local date and time, not ISO
+08:24 +4523 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: a store with no reviews says so instead of "★ 0.0 (0)"
+08:24 +4524 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: a store with no reviews says so instead of "★ 0.0 (0)"
+08:24 +4525 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/date_formatters_test.dart: …and in Swahili when the member chose it
+08:24 +4526 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout home delivery needs an address; the order body is exact
+08:24 +4527 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout home delivery needs an address; the order body is exact
+08:25 +4528 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout the default payment method is M-Pesa
+08:25 +4529 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout gym pickup needs a gym and sends pickupGymId, not an address
+08:25 +4530 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout nearest gyms sorts the pickup list by distance
+08:26 +4531 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout nearest gyms reports when the location cannot be read
+08:26 +4532 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout nearest gyms reports when the location cannot be read
+08:26 +4533 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout nearest gyms reports when the location cannot be read
+08:26 +4534 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout nearest gyms reports when the location cannot be read
+08:26 +4535 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout nearest gyms reports when the location cannot be read
+08:26 +4536 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout nearest gyms reports when the location cannot be read
+08:26 +4537 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout nearest gyms reports when the location cannot be read
+08:26 +4538 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout nearest gyms reports when the location cannot be read
+08:26 +4539 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/pass_state_test.dart: PassSummaryCard active pass: ring shows visits left and Show my QR
+08:26 +4539 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout a failed order shows an error and keeps the cart
+08:26 +4540 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/pass_state_test.dart: PassSummaryCard active pass: ring shows visits left and Show my QR
+08:26 +4540 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout safety every order carries an Idempotency-Key
+08:26 +4541 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/pass_state_test.dart: PassSummaryCard active pass: ring shows visits left and Show my QR
+08:26 +4541 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout safety a timeout keeps the cart and the retry sends the same key
+08:26 +4542 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout safety a timeout keeps the cart and the retry sends the same key
+08:26 +4543 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout safety a timeout keeps the cart and the retry sends the same key
+08:26 +4544 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout safety a timeout keeps the cart and the retry sends the same key
+08:26 +4545 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout safety a timeout keeps the cart and the retry sends the same key
+08:26 +4546 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout safety a timeout keeps the cart and the retry sends the same key
+08:26 +4547 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout safety a timeout keeps the cart and the retry sends the same key
+08:26 +4548 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/pass_state_test.dart: PassSummaryCard ending soon says the date once, in the sentence
+08:26 +4549 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout safety changed delivery details are a new order with a new key
+08:27 +4550 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout safety changed delivery details are a new order with a new key
+08:27 +4551 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout safety changed delivery details are a new order with a new key
+08:27 +4552 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout safety changed delivery details are a new order with a new key
+08:27 +4553 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout safety changed delivery details are a new order with a new key
+08:27 +4554 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout safety changed delivery details are a new order with a new key
+08:27 +4555 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout safety changed delivery details are a new order with a new key
+08:27 +4556 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout safety changed delivery details are a new order with a new key
+08:27 +4557 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout safety changed delivery details are a new order with a new key
+08:27 +4558 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout safety changed delivery details are a new order with a new key
+08:27 +4559 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout safety changed delivery details are a new order with a new key
+08:27 +4560 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/pass_state_test.dart: status badge when the pass is ending soon (owner 2026-10-19) PHOTO_HERO_UI=true, sw: reads "Inaisha karibuni", not "Hai"
+08:27 +4560 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout safety a clear refusal keeps the cart and the next order is a new attempt
+08:27 +4561 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout safety a clear refusal keeps the cart and the next order is a new attempt
+08:27 +4562 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout safety a clear refusal keeps the cart and the next order is a new attempt
+08:27 +4563 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout safety a clear refusal keeps the cart and the next order is a new attempt
+08:27 +4564 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout safety a clear refusal keeps the cart and the next order is a new attempt
+08:27 +4565 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout safety a clear refusal keeps the cart and the next order is a new attempt
+08:27 +4566 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout safety a clear refusal keeps the cart and the next order is a new attempt
+08:27 +4567 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout safety a clear refusal keeps the cart and the next order is a new attempt
+08:27 +4568 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/pass_state_test.dart: My QR reads the same state low visits: the QR stays and an amber notice says why
+08:27 +4568 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout safety a price change is explained, not shown as a generic failure
+08:27 +4569 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout safety a price change is explained, not shown as a generic failure
+08:27 +4570 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout safety a price change is explained, not shown as a generic failure
+08:27 +4571 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout safety a price change is explained, not shown as a generic failure
+08:27 +4572 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout safety a price change is explained, not shown as a generic failure
+08:27 +4573 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout safety a price change is explained, not shown as a generic failure
+08:27 +4574 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout safety a price change is explained, not shown as a generic failure
+08:27 +4575 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout safety a price change is explained, not shown as a generic failure
+08:27 +4576 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout safety a price change is explained, not shown as a generic failure
+08:27 +4577 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout safety a price change is explained, not shown as a generic failure
+08:27 +4578 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout safety a paid order is confirmed; an unpaid one is reported as waiting
+08:28 +4579 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout safety the server total is reported when it differs from the cart
+08:28 +4580 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout safety missing address or gym says what is needed
+08:28 +4581 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout safety a product with options asks which one and sends it
+08:28 +4582 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: checkout safety a second tap while the order is in flight sends one order
+08:28 +4583 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: my orders lists orders with total, status and timeline
+08:28 +4584 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/check_in_member_sheet_test.dart: a failed check-in shows the reason the caller gives
+08:29 +4584 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: my orders an unpaid order says it is awaiting payment
+08:29 +4585 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/check_in_member_sheet_test.dart: a failed check-in shows the reason the caller gives
+08:29 +4585 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: my orders a refund that is not sent yet is not shown as refunded
+08:29 +4586 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/check_in_member_sheet_test.dart: a failed check-in shows the reason the caller gives
+08:29 +4586 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: my orders check payment re-reads the order and reports what changed
+08:29 +4587 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/check_in_member_sheet_test.dart: a failed check-in shows the reason the caller gives
+08:29 +4587 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: my orders cancel asks first: keep sends nothing, confirm cancels (paid)
+08:29 +4588 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/check_in_member_sheet_test.dart: a failed check-in shows the reason the caller gives
+08:29 +4588 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: my orders cancelling an unpaid order uses the plain wording
+08:29 +4589 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: my orders cancelling an unpaid order uses the plain wording
+08:29 +4590 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/check_in_member_sheet_test.dart: without a reason the sheet falls back to the generic error
+08:29 +4590 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: my orders a failed cancel shows an error, not the success message
+08:29 +4591 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: my orders a failed cancel shows an error, not the success message
+08:29 +4592 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: my orders a failed cancel shows an error, not the success message
+08:29 +4593 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: my orders orders that cannot be cancelled offer no cancel button
+08:29 +4594 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: my orders reorder re-adds the items and returns to browsing
+08:30 +4595 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: my orders reorder keeps each item's option for checkout
+08:30 +4596 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: my orders Invoice only on paid / refund-pending / refunded orders (AC-28)
+08:30 +4597 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: my orders invoice shows the order lines and a download button
+08:30 +4598 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: my orders a delivered order can be reviewed with rating and comment
+08:30 +4599 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: my orders only delivered orders offer a review
+08:30 +4600 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: my orders only delivered orders offer a review
+08:30 +4601 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: my orders only delivered orders offer a review
+08:30 +4602 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/verify_email_test.dart: sends the link, waits for verification, then signs in
+08:30 +4602 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: my orders order status changes are picked up and announced
+08:31 +4603 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/verify_email_test.dart: sends the link, waits for verification, then signs in
+08:31 +4603 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: English and Swahili layout browse, detail, checkout and orders fit 360x740 at x1.0 (en)
+08:31 +4604 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/verify_email_test.dart: sends the link, waits for verification, then signs in
+08:31 +4604 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: English and Swahili layout browse, detail, checkout and orders fit 360x740 at x1.3 (en)
+08:31 +4604 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/verify_email_test.dart: sends the link, waits for verification, then signs in
+08:31 +4605 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/verify_email_test.dart: sends the link, waits for verification, then signs in
+08:31 +4606 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: English and Swahili layout browse, detail, checkout and orders fit 360x740 at x1.0 (sw)
+08:31 +4607 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: English and Swahili layout browse, detail, checkout and orders fit 360x740 at x1.0 (sw)
+08:32 +4608 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: English and Swahili layout browse, detail, checkout and orders fit 360x740 at x1.3 (sw)
+08:32 +4609 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: English and Swahili layout the order flow sends the same body in Swahili
+08:32 +4610 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_browse_page_test.dart: (tearDownAll)
+08:33 +4610 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/delete_account_test.dart: confirmation nothing is sent until the word is typed
+08:34 +4611 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/latest_checkins_card_test.dart: shows the latest three, newest first, with time and plan
+08:34 +4612 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/latest_checkins_card_test.dart: shows the latest three, newest first, with time and plan
+08:34 +4613 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/latest_checkins_card_test.dart: shows the latest three, newest first, with time and plan
+08:34 +4613 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/delete_account_test.dart: success signs out fully and goes to the start screen
+08:34 +4614 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/latest_checkins_card_test.dart: shows the latest three, newest first, with time and plan
+08:34 +4614 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/delete_account_test.dart: success an answer lost on the way counts as deleted
+08:34 +4615 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/delete_account_test.dart: success an answer lost on the way counts as deleted
+08:34 +4616 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/delete_account_test.dart: success an answer lost on the way counts as deleted
+08:34 +4617 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/latest_checkins_card_test.dart: a failed load leaves no block behind
+08:34 +4618 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/delete_account_test.dart: blocked by the backend shows the reason and a way to support; stays signed in
+08:34 +4619 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/delete_account_test.dart: blocked by the backend shows the reason and a way to support; stays signed in
+08:34 +4620 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/latest_checkins_card_test.dart: a name leads when the server sends one, public ID otherwise
+08:34 +4621 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/delete_account_test.dart: blocked by the backend the gym reason is in the app language
+08:34 +4622 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/delete_account_test.dart: blocked by the backend the gym reason is in the app language
+08:34 +4623 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/latest_checkins_card_test.dart: the full list shows the name, then public ID, plan and time
+08:34 +4624 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/delete_account_test.dart: blocked by the backend a paid order on its way blocks deletion, in Swahili too
+08:35 +4625 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/delete_account_test.dart: blocked by the backend organizer owners get the server's Swahili sentence
+08:35 +4626 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/delete_account_test.dart: failure offline: stays signed in, says so, and can try again
+08:35 +4627 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/delete_account_test.dart: failure a server error keeps the session
+08:35 +4628 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/delete_account_test.dart: double tap sends one request
+08:35 +4629 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/delete_account_test.dart: another profile on the account is mentioned, not deleted
+08:35 +4630 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/delete_account_test.dart: who sees it member sees the action
+08:35 +4631 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/delete_account_test.dart: who sees it trainer sees the action
+08:35 +4632 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/delete_account_test.dart: who sees it gym_operator sees the action
+08:35 +4633 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/delete_account_test.dart: who sees it vendor sees the action
+08:35 +4634 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/delete_account_test.dart: who sees it gym_staff does not
+08:35 +4635 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/delete_account_test.dart: who sees it vendor_staff does not
+08:35 +4636 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/delete_account_test.dart: who sees it every account area carries it
+08:35 +4637 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/delete_account_test.dart: every string has English and Swahili
+08:35 +4638 ~9 -1: Some tests failed.
