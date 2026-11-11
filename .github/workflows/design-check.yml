@@ -46,29 +46,31 @@ jobs:
 
       - name: Save results to design/results
         if: ${{ !cancelled() }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          set -e
           sha="${GITHUB_SHA::7}"
-          out="/tmp/out/$sha"
+          out="$RUNNER_TEMP/out/$sha"
           mkdir -p "$out"
-          cp analyze.txt test.txt shots.txt "$out/" || true
-          grep -E "\[E\]|Some tests failed|All tests passed|^[0-9]+:[0-9]+ \+[0-9]+" test.txt | tail -n 300 > "$out/test-summary.txt" || true
-          cp -r test/design_shots "$out/shots" || true
+          cp analyze.txt test.txt shots.txt "$out/" 2>/dev/null || true
+          grep -E "\[E\]|Some tests failed|All tests passed" test.txt | tail -n 300 > "$out/test-summary.txt" || true
+          tail -n 3 test.txt >> "$out/test-summary.txt" || true
+          cp -r test/design_shots "$out/shots" 2>/dev/null || true
           {
             echo "commit=$GITHUB_SHA"
             echo "analyze=${{ steps.analyze.outcome }}"
             echo "test=${{ steps.test.outcome }}"
             echo "shots=${{ steps.shots.outcome }}"
           } > "$out/summary.txt"
+          url="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          dir="$RUNNER_TEMP/results"
+          if ! git clone -q --depth 1 --branch design/results "$url" "$dir"; then
+            mkdir -p "$dir" && cd "$dir" && git init -q -b design/results && git remote add origin "$url" && cd -
+          fi
+          cd "$dir"
+          rm -rf "$sha" && cp -r "$out" "./$sha"
           git config user.name "design-check"
           git config user.email "design-check@users.noreply.github.com"
-          if git fetch --depth=1 origin design/results 2>/dev/null; then
-            git checkout -q -B results FETCH_HEAD
-          else
-            git checkout -q --orphan results
-            git rm -rfq .
-          fi
-          rm -rf "$sha" && cp -r "$out" "./$sha"
-          git add "$sha"
-          git commit -qm "Design check results for $sha"
+          git add -A
+          git commit -qm "Design check results for $sha" || true
           git push -q origin HEAD:design/results
