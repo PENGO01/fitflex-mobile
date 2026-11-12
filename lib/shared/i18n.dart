@@ -703,6 +703,8 @@ class FFLocale extends ChangeNotifier {
       'member.trainers': 'Trainers',
       'member.qr': 'My QR',
       'member.profile': 'Profile',
+      // Bottom-bar label of the central check-in action.
+      'member.checkInNav': 'Check in',
       'member.yourPass': 'Your pass',
       'member.upgradePlan': 'Upgrade plan',
       'momo.title': 'Pay with mobile money',
@@ -8966,6 +8968,7 @@ class FFLocale extends ChangeNotifier {
       'member.trainers': 'Ma-trainer',
       'member.qr': 'QR yangu',
       'member.profile': 'Wasifu',
+      'member.checkInNav': 'Ingia',
       'member.yourPass': 'Pasi yako',
       'member.upgradePlan': 'Boresha mpango',
       'momo.title': 'Lipa kwa mtandao wa simu',

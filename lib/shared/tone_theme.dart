@@ -50,51 +50,51 @@ class FFToneTheme extends ThemeExtension<FFToneTheme> {
   final FFToneColors warning;
   final FFToneColors info;
 
-  // Light system (docs/design/light-system): soft fills with no visible
-  // outline (border = bg). Every fg/bg pair is >= 5.3:1.
+  // FitFlex DS v1.0 badge colours: soft fills with no visible outline
+  // (border = bg). Every fg/bg pair is >= 5.4:1.
   static const light = FFToneTheme(
     neutral: FFToneColors(
-      bg: Color(0xFFE9ECEA),
-      fg: Color(0xFF4A5852),
-      border: Color(0xFFE9ECEA),
-      dot: Color(0xFF8A928D),
+      bg: Color(0xFFEAF0E8),
+      fg: Color(0xFF53645A),
+      border: Color(0xFFEAF0E8),
+      dot: Color(0xFF87938C),
     ),
     gray: FFToneColors(
-      bg: Color(0xFFE9ECEA),
+      bg: Color(0xFFEAF0E8),
       fg: Color(0xFF3A4642),
-      border: Color(0xFFE9ECEA),
-      dot: Color(0xFF5B6B64),
+      border: Color(0xFFEAF0E8),
+      dot: Color(0xFF68766F),
     ),
-    // Brand is a pale Volt with forest ink: "active", "valid", "paid".
+    // "Active", "valid", "paid": the lime badge with forest text (11.5:1).
     brand: FFToneColors(
-      bg: Color(0xFFEEF8CF),
-      fg: Color(0xFF0E2A22),
-      border: Color(0xFFEEF8CF),
-      dot: Color(0xFF7FA800),
+      bg: Color(0xFFD4EF68),
+      fg: Color(0xFF102D24),
+      border: Color(0xFFD4EF68),
+      dot: Color(0xFF102D24),
     ),
     success: FFToneColors(
-      bg: Color(0xFFE4F2E7),
-      fg: Color(0xFF1D5B34),
-      border: Color(0xFFE4F2E7),
-      dot: Color(0xFF2E8B4F),
+      bg: Color(0xFFE4F2E9),
+      fg: Color(0xFF1B6542),
+      border: Color(0xFFE4F2E9),
+      dot: Color(0xFF237A50),
     ),
     danger: FFToneColors(
-      bg: Color(0xFFFBE4E1),
-      fg: Color(0xFFB3261E),
-      border: Color(0xFFFBE4E1),
-      dot: Color(0xFFD92D20),
+      bg: Color(0xFFFCE8E7),
+      fg: Color(0xFFA52828),
+      border: Color(0xFFFCE8E7),
+      dot: Color(0xFFBA3434),
     ),
     warning: FFToneColors(
-      bg: Color(0xFFFCEFD6),
-      fg: Color(0xFF9A4A00),
-      border: Color(0xFFFCEFD6),
-      dot: Color(0xFFF79009),
+      bg: Color(0xFFFFF2D6),
+      fg: Color(0xFF815000),
+      border: Color(0xFFFFF2D6),
+      dot: Color(0xFF9A6500),
     ),
     info: FFToneColors(
-      bg: Color(0xFFE2ECFA),
-      fg: Color(0xFF2858A0),
-      border: Color(0xFFE2ECFA),
-      dot: Color(0xFF2E90FA),
+      bg: Color(0xFFE7F0FF),
+      fg: Color(0xFF245B91),
+      border: Color(0xFFE7F0FF),
+      dot: Color(0xFF3275B8),
     ),
   );
 
@@ -115,10 +115,10 @@ class FFToneTheme extends ThemeExtension<FFToneTheme> {
     ),
     // Volt family: the dark theme's primary is Volt.
     brand: FFToneColors(
-      bg: Color(0xFF323A1E),
-      fg: Color(0xFFC8F04A),
-      border: Color(0xFF323A1E),
-      dot: Color(0xFFC8F04A),
+      bg: Color(0xFF343A23),
+      fg: Color(0xFFD4EF68),
+      border: Color(0xFF343A23),
+      dot: Color(0xFFD4EF68),
     ),
     success: FFToneColors(
       bg: Color(0xFF1C3024),

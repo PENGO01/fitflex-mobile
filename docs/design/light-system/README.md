@@ -32,20 +32,20 @@ theme builders there.
 
 | Role | Light | Dark |
 | --- | --- | --- |
-| Page ground | `#F1F3EE` | `#090A0A` |
+| Page ground | `#F3F5F0` | `#090A0A` |
 | Card | `#FFFFFF` | `#151716` |
-| Raised (chips, image tiles) | `#F1F3EE` on a card | `#1F2221` |
-| Hairline | `#E3E7E0` | `#2A2E2C` |
-| Text | `#0E2A22` | `#F4F5F2` |
+| Raised (chips, image tiles) | `#EAF0E8` | `#1F2221` |
+| Hairline | `#E5EAE4` | `#2A2E2C` |
+| Text | `#102D24` | `#F4F5F2` |
 | Secondary text | `#5B6B64` | `#A3ABA6` |
-| Primary action fill | `#0E2A22`, white text | `#C8F04A`, `#0E2A22` text |
-| Lime card | `#C8F04A`, `#0E2A22` text | the same |
+| Primary action fill | `#102D24`, white text | `#D4EF68`, `#102D24` text |
+| Lime card | `#D4EF68`, `#102D24` text | the same |
 
 Status chips are the same in both modes:
 
 | State | Background | Text |
 | --- | --- | --- |
-| Active, valid, paid | `#C8F04A` | `#0E2A22` |
+| Active, valid, paid | `#D4EF68` | `#102D24` |
 | Pending | `#FCEFD6` | `#9A4A00` |
 | Failed | `#FBE4E1` | `#B3261E` |
 | Under review, new | `#E2ECFA` | `#2858A0` |
@@ -55,9 +55,9 @@ Contrast, computed with the WCAG 2 formula:
 
 | Pair | Ratio |
 | --- | --- |
-| Text on page, light (`#0E2A22` on `#F1F3EE`) | 13.7:1 |
-| Secondary text on page, light (`#5B6B64` on `#F1F3EE`) | 5.0:1 |
-| Text on lime (`#0E2A22` on `#C8F04A`) | 11.7:1 |
+| Text on page, light (`#102D24` on `#F3F5F0`) | 13.7:1 |
+| Secondary text on page, light (`#5B6B64` on `#F3F5F0`) | 5.0:1 |
+| Text on lime (`#102D24` on `#D4EF68`) | 11.7:1 |
 | Text on page, dark (`#F4F5F2` on `#090A0A`) | 18.1:1 |
 | Secondary text on card, dark (`#A3ABA6` on `#151716`) | 7.7:1 |
 | Status chips, lowest pair (failed) | 5.4:1 |
@@ -129,6 +129,30 @@ gym owner and seller. All in both modes.
 Not drawn yet: the inner screens for each partner role, gym detail, checkout,
 and empty and error states.
 
+## FitFlex DS v1.0 values
+
+Colours follow Godliving's FitFlex Design System v1.0 (lime `#D4EF68`,
+forest `#102D24`, page `#F3F5F0`, border `#E5EAE4`, badge palette, error
+`#BA3434`), with three deliberate departures where the spec's own values fail
+its accessibility rules:
+
+| Spec value | Problem | Used instead |
+| --- | --- | --- |
+| Secondary text `#68766F` | 4.3:1 on `#F3F5F0` (needs 4.5:1) | `#5B6B64`, 5.0:1 |
+| Input border `#C8D1C9` | 1.6:1 on white (needs 3:1) | `#7F8A84`, 3.6:1 |
+| Lime progress fill on `#E5EAE4` track | 1.05:1, the bar disappears | Forest fill in light, lime in dark |
+
+Buttons stay pills (as in the DS v1.0 board) rather than the 16px radius in
+its text. Inputs use 12px, cards 20px, the pass 24px.
+
+## Member bottom bar
+
+Home, Activity, a raised round **Check in** action in the centre (forest with
+a lime QR icon; lime with a forest icon in dark), Gyms, Shop. Check in opens
+the existing QR screen (`/member/qr`). Profile moves to a round avatar button
+in the app bar (`member-nav-profile`). On Profile and the check-in screen no
+tab is highlighted.
+
 ## What this branch changes
 
 | Area | Where | Change |
@@ -146,8 +170,9 @@ and empty and error states.
 | Member pass | `PassSummaryCard` | The Volt card while the pass is active; warning states keep the normal card. |
 | Splash | `kinetic_splash.dart` | Near-black with Volt instead of navy and teal. |
 
-Not changed: the Inter typeface, button heights, screen layouts, the photo
-heroes and footer (still behind their flags, still off), the app icon.
+Not changed: the Inter typeface, button heights, screen layouts other than
+the member bottom bar, the photo heroes and footer (still behind their flags,
+still off), the app icon.
 
 Next steps, each its own pull request:
 
@@ -172,7 +197,7 @@ Next steps, each its own pull request:
   first; should new installs start in light?
 - Is retiring Inter for Onest acceptable this close to launch?
 - The light theme's brand green (`brand500`, `#067647`) is replaced by ink
-  (`#0E2A22`) as the primary fill. Anything in the portal that must stay in
+  (`#102D24`) as the primary fill. Anything in the portal that must stay in
   step?
 - Dark mode moves from navy (`#020617`) to near-black (`#090A0A`).
 

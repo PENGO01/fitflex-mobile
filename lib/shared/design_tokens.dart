@@ -49,7 +49,8 @@ class FFTokens {
 
   /// Error foreground on dark surfaces (>= 4.5:1 on slate-900/950).
   static const Color errorOnDark = Color(0xFFF97066);
-  static const Color danger = error500;
+  // DS v1.0 error: 5.8:1 on white.
+  static const Color danger = Color(0xFFBA3434);
 
   // Success is teal-leaning so it is distinct from the brand green.
   static const Color success50 = Color(0xFFF0FDF9);
@@ -70,7 +71,7 @@ class FFTokens {
   static const Color fgTertiary = Color(0xFFBAC1BC);
   static const Color fgQuaternary = Color(0xFFA3ABA6);
   static const Color fgDisabled = Color(0xFF5E6662);
-  static const Color fgBrand = Color(0xFFC8F04A);
+  static const Color fgBrand = volt;
 
   // Legacy aliases
   static const Color text = fgPrimary;
@@ -182,10 +183,10 @@ class FFTokens {
   // ── Light mode surfaces (light system) ──
   // A sage page, white cards, a raised step for chips and image tiles inside
   // cards, and forest ink for text and the primary fill.
-  static const Color lightGround = Color(0xFFF1F3EE);
-  static const Color lightRaised = Color(0xFFEEF1EA);
-  static const Color lightLine = Color(0xFFE3E7E0);
-  static const Color ink = Color(0xFF0E2A22);
+  static const Color lightGround = Color(0xFFF3F5F0);
+  static const Color lightRaised = Color(0xFFEAF0E8);
+  static const Color lightLine = Color(0xFFE5EAE4);
+  static const Color ink = Color(0xFF102D24); // forest (DS v1.0)
 
   // ── Vibrant brand green (dark-mode CTA + selection state) ──
   static const Color brandVibrant = Color(0xFF17B26A);
@@ -193,8 +194,8 @@ class FFTokens {
   // ── V2 accents (Design System V2, approved) ──
   // Volt is the member-app accent on the Pulse (dark) theme: primary CTAs,
   // selection and focus. Always pair it with [onVolt] text (15.4:1).
-  static const Color volt = Color(0xFFC8F04A);
-  static const Color onVolt = ink; // 11.7:1 on Volt
+  static const Color volt = Color(0xFFD4EF68); // FitFlex lime (DS v1.0)
+  static const Color onVolt = ink; // 11.5:1 on Volt
   // Fuel is the warm "act soon" accent (expiring passes, streak heat).
   // [fuel] for light surfaces, [fuelOnDark] for text/icons on dark.
   static const Color fuel = Color(0xFFB8452C);
@@ -228,9 +229,10 @@ class FFTokens {
   // photo pixel, so it holds for any photo. Owner 2026-10-20 ("lighter"):
   // the scrim is local. A band behind the status bar and app bar, the photo
   // clear in between, and a ramp into a dark zone that holds all text.
-  // Deeper than the page black so hero text keeps >= 13.2:1 over a
-  // pure-white pixel at the 86% text zone (13.9:1).
-  static const Color heroScrim = Color(0xFF020303);
+  // A neutral near-black chosen so hero text keeps >= 13.2:1 over a
+  // pure-white pixel at the 86% zone (13.5:1), while the 0.46 top band
+  // stays the lowest value that holds 3:1 (0.45 gives 2.98:1).
+  static const Color heroScrim = Color(0xFF040505);
 
   /// Behind the status bar, app bar icons and logo (no other text): held
   /// over the bar, then faded out. 0.46 is the lowest value that keeps
@@ -415,7 +417,7 @@ WidgetStateProperty<BorderSide?> ffFocusRing(Color color) =>
 /// Focus ring colour on the dark ground (slate-100 on slate-950: 17:1).
 const Color ffFocusRingDark = FFTokens.darkFgPrimary;
 
-/// Focus ring colour on the light ground (forest ink on sage: 13.7:1).
+/// Focus ring colour on the light ground (forest ink on sage: 13.4:1).
 const Color ffFocusRingLight = FFTokens.ink;
 
 /// Shared shapes of the light system: every button and chip is a pill.
@@ -592,7 +594,7 @@ ThemeData buildDarkTheme() {
             fontFamily: FFTokens.fontSans,
             color: onSurface,
             fontSize: 11,
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w600,
           );
         }
         return const TextStyle(
@@ -680,23 +682,23 @@ ThemeData buildDarkTheme() {
       suffixIconColor: FFTokens.darkFgMuted,
       prefixIconColor: FFTokens.darkFgMuted,
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(FFTokens.radiusLg),
+        borderRadius: BorderRadius.circular(FFTokens.radiusMd),
         borderSide: const BorderSide(color: FFTokens.inputBorderDark),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(FFTokens.radiusLg),
+        borderRadius: BorderRadius.circular(FFTokens.radiusMd),
         borderSide: const BorderSide(color: FFTokens.inputBorderDark),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(FFTokens.radiusLg),
+        borderRadius: BorderRadius.circular(FFTokens.radiusMd),
         borderSide: const BorderSide(color: primary, width: 2),
       ),
       errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(FFTokens.radiusLg),
+        borderRadius: BorderRadius.circular(FFTokens.radiusMd),
         borderSide: const BorderSide(color: FFTokens.errorOnDark),
       ),
       focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(FFTokens.radiusLg),
+        borderRadius: BorderRadius.circular(FFTokens.radiusMd),
         borderSide: const BorderSide(color: FFTokens.errorOnDark, width: 2),
       ),
     ),
@@ -806,7 +808,7 @@ ThemeData buildTheme() {
   // ── Light-mode palette (light system) ──
   const bg = FFTokens.lightGround;
   const surface = Colors.white;
-  const onSurface = FFTokens.ink; // 13.7:1 on the page, 15.3:1 on white
+  const onSurface = FFTokens.ink; // 13.4:1 on the page, 14.8:1 on white
   const primary = FFTokens.ink; // primary fill: forest ink, white text
   const onPrimary = Colors.white;
   const bord = FFTokens.lightLine;
@@ -967,7 +969,7 @@ ThemeData buildTheme() {
             fontFamily: FFTokens.fontSans,
             color: onSurface,
             fontSize: 11,
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w600,
           );
         }
         return const TextStyle(
@@ -1047,23 +1049,23 @@ ThemeData buildTheme() {
       suffixIconColor: muted,
       prefixIconColor: muted,
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(FFTokens.radiusLg),
+        borderRadius: BorderRadius.circular(FFTokens.radiusMd),
         borderSide: const BorderSide(color: FFTokens.inputBorderLight),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(FFTokens.radiusLg),
+        borderRadius: BorderRadius.circular(FFTokens.radiusMd),
         borderSide: const BorderSide(color: FFTokens.inputBorderLight),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(FFTokens.radiusLg),
+        borderRadius: BorderRadius.circular(FFTokens.radiusMd),
         borderSide: const BorderSide(color: primary, width: 2),
       ),
       errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(FFTokens.radiusLg),
+        borderRadius: BorderRadius.circular(FFTokens.radiusMd),
         borderSide: const BorderSide(color: FFTokens.danger),
       ),
       focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(FFTokens.radiusLg),
+        borderRadius: BorderRadius.circular(FFTokens.radiusMd),
         borderSide: const BorderSide(color: FFTokens.danger, width: 2),
       ),
     ),
@@ -1172,13 +1174,13 @@ ThemeData buildTheme() {
 /// Theme for the one Volt card on a screen (the member's active pass).
 ///
 /// The card looks the same in light and dark mode: Volt fill, forest-ink
-/// text (11.7:1), muted text 7.5:1, an ink primary button with white text,
+/// text (11.5:1), muted text 7.7:1, an ink primary button with white text,
 /// and status badges as ink pills. Wrap the card in
 /// `Theme(data: buildVoltCardTheme(), child: ...)` and build its content
 /// with the inner context.
 ThemeData buildVoltCardTheme() {
   const ink = FFTokens.ink;
-  const inkMuted = Color(0xFF2F4A28); // 7.5:1 on Volt
+  const inkMuted = Color(0xFF2F4A28); // 7.7:1 on Volt
   final base = buildTheme();
   const inkPill = FFToneColors(
     bg: ink,

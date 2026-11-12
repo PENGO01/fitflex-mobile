@@ -15,7 +15,7 @@ const bool kSplashAnimation = bool.fromEnvironment(
 // Light system dark mode: near-black ground, Volt accents.
 const _bg0 = Color(0xFF090A0A);
 const _bg1 = Color(0xFF151716);
-const _teal = Color(0xFFC8F04A); // Volt
+const _teal = Color(0xFFD4EF68); // FitFlex lime
 const _sky = Color(0xFFE6F7A8); // pale Volt
 
 /// Total length of the logo animation, in seconds.
