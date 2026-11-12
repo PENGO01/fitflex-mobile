@@ -160,6 +160,19 @@ void main() {
               }
             }
           }
+          // Member profile lives behind the avatar in the app bar.
+          final profile = find.byKey(const Key('member-nav-profile'));
+          if (profile.evaluate().isNotEmpty) {
+            await tester.tap(profile.first);
+            await _settle(tester);
+            await _shot(tester, 'design_shots/$role-9-profile-a-$mode.png');
+            final sc = find.byType(Scrollable);
+            if (sc.evaluate().isNotEmpty) {
+              await tester.drag(sc.first, const Offset(0, -700));
+              await _settle(tester, 2);
+              await _shot(tester, 'design_shots/$role-9-profile-b-$mode.png');
+            }
+          }
           await tester.pumpWidget(const SizedBox());
           await tester.pump(const Duration(seconds: 31));
         }, _client);
