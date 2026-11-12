@@ -1,0 +1,17 @@
+00:33 +282 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_test.dart: Flag off: unchanged screens Home has no photo hero and keeps the page header and card [E]
+[REST] error: TimeoutException: slow
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+10:07 +4638 ~9 -1: Some tests failed.
+10:06 +4634 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/latest_checkins_card_test.dart: See all calls back
+10:07 +4635 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/latest_checkins_card_test.dart: a name leads when the server sends one, public ID otherwise
+10:07 +4636 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/latest_checkins_card_test.dart: checkinVisitorLabel falls back through the identifiers
+10:07 +4637 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/latest_checkins_card_test.dart: the full list shows the name, then public ID, plan and time
+10:07 +4638 ~9 -1: Some tests failed.
+
+Failing tests:
+  /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_test.dart: Flag off: unchanged screens Home has no photo hero and keeps the page header and card
