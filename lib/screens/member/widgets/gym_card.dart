@@ -98,7 +98,7 @@ class GymCard extends StatelessWidget {
                     children: [
                       FFBadge(
                         label: gymTierLabel(context, gym),
-                        tone: FFBadgeTone.neutral,
+                        tone: FFBadgeTone.gray,
                       ),
                       if (distanceKm != null)
                         FFBadge(
@@ -292,7 +292,7 @@ class GymGridCard extends StatelessWidget {
                         children: [
                           FFBadge(
                             label: gymTierLabel(context, gym),
-                            tone: FFBadgeTone.neutral,
+                            tone: FFBadgeTone.gray,
                           ),
                           if (distanceKm != null)
                             FFBadge(

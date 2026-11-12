@@ -658,7 +658,7 @@ class _TrainerGymDetailPageState extends State<TrainerGymDetailPage> {
               ),
               FFBadge(
                 label: gymTierLabel(context, gym),
-                tone: FFBadgeTone.neutral,
+                tone: FFBadgeTone.gray,
               ),
             ],
           ),
