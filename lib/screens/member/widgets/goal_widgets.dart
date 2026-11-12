@@ -131,7 +131,7 @@ class _GoalGroupLabel extends StatelessWidget {
       bottom: FFTokens.spacingSm,
     ),
     child: Text(
-      text.toUpperCase(),
+      text,
       style: FFTokens.monoLabel(Theme.of(context).colorScheme.onSurfaceVariant),
     ),
   );
@@ -202,8 +202,7 @@ class GoalCard extends StatelessWidget {
                                   g.isCoaching
                                       ? 'goal.label.coaching'
                                       : 'goal.label.trainer',
-                                )
-                                .toUpperCase(),
+                                ),
                             key: Key('goal-trainer-label-${g.id}'),
                             style: FFTokens.monoLabel(
                               theme.colorScheme.primary,

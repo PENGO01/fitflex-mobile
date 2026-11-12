@@ -137,13 +137,13 @@ class FFTokens {
   static const String fontSans = 'Inter';
   static const String fontMono = 'JetBrains Mono';
 
-  /// UPPERCASE, wide-tracked "telemetry" label: section eyebrows, data
-  /// tags, field labels. Never for sentences.
+  /// Small section label: section eyebrows, data tags, field labels.
+  /// FitFlex DS v1.0: one typeface, sentence case, no tracking. (The name is
+  /// kept so existing call sites don't change.)
   static TextStyle monoLabel(Color color, {double size = 11}) => TextStyle(
-    fontFamily: fontMono,
-    fontSize: size,
-    fontWeight: FontWeight.w500,
-    letterSpacing: size * 0.12,
+    fontFamily: fontSans,
+    fontSize: size + 2,
+    fontWeight: FontWeight.w600,
     color: color,
   );
 

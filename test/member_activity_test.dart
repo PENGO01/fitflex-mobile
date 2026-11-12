@@ -156,7 +156,7 @@ void main() {
       _wrap(TodayActivityCard(data: data, now: _now), data),
     );
 
-    expect(find.text("TODAY'S ACTIVITY"), findsOneWidget);
+    expect(find.text("Today's activity"), findsOneWidget);
     expect(find.textContaining('6,240'), findsOneWidget);
     expect(find.text('52'), findsOneWidget); // active minutes
     expect(find.text('8'), findsOneWidget); // streak

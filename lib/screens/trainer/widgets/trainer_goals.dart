@@ -197,7 +197,7 @@ class _AssignedGoalCard extends StatelessWidget {
                   children: [
                     if (kind != null)
                       Text(
-                        context.tr(kind).toUpperCase(),
+                        context.tr(kind),
                         style: FFTokens.monoLabel(
                           theme.colorScheme.primary,
                           size: 10,
@@ -464,7 +464,7 @@ class _AssignGoalSheetState extends State<AssignGoalSheet> {
         bottom: FFTokens.spacingSm,
       ),
       child: Text(
-        context.tr(key).toUpperCase(),
+        context.tr(key),
         style: FFTokens.monoLabel(theme.colorScheme.onSurfaceVariant),
       ),
     );

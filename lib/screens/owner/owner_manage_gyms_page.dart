@@ -226,8 +226,8 @@ class _OwnerGymGridCard extends StatelessWidget {
 
   static Widget _cover(ColorScheme cs, String? src) {
     final placeholder = Container(
-      color: cs.primary.withValues(alpha: 0.1),
-      child: Icon(Icons.fitness_center, size: 36, color: cs.primary),
+      color: cs.surfaceContainerHighest,
+      child: Icon(Icons.fitness_center, size: 36, color: cs.onSurfaceVariant),
     );
     if (src == null) return placeholder;
     return FFRemoteImage(

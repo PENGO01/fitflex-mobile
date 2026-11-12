@@ -142,7 +142,7 @@ class PhotoGallery extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 14),
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(FFTokens.radiusXl),
       ),
       child: images.isNotEmpty
@@ -162,7 +162,7 @@ class PhotoGallery extends StatelessWidget {
                       fallback: Center(
                         child: Icon(
                           emptyIcon,
-                          color: Theme.of(context).colorScheme.primary,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                           size: 48,
                         ),
                       ),

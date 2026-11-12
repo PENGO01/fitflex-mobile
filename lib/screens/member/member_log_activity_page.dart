@@ -257,7 +257,7 @@ class _MemberLogActivityPageState extends State<MemberLogActivityPage> {
         ],
         const SizedBox(height: FFTokens.spacingMd),
         Text(
-          context.tr('logActivity.type').toUpperCase(),
+          context.tr('logActivity.type'),
           style: FFTokens.monoLabel(theme.colorScheme.onSurfaceVariant),
         ),
         const SizedBox(height: FFTokens.spacingSm),
@@ -357,7 +357,7 @@ class _MemberLogActivityPageState extends State<MemberLogActivityPage> {
         if (f.intensity) ...[
           const SizedBox(height: FFTokens.spacingMd),
           Text(
-            context.tr('logActivity.intensity').toUpperCase(),
+            context.tr('logActivity.intensity'),
             style: FFTokens.monoLabel(theme.colorScheme.onSurfaceVariant),
           ),
           const SizedBox(height: FFTokens.spacingSm),

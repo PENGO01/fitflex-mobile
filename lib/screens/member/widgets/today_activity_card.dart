@@ -64,7 +64,7 @@ class TodayActivityCard extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  context.tr('activity.today').toUpperCase(),
+                  context.tr('activity.today'),
                   style: FFTokens.monoLabel(theme.colorScheme.onSurfaceVariant),
                 ),
               ),

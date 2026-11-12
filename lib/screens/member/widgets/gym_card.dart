@@ -98,7 +98,7 @@ class GymCard extends StatelessWidget {
                     children: [
                       FFBadge(
                         label: gymTierLabel(context, gym),
-                        tone: FFBadgeTone.brand,
+                        tone: FFBadgeTone.neutral,
                       ),
                       if (distanceKm != null)
                         FFBadge(
@@ -198,11 +198,11 @@ class GymGridCard extends StatelessWidget {
                 aspectRatio: imageAspectRatio,
                 child: gym.coverThumbnail == null
                     ? Container(
-                        color: cs.primary.withValues(alpha: 0.1),
+                        color: cs.surfaceContainerHighest,
                         child: Icon(
                           Icons.fitness_center,
                           size: 36,
-                          color: cs.primary,
+                          color: cs.onSurfaceVariant,
                         ),
                       )
                     : FFRemoteImage(
@@ -211,11 +211,11 @@ class GymGridCard extends StatelessWidget {
                         height: double.infinity,
                         fit: BoxFit.cover,
                         fallback: Container(
-                          color: cs.primary.withValues(alpha: 0.1),
+                          color: cs.surfaceContainerHighest,
                           child: Icon(
                             Icons.fitness_center,
                             size: 36,
-                            color: cs.primary,
+                            color: cs.onSurfaceVariant,
                           ),
                         ),
                       ),
@@ -292,7 +292,7 @@ class GymGridCard extends StatelessWidget {
                         children: [
                           FFBadge(
                             label: gymTierLabel(context, gym),
-                            tone: FFBadgeTone.brand,
+                            tone: FFBadgeTone.neutral,
                           ),
                           if (distanceKm != null)
                             FFBadge(
@@ -337,12 +337,12 @@ class _GymThumb extends StatelessWidget {
     if (thumb == null) {
       return Container(
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(FFTokens.radiusMd),
         ),
         child: Icon(
           Icons.fitness_center,
-          color: Theme.of(context).colorScheme.primary,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
         ),
       );
     }
@@ -354,10 +354,10 @@ class _GymThumb extends StatelessWidget {
         height: 72,
         fit: BoxFit.cover,
         fallback: Container(
-          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
           child: Icon(
             Icons.fitness_center,
-            color: Theme.of(context).colorScheme.primary,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
       ),

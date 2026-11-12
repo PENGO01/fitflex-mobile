@@ -422,8 +422,9 @@ class _Chip extends StatelessWidget {
         alignment: Alignment.center,
         padding: const EdgeInsets.symmetric(horizontal: FFTokens.spacingMd),
         decoration: BoxDecoration(
+          // FitFlex DS v1.0: a selected filter is a solid primary pill.
           color: selected
-              ? theme.colorScheme.primary.withValues(alpha: 0.12)
+              ? theme.colorScheme.primary
               : theme.colorScheme.surface,
           border: Border.all(
             color: selected
@@ -436,9 +437,9 @@ class _Chip extends StatelessWidget {
           label,
           style: theme.textTheme.labelLarge?.copyWith(
             color: selected
-                ? theme.colorScheme.primary
+                ? theme.colorScheme.onPrimary
                 : theme.colorScheme.onSurface,
-            fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+            fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
           ),
         ),
       ),

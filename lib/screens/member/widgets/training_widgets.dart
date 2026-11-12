@@ -126,7 +126,7 @@ class TrainingPlanCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            context.tr('training.myPlan').toUpperCase(),
+            context.tr('training.myPlan'),
             style: FFTokens.monoLabel(theme.colorScheme.onSurfaceVariant),
           ),
           const SizedBox(height: FFTokens.spacingXs),

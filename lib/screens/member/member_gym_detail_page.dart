@@ -167,7 +167,7 @@ class _MemberGymDetailPageState extends State<MemberGymDetailPage> {
               const SizedBox(width: 6),
               FFBadge(
                 label: gymTierLabel(context, gym),
-                tone: FFBadgeTone.brand,
+                tone: FFBadgeTone.neutral,
               ),
               if (gym.isFreeOnline) ...[
                 const SizedBox(width: 6),

@@ -115,7 +115,7 @@ class TodayWorkoutCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            context.tr('workout.today').toUpperCase(),
+            context.tr('workout.today'),
             style: FFTokens.monoLabel(theme.colorScheme.onSurfaceVariant),
           ),
           const SizedBox(height: FFTokens.spacingXs),
