@@ -1221,13 +1221,18 @@ ThemeData buildVoltCardTheme() {
   );
   return base.copyWith(
     // On the lime card the primary button is forest with white text.
+    // (styleFrom first: `merge` only fills what the first style leaves null.)
     filledButtonTheme: FilledButtonThemeData(
-      style: base.filledButtonTheme.style?.merge(
-        FilledButton.styleFrom(
-          backgroundColor: ink,
-          foregroundColor: Colors.white,
-        ),
-      ),
+      style: FilledButton.styleFrom(
+        backgroundColor: ink,
+        foregroundColor: Colors.white,
+      ).merge(base.filledButtonTheme.style),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        foregroundColor: ink,
+        side: const BorderSide(color: ink, width: 1.5),
+      ).merge(base.outlinedButtonTheme.style),
     ),
     colorScheme: base.colorScheme.copyWith(
       surface: FFTokens.volt,
