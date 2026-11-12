@@ -323,7 +323,9 @@ class _TrainerHomePageState extends State<TrainerHomePage> {
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
-          title: Text(context.tr('trainer.dashboard')),
+          // DS v1.0 app bar: wordmark left; language and theme moved to the
+          // Trainer profile tab.
+          title: const FFLimeWordmark(),
           // Bookings, pass approvals, and FitFlex promotions and news.
           actions: [
             IconButton(
@@ -333,7 +335,7 @@ class _TrainerHomePageState extends State<TrainerHomePage> {
               icon: const Icon(Icons.qr_code_2),
             ),
             const InboxBellButton(),
-            const AppPrefsButtons(),
+            const SizedBox(width: 8),
           ],
         ),
         body: RefreshIndicator(
@@ -639,6 +641,20 @@ class _TrainerHomePageState extends State<TrainerHomePage> {
       style: Theme.of(context).textTheme.headlineSmall,
     ),
     const SizedBox(height: 12),
+    FFCard(
+      key: const Key('trainer-prefs'),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              context.tr('member.prefs'),
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+          ),
+          const AppPrefsButtons(),
+        ],
+      ),
+    ),
     FFActionTile(
       key: const Key('trainer-tile-professional'),
       icon: Icons.edit_outlined,
