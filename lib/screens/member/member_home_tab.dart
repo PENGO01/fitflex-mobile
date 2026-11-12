@@ -16,6 +16,7 @@ import 'widgets/home_hero.dart';
 import '../../shared/photo_footer_flag.dart';
 import '../../shared/photo_hero_flag.dart';
 import 'widgets/pass_summary_card.dart';
+import 'widgets/home_board.dart';
 import 'widgets/today_activity_card.dart';
 import 'widgets/workout_widgets.dart';
 
@@ -95,21 +96,69 @@ class _MemberHomeTabState extends State<MemberHomeTab> {
     bool has(HomeCardKind k) => picks.any((p) => p.kind == k);
 
     if (photoHeroUi) return _buildPhotoHero(context, data, picks, now, has);
+
+    // FitFlex DS v1.0 Home board: greeting, the pass, this week, streak and
+    // visits, the nearest gym; then the ranked cards. The streak and the
+    // gym suggestion live in the fixed rows, so their ranked cards don't
+    // repeat them.
+    const gap = SizedBox(height: FFTokens.spacingSm);
+    final nearest = data.gyms.isEmpty
+        ? null
+        : memberHomeNearGyms(data.gyms, userLat: _userLat, userLng: _userLng)
+              .firstOrNull;
+    final showPass = picks.any((p) => p.kind == HomeCardKind.passport);
+    final rest = [
+      for (final p in picks)
+        if (p.kind != HomeCardKind.passport &&
+            p.kind != HomeCardKind.streak &&
+            !(p.kind == HomeCardKind.recommendation && nearest != null))
+          p,
+    ];
     return ListView(
       key: const Key('member-home'),
-      padding: const EdgeInsets.all(FFTokens.spacingLg),
+      padding: const EdgeInsets.fromLTRB(
+        FFTokens.spacingLg,
+        FFTokens.spacingSm,
+        FFTokens.spacingLg,
+        FFTokens.spacingXl,
+      ),
       children: [
-        FFPageHeader(
-          title: displayName,
-          description: context.tr(
-            now.hour < 12
-                ? 'member.goodMorning'
-                : now.hour < 17
-                ? 'member.goodAfternoon'
-                : 'member.goodEvening',
-          ),
+        HomeGreeting(
+          data: data,
+          name: me == null ? null : displayName,
+          now: now,
         ),
-        for (final p in picks)
+        if (showPass)
+          KeyedSubtree(
+            key: const Key('home-card-passport'),
+            child: _card(
+              context,
+              data,
+              picks.firstWhere((p) => p.kind == HomeCardKind.passport),
+              now,
+              has,
+            ),
+          ),
+        HomeWeekCard(data: data, now: now),
+        gap,
+        KeyedSubtree(
+          key: const Key('home-card-streak'),
+          child: HomeStatsRow(data: data, now: now),
+        ),
+        if (nearest != null) ...[
+          gap,
+          HomeNearestGym(
+            gym: nearest,
+            distanceKm: gymDisplayDistanceKm(
+              nearest,
+              userLat: _userLat,
+              userLng: _userLng,
+              activeFilter: 'home',
+            ),
+          ),
+        ],
+        const SizedBox(height: FFTokens.spacingLg),
+        for (final p in rest)
           KeyedSubtree(
             key: Key('home-card-${p.kind.name}'),
             child: _card(context, data, p, now, has),

@@ -2726,6 +2726,16 @@ class FFLocale extends ChangeNotifier {
       'home.why.trainerRegular':
           "You've been training regularly. A coach can help plan what's next.",
       'home.streak.title': '{n}-day streak',
+      // Home board (FitFlex DS v1.0).
+      'home.week.title': 'This week',
+      'home.week.activeDays': '{n} of 7 days active',
+      'home.stat.streak': 'Streak',
+      'home.stat.days': 'days',
+      'home.stat.visitsMonth': 'Visits this month',
+      'home.stat.checkins': 'check-ins',
+      'home.nearest.title': 'Nearest gym',
+      'home.nearest.suggested': 'A gym to try',
+      'home.nearest.open': 'Open',
       'home.streak.endedTitle': 'Your {n}-day streak ended',
       'home.streak.atRisk':
           'Nothing counted yet today. Any activity keeps it going.',
@@ -11022,6 +11032,15 @@ class FFLocale extends ChangeNotifier {
       'home.why.trainerRegular':
           'Umekuwa ukifanya mazoezi mara kwa mara. Trainer anaweza kukusaidia kupanga hatua inayofuata.',
       'home.streak.title': 'Mfululizo wa siku {n}',
+      'home.week.title': 'Wiki hii',
+      'home.week.activeDays': 'Siku {n} kati ya 7', // TODO(sw-review)
+      'home.stat.streak': 'Mfululizo',
+      'home.stat.days': 'siku',
+      'home.stat.visitsMonth': 'Ziara za mwezi huu', // TODO(sw-review)
+      'home.stat.checkins': 'mara', // TODO(sw-review)
+      'home.nearest.title': 'Gym iliyo karibu',
+      'home.nearest.suggested': 'Gym ya kujaribu', // TODO(sw-review)
+      'home.nearest.open': 'Fungua',
       'home.streak.endedTitle': 'Mfululizo wako wa siku {n} umeisha',
       'home.streak.atRisk':
           'Bado hakuna kilichohesabiwa leo. Shughuli yoyote itaendeleza mfululizo.',

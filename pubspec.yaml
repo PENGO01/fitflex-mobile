@@ -129,6 +129,8 @@ flutter:
     - assets/brand/fitflex-icon.png
     - assets/brand/logo-pin.png
     - assets/brand/logo-runner.png
+    # Africa dot map on the active pass card (Natural Earth, public domain).
+    - assets/brand/africa-dots.png
     # Photo heroes (PHOTO_HERO_UI). 1x here, 2x in 2.0x/; licences in
     # assets/photos/hero/LICENSES.md (not bundled).
     - assets/photos/hero/hero_language.webp

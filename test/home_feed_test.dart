@@ -331,8 +331,15 @@ void main() {
     ];
     expect(order, [...order]..sort());
     expect(find.text('Good evening'), findsOneWidget);
-    expect(find.text('5-day streak'), findsOneWidget);
-    expect(find.textContaining('Any activity keeps it going'), findsOneWidget);
+    // DS v1.0 Home board: the streak is the forest tile beside visits.
+    expect(
+      find.descendant(
+        of: find.byKey(const Key('home-stat-streak')),
+        matching: find.text('5'),
+      ),
+      findsOneWidget,
+    );
+    expect(find.byKey(const Key('home-week')), findsOneWidget);
     // Its own cards exist, so the activity card drops those rows.
     expect(find.byKey(const Key('home-today-workout')), findsNothing);
     expect(find.text('Featured trainers'), findsNothing);

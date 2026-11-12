@@ -127,8 +127,7 @@ class PassSummaryCard extends StatelessWidget {
     final theme = Theme.of(context);
     final sub = data.subscription;
     final pending = data.pendingPayment;
-    return FFCard(
-      child: Column(
+    final content = Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // "Your pass" and the badge share the top line; the title gets the
@@ -232,6 +231,9 @@ class PassSummaryCard extends StatelessWidget {
                 ),
               ),
             ],
+          ] else if (state == PassState.active) ...[
+            const SizedBox(height: FFTokens.spacingMd),
+            _voltBody(context),
           ] else ...[
             const SizedBox(height: FFTokens.spacingMd),
             _stateBody(context, state),
@@ -264,7 +266,113 @@ class PassSummaryCard extends StatelessWidget {
             ),
           ],
         ],
+      );
+    // On the Volt card: the Africa dot map, faint, top right (DS v1.0).
+    if (state != PassState.active) return FFCard(child: content);
+    return FFCard(
+      child: Stack(
+        children: [
+          PositionedDirectional(
+            top: 0,
+            end: 0,
+            child: IgnorePointer(
+              child: ExcludeSemantics(
+                child: Opacity(
+                  opacity: 0.55,
+                  child: Image.asset(
+                    'assets/brand/africa-dots.png',
+                    key: const Key('pass-africa-motif'),
+                    width: 132,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          content,
+        ],
       ),
+    );
+  }
+
+  /// Active pass on the Volt card (DS v1.0 Home board): the visits left as
+  /// a large number, "left" and "7 of 18 used" beside it, the end date
+  /// under. Same keys and spoken text as the ring it replaces.
+  Widget _voltBody(BuildContext context) {
+    final theme = Theme.of(context);
+    final sub = data.subscription;
+    final left = visitsLeft(data);
+    final cap = data.me?.visitCap;
+    final leftLabel = context.tr('pass.state.left');
+    final usedOf = left == null || cap == null
+        ? null
+        : context
+              .tr('pass.state.usedOf')
+              .replaceAll('{used}', '${(cap - left).clamp(0, cap)}')
+              .replaceAll('{total}', '$cap');
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            if (left != null && cap != null)
+              Semantics(
+                key: const Key('pass-visits-ring'),
+                container: true,
+                label: '$left $leftLabel',
+                child: ExcludeSemantics(
+                  child: Text(
+                    '$left',
+                    style: theme.textTheme.displayMedium?.copyWith(
+                      fontSize: 56,
+                      fontWeight: FontWeight.w700,
+                      height: 0.95,
+                      letterSpacing: -2,
+                    ),
+                  ),
+                ),
+              )
+            else
+              const Icon(Icons.all_inclusive, size: 44),
+            const SizedBox(width: FFTokens.spacingSm),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (left != null && cap != null)
+                      ExcludeSemantics(
+                        child: Text(
+                          leftLabel,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    Text(
+                      usedOf ?? context.tr('pass.unlimited'),
+                      key: const Key('pass-visits-used'),
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+        if (sub?.expiresAt != null) ...[
+          const SizedBox(height: FFTokens.spacingSm),
+          Text(
+            context
+                .tr('pass.state.endsOn')
+                .replaceAll('{date}', passDate(context, sub?.expiresAt)),
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ],
     );
   }
 
