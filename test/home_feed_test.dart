@@ -326,10 +326,12 @@ void main() {
     await tester.pump();
     final order = [
       // The pass (check-in QR) always leads; the rest keep their ranking.
-      for (final k in ['passport', 'streak', 'todayWorkout', 'todayActivity'])
+      for (final k in ['passport', 'streak', 'todayWorkout'])
         tester.getTopLeft(find.byKey(Key('home-card-$k'))).dy,
     ];
     expect(order, [...order]..sort());
+    // DS v1.0: This week and the stat tiles replace today's activity card.
+    expect(find.byKey(const Key('home-card-todayActivity')), findsNothing);
     expect(find.textContaining('Good evening'), findsOneWidget);
     // DS v1.0 Home board: the streak is the forest tile beside visits.
     expect(

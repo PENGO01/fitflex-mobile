@@ -928,8 +928,8 @@ class MemberShellState extends State<MemberShell> with WidgetsBindingObserver {
                   ),
                   NavigationDestination(
                     key: const Key('member-nav-activity'),
-                    icon: const Icon(Icons.directions_run_outlined),
-                    selectedIcon: const Icon(Icons.directions_run),
+                    icon: const Icon(Icons.monitor_heart_outlined),
+                    selectedIcon: const Icon(Icons.monitor_heart),
                     label: context.tr('activity.title'),
                   ),
                   NavigationDestination(
@@ -946,8 +946,8 @@ class MemberShellState extends State<MemberShell> with WidgetsBindingObserver {
                   ),
                   NavigationDestination(
                     key: const Key('member-nav-shop'),
-                    icon: const Icon(Icons.storefront_outlined),
-                    selectedIcon: const Icon(Icons.storefront),
+                    icon: const Icon(Icons.shopping_bag_outlined),
+                    selectedIcon: const Icon(Icons.shopping_bag),
                     label: context.tr('member.shop'),
                   ),
                 ],
@@ -1100,7 +1100,7 @@ class _ProfileAvatarButton extends StatelessWidget {
         tooltip: context.tr('member.profile'),
         onPressed: () => context.go(AppRoutes.memberProfile),
         icon: CircleAvatar(
-          radius: 18,
+          radius: 20,
           backgroundColor: dark ? FFTokens.volt : FFTokens.ink,
           foregroundColor: dark ? FFTokens.onVolt : FFTokens.volt,
           child: initial.isEmpty

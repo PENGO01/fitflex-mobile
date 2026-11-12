@@ -323,12 +323,12 @@ void main() {
           ),
         );
         expect(tester.takeException(), isNull);
-        // The name has the whole content width (158 - 2×10 padding) to
+        // The name has the whole content width (158 - 2×12 padding) to
         // itself; "Not verified" is on the line below, not beside it. (The
         // test font is wider than the real one, so the width is what is
         // checked, not whether this name fits.)
         final nameFinder = find.byKey(const Key('gym-grid-name-g1'));
-        expect(tester.getSize(nameFinder).width, greaterThanOrEqualTo(137));
+        expect(tester.getSize(nameFinder).width, greaterThanOrEqualTo(133));
         expect(
           tester.getTopLeft(find.byType(NotVerifiedLabel)).dy,
           greaterThan(tester.getBottomLeft(nameFinder).dy - 1),

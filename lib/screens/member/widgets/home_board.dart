@@ -48,7 +48,7 @@ class HomeGreeting extends StatelessWidget {
       key: const Key('home-greeting'),
       padding: const EdgeInsets.only(
         top: FFTokens.spacingXs,
-        bottom: FFTokens.spacingLg,
+        bottom: FFTokens.spacingMd,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -356,10 +356,19 @@ class _StatTile extends StatelessWidget {
       label: '$label: $value $unit',
       child: ExcludeSemantics(
         child: Container(
-          padding: const EdgeInsets.all(FFTokens.spacingLg),
+          padding: const EdgeInsets.all(FFTokens.spacingMd),
           decoration: BoxDecoration(
             color: bg,
             borderRadius: BorderRadius.circular(FFTokens.radiusXl),
+            boxShadow: dark || theme.brightness == Brightness.dark
+                ? null
+                : [
+                    BoxShadow(
+                      color: FFTokens.ink.withValues(alpha: 0.06),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -380,14 +389,14 @@ class _StatTile extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: FFTokens.spacingMd),
+              const SizedBox(height: FFTokens.spacingSm),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Expanded(
                     child: Wrap(
                       crossAxisAlignment: WrapCrossAlignment.end,
-                      spacing: 6,
+                      spacing: 4,
                       children: [
                         Text(
                           value,
@@ -405,6 +414,7 @@ class _StatTile extends StatelessWidget {
                             unit,
                             style: theme.textTheme.bodyMedium?.copyWith(
                               color: fg,
+                              fontSize: 14,
                             ),
                           ),
                         ),
@@ -491,7 +501,7 @@ class HomeNearestGym extends StatelessWidget {
                 ),
                 Text(
                   gym.name,
-                  maxLines: 1,
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w700,

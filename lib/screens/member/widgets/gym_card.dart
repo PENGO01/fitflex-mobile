@@ -196,14 +196,8 @@ class GymGridCard extends StatelessWidget {
       GymCardLayout.hero => _hero(context),
       GymCardLayout.row => _row(context),
     };
-    return Material(
+    return FFSurface(
       color: theme.colorScheme.surface,
-      elevation: theme.brightness == Brightness.light ? 1 : 0,
-      shadowColor: FFTokens.ink.withValues(alpha: 0.35),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(FFTokens.radiusXl),
-      ),
-      clipBehavior: Clip.antiAlias,
       child: InkWell(onTap: () => _open(context), child: content),
     );
   }

@@ -119,14 +119,8 @@ class FFTileGroup extends StatelessWidget {
     final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.only(bottom: FFTokens.spacingSm),
-      child: Material(
+      child: FFSurface(
         color: theme.colorScheme.surface,
-        elevation: theme.brightness == Brightness.light ? 1 : 0,
-        shadowColor: FFTokens.ink.withValues(alpha: 0.35),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(FFTokens.radiusXl),
-        ),
-        clipBehavior: Clip.antiAlias,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

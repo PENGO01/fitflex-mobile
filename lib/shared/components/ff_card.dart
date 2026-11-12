@@ -16,14 +16,8 @@ class FFCard extends StatelessWidget {
     final theme = Theme.of(context);
     return Padding(
       padding: margin ?? const EdgeInsets.only(bottom: FFTokens.spacingSm),
-      child: Material(
+      child: FFSurface(
         color: theme.colorScheme.surface,
-        elevation: theme.brightness == Brightness.light ? 1 : 0,
-        shadowColor: FFTokens.ink.withValues(alpha: 0.35),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(FFTokens.radiusXl),
-        ),
-        clipBehavior: Clip.antiAlias,
         child: Padding(
           padding: padding ?? const EdgeInsets.all(FFTokens.spacingMd),
           child: child,
@@ -93,6 +87,47 @@ class FFCardFooter extends StatelessWidget {
         ),
       ),
       child: child,
+    );
+  }
+}
+
+/// A white (charcoal in dark) radius-20 surface with the DS v1.0 card
+/// shadow, `0 2 8 rgba(16,45,36,.06)`, in light mode only. No border.
+class FFSurface extends StatelessWidget {
+  const FFSurface({
+    super.key,
+    required this.color,
+    required this.child,
+    this.radius = FFTokens.radiusXl,
+  });
+
+  final Color color;
+  final Widget child;
+  final double radius;
+
+  @override
+  Widget build(BuildContext context) {
+    final light = Theme.of(context).brightness == Brightness.light;
+    final shape = BorderRadius.circular(radius);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius: shape,
+        boxShadow: light
+            ? [
+                BoxShadow(
+                  color: FFTokens.ink.withValues(alpha: 0.06),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ]
+            : null,
+      ),
+      child: Material(
+        color: color,
+        shape: RoundedRectangleBorder(borderRadius: shape),
+        clipBehavior: Clip.antiAlias,
+        child: child,
+      ),
     );
   }
 }

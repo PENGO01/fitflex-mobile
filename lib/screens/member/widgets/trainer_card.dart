@@ -56,15 +56,8 @@ class TrainerGridCard extends StatelessWidget {
       context.go('/member/trainers/${trainer.id}');
     }
 
-    final theme = Theme.of(context);
-    return Material(
+    return FFSurface(
       color: cs.surface,
-      elevation: theme.brightness == Brightness.light ? 1 : 0,
-      shadowColor: FFTokens.ink.withValues(alpha: 0.35),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(FFTokens.radiusXl),
-      ),
-      clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: open,
         child: row ? _row(context, specialties) : Column(

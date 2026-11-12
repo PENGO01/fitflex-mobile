@@ -305,7 +305,7 @@ class PassSummaryCard extends StatelessWidget {
             child: IgnorePointer(
               child: ExcludeSemantics(
                 child: Opacity(
-                  opacity: 0.5,
+                  opacity: 0.4,
                   child: Image.asset(
                     'assets/brand/africa-dots.png',
                     key: const Key('pass-africa-motif'),
@@ -415,7 +415,7 @@ class PassSummaryCard extends StatelessWidget {
                         backgroundColor: FFTokens.ink,
                         foregroundColor: Colors.white,
                         minimumSize: const Size(0, 44),
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: const EdgeInsets.symmetric(horizontal: 14),
                       ),
                       onPressed: () => _go(context, AppRoutes.memberQr),
                       icon: const Icon(Icons.qr_code_2, size: 18),
@@ -443,7 +443,10 @@ class PassSummaryCard extends StatelessWidget {
                       children: [
                         Expanded(child: count),
                         const SizedBox(width: FFTokens.spacingSm),
-                        Flexible(
+                        ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: c.maxWidth * 0.45,
+                          ),
                           child: FittedBox(
                             fit: BoxFit.scaleDown,
                             alignment: AlignmentDirectional.bottomEnd,

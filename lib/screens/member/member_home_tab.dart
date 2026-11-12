@@ -101,7 +101,8 @@ class _MemberHomeTabState extends State<MemberHomeTab> {
     // visits, the nearest gym; then the ranked cards. The streak and the
     // gym suggestion live in the fixed rows, so their ranked cards don't
     // repeat them.
-    const gap = SizedBox(height: FFTokens.spacingSm);
+    // Cards carry an 8px bottom margin; with this the rhythm is 12.
+    const gap = SizedBox(height: 4);
     final nearest = data.gyms.isEmpty
         ? null
         : memberHomeNearGyms(data.gyms, userLat: _userLat, userLng: _userLng)
@@ -109,17 +110,21 @@ class _MemberHomeTabState extends State<MemberHomeTab> {
     final showPass = picks.any((p) => p.kind == HomeCardKind.passport);
     final rest = [
       for (final p in picks)
+        // This week and the stat tiles already say what today's activity
+        // card said (DS v1.0 board ends at the nearest gym).
         if (p.kind != HomeCardKind.passport &&
             p.kind != HomeCardKind.streak &&
+            p.kind != HomeCardKind.todayActivity &&
             !(p.kind == HomeCardKind.recommendation && nearest != null))
           p,
     ];
     return ListView(
       key: const Key('member-home'),
+      // DS v1.0: 16px side gutter.
       padding: const EdgeInsets.fromLTRB(
-        FFTokens.spacingLg,
+        FFTokens.spacingMd,
         FFTokens.spacingSm,
-        FFTokens.spacingLg,
+        FFTokens.spacingMd,
         FFTokens.spacingXl,
       ),
       children: [
@@ -139,6 +144,7 @@ class _MemberHomeTabState extends State<MemberHomeTab> {
               has,
             ),
           ),
+        gap,
         HomeWeekCard(data: data, now: now),
         gap,
         KeyedSubtree(

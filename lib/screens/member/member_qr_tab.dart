@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -56,7 +58,7 @@ class MemberQrTab extends StatelessWidget {
             // Tech Brief §5: self check-in by scanning the gym's entrance QR.
             FFButton(
               key: const Key('member-scan-gym-qr'),
-              label: context.tr('member.scanGymQr'),
+              label: context.tr('checkin.scanInstead'),
               onPressed: () => _scanGym(context, data),
               variant: FFButtonVariant.secondary,
               icon: Icons.qr_code_scanner,
@@ -151,12 +153,7 @@ class _QrCard extends StatelessWidget {
                   ),
           ),
           const SizedBox(height: FFTokens.spacingMd),
-          Text(
-            context.tr('home.qr.refreshes'),
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
+          _QrRefresh(token: data.qrToken),
           if (visit != null) ...[
             const SizedBox(height: FFTokens.spacingMd),
             Text(
@@ -393,6 +390,82 @@ class _QrPassStrip extends StatelessWidget {
             ),
         ],
       ),
+    );
+  }
+}
+
+/// DS v1.0 Check in board: a thin lime bar that empties until the next code
+/// and "New code in 37 s". The shell fetches a new code every 30 seconds
+/// (`MemberShellState`), so the count restarts whenever the code changes.
+class _QrRefresh extends StatefulWidget {
+  const _QrRefresh({required this.token});
+
+  final String? token;
+
+  @override
+  State<_QrRefresh> createState() => _QrRefreshState();
+}
+
+class _QrRefreshState extends State<_QrRefresh> {
+  static const _period = 30;
+  Timer? _tick;
+  int _left = _period;
+
+  @override
+  void initState() {
+    super.initState();
+    _tick = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) setState(() => _left = _left > 1 ? _left - 1 : _period);
+    });
+  }
+
+  @override
+  void didUpdateWidget(_QrRefresh old) {
+    super.didUpdateWidget(old);
+    if (old.token != widget.token) _left = _period;
+  }
+
+  @override
+  void dispose() {
+    _tick?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      key: const Key('qr-refresh'),
+      children: [
+        ExcludeSemantics(
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(2),
+            child: SizedBox(
+              width: 210,
+              child: LinearProgressIndicator(
+                value: _left / _period,
+                minHeight: 4,
+                color: FFTokens.volt,
+                backgroundColor: theme.colorScheme.surfaceContainerHighest,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        // Read once, not every second, by screen readers.
+        Semantics(
+          liveRegion: false,
+          label: context.tr('home.qr.refreshes'),
+          child: ExcludeSemantics(
+            child: Text(
+              context.tr('qr.newCodeIn').replaceAll('{n}', '$_left'),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
