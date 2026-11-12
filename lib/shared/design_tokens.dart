@@ -142,7 +142,8 @@ class FFTokens {
   /// kept so existing call sites don't change.)
   static TextStyle monoLabel(Color color, {double size = 11}) => TextStyle(
     fontFamily: fontSans,
-    fontSize: size + 2,
+    fontSize: size + 1,
+    height: 1.2,
     fontWeight: FontWeight.w600,
     color: color,
   );

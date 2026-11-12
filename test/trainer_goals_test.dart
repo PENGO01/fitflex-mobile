@@ -265,10 +265,10 @@ void main() {
           data: data,
         ),
       );
-      expect(find.text('FROM YOUR TRAINER'), findsOneWidget);
-      expect(find.text('YOUR GOALS'), findsOneWidget);
+      expect(find.text('From your trainer'), findsOneWidget);
+      expect(find.text('Your goals'), findsOneWidget);
       expect(find.byKey(const Key('goal-trainer-label-g_t')), findsOneWidget);
-      expect(find.text('TRAINER GOAL'), findsOneWidget);
+      expect(find.text('Trainer goal'), findsOneWidget);
       expect(find.text('Assigned by Sarah'), findsOneWidget);
       expect(find.text('4 workouts, 23–29 Sep'), findsOneWidget);
       expect(find.textContaining('2 of 4'), findsOneWidget);
@@ -292,7 +292,7 @@ void main() {
           data: data,
         ),
       );
-      expect(find.text('COACHING GOAL'), findsOneWidget);
+      expect(find.text('Coaching goal'), findsOneWidget);
       expect(find.byKey(const Key('goal-undo-g_c')), findsNothing);
       await t.tap(find.byKey(const Key('goal-mark-g_c')));
       await t.pumpAndSettle();
