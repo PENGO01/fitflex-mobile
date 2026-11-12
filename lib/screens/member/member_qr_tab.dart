@@ -63,14 +63,6 @@ class MemberQrTab extends StatelessWidget {
               variant: FFButtonVariant.secondary,
               icon: Icons.qr_code_scanner,
             ),
-            const SizedBox(height: FFTokens.spacingSm),
-            Text(
-              context.tr('qr.needsSignal'),
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-            ),
           ],
           const SizedBox(height: FFTokens.spacingLg),
 
@@ -463,6 +455,14 @@ class _QrRefreshState extends State<_QrRefresh> {
                 color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
+          ),
+        ),
+        // Reads with the countdown (DS v1.0 Check in board).
+        Text(
+          context.tr('qr.needsSignal'),
+          textAlign: TextAlign.center,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
           ),
         ),
       ],

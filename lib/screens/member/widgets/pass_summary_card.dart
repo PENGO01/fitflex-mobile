@@ -363,7 +363,36 @@ class PassSummaryCard extends StatelessWidget {
                     // The board puts Check in beside the count; on a narrow
                     // phone or at large text it moves under it.
                     final scale = MediaQuery.textScalerOf(context).scale(1);
-                    final stacked = c.maxWidth < 280 || scale > 1.1;
+                    final numStyle = theme.textTheme.displayMedium?.copyWith(
+                      fontSize: 56,
+                      fontWeight: FontWeight.w800,
+                      height: 0.95,
+                      letterSpacing: -2,
+                    );
+                    final ofStyle = theme.textTheme.bodyMedium?.copyWith(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                    );
+                    double width(String t, TextStyle? st) => (TextPainter(
+                      text: TextSpan(text: t, style: st),
+                      textDirection: Directionality.of(context),
+                      textScaler: MediaQuery.textScalerOf(context),
+                      maxLines: 1,
+                    )..layout()).width;
+                    // "11 of 18 visits left" stays on one line (DS v1.0);
+                    // when it and the pill don't both fit, the pill drops
+                    // to its own row.
+                    final need =
+                        (left == null ? 44 : width('$left', numStyle)) +
+                        6 +
+                        width(ofLeft, ofStyle) +
+                        FFTokens.spacingSm +
+                        width(
+                          context.tr('member.checkInNav'),
+                          theme.textTheme.labelLarge,
+                        ) +
+                        28 + 18 + 8 + 4 + 16 + 4;
+                    final stacked = need > c.maxWidth || scale > 1.1;
                     final count = Row(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
@@ -378,15 +407,7 @@ class PassSummaryCard extends StatelessWidget {
                           child: ExcludeSemantics(
                             child: left == null
                                 ? const Icon(Icons.all_inclusive, size: 44)
-                                : Text(
-                                    '$left',
-                                    style: theme.textTheme.displayMedium?.copyWith(
-                                      fontSize: 56,
-                                      fontWeight: FontWeight.w800,
-                                      height: 0.95,
-                                      letterSpacing: -2,
-                                    ),
-                                  ),
+                                : Text('$left', style: numStyle),
                           ),
                         ),
                           ),
@@ -399,10 +420,7 @@ class PassSummaryCard extends StatelessWidget {
                               child: Text(
                                 ofLeft,
                                 key: const Key('pass-visits-used'),
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                                style: ofStyle,
                               ),
                             ),
                           ),

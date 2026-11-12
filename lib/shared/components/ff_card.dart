@@ -92,7 +92,7 @@ class FFCardFooter extends StatelessWidget {
 }
 
 /// A white (charcoal in dark) radius-20 surface with the DS v1.0 card
-/// shadow, `0 2 8 rgba(16,45,36,.06)`, in light mode only. No border.
+/// shadow, `0 2 12 rgba(16,45,36,.05)`, in light mode only. No border.
 class FFSurface extends StatelessWidget {
   const FFSurface({
     super.key,
@@ -115,8 +115,8 @@ class FFSurface extends StatelessWidget {
         boxShadow: light
             ? [
                 BoxShadow(
-                  color: FFTokens.ink.withValues(alpha: 0.06),
-                  blurRadius: 8,
+                  color: FFTokens.ink.withValues(alpha: 0.05),
+                  blurRadius: 12,
                   offset: const Offset(0, 2),
                 ),
               ]

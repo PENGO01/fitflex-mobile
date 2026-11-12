@@ -152,7 +152,8 @@ class _MemberHomeTabState extends State<MemberHomeTab> {
           child: HomeStatsRow(data: data, now: now),
         ),
         if (nearest != null) ...[
-          gap,
+          // The stat row has no card margin of its own: a full 12.
+          const SizedBox(height: 12),
           HomeNearestGym(
             gym: nearest,
             distanceKm: gymDisplayDistanceKm(

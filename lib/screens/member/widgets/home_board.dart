@@ -57,7 +57,8 @@ class HomeGreeting extends StatelessWidget {
             first.isEmpty ? greeting : '$greeting,',
             style: theme.textTheme.titleMedium?.copyWith(
               fontSize: 18,
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0,
             ),
           ),
           const SizedBox(height: 2),
@@ -501,7 +502,7 @@ class HomeNearestGym extends StatelessWidget {
                 ),
                 Text(
                   gym.name,
-                  maxLines: 2,
+                  maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w700,
@@ -573,16 +574,21 @@ class _MiniBars extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisSize: MainAxisSize.min,
           children: [
-            for (final v in values) ...[
+            for (final (i, v) in values.indexed) ...[
               Container(
                 width: 6,
-                height: v == 0 ? 4 : 6 + 22 * v / top,
+                height: v == 0 ? 4 : 10 + 18 * v / top,
                 decoration: BoxDecoration(
-                  color: v == 0 ? empty : FFTokens.volt,
+                  // This week lime; earlier weeks quieter (DS v1.0 board).
+                  color: v == 0
+                      ? empty
+                      : i == values.length - 1
+                      ? FFTokens.volt
+                      : FFTokens.volt.withValues(alpha: dark ? 0.45 : 0.55),
                   borderRadius: BorderRadius.circular(3),
                 ),
               ),
-              const SizedBox(width: 3),
+              const SizedBox(width: 4),
             ],
           ],
         ),
