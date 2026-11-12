@@ -35,11 +35,13 @@ jobs:
       - name: Test
         id: test
         continue-on-error: true
-        run: flutter test --reporter expanded > test.txt 2>&1
+        timeout-minutes: 35
+        run: flutter test --reporter expanded --timeout=120s > test.txt 2>&1
 
       - name: Screens
         id: shots
         continue-on-error: true
+        timeout-minutes: 15
         run: |
           flutter test test/design_screens_test.dart \
             --dart-define=DESIGN_SHOTS=true --update-goldens > shots.txt 2>&1
@@ -53,8 +55,8 @@ jobs:
           out="$RUNNER_TEMP/out/$sha"
           mkdir -p "$out"
           cp analyze.txt test.txt shots.txt "$out/" 2>/dev/null || true
-          grep -E "\[E\]|Some tests failed|All tests passed" test.txt | tail -n 300 > "$out/test-summary.txt" || true
-          tail -n 3 test.txt >> "$out/test-summary.txt" || true
+          grep -E "\[E\]|Some tests failed|All tests passed|TimeoutException" test.txt | tail -n 300 > "$out/test-summary.txt" || true
+          tail -n 8 test.txt >> "$out/test-summary.txt" || true
           cp -r test/design_shots "$out/shots" 2>/dev/null || true
           {
             echo "commit=$GITHUB_SHA"
