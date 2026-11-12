@@ -1,0 +1,16 @@
+[REST] error: TimeoutException: slow
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+08:52 +4639 ~9: All tests passed!
+08:51 +4632 ~9: /home/runner/work/fitflex-mobile/fitflex-mobile/test/delete_account_test.dart: who sees it trainer sees the action
+08:51 +4633 ~9: /home/runner/work/fitflex-mobile/fitflex-mobile/test/delete_account_test.dart: who sees it gym_operator sees the action
+08:51 +4634 ~9: /home/runner/work/fitflex-mobile/fitflex-mobile/test/delete_account_test.dart: who sees it vendor sees the action
+08:51 +4635 ~9: /home/runner/work/fitflex-mobile/fitflex-mobile/test/delete_account_test.dart: who sees it gym_staff does not
+08:51 +4636 ~9: /home/runner/work/fitflex-mobile/fitflex-mobile/test/delete_account_test.dart: who sees it vendor_staff does not
+08:51 +4637 ~9: /home/runner/work/fitflex-mobile/fitflex-mobile/test/delete_account_test.dart: who sees it every account area carries it
+08:51 +4638 ~9: /home/runner/work/fitflex-mobile/fitflex-mobile/test/delete_account_test.dart: every string has English and Swahili
+08:52 +4639 ~9: All tests passed!
