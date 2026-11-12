@@ -370,7 +370,7 @@ class PassSummaryCard extends StatelessWidget {
                       letterSpacing: -2,
                     );
                     final ofStyle = theme.textTheme.bodyMedium?.copyWith(
-                      fontSize: 15,
+                      fontSize: 14,
                       fontWeight: FontWeight.w500,
                     );
                     double width(String t, TextStyle? st) => (TextPainter(
@@ -391,7 +391,7 @@ class PassSummaryCard extends StatelessWidget {
                           context.tr('member.checkInNav'),
                           theme.textTheme.labelLarge,
                         ) +
-                        28 + 18 + 8 + 4 + 16 + 4;
+                        24 + 18 + 8 + 4 + 16 + 4;
                     final stacked = need > c.maxWidth || scale > 1.1;
                     final count = Row(
                       crossAxisAlignment: CrossAxisAlignment.end,
@@ -433,7 +433,7 @@ class PassSummaryCard extends StatelessWidget {
                         backgroundColor: FFTokens.ink,
                         foregroundColor: Colors.white,
                         minimumSize: const Size(0, 44),
-                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
                       ),
                       onPressed: () => _go(context, AppRoutes.memberQr),
                       icon: const Icon(Icons.qr_code_2, size: 18),
