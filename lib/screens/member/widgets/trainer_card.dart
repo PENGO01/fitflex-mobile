@@ -17,9 +17,14 @@ class TrainerGridCard extends StatelessWidget {
     required this.trainer,
     this.placement,
     this.imageAspectRatio = 1,
+    this.row = false,
   });
 
   final TrainerProfile trainer;
+
+  /// Phone list (DS v1.0 Trainers board): photo left, name, specialties
+  /// and rate, and a lime "Book" pill on the right.
+  final bool row;
 
   /// Photo shape; a one-column grid uses a wider one so the card stays short.
   final double imageAspectRatio;
@@ -41,23 +46,28 @@ class TrainerGridCard extends StatelessWidget {
     final tt = Theme.of(context).textTheme;
     final specialties = trainer.specialties.take(2).join(' · ');
 
-    return GestureDetector(
-      onTap: () {
-        trackPromotionClick(
-          'trainer',
-          trainer.id,
-          trainer.promotion,
-          placement: placement,
-        );
-        context.go('/member/trainers/${trainer.id}');
-      },
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: cs.surface,
-          borderRadius: BorderRadius.circular(FFTokens.radiusLg),
-          border: Border.all(color: cs.outlineVariant),
-        ),
-        child: Column(
+    void open() {
+      trackPromotionClick(
+        'trainer',
+        trainer.id,
+        trainer.promotion,
+        placement: placement,
+      );
+      context.go('/member/trainers/${trainer.id}');
+    }
+
+    final theme = Theme.of(context);
+    return Material(
+      color: cs.surface,
+      elevation: theme.brightness == Brightness.light ? 1 : 0,
+      shadowColor: FFTokens.ink.withValues(alpha: 0.35),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(FFTokens.radiusXl),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: open,
+        child: row ? _row(context, specialties) : Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -149,6 +159,116 @@ class TrainerGridCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _photo(BuildContext context) =>
+      trainer.photoUrl != null && trainer.photoUrl!.isNotEmpty
+      ? FFRemoteImage(
+          src: trainer.photoUrl!,
+          profilePhoto: true,
+          width: double.infinity,
+          height: double.infinity,
+          fit: BoxFit.cover,
+          fallback: _AvatarPlaceholder(name: trainer.displayName),
+        )
+      : _AvatarPlaceholder(name: trainer.displayName);
+
+  Widget _row(BuildContext context, String specialties) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(14),
+            child: SizedBox(width: 72, height: 72, child: _photo(context)),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text.rich(
+                  TextSpan(
+                    text: trainer.displayName,
+                    children: [
+                      if (trainer.isVerified) ...[
+                        const TextSpan(text: ' '),
+                        const WidgetSpan(
+                          alignment: PlaceholderAlignment.middle,
+                          child: Icon(
+                            Icons.verified,
+                            size: 13,
+                            color: FFTokens.success600,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                  key: Key('trainer-grid-name-${trainer.id}'),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: tt.bodyMedium?.copyWith(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                if (!trainer.isVerified) ...[
+                  const SizedBox(height: 2),
+                  NotVerifiedLabel(
+                    key: Key('trainer-grid-unverified-${trainer.id}'),
+                    maxLines: 2,
+                  ),
+                ],
+                if (specialties.isNotEmpty) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    specialties,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: tt.bodySmall,
+                  ),
+                ],
+                const SizedBox(height: 4),
+                Text(
+                  formatCurrency(
+                    trainer.hourlyRateTzs,
+                    currency: trainer.sessionRateCurrency,
+                  ),
+                  style: tt.labelMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: cs.onSurface,
+                  ),
+                ),
+                if (trainer.promotion != null) ...[
+                  const SizedBox(height: 4),
+                  FFPromotionBadge(tag: trainer.promotion!),
+                ],
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          ExcludeSemantics(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+              decoration: const ShapeDecoration(
+                color: FFTokens.volt,
+                shape: StadiumBorder(),
+              ),
+              child: Text(
+                context.tr('trainer.bookPill'),
+                style: const TextStyle(
+                  color: FFTokens.ink,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

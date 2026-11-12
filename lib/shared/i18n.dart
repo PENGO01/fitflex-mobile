@@ -708,6 +708,7 @@ class FFLocale extends ChangeNotifier {
       'member.prefs': 'Language and theme',
       // Bottom-bar label of the central check-in action.
       'member.checkInNav': 'Check in',
+      'trainer.bookPill': 'Book',
       'activity.period.week': 'Week',
       'activity.period.month': 'Month',
       'activity.period.year': 'Year',
@@ -9003,6 +9004,8 @@ class FFLocale extends ChangeNotifier {
       'member.profile': 'Wasifu',
       'member.prefs': 'Lugha na mwonekano',
       'member.checkInNav': 'Ingia',
+      // TODO(sw-review)
+      'trainer.bookPill': 'Weka',
       // TODO(sw-review)
       'activity.period.week': 'Wiki',
       // TODO(sw-review)

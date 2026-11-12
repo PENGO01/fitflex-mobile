@@ -154,6 +154,12 @@ class _MemberTrainersTabState extends State<MemberTrainersTab> {
     _requestDiscovery(immediate: true);
   }
 
+  static OutlineInputBorder _pill(Color color, [double width = 1]) =>
+      OutlineInputBorder(
+        borderRadius: BorderRadius.circular(999),
+        borderSide: BorderSide(color: color, width: width),
+      );
+
   @override
   Widget build(BuildContext context) {
     final data = MemberDataScope.of(context);
@@ -221,10 +227,18 @@ class _MemberTrainersTabState extends State<MemberTrainersTab> {
                                     _requestDiscovery(immediate: true);
                                   },
                                 ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(
-                              FFTokens.radiusLg,
-                            ),
+                          // DS v1.0: the search field is a white pill.
+                          filled: true,
+                          fillColor: Theme.of(context).colorScheme.surface,
+                          border: _pill(
+                            Theme.of(context).colorScheme.outlineVariant,
+                          ),
+                          enabledBorder: _pill(
+                            Theme.of(context).colorScheme.outlineVariant,
+                          ),
+                          focusedBorder: _pill(
+                            Theme.of(context).colorScheme.onSurface,
+                            1.5,
                           ),
                         ),
                         onChanged: (v) {
@@ -377,6 +391,7 @@ class _MemberTrainersTabState extends State<MemberTrainersTab> {
                     trainer: trainers[i],
                     placement: _discovery?.placement,
                     imageAspectRatio: cols == 1 ? 4 / 3 : 1,
+                    row: cols == 1,
                   ),
                 ),
               ),
