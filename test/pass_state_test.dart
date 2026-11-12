@@ -428,7 +428,14 @@ void main() {
     testWidgets('an active pass still reads Active', (tester) async {
       debugPhotoHeroUiOverride = false;
       await _pumpCard(tester, _data(subscription: _pass(), used: 7));
-      expect(badge(tester).label, 'Active');
+      // DS v1.0 lime card: a forest chip, "Active" or "Active till 8 Nov".
+      expect(
+        find.descendant(
+          of: find.byKey(const Key('pass-status-badge')),
+          matching: find.textContaining('Active'),
+        ),
+        findsOneWidget,
+      );
     });
 
     testWidgets('low visits keeps its current badge wording', (tester) async {

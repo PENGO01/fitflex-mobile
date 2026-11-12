@@ -34,9 +34,10 @@ const _clear390 = <String, double?>{
   'owner-home': 90,
 };
 
-/// Trainer home in Swahili: the longer text leaves too little clear photo
-/// under the cap, so the band keeps today's height.
-const _swNoClear = {'trainer-home'};
+/// Screens whose Swahili text leaves too little clear photo under the cap.
+/// Trainer home used to be one; with Plus Jakarta Sans (DS v1.0) its
+/// Swahili text fits and it gets the clear photo too.
+const _swNoClear = <String>{};
 
 const _controlShare = FFTokens.heroBandControlShare;
 

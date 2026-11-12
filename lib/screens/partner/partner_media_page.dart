@@ -501,7 +501,12 @@ class _PartnerMediaPageState extends State<PartnerMediaPage> {
           child: Semantics(
             header: true,
             child: LayoutBuilder(
-              builder: (context, c) => FittedBox(
+              // Never taller than the bar: at 1.3x two lines are shrunk.
+              builder: (context, c) => ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxHeight: kToolbarHeight - 4,
+                ),
+                child: FittedBox(
                 key: const Key('partner-media-title'),
                 fit: BoxFit.scaleDown,
                 alignment: AlignmentDirectional.centerStart,
@@ -513,6 +518,7 @@ class _PartnerMediaPageState extends State<PartnerMediaPage> {
                     softWrap: true,
                   ),
                 ),
+              ),
               ),
             ),
           ),

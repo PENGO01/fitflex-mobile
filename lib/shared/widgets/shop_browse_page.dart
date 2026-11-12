@@ -1902,7 +1902,7 @@ class _ShopBrowseBodyState extends State<ShopBrowseBody> {
           title: context.tr('member.featuredProducts'),
           count: featured.length,
           // Grows with the text size so the card text is never clipped.
-          height: 140 + MediaQuery.textScalerOf(context).scale(70),
+          height: 140 + MediaQuery.textScalerOf(context).scale(90),
           itemWidth: 160,
           itemBuilder: (context, i) => _FeaturedProductCard(
             key: Key('shop-featured-${featured[i].id}'),

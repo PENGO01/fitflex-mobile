@@ -358,45 +358,58 @@ class PassSummaryCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: FFTokens.spacingSm),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Semantics(
-                      key: const Key('pass-visits-ring'),
-                      container: true,
-                      label: left == null ? ofLeft : '$left $ofLeft',
-                      child: ExcludeSemantics(
-                        child: left == null
-                            ? const Icon(Icons.all_inclusive, size: 44)
-                            : Text(
-                                '$left',
-                                style: theme.textTheme.displayMedium?.copyWith(
-                                  fontSize: 56,
-                                  fontWeight: FontWeight.w800,
-                                  height: 0.95,
-                                  letterSpacing: -2,
+                LayoutBuilder(
+                  builder: (context, c) {
+                    // The board puts Check in beside the count; on a narrow
+                    // phone or at large text it moves under it.
+                    final scale = MediaQuery.textScalerOf(context).scale(1);
+                    final stacked = c.maxWidth < 280 || scale > 1.1;
+                    final count = Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Flexible(
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: AlignmentDirectional.bottomStart,
+                            child: Semantics(
+                          key: const Key('pass-visits-ring'),
+                          container: true,
+                          label: left == null ? ofLeft : '$left $ofLeft',
+                          child: ExcludeSemantics(
+                            child: left == null
+                                ? const Icon(Icons.all_inclusive, size: 44)
+                                : Text(
+                                    '$left',
+                                    style: theme.textTheme.displayMedium?.copyWith(
+                                      fontSize: 56,
+                                      fontWeight: FontWeight.w800,
+                                      height: 0.95,
+                                      letterSpacing: -2,
+                                    ),
+                                  ),
+                          ),
+                        ),
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 6),
+                            child: ExcludeSemantics(
+                              child: Text(
+                                ofLeft,
+                                key: const Key('pass-visits-used'),
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 6),
-                        child: ExcludeSemantics(
-                          child: Text(
-                            ofLeft,
-                            key: const Key('pass-visits-used'),
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(width: FFTokens.spacingSm),
-                    FilledButton.icon(
+                      ],
+                    );
+                    final action = FilledButton.icon(
                       key: const Key('pass-primary-action'),
                       style: FilledButton.styleFrom(
                         backgroundColor: FFTokens.ink,
@@ -414,8 +427,32 @@ class PassSummaryCard extends StatelessWidget {
                           const Icon(Icons.arrow_forward, size: 16),
                         ],
                       ),
-                    ),
-                  ],
+                    );
+                    if (stacked) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          count,
+                          const SizedBox(height: FFTokens.spacingMd),
+                          action,
+                        ],
+                      );
+                    }
+                    return Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Expanded(child: count),
+                        const SizedBox(width: FFTokens.spacingSm),
+                        Flexible(
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: AlignmentDirectional.bottomEnd,
+                            child: action,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ],
             ),
