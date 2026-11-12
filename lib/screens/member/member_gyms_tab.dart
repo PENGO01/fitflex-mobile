@@ -238,7 +238,12 @@ class _MemberGymsTabState extends State<MemberGymsTab> {
     _requestDiscovery(immediate: true);
   }
 
-  /// Returns the responsive column count based on available width.
+  static OutlineInputBorder _pill(Color color, [double width = 1]) =>
+      OutlineInputBorder(
+        borderRadius: BorderRadius.circular(999),
+        borderSide: BorderSide(color: color, width: width),
+      );
+
   @override
   Widget build(BuildContext context) {
     final data = MemberDataScope.of(context);
@@ -259,6 +264,14 @@ class _MemberGymsTabState extends State<MemberGymsTab> {
     return LayoutBuilder(
       builder: (context, constraints) {
         final cols = ffCardGridColumns(context, constraints.maxWidth);
+        // Phone layout from the DS v1.0 Gyms board (big card, then rows).
+        final heroFirst = cols == 1 && gyms.isNotEmpty;
+        double? distanceOf(Gym g) => gymDisplayDistanceKm(
+          g,
+          userLat: _userLat,
+          userLng: _userLng,
+          activeFilter: _filter,
+        );
 
         return CustomScrollView(
           key: const Key('gym-page-scroll'),
@@ -307,7 +320,8 @@ class _MemberGymsTabState extends State<MemberGymsTab> {
                       const SizedBox(height: FFTokens.spacingMd),
                     ] else
                       FFPageHeader(
-                        title: context.tr('member.discoverGyms'),
+                        // DS v1.0 Gyms board: "Find your gym".
+                        title: context.tr('member.findGym'),
                         // Trainer discovery moved here from the bottom nav
                         // when Activity took that slot.
                         actions: FFButton(
@@ -339,11 +353,12 @@ class _MemberGymsTabState extends State<MemberGymsTab> {
                                     _requestDiscovery(immediate: true);
                                   },
                                 ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(
-                              FFTokens.radiusLg,
-                            ),
-                          ),
+                          // DS v1.0: the search field is a white pill.
+                          filled: true,
+                          fillColor: cs.surface,
+                          border: _pill(cs.outlineVariant),
+                          enabledBorder: _pill(cs.outlineVariant),
+                          focusedBorder: _pill(cs.onSurface, 1.5),
                         ),
                         onChanged: (v) {
                           setState(() => _search = v);
@@ -510,27 +525,47 @@ class _MemberGymsTabState extends State<MemberGymsTab> {
 
             // ── Section header ───────────────────────────────────────────
             SliverToBoxAdapter(
-              child: Container(
-                margin: const EdgeInsets.only(top: 20),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: FFTokens.spacingLg,
-                  vertical: 10,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  FFTokens.spacingLg,
+                  20,
+                  FFTokens.spacingLg,
+                  0,
                 ),
-                color: cs.surfaceContainerLow,
-                child: Row(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(
-                      context.tr('member.discoverGyms'),
-                      style: tt.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w700,
+                    // Phone: the first gym is the big photo card (the
+                    // nearest one when location is on), the rest are rows.
+                    if (heroFirst) ...[
+                      GymGridCard(
+                        key: Key('gym-card-${gyms.first.id}'),
+                        gym: gyms.first,
+                        layout: GymCardLayout.hero,
+                        placement: _discovery?.placement,
+                        distanceKm: distanceOf(gyms.first),
                       ),
+                      const SizedBox(height: 20),
+                    ],
+                    Row(
+                      children: [
+                        Text(
+                          context.tr('member.discoverGyms'),
+                          style: tt.titleMedium?.copyWith(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const Spacer(),
+                        if (gyms.isNotEmpty)
+                          Text(
+                            '${gyms.length}',
+                            style: tt.bodySmall?.copyWith(
+                              color: cs.onSurfaceVariant,
+                            ),
+                          ),
+                      ],
                     ),
-                    const Spacer(),
-                    if (gyms.isNotEmpty)
-                      Text(
-                        '${gyms.length}',
-                        style: tt.bodySmall?.copyWith(color: cs.primary),
-                      ),
                   ],
                 ),
               ),
@@ -579,6 +614,26 @@ class _MemberGymsTabState extends State<MemberGymsTab> {
                       : FFEmptyState(title: context.tr('member.noData')),
                 ),
               )
+            else if (heroFirst)
+              SliverPadding(
+                padding: const EdgeInsets.fromLTRB(
+                  FFTokens.spacingLg,
+                  12,
+                  FFTokens.spacingLg,
+                  FFTokens.spacingLg,
+                ),
+                sliver: SliverList.separated(
+                  itemCount: gyms.length - 1,
+                  separatorBuilder: (_, _) => const SizedBox(height: 10),
+                  itemBuilder: (context, i) => GymGridCard(
+                    key: Key('gym-card-${gyms[i + 1].id}'),
+                    gym: gyms[i + 1],
+                    layout: GymCardLayout.row,
+                    placement: _discovery?.placement,
+                    distanceKm: distanceOf(gyms[i + 1]),
+                  ),
+                ),
+              )
             else if (gyms.isNotEmpty)
               SliverPadding(
                 padding: const EdgeInsets.all(FFTokens.spacingLg),
@@ -592,12 +647,7 @@ class _MemberGymsTabState extends State<MemberGymsTab> {
                     gym: gyms[i],
                     placement: _discovery?.placement,
                     imageAspectRatio: cols == 1 ? 16 / 9 : 4 / 3,
-                    distanceKm: gymDisplayDistanceKm(
-                      gyms[i],
-                      userLat: _userLat,
-                      userLng: _userLng,
-                      activeFilter: _filter,
-                    ),
+                    distanceKm: distanceOf(gyms[i]),
                   ),
                 ),
               ),

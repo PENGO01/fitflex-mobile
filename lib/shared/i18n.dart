@@ -706,6 +706,9 @@ class FFLocale extends ChangeNotifier {
       'member.prefs': 'Language and theme',
       // Bottom-bar label of the central check-in action.
       'member.checkInNav': 'Check in',
+      'member.findGym': 'Find your gym',
+      'member.allGyms': 'All gyms',
+      'gym.view': 'View',
       'member.yourPass': 'Your pass',
       'member.upgradePlan': 'Upgrade plan',
       'momo.title': 'Pay with mobile money',
@@ -8987,6 +8990,12 @@ class FFLocale extends ChangeNotifier {
       'member.profile': 'Wasifu',
       'member.prefs': 'Lugha na mwonekano',
       'member.checkInNav': 'Ingia',
+      // TODO(sw-review)
+      'member.findGym': 'Tafuta gym yako',
+      // TODO(sw-review)
+      'member.allGyms': 'Gym zote',
+      // TODO(sw-review)
+      'gym.view': 'Tazama',
       'member.yourPass': 'Pasi yako',
       'member.upgradePlan': 'Boresha mpango',
       'momo.title': 'Lipa kwa mtandao wa simu',

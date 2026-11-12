@@ -28,6 +28,11 @@ class InboxBellButton extends StatelessWidget {
         key: const Key('inbox-bell'),
         tooltip: context.tr('inbox.title'),
         onPressed: () => context.push('/inbox'),
+        // DS v1.0 app bar: the bell sits in a 44px white circle.
+        style: IconButton.styleFrom(
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          minimumSize: const Size(44, 44),
+        ),
         icon: Badge(
           isLabelVisible: inbox.unread > 0,
           label: Text(inbox.unread > 99 ? '99+' : '${inbox.unread}'),
