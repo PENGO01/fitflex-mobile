@@ -265,7 +265,9 @@ class _MemberGymsTabState extends State<MemberGymsTab> {
       builder: (context, constraints) {
         final cols = ffCardGridColumns(context, constraints.maxWidth);
         // Phone layout from the DS v1.0 Gyms board (big card, then rows).
-        final heroFirst = cols == 1 && gyms.isNotEmpty;
+        // Phones (under 600 wide) get it even when the grid would use two
+        // columns.
+        final heroFirst = constraints.maxWidth < 600 && gyms.isNotEmpty;
         double? distanceOf(Gym g) => gymDisplayDistanceKm(
           g,
           userLat: _userLat,

@@ -25,18 +25,13 @@ class MemberQrTab extends StatelessWidget {
         ? passStateMessage(context, data, state)
         : null;
 
+    // Check in is a tab of its own now (DS v1.0 bar): no second app bar and
+    // no back arrow under the shell's bar, just the page title.
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          tooltip: context.tr('a11y.back'),
-          onPressed: () => context.go(AppRoutes.memberHome),
-          icon: const Icon(Icons.arrow_back),
-        ),
-        title: Text(context.tr('member.qr')),
-      ),
       body: ListView(
         padding: const EdgeInsets.all(FFTokens.spacingLg),
         children: [
+          FFPageHeader(title: context.tr('member.checkInNav')),
           if (data.pendingPayment != null) _PendingPaymentCard(data: data),
           // Amber heads-up while the QR still works: running low or ending.
           if (notice != null && data.canCheckIn) ...[
