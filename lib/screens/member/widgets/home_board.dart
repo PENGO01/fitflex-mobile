@@ -176,8 +176,9 @@ class _DayDot extends StatelessWidget {
     final Color fill;
     final Color fg;
     if (today) {
-      fill = cs.primary;
-      fg = cs.onPrimary;
+      // Forest in light, near-white in dark: never the same as a done day.
+      fill = cs.onSurface;
+      fg = cs.surface;
     } else if (done) {
       fill = FFTokens.volt;
       fg = FFTokens.onVolt;

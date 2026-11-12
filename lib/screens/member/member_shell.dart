@@ -889,7 +889,7 @@ class MemberShellState extends State<MemberShell> with WidgetsBindingObserver {
               ? _heroAppBar(context)
               : AppBar(
                   automaticallyImplyLeading: false,
-                  title: Text(context.tr('app.title')),
+                  title: const FFWordmark(),
                   actions: const [
                     InboxBellButton(),
                     AppPrefsButtons(),

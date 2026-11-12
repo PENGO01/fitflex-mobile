@@ -88,8 +88,14 @@ Future<void> _settle(WidgetTester tester, [int frames = 6]) async {
   }
 }
 
-Future<void> _shot(WidgetTester tester, String name) =>
-    expectLater(find.byType(MaterialApp).first, matchesGoldenFile(name));
+Future<void> _shot(WidgetTester tester, String name) async {
+  // Let asset images (the pass card's dot map) finish decoding first.
+  await tester.runAsync(
+    () => Future<void>.delayed(const Duration(milliseconds: 300)),
+  );
+  await tester.pump();
+  await expectLater(find.byType(MaterialApp).first, matchesGoldenFile(name));
+}
 
 void main() {
   setUpAll(_loadFonts);

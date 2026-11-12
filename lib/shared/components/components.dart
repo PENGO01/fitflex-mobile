@@ -20,6 +20,7 @@ export 'ff_section_title.dart';
 export 'ff_remote_image.dart';
 export 'ff_segmented.dart';
 export 'ff_text_field.dart';
+export 'ff_wordmark.dart';
 export 'ff_pill.dart';
 export 'ff_qr_code.dart';
 export 'ff_spinner.dart';
