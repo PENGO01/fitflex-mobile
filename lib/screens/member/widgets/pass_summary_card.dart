@@ -396,7 +396,10 @@ class PassSummaryCard extends StatelessWidget {
                     final count = Row(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
+                        // No flex: the measured count keeps its width and
+                        // "of 18 visits left" gets the rest (one line).
                         Flexible(
+                          flex: 0,
                           child: FittedBox(
                             fit: BoxFit.scaleDown,
                             alignment: AlignmentDirectional.bottomStart,
