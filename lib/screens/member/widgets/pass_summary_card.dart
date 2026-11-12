@@ -127,6 +127,12 @@ class PassSummaryCard extends StatelessWidget {
     final theme = Theme.of(context);
     final sub = data.subscription;
     final pending = data.pendingPayment;
+    // A purchase in flight keeps the full card, which has room for its line.
+    if (state == PassState.active &&
+        sub?.isDirect != true &&
+        pendingAside == null) {
+      return _voltCard(context, title: title);
+    }
     final content = Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -231,9 +237,6 @@ class PassSummaryCard extends StatelessWidget {
                 ),
               ),
             ],
-          ] else if (state == PassState.active) ...[
-            const SizedBox(height: FFTokens.spacingMd),
-            _voltBody(context),
           ] else ...[
             const SizedBox(height: FFTokens.spacingMd),
             _stateBody(context, state),
@@ -267,112 +270,158 @@ class PassSummaryCard extends StatelessWidget {
           ],
         ],
       );
-    // On the Volt card: the Africa dot map, faint, top right (DS v1.0).
-    if (state != PassState.active) return FFCard(child: content);
-    return FFCard(
-      child: Stack(
-        children: [
-          PositionedDirectional(
-            top: 0,
-            end: 0,
-            child: IgnorePointer(
-              child: ExcludeSemantics(
-                child: Opacity(
-                  opacity: 0.55,
-                  child: Image.asset(
-                    'assets/brand/africa-dots.png',
-                    key: const Key('pass-africa-motif'),
-                    width: 132,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          content,
-        ],
-      ),
-    );
+    return FFCard(child: content);
   }
 
-  /// Active pass on the Volt card (DS v1.0 Home board): the visits left as
-  /// a large number, "left" and "7 of 18 used" beside it, the end date
-  /// under. Same keys and spoken text as the ring it replaces.
-  Widget _voltBody(BuildContext context) {
+  /// The active platform pass as the screen's lime card (DS v1.0 Home
+  /// board): a forest "Active till" chip, "FitFlex Pass · Pro", the visits
+  /// left large with "of 18 visits left" beside it, a forest Check in pill,
+  /// and the Africa dot map, faint, top right.
+  Widget _voltCard(BuildContext context, {required String title}) {
     final theme = Theme.of(context);
     final sub = data.subscription;
     final left = visitsLeft(data);
     final cap = data.me?.visitCap;
-    final leftLabel = context.tr('pass.state.left');
-    final usedOf = left == null || cap == null
+    final ofLeft = cap == null
+        ? context.tr('pass.unlimited')
+        : context.tr('pass.state.ofVisitsLeft').replaceAll('{total}', '$cap');
+    final until = sub?.expiresAt == null
         ? null
         : context
-              .tr('pass.state.usedOf')
-              .replaceAll('{used}', '${(cap - left).clamp(0, cap)}')
-              .replaceAll('{total}', '$cap');
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            if (left != null && cap != null)
-              Semantics(
-                key: const Key('pass-visits-ring'),
-                container: true,
-                label: '$left $leftLabel',
-                child: ExcludeSemantics(
-                  child: Text(
-                    '$left',
-                    style: theme.textTheme.displayMedium?.copyWith(
-                      fontSize: 56,
-                      fontWeight: FontWeight.w700,
-                      height: 0.95,
-                      letterSpacing: -2,
-                    ),
+              .tr('pass.activeTill')
+              .replaceAll('{date}', passShortDate(context, sub!.expiresAt));
+    final passName = title.contains('FitFlex')
+        ? title
+        : '${context.tr('pass.brand')} · $title';
+    return Material(
+      color: FFTokens.volt,
+      borderRadius: BorderRadius.circular(FFTokens.radius2xl),
+      clipBehavior: Clip.antiAlias,
+      child: Stack(
+        children: [
+          PositionedDirectional(
+            top: -6,
+            end: -10,
+            child: IgnorePointer(
+              child: ExcludeSemantics(
+                child: Opacity(
+                  opacity: 0.5,
+                  child: Image.asset(
+                    'assets/brand/africa-dots.png',
+                    key: const Key('pass-africa-motif'),
+                    width: 150,
                   ),
-                ),
-              )
-            else
-              const Icon(Icons.all_inclusive, size: 44),
-            const SizedBox(width: FFTokens.spacingSm),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (left != null && cap != null)
-                      ExcludeSemantics(
-                        child: Text(
-                          leftLabel,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    Text(
-                      usedOf ?? context.tr('pass.unlimited'),
-                      key: const Key('pass-visits-used'),
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                  ],
                 ),
               ),
             ),
-          ],
-        ),
-        if (sub?.expiresAt != null) ...[
-          const SizedBox(height: FFTokens.spacingSm),
-          Text(
-            context
-                .tr('pass.state.endsOn')
-                .replaceAll('{date}', passDate(context, sub?.expiresAt)),
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
+          ),
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  key: const Key('pass-status-badge'),
+                  padding: const EdgeInsets.fromLTRB(10, 6, 12, 6),
+                  decoration: BoxDecoration(
+                    color: FFTokens.ink,
+                    borderRadius: BorderRadius.circular(FFTokens.radiusFull),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.event_available,
+                        size: 14,
+                        color: Colors.white,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        until ?? context.tr('member.status_active'),
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: FFTokens.spacingMd),
+                Text(
+                  passName,
+                  key: const Key('pass-title'),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: FFTokens.spacingSm),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Semantics(
+                      key: const Key('pass-visits-ring'),
+                      container: true,
+                      label: left == null ? ofLeft : '$left $ofLeft',
+                      child: ExcludeSemantics(
+                        child: left == null
+                            ? const Icon(Icons.all_inclusive, size: 44)
+                            : Text(
+                                '$left',
+                                style: theme.textTheme.displayMedium?.copyWith(
+                                  fontSize: 56,
+                                  fontWeight: FontWeight.w800,
+                                  height: 0.95,
+                                  letterSpacing: -2,
+                                ),
+                              ),
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 6),
+                        child: ExcludeSemantics(
+                          child: Text(
+                            ofLeft,
+                            key: const Key('pass-visits-used'),
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: FFTokens.spacingSm),
+                    FilledButton.icon(
+                      key: const Key('pass-primary-action'),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: FFTokens.ink,
+                        foregroundColor: Colors.white,
+                        minimumSize: const Size(0, 44),
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                      ),
+                      onPressed: () => _go(context, AppRoutes.memberQr),
+                      icon: const Icon(Icons.qr_code_2, size: 18),
+                      label: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(context.tr('member.checkInNav')),
+                          const SizedBox(width: 4),
+                          const Icon(Icons.arrow_forward, size: 16),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         ],
-      ],
+      ),
     );
   }
 

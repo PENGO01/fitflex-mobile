@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import '../design_tokens.dart';
 
 /// Surface card: white on the sage page (light), charcoal on black (dark).
-/// Light system: radius 20, no border, no shadow.
+/// DS v1.0: radius 20, no border, elevation 1 in light (a soft forest
+/// shadow), flat in dark.
 class FFCard extends StatelessWidget {
   const FFCard({super.key, required this.child, this.padding, this.margin});
 
@@ -17,6 +18,8 @@ class FFCard extends StatelessWidget {
       padding: margin ?? const EdgeInsets.only(bottom: FFTokens.spacingSm),
       child: Material(
         color: theme.colorScheme.surface,
+        elevation: theme.brightness == Brightness.light ? 1 : 0,
+        shadowColor: FFTokens.ink.withValues(alpha: 0.35),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(FFTokens.radiusXl),
         ),

@@ -162,6 +162,21 @@ flutter:
   # Mono (uppercase data labels). Bundled so they work offline. SIL OFL,
   # licences in assets/fonts/.
   fonts:
+    # FitFlex DS v1.0 typeface (SIL OFL 1.1, assets/fonts/OFL-PlusJakartaSans.txt).
+    - family: Plus Jakarta Sans
+      fonts:
+        - asset: assets/fonts/PlusJakartaSans-400.ttf
+          weight: 400
+        - asset: assets/fonts/PlusJakartaSans-500.ttf
+          weight: 500
+        - asset: assets/fonts/PlusJakartaSans-600.ttf
+          weight: 600
+        - asset: assets/fonts/PlusJakartaSans-700.ttf
+          weight: 700
+        - asset: assets/fonts/PlusJakartaSans-800.ttf
+          weight: 800
+        - asset: assets/fonts/PlusJakartaSans-800.ttf
+          weight: 900
     - family: Inter
       fonts:
         - asset: assets/fonts/Inter-400.ttf

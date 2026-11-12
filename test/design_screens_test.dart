@@ -54,12 +54,12 @@ MockClient _client() => MockClient((req) async {
 Future<void> _loadFonts() async {
   Future<ByteData> f(String p) async =>
       ByteData.sublistView(File(p).readAsBytesSync());
-  final inter = FontLoader('Inter');
-  for (final w in [400, 500, 600, 700, 800, 900]) {
-    final file = File('assets/fonts/Inter-$w.ttf');
-    if (file.existsSync()) inter.addFont(f(file.path));
+  final sans = FontLoader('Plus Jakarta Sans');
+  for (final w in [400, 500, 600, 700, 800]) {
+    final file = File('assets/fonts/PlusJakartaSans-$w.ttf');
+    if (file.existsSync()) sans.addFont(f(file.path));
   }
-  await inter.load();
+  await sans.load();
   final mono = FontLoader('JetBrains Mono');
   for (final w in [400, 500, 700]) {
     final file = File('assets/fonts/JetBrainsMono-$w.ttf');

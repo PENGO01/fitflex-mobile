@@ -134,7 +134,8 @@ class FFTokens {
   static const double iconBox = 40;
 
   // ── Type families (bundled in assets/fonts) ──
-  static const String fontSans = 'Inter';
+  // FitFlex DS v1.0 typeface (SIL OFL), bundled in assets/fonts.
+  static const String fontSans = 'Plus Jakarta Sans';
   static const String fontMono = 'JetBrains Mono';
 
   /// Small section label: section eyebrows, data tags, field labels.
@@ -586,12 +587,13 @@ ThemeData buildDarkTheme() {
       elevation: 0,
       height: 72,
       surfaceTintColor: Colors.transparent,
-      // The selected tab sits in a Volt pill in both themes.
-      indicatorColor: FFTokens.volt,
+      // DS v1.0: no pill behind the selected tab; a filled icon and a bold
+      // label carry the selection.
+      indicatorColor: Colors.transparent,
       indicatorShape: _ffPill,
       iconTheme: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.selected)) {
-          return const IconThemeData(color: FFTokens.onVolt);
+          return const IconThemeData(color: onSurface);
         }
         return const IconThemeData(color: muted);
       }),
@@ -600,14 +602,14 @@ ThemeData buildDarkTheme() {
           return const TextStyle(
             fontFamily: FFTokens.fontSans,
             color: onSurface,
-            fontSize: 11,
-            fontWeight: FontWeight.w600,
+            fontSize: 12,
+            fontWeight: FontWeight.w700,
           );
         }
         return const TextStyle(
           fontFamily: FFTokens.fontSans,
           color: muted,
-          fontSize: 11,
+          fontSize: 12,
           fontWeight: FontWeight.w500,
         );
       }),
@@ -961,12 +963,13 @@ ThemeData buildTheme() {
       elevation: 0,
       height: 72,
       surfaceTintColor: Colors.transparent,
-      // The selected tab sits in a Volt pill in both themes.
-      indicatorColor: FFTokens.volt,
+      // DS v1.0: no pill behind the selected tab; a filled icon and a bold
+      // label carry the selection.
+      indicatorColor: Colors.transparent,
       indicatorShape: _ffPill,
       iconTheme: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.selected)) {
-          return const IconThemeData(color: FFTokens.onVolt);
+          return const IconThemeData(color: onSurface);
         }
         return const IconThemeData(color: muted);
       }),
@@ -975,14 +978,14 @@ ThemeData buildTheme() {
           return const TextStyle(
             fontFamily: FFTokens.fontSans,
             color: onSurface,
-            fontSize: 11,
-            fontWeight: FontWeight.w600,
+            fontSize: 12,
+            fontWeight: FontWeight.w700,
           );
         }
         return const TextStyle(
           fontFamily: FFTokens.fontSans,
           color: muted,
-          fontSize: 11,
+          fontSize: 12,
           fontWeight: FontWeight.w500,
         );
       }),
@@ -999,9 +1002,10 @@ ThemeData buildTheme() {
     ),
     // ── Buttons ───────────────────────────────────────────────────────────────
     filledButtonTheme: FilledButtonThemeData(
+      // DS v1.0: the primary button is lime with forest text (11.5:1).
       style: FilledButton.styleFrom(
-        backgroundColor: primary,
-        foregroundColor: onPrimary,
+        backgroundColor: FFTokens.volt,
+        foregroundColor: FFTokens.onVolt,
         disabledBackgroundColor: bord,
         disabledForegroundColor: muted,
         shape: _ffPill,
@@ -1011,7 +1015,7 @@ ThemeData buildTheme() {
           fontWeight: FontWeight.w600,
           fontSize: 15,
           letterSpacing: 0,
-          color: onPrimary,
+          color: FFTokens.onVolt,
         ),
       ).copyWith(side: ffFocusRing(ffFocusRingLight)),
     ),
@@ -1196,6 +1200,15 @@ ThemeData buildVoltCardTheme() {
     dot: FFTokens.volt,
   );
   return base.copyWith(
+    // On the lime card the primary button is forest with white text.
+    filledButtonTheme: FilledButtonThemeData(
+      style: base.filledButtonTheme.style?.merge(
+        FilledButton.styleFrom(
+          backgroundColor: ink,
+          foregroundColor: Colors.white,
+        ),
+      ),
+    ),
     colorScheme: base.colorScheme.copyWith(
       surface: FFTokens.volt,
       onSurface: ink,

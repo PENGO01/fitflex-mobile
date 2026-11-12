@@ -633,8 +633,9 @@ void main() {
       expect(find.byType(FFPhotoHero), findsNothing);
       // DS v1.0 Home board: the greeting block replaces the page header.
       expect(find.byKey(const Key('home-greeting')), findsOneWidget);
-      expect(find.text(', Amina'), findsOneWidget);
-      expect(find.text('Good evening'), findsOneWidget);
+      // "Good evening," over the first name, large (DS v1.0 Home board).
+      expect(find.text('Amina'), findsOneWidget);
+      expect(find.text('Good evening,'), findsOneWidget);
       expect(find.text('No pass yet'), findsOneWidget);
       expect(find.byKey(const Key('home-how-it-works')), findsNothing);
     });

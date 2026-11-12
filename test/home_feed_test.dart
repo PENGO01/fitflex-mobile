@@ -330,7 +330,7 @@ void main() {
         tester.getTopLeft(find.byKey(Key('home-card-$k'))).dy,
     ];
     expect(order, [...order]..sort());
-    expect(find.text('Good evening'), findsOneWidget);
+    expect(find.textContaining('Good evening'), findsOneWidget);
     // DS v1.0 Home board: the streak is the forest tile beside visits.
     expect(
       find.descendant(

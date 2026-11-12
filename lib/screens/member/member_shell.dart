@@ -890,11 +890,9 @@ class MemberShellState extends State<MemberShell> with WidgetsBindingObserver {
               : AppBar(
                   automaticallyImplyLeading: false,
                   title: const FFWordmark(),
-                  actions: const [
-                    InboxBellButton(),
-                    AppPrefsButtons(),
-                    _ProfileAvatarButton(),
-                  ],
+                  // DS v1.0: bell and avatar only; language and theme live
+                  // in Profile.
+                  actions: const [InboxBellButton(), _ProfileAvatarButton()],
                 ),
           body: heroHome
               ? _heroHomeBody(context)
@@ -1026,15 +1024,16 @@ class _CheckInAction extends StatelessWidget {
     // Laid out as a normal 24dp icon so its label lines up with the other
     // tabs; the 52dp circle overflows upwards out of the bar.
     return SizedBox(
-      width: 52,
+      width: 60,
       height: 24,
       child: OverflowBox(
-        maxHeight: 52,
+        maxHeight: 60,
+        maxWidth: 60,
         child: Transform.translate(
-          offset: const Offset(0, -14),
+          offset: const Offset(0, -18),
           child: Container(
-            width: 52,
-            height: 52,
+            width: 60,
+            height: 60,
             decoration: BoxDecoration(
               color: dark ? FFTokens.volt : FFTokens.ink,
               shape: BoxShape.circle,
@@ -1074,7 +1073,7 @@ class _MemberNavTheme extends StatelessWidget {
           TextStyle(
             fontFamily: FFTokens.fontSans,
             color: muted,
-            fontSize: 11,
+            fontSize: 12,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -1090,7 +1089,7 @@ class _ProfileAvatarButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final dark = Theme.of(context).brightness == Brightness.dark;
     final name =
         AppScope.of(context).auth.user?['displayName']?.toString() ?? '';
     final initial = name.trim().isEmpty ? '' : name.trim()[0].toUpperCase();
@@ -1101,9 +1100,9 @@ class _ProfileAvatarButton extends StatelessWidget {
         tooltip: context.tr('member.profile'),
         onPressed: () => context.go(AppRoutes.memberProfile),
         icon: CircleAvatar(
-          radius: 16,
-          backgroundColor: scheme.primary,
-          foregroundColor: scheme.onPrimary,
+          radius: 18,
+          backgroundColor: dark ? FFTokens.volt : FFTokens.ink,
+          foregroundColor: dark ? FFTokens.onVolt : FFTokens.volt,
           child: initial.isEmpty
               ? const Icon(Icons.person, size: 18)
               : Text(

@@ -703,6 +703,7 @@ class FFLocale extends ChangeNotifier {
       'member.trainers': 'Trainers',
       'member.qr': 'My QR',
       'member.profile': 'Profile',
+      'member.prefs': 'Language and theme',
       // Bottom-bar label of the central check-in action.
       'member.checkInNav': 'Check in',
       'member.yourPass': 'Your pass',
@@ -2728,7 +2729,7 @@ class FFLocale extends ChangeNotifier {
       'home.streak.title': '{n}-day streak',
       // Home board (FitFlex DS v1.0).
       'home.week.title': 'This week',
-      'home.week.activeDays': '{n} of 7 days active',
+      'home.week.activeDays': '{n} active days',
       'home.stat.streak': 'Streak',
       'home.stat.days': 'days',
       'home.stat.visitsMonth': 'Visits this month',
@@ -2784,6 +2785,9 @@ class FFLocale extends ChangeNotifier {
       'pass.state.payAgain': 'Pay again',
       'pass.state.left': 'left',
       'pass.state.usedOf': '{used} of {total} used',
+      'pass.state.ofVisitsLeft': 'of {total} visits left',
+      'pass.activeTill': 'Active till {date}',
+      'pass.brand': 'FitFlex Pass',
       'pass.state.endsOn': 'Ends {date}',
       'pass.badge.endingSoon': 'Ending soon',
       'pass.gymAccess': 'Gym access',
@@ -8978,6 +8982,7 @@ class FFLocale extends ChangeNotifier {
       'member.trainers': 'Ma-trainer',
       'member.qr': 'QR yangu',
       'member.profile': 'Wasifu',
+      'member.prefs': 'Lugha na mwonekano',
       'member.checkInNav': 'Ingia',
       'member.yourPass': 'Pasi yako',
       'member.upgradePlan': 'Boresha mpango',
@@ -11033,7 +11038,7 @@ class FFLocale extends ChangeNotifier {
           'Umekuwa ukifanya mazoezi mara kwa mara. Trainer anaweza kukusaidia kupanga hatua inayofuata.',
       'home.streak.title': 'Mfululizo wa siku {n}',
       'home.week.title': 'Wiki hii',
-      'home.week.activeDays': 'Siku {n} kati ya 7', // TODO(sw-review)
+      'home.week.activeDays': 'Siku {n} za mazoezi', // TODO(sw-review)
       'home.stat.streak': 'Mfululizo',
       'home.stat.days': 'siku',
       'home.stat.visitsMonth': 'Ziara za mwezi huu', // TODO(sw-review)
@@ -11102,6 +11107,9 @@ class FFLocale extends ChangeNotifier {
       'pass.state.payAgain': 'Lipa tena',
       'pass.state.left': 'zimebaki',
       'pass.state.usedOf': 'Umetumia {used} kati ya {total}',
+      'pass.state.ofVisitsLeft': 'kati ya {total} zimebaki', // TODO(sw-review)
+      'pass.activeTill': 'Inatumika hadi {date}', // TODO(sw-review)
+      'pass.brand': 'FitFlex Pass',
       'pass.state.endsOn': 'Inaisha {date}',
       'pass.badge.endingSoon': 'Inaisha karibuni',
       'pass.gymAccess': 'Ufikiaji wa gym',

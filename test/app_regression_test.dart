@@ -115,11 +115,11 @@ Future<List<String>> _visitTabs(WidgetTester tester) async {
 Future<void> _loadFonts() async {
   Future<ByteData> f(String p) async =>
       ByteData.sublistView(File(p).readAsBytesSync());
-  final inter = FontLoader('Inter');
-  for (final w in [400, 500, 600, 700, 800, 900]) {
-    inter.addFont(f('assets/fonts/Inter-$w.ttf'));
+  final sans = FontLoader('Plus Jakarta Sans');
+  for (final w in [400, 500, 600, 700, 800]) {
+    sans.addFont(f('assets/fonts/PlusJakartaSans-$w.ttf'));
   }
-  await inter.load();
+  await sans.load();
   final mono = FontLoader('JetBrains Mono');
   for (final w in [400, 500, 700]) {
     mono.addFont(f('assets/fonts/JetBrainsMono-$w.ttf'));

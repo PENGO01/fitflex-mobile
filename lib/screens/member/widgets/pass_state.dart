@@ -91,6 +91,16 @@ extension PassStateBadge on PassState {
 /// there is no date.
 String passDate(BuildContext context, String? iso) => context.localDate(iso);
 
+/// "8 Nov" (sw "8 Nov"): the day and month of an ISO date, for the pass chip.
+String passShortDate(BuildContext context, String? iso) {
+  final d = localDateTime(iso);
+  if (d == null) return '';
+  return formatDayMonth(
+    d,
+    locale: FFLocaleScope.of(context).locale.languageCode,
+  );
+}
+
 /// The one sentence that explains a state, or null when the pass is simply
 /// fine. Home, My QR and Profile all say the same thing.
 String? passStateMessage(BuildContext context, MemberData d, PassState state) {

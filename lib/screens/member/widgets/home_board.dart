@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 
 import '../../../shared/activity/activity_summary.dart';
 import '../../../shared/activity/streaks.dart';
@@ -39,15 +38,12 @@ class HomeGreeting extends StatelessWidget {
           : 'member.goodEvening',
     );
     final state = switch (homeHeroStateFor(data)) {
-      HomeHeroState.pass => 'active',
       HomeHeroState.pending => 'pending',
       HomeHeroState.ended => 'ended',
       HomeHeroState.none => 'none',
       _ => 'active',
     };
-    final muted = theme.textTheme.bodyLarge?.copyWith(
-      color: theme.colorScheme.onSurfaceVariant,
-    );
+    final first = name?.trim().split(RegExp(r'\s+')).first ?? '';
     return Padding(
       key: const Key('home-greeting'),
       padding: const EdgeInsets.only(
@@ -57,21 +53,25 @@ class HomeGreeting extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Wrap(
-            children: [
-              Text(greeting, style: muted),
-              if (name != null && name!.trim().isNotEmpty)
-                Text(', ${name!.trim()}', style: muted),
-            ],
+          Text(
+            first.isEmpty ? greeting : '$greeting,',
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
+            ),
           ),
           const SizedBox(height: 2),
           Text(
-            '${context.tr('home.hero.$state.lead')} '
-            '${context.tr('home.hero.$state.accent')}',
+            first.isEmpty
+                ? '${context.tr('home.hero.$state.lead')} '
+                      '${context.tr('home.hero.$state.accent')}'
+                : first,
             key: const Key('home-headline'),
-            style: theme.textTheme.headlineSmall?.copyWith(
+            style: theme.textTheme.headlineMedium?.copyWith(
+              fontSize: 28,
+              height: 32 / 28,
               fontWeight: FontWeight.w700,
-              letterSpacing: -0.3,
+              letterSpacing: -0.4,
             ),
           ),
         ],
@@ -104,10 +104,20 @@ class HomeWeekCard extends StatelessWidget {
         (checkinDays.contains(d) ||
             summarizeDay(data.activities, d).countsForStreak);
     final active = days.where(done).length;
-    final locale = Localizations.localeOf(context).toLanguageTag();
+    const dayKeys = [
+      'monday',
+      'tuesday',
+      'wednesday',
+      'thursday',
+      'friday',
+      'saturday',
+      'sunday',
+    ];
+    final sw = FFLocaleScope.of(context).locale.languageCode == 'sw';
     String dayName(DateTime d) {
-      final s = DateFormat.E(locale).format(d);
-      return s.length > 2 ? s.substring(0, 2) : s;
+      final s = context.tr('cal.day.${dayKeys[d.weekday - 1]}');
+      // English "Mo", "Tu"; Swahili keeps its three-letter forms.
+      return !sw && s.length > 2 ? s.substring(0, 2) : s;
     }
 
     return FFCard(
@@ -125,13 +135,30 @@ class HomeWeekCard extends StatelessWidget {
                   ),
                 ),
               ),
-              Text(
-                context
-                    .tr('home.week.activeDays')
-                    .replaceAll('{n}', '$active'),
+              InkWell(
                 key: const Key('home-week-count'),
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
+                borderRadius: BorderRadius.circular(FFTokens.radiusFull),
+                onTap: () => context.go('/member/activity'),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        context
+                            .tr('home.week.activeDays')
+                            .replaceAll('{n}', '$active'),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      Icon(
+                        Icons.chevron_right,
+                        size: 18,
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -200,8 +227,8 @@ class _DayDot extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             Container(
-              width: 34,
-              height: 34,
+              width: 36,
+              height: 36,
               alignment: Alignment.center,
               decoration: BoxDecoration(color: fill, shape: BoxShape.circle),
               child: done && !today
@@ -210,6 +237,7 @@ class _DayDot extends StatelessWidget {
                       '$number',
                       style: theme.textTheme.labelLarge?.copyWith(
                         color: fg,
+                        fontSize: 15,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -241,6 +269,26 @@ class HomeStatsRow extends StatelessWidget {
     final visits = data.checkInMoments
         .where((m) => m.at.year == now.year && m.at.month == now.month)
         .length;
+    // Last four weeks, oldest first: active days and gym visits per week.
+    final today = DateTime(now.year, now.month, now.day);
+    final monday = today.subtract(Duration(days: today.weekday - 1));
+    List<int> perWeek(bool Function(DateTime day) hit) => [
+      for (var w = 3; w >= 0; w--)
+        [
+          for (var d = 0; d < 7; d++)
+            monday.subtract(Duration(days: 7 * w)).add(Duration(days: d)),
+        ].where((d) => !d.isAfter(today) && hit(d)).length,
+    ];
+    final visitDays = <DateTime>[
+      for (final m in data.checkInMoments)
+        DateTime(m.at.toLocal().year, m.at.toLocal().month, m.at.toLocal().day),
+    ];
+    final activeWeeks = perWeek(
+      (d) =>
+          visitDays.contains(d) ||
+          summarizeDay(data.activities, d).countsForStreak,
+    );
+    final visitWeeks = perWeek(visitDays.contains);
     return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -252,6 +300,8 @@ class HomeStatsRow extends StatelessWidget {
               value: '$streak',
               unit: context.tr('home.stat.days'),
               dark: true,
+              icon: Icons.local_fire_department,
+              bars: activeWeeks,
             ),
           ),
           const SizedBox(width: FFTokens.spacingSm),
@@ -262,6 +312,7 @@ class HomeStatsRow extends StatelessWidget {
               value: '$visits',
               unit: context.tr('home.stat.checkins'),
               dark: false,
+              bars: visitWeeks,
             ),
           ),
         ],
@@ -277,11 +328,17 @@ class _StatTile extends StatelessWidget {
     required this.value,
     required this.unit,
     required this.dark,
+    this.icon,
+    this.bars = const [],
   });
 
   final String label;
   final String value;
   final String unit;
+  final IconData? icon;
+
+  /// Real counts for the last four weeks, oldest first (mini bar chart).
+  final List<int> bars;
 
   /// The forest tile (lime number) in both themes.
   final bool dark;
@@ -307,31 +364,54 @@ class _StatTile extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                label,
-                style: theme.textTheme.bodySmall?.copyWith(color: muted),
+              Row(
+                children: [
+                  if (icon != null) ...[
+                    Icon(icon, size: 16, color: number),
+                    const SizedBox(width: 4),
+                  ],
+                  Expanded(
+                    child: Text(
+                      label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodySmall?.copyWith(color: muted),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: FFTokens.spacingMd),
-              Wrap(
-                crossAxisAlignment: WrapCrossAlignment.end,
-                spacing: 6,
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(
-                    value,
-                    style: theme.textTheme.displaySmall?.copyWith(
-                      color: number,
-                      fontWeight: FontWeight.w700,
-                      height: 1,
-                      letterSpacing: -1,
+                  Expanded(
+                    child: Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.end,
+                      spacing: 6,
+                      children: [
+                        Text(
+                          value,
+                          style: theme.textTheme.displaySmall?.copyWith(
+                            color: number,
+                            fontSize: 40,
+                            fontWeight: FontWeight.w800,
+                            height: 1,
+                            letterSpacing: -1,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 4),
+                          child: Text(
+                            unit,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: fg,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 4),
-                    child: Text(
-                      unit,
-                      style: theme.textTheme.bodyMedium?.copyWith(color: fg),
-                    ),
-                  ),
+                  if (bars.isNotEmpty) _MiniBars(values: bars, dark: dark),
                 ],
               ),
             ],
@@ -355,17 +435,19 @@ class HomeNearestGym extends StatelessWidget {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
     final thumb = gym.coverThumbnail;
+    final distance = distanceKm == null
+        ? null
+        : distanceKm! < 1
+        ? '${(distanceKm! * 1000).round()} m'
+        : '${distanceKm!.toStringAsFixed(1)} km';
     final place = [
       if (gym.location.trim().isNotEmpty) gym.location.trim(),
-      if (distanceKm != null)
-        distanceKm! < 1
-            ? '${(distanceKm! * 1000).round()} m'
-            : '${distanceKm!.toStringAsFixed(1)} km',
+      ?distance,
     ].join(' · ');
     void open() => context.go('/member/gyms/${gym.id}');
     final tile = Container(
-      width: 60,
-      height: 60,
+      width: 64,
+      height: 64,
       color: cs.surfaceContainerHighest,
       child: Icon(Icons.fitness_center, color: cs.onSurfaceVariant),
     );
@@ -381,13 +463,13 @@ class HomeNearestGym extends StatelessWidget {
           child: Row(
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.circular(FFTokens.radiusLg),
+            borderRadius: BorderRadius.circular(14),
             child: thumb == null
                 ? tile
                 : FFRemoteImage(
                     src: thumb,
-                    width: 60,
-                    height: 60,
+                    width: 64,
+                    height: 64,
                     fit: BoxFit.cover,
                     fallback: tile,
                   ),
@@ -412,17 +494,29 @@ class HomeNearestGym extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
                 if (place.isNotEmpty)
-                  Text(
-                    place,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: cs.onSurfaceVariant,
-                    ),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.place_outlined,
+                        size: 14,
+                        color: cs.onSurfaceVariant,
+                      ),
+                      const SizedBox(width: 2),
+                      Expanded(
+                        child: Text(
+                          place,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: cs.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
               ],
             ),
@@ -441,6 +535,46 @@ class HomeNearestGym extends StatelessWidget {
           ),
         ],
       ),
+        ),
+      ),
+    );
+  }
+}
+
+
+/// Four small bars of real weekly counts (oldest first), lime. Hidden from
+/// screen readers: the tile's label already says the number.
+class _MiniBars extends StatelessWidget {
+  const _MiniBars({required this.values, required this.dark});
+
+  final List<int> values;
+  final bool dark;
+
+  @override
+  Widget build(BuildContext context) {
+    final top = values.fold<int>(1, (m, v) => v > m ? v : m);
+    final empty = dark
+        ? Colors.white.withValues(alpha: 0.16)
+        : Theme.of(context).colorScheme.surfaceContainerHighest;
+    return ExcludeSemantics(
+      child: SizedBox(
+        height: 28,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (final v in values) ...[
+              Container(
+                width: 6,
+                height: v == 0 ? 4 : 6 + 22 * v / top,
+                decoration: BoxDecoration(
+                  color: v == 0 ? empty : FFTokens.volt,
+                  borderRadius: BorderRadius.circular(3),
+                ),
+              ),
+              const SizedBox(width: 3),
+            ],
+          ],
         ),
       ),
     );

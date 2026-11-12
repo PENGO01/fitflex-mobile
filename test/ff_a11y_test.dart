@@ -2,6 +2,7 @@ import 'package:fitflexmobile/main.dart';
 import 'package:fitflexmobile/shared/api_client.dart';
 import 'package:fitflexmobile/shared/auth_state.dart';
 import 'package:fitflexmobile/shared/components/components.dart';
+import 'package:fitflexmobile/shared/design_tokens.dart';
 import 'package:fitflexmobile/shared/i18n.dart';
 import 'package:fitflexmobile/shared/theme_notifier.dart';
 import 'package:flutter/material.dart';
@@ -14,9 +15,9 @@ import 'support/ff_harness.dart';
 /// Real Inter metrics (the default test font has very wide glyphs, so nothing
 /// would "fit" and the segmented control would always scroll).
 Future<void> _loadInter() async {
-  final loader = FontLoader('Inter')
-    ..addFont(rootBundle.load('assets/fonts/Inter-400.ttf'))
-    ..addFont(rootBundle.load('assets/fonts/Inter-700.ttf'));
+  final loader = FontLoader(FFTokens.fontSans)
+    ..addFont(rootBundle.load('assets/fonts/PlusJakartaSans-400.ttf'))
+    ..addFont(rootBundle.load('assets/fonts/PlusJakartaSans-700.ttf'));
   await loader.load();
 }
 

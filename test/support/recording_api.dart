@@ -178,11 +178,12 @@ class RecordingApi {
 Future<void> loadAppFonts() async {
   Future<ByteData> f(String p) async =>
       ByteData.sublistView(File(p).readAsBytesSync());
-  final inter = FontLoader('Inter');
-  for (final w in [400, 500, 600, 700, 800, 900]) {
-    inter.addFont(f('assets/fonts/Inter-$w.ttf'));
+  // The app's typeface (FitFlex DS v1.0).
+  final sans = FontLoader('Plus Jakarta Sans');
+  for (final w in [400, 500, 600, 700, 800]) {
+    sans.addFont(f('assets/fonts/PlusJakartaSans-$w.ttf'));
   }
-  await inter.load();
+  await sans.load();
   final mono = FontLoader('JetBrains Mono');
   for (final w in [400, 500, 700]) {
     mono.addFont(f('assets/fonts/JetBrainsMono-$w.ttf'));

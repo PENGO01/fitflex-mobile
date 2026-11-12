@@ -144,20 +144,20 @@ void main() {
   });
 
   group('PassSummaryCard', () {
-    testWidgets('active pass: ring shows visits left and Show my QR', (
+    testWidgets('active pass: the lime card, visits left and Check in', (
       tester,
     ) async {
       await _pumpCard(tester, _data(subscription: _pass(), used: 7));
       expect(find.byKey(const Key('pass-visits-ring')), findsOneWidget);
-      // "11 left" in the ring, "7 of 18 used" beside it: no number twice.
+      // DS v1.0 board: "11" large, "of 18 visits left" beside it.
       expect(find.text('11'), findsOneWidget);
       // Not repeated as "11 left" / "11 visits" elsewhere. Matched on those
       // words, not on "11 ", which the end date can contain (e.g. 11 Dec).
       expect(find.textContaining(RegExp(r'\b11 (left|visit)')), findsNothing);
-      expect(find.text('left'), findsOneWidget);
-      expect(find.text('7 of 18 used'), findsOneWidget);
-      expect(find.text('Show my QR'), findsOneWidget);
-      expect(find.byKey(const Key('pass-upgrade-action')), findsOneWidget);
+      expect(find.text('of 18 visits left'), findsOneWidget);
+      expect(find.text('Check in'), findsOneWidget);
+      expect(find.textContaining('Active till'), findsOneWidget);
+      expect(find.byKey(const Key('pass-africa-motif')), findsOneWidget);
     });
 
     for (final lang in ['en', 'sw']) {
@@ -174,17 +174,15 @@ void main() {
           lang: lang,
         );
         String tr(String k) => FFLocale.textOf(lang, k)!;
-        final used = tr(
-          'pass.state.usedOf',
-        ).replaceAll('{used}', '7').replaceAll('{total}', '18');
-        // The ring is "11 left" only; the used count is the line beside it.
+        final ofLeft = tr('pass.state.ofVisitsLeft').replaceAll('{total}', '18');
+        // The number is read with its words: "11 of 18 visits left".
         expect(
           tester.getSemantics(find.byKey(const Key('pass-visits-ring'))).label,
-          '11 ${tr('pass.state.left')}',
+          '11 $ofLeft',
         );
-        // Across the whole card the used count is announced once.
+        // Across the whole card it is announced once.
         expect(
-          find.bySemanticsLabel(RegExp(RegExp.escape(used))),
+          find.bySemanticsLabel(RegExp(RegExp.escape(ofLeft))),
           findsOneWidget,
         );
         handle.dispose();
@@ -210,8 +208,7 @@ void main() {
     ) async {
       await _pumpCard(tester, _data(subscription: _pass(), used: 0));
       expect(find.text('18'), findsOneWidget);
-      expect(find.text('left'), findsOneWidget);
-      expect(find.text('0 of 18 used'), findsOneWidget);
+      expect(find.text('of 18 visits left'), findsOneWidget);
     });
 
     test('every pass-state line has its own Swahili', () {

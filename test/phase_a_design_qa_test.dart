@@ -409,15 +409,13 @@ void main() {
           ),
         ),
       );
-      // The ring says "11 left"; "7 of 18 used" is the line beside it and
-      // is read there only (polish round 2: each fact once).
-      expect(find.bySemanticsLabel('11 left'), findsOneWidget);
-      expect(find.bySemanticsLabel(RegExp('7 of 18 used')), findsOneWidget);
-      // The number and "left" inside the ring are not read again.
+      // DS v1.0 lime card: "11 of 18 visits left" is read once, on the
+      // number (polish round 2: each fact once).
+      expect(find.bySemanticsLabel('11 of 18 visits left'), findsOneWidget);
       final ring = tester.getSemantics(
         find.byKey(const Key('pass-visits-ring')),
       );
-      expect(ring.label, '11 left');
+      expect(ring.label, '11 of 18 visits left');
       var children = 0;
       ring.visitChildren((_) {
         children++;

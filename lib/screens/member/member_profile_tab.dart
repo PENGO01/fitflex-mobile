@@ -340,6 +340,21 @@ class _MemberProfileTabState extends State<MemberProfileTab> {
   List<Widget> _settings(BuildContext context) => [
     // Settings
     FFSectionTitle(context.tr('member.accountSettings')),
+    // Language and theme (moved here from the app bar, DS v1.0).
+    FFCard(
+      key: const Key('profile-prefs'),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              context.tr('member.prefs'),
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+          ),
+          const AppPrefsButtons(),
+        ],
+      ),
+    ),
     FFActionTile(
       key: const Key('profile-edit'),
       icon: Icons.edit,
