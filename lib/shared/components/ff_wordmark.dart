@@ -4,8 +4,8 @@ import '../design_tokens.dart';
 
 /// The FitFlex wordmark: "Fit" in the text colour, "Flex" on a lime chip
 /// (FitFlex DS v1.0). Read as one word, "FitFlex".
-class FFWordmark extends StatelessWidget {
-  const FFWordmark({super.key, this.size = 20});
+class FFLimeWordmark extends StatelessWidget {
+  const FFLimeWordmark({super.key, this.size = 20});
 
   /// Font size of the letters.
   final double size;

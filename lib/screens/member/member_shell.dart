@@ -889,7 +889,7 @@ class MemberShellState extends State<MemberShell> with WidgetsBindingObserver {
               ? _heroAppBar(context)
               : AppBar(
                   automaticallyImplyLeading: false,
-                  title: const FFWordmark(),
+                  title: const FFLimeWordmark(),
                   // DS v1.0: bell and avatar only; language and theme live
                   // in Profile.
                   actions: const [InboxBellButton(), _ProfileAvatarButton()],

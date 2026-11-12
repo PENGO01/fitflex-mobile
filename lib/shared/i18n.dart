@@ -1890,6 +1890,9 @@ class FFLocale extends ChangeNotifier {
       'member.level.advanced': 'Advanced',
       'home.qr': 'Show this code at the gym',
       'home.qr.refreshes': 'Refreshes every 60s for security',
+      'qr.visitOf': 'Visit {n} of {total}',
+      'qr.visitsLeft': 'visits left',
+      'qr.needsSignal': 'The code needs signal to refresh.',
       'home.qr.lockedTitle': 'Gym QR locked',
       'home.qr.lockedBody':
           'Choose a paid physical gym pass and wait for admin approval to unlock check-in QR.',
@@ -10189,6 +10192,9 @@ class FFLocale extends ChangeNotifier {
       'member.level.advanced': 'Mzoefu',
       'home.qr': 'Onyesha msimbo huu kwenye gym',
       'home.qr.refreshes': 'Unabadilika kila sekunde 60 kwa usalama',
+      'qr.visitOf': 'Ziara ya {n} kati ya {total}', // TODO(sw-review)
+      'qr.visitsLeft': 'zimebaki',
+      'qr.needsSignal': 'Msimbo unahitaji mtandao ili kujisasisha.', // TODO(sw-review)
       'home.qr.lockedTitle': 'QR ya gym imefungwa',
       'home.qr.lockedBody':
           'Chagua pasi ya gym ya kulipia kisha subiri idhini ya admin ili QR ya kuingia ifunguke.',
