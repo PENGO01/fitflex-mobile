@@ -1,0 +1,18 @@
+[REST] error: TimeoutException: slow
+02:55 +1503 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/phase_a_design_qa_test.dart: H3 gym grid card at 360px an unverified gym keeps its name (en) [E]
+02:55 +1503 -2: /home/runner/work/fitflex-mobile/fitflex-mobile/test/phase_a_design_qa_test.dart: H3 gym grid card at 360px an unverified gym keeps its name (sw) [E]
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+10:17 +4637 ~9 -2: Some tests failed.
+10:16 +4634 ~9 -2: /home/runner/work/fitflex-mobile/fitflex-mobile/test/latest_checkins_card_test.dart: a name leads when the server sends one, public ID otherwise
+10:16 +4635 ~9 -2: /home/runner/work/fitflex-mobile/fitflex-mobile/test/latest_checkins_card_test.dart: checkinVisitorLabel falls back through the identifiers
+10:17 +4636 ~9 -2: /home/runner/work/fitflex-mobile/fitflex-mobile/test/latest_checkins_card_test.dart: the full list shows the name, then public ID, plan and time
+10:17 +4637 ~9 -2: Some tests failed.
+
+Failing tests:
+  /home/runner/work/fitflex-mobile/fitflex-mobile/test/phase_a_design_qa_test.dart: H3 gym grid card at 360px an unverified gym keeps its name (en)
+  /home/runner/work/fitflex-mobile/fitflex-mobile/test/phase_a_design_qa_test.dart: H3 gym grid card at 360px an unverified gym keeps its name (sw)
