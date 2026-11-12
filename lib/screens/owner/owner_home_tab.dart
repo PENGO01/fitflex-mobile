@@ -361,16 +361,25 @@ class _OwnerHomeTabState extends State<OwnerHomeTab> {
         const SizedBox(height: FFTokens.spacingMd),
 
         // The daily job first; the rest are one tap away below it.
+        // DS v1.0 owner "Today" card: check-ins for the chosen period on
+        // lime, and the day's job (scan a member in) as its button.
         if (!hero) ...[
-          FFButton(
-            key: const Key('owner-checkin-primary'),
-            fullWidth: true,
-            size: FFButtonSize.lg,
-            icon: Icons.qr_code_scanner,
-            label: context.tr('owner.checkin'),
-            onPressed: () => context.push('/owner/scan'),
+          FFTodayCard(
+            key: const Key('owner-today'),
+            chipIcon: Icons.event_available,
+            chipLabel: _presetLabel(context),
+            value: '$periodVisits',
+            valueLabel: context.tr('owner.checkins'),
+            action: FFButton(
+              key: const Key('owner-checkin-primary'),
+              fullWidth: true,
+              size: FFButtonSize.lg,
+              icon: Icons.qr_code_scanner,
+              label: context.tr('owner.checkin'),
+              onPressed: () => context.push('/owner/scan'),
+            ),
           ),
-          const SizedBox(height: FFTokens.spacingSm),
+          const SizedBox(height: 4),
         ],
         FFCard(
           padding: const EdgeInsets.symmetric(vertical: 12),
