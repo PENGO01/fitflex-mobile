@@ -1,0 +1,911 @@
+Resolving dependencies...
+Downloading packages...
+  _flutterfire_internals 1.3.77 (1.3.79 available)
+  android_file_picker 1.1.0 (2.1.5 available)
+  cli_util 0.4.2 (0.6.0 available)
+  clock 1.1.2 (1.1.3 available)
+  code_assets 1.2.1 (2.2.0 available)
+  cross_file 0.3.5+5 (0.4.0 available)
+  crypto 3.0.7 (3.0.8 available)
+  cupertino_icons 1.0.9 (2.0.0 available)
+  dbus 0.7.15 (0.8.0 available)
+  equatable 2.1.0 (3.0.0 available)
+  file_picker 12.2.0 (13.3.3 available)
+  file_picker_darwin 1.1.0 (2.5.1 available)
+  file_picker_linux 1.1.0 (2.0.4 available)
+  file_picker_platform_interface 3.3.0 (4.2.0 available)
+  file_picker_web 3.1.0 (4.2.1 available)
+  file_selector_linux 0.9.4 (0.9.4+1 available)
+  file_selector_macos 0.9.5 (0.9.5+2 available)
+  file_selector_windows 0.9.3+5 (0.9.3+6 available)
+  firebase_auth 6.7.0 (7.0.1 available)
+  firebase_auth_platform_interface 9.1.0 (9.1.2 available)
+  firebase_auth_web 6.3.0 (6.3.2 available)
+  firebase_core 4.15.0 (5.1.0 available)
+  firebase_core_web 3.12.0 (4.1.0 available)
+  firebase_messaging 16.7.0 (17.0.1 available)
+  firebase_messaging_platform_interface 4.10.0 (4.11.1 available)
+  firebase_messaging_web 4.2.5 (4.3.1 available)
+  flutter_dotenv 5.2.1 (6.0.1 available)
+  flutter_image_compress 2.4.0 (2.5.1 available)
+  flutter_image_compress_common 1.0.6 (1.1.1 available)
+  flutter_image_compress_macos 1.0.3 (1.1.0 available)
+  flutter_image_compress_ohos 0.0.3 (0.0.3+1 available)
+  flutter_image_compress_platform_interface 1.0.5 (1.1.0 available)
+  flutter_image_compress_web 0.1.5 (0.1.5+1 available)
+  flutter_map 7.0.2 (8.3.2 available)
+  flutter_plugin_android_lifecycle 2.0.34 (2.0.35 available)
+  geolocator 13.0.4 (14.1.2 available)
+  geolocator_android 4.6.2 (5.2.1 available)
+  geolocator_apple 2.3.13 (2.4.3 available)
+  geolocator_platform_interface 4.2.6 (4.4.1 available)
+  geolocator_web 4.1.3 (4.1.4 available)
+  go_router 14.8.1 (18.1.4 available)
+  google_sign_in_android 7.2.10 (7.2.19 available)
+  google_sign_in_ios 6.3.0 (6.4.0 available)
+  hooks 2.0.2 (2.2.0 available)
+  image_picker 1.2.2 (1.2.4 available)
+  image_picker_android 0.8.13+17 (0.8.13+25 available)
+  image_picker_ios 0.8.13+6 (0.8.13+15 available)
+  image_picker_platform_interface 2.11.1 (2.11.2 available)
+  intl 0.20.2 (0.20.3 available)
+  jni 1.1.0 (1.1.2 available)
+  latlong2 0.9.1 (0.10.1 available)
+  logger 2.7.0 (2.8.0 available)
+  matcher 0.12.19 (0.12.20 available)
+  material_color_utilities 0.13.0 (0.13.1 available)
+  meta 1.18.0 (1.19.0 available)
+  mgrs_dart 2.0.0 (3.0.0 available)
+  mime 2.0.0 (2.1.0 available)
+  mobile_scanner 6.0.11 (7.5.0 available)
+  objective_c 9.5.0 (9.6.4 available)
+  path_provider_linux 2.2.1 (2.2.2 available)
+  path_provider_platform_interface 2.1.2 (2.1.3 available)
+  patrol 3.20.0 (4.11.0 available)
+  patrol_finders 2.9.0 (3.7.0 available)
+  patrol_log 0.5.0 (0.10.2 available)
+  permission_handler_android 14.1.0 (14.1.1 available)
+  permission_handler_apple 9.6.1 (9.6.5 available)
+  permission_handler_windows 0.2.2 (0.2.4 available)
+  petitparser 7.0.2 (7.1.0 available)
+  platform 3.1.6 (3.2.0 available)
+  posix 6.5.0 (6.5.4 available)
+  process 5.0.5 (5.0.6 available)
+  proj4dart 2.1.0 (3.0.0 available)
+  qr 3.0.2 (4.0.1 available)
+  record_use 0.6.0 (1.1.1 available)
+  shared_preferences 2.5.5 (2.5.6 available)
+  shared_preferences_android 2.4.23 (2.5.5 available)
+  shared_preferences_foundation 2.5.6 (2.6.1 available)
+  shelf 1.4.2 (1.4.3 available)
+  stack_trace 1.12.1 (1.12.2 available)
+  test_api 0.7.11 (0.7.15 available)
+  unicode 0.3.1 (1.1.9 available)
+  url_launcher 6.3.2 (6.3.3 available)
+  url_launcher_android 6.3.29 (6.3.33 available)
+  url_launcher_ios 6.4.1 (6.4.2 available)
+  url_launcher_linux 3.2.2 (3.2.3 available)
+  url_launcher_macos 3.2.5 (3.2.6 available)
+  url_launcher_windows 3.1.5 (3.1.6 available)
+  uuid 4.5.3 (4.6.0 available)
+  vector_math 2.2.0 (2.4.4 available)
+  vm_service 15.1.0 (15.4.0 available)
+  web 1.1.1 (1.1.2 available)
+  webdriver 3.1.0 (3.2.0 available)
+  windows_file_picker 1.2.0 (2.0.2 available)
+  xml 7.0.1 (7.1.0 available)
+  yaml 3.1.3 (3.1.4 available)
+Got dependencies!
+95 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+
+::group::✅ member tabs (light)
+[REST] --> GET http://fixtures.local/auth/options
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/me
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/auth/options
+[REST] response: {"error":"not_recorded"}
+[REST] --> POST http://fixtures.local/auth/pin/login
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] request: {}
+[REST] --> POST http://fixtures.local/auth/pin/reset/start
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] request: {}
+[REST] <-- 200 GET http://fixtures.local/me
+[REST] response: {"user":{"id":"usr_dev_member","firebaseUid":null,"phone":"+255700000010","email":"dev.member@fitflex.test","displayName":"Dev Member","photoUrl":null,"userType":"member","accountStatus":"active","approvalStatus":"approved","verified":false,"passwordHash":null,"approvalNote":null,"onboardingCompleted":true,"portalUser":false,"aclPermissions":[],"memberProfile":{"gender":null,"heightCm":null,"weightKg":null,"dateOfBirth":null,"fitnessGoal":null,"fitnessGoals":[],"fitnessLevel":null,"preferredWorkoutTimes":[],"notificationPreferences":{}},"gymId":null,"gymIds":[],"createdAt":"2026-09-24T07:39:40.576Z","updatedAt":"2026-09-24T08:13:39.452Z","vendorProfile":null,"vendorId":null,"vendorRole":null,"vendorPermissions":[],"corporateId":null,"publicId":"FM664","userCode":"FM664"},"subscription":{"id":"sub_dev_member","memberId":"usr_dev_member","type":"platform_pass","tier":"premium","status":"active","startedAt":"2026-09-24T08:13:39.452Z","cycleStartedAt":"2026-09-24T08:13:39.452Z","renewsAt":"2026-10-24T08:13:39.452Z","expiresAt":"2026-10-24T08:13:39.452Z","homeGymId":null,"paymentRef":"DEV_MOCK","createdAt":"2026-09-24T07:39:40.609Z","plan":null},"pendingPayment":null,"visitsUsed":0,"visitCap":30}
+[REST] --> GET http://fixtures.local/me/personas
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 200 POST http://fixtures.local/auth/pin/login
+[REST] response: {}
+[REST] <-- 200 POST http://fixtures.local/auth/pin/reset/start
+[REST] response: {}
+[REST] <-- 404 GET http://fixtures.local/me/personas
+[REST] response: {"error":"not_recorded"}
+[REST] --> GET http://fixtures.local/me/invitations
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/me/invitations
+[REST] response: {"error":"not_recorded"}
+[REST] --> GET http://fixtures.local/me/identifiers
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/me/identifiers
+[REST] response: {"error":"not_recorded"}
+[REST] --> GET http://fixtures.local/me/notifications
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> PUT http://fixtures.local/me/communication-preferences
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] request: {"locale":"en"}
+[REST] --> GET http://fixtures.local/me/recovery
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/me/notifications
+[REST] response: {"error":"not_recorded"}
+[REST] <-- 200 PUT http://fixtures.local/me/communication-preferences
+[REST] response: {}
+[REST] <-- 404 GET http://fixtures.local/me/recovery
+[REST] response: {"error":"not_recorded"}
+[REST] --> GET http://fixtures.local/me
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/gyms
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/trainers
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/me/checkins
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/subscription-tiers
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/me/favorites/gyms
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/me/trainer-connections
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/me/gym-sharing
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/me/challenges
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/b2b/me/benefits
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/me
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 200 GET http://fixtures.local/me
+[REST] response: {"user":{"id":"usr_dev_member","firebaseUid":null,"phone":"+255700000010","email":"dev.member@fitflex.test","displayName":"Dev Member","photoUrl":null,"userType":"member","accountStatus":"active","approvalStatus":"approved","verified":false,"passwordHash":null,"approvalNote":null,"onboardingCompleted":true,"portalUser":false,"aclPermissions":[],"memberProfile":{"gender":null,"heightCm":null,"weightKg":null,"dateOfBirth":null,"fitnessGoal":null,"fitnessGoals":[],"fitnessLevel":null,"preferredWorkoutTimes":[],"notificationPreferences":{}},"gymId":null,"gymIds":[],"createdAt":"2026-09-24T07:39:40.576Z","updatedAt":"2026-09-24T08:13:39.452Z","vendorProfile":null,"vendorId":null,"vendorRole":null,"vendorPermissions":[],"corporateId":null,"publicId":"FM664","userCode":"FM664"},"subscription":{"id":"sub_dev_member","memberId":"usr_dev_member","type":"platform_pass","tier":"premium","status":"active","startedAt":"2026-09-24T08:13:39.452Z","cycleStartedAt":"2026-09-24T08:13:39.452Z","renewsAt":"2026-10-24T08:13:39.452Z","expiresAt":"2026-10-24T08:13:39.452Z","homeGymId":null,"paymentRef":"DEV_MOCK","createdAt":"2026-09-24T07:39:40.609Z","plan":null},"pendingPayment":null,"visitsUsed":0,"visitCap":30}
+[REST] <-- 200 GET http://fixtures.local/gyms
+[REST] response: [{"id":"gym_50106d","name":"High priority gym b49b6e18-7cfa-43df-8419-8222dd41bfd7","tier":"standard","location":"Dar es Salaam","venueType":"physical","accessMode":"paid_visit","operatingHours":null,"perVisitRate":0,"ratePerDay":0,"ratePerWeek":0,"ratePerMonth":0,"commissionRate":12,"status":"active","images":[],"thumbnails":[],"coordinates":{"lat":null,"lng":null},"amenities":[],"equipment":[],"paymentBank":null,"paymentNumber":null,"paymentNotes":null,"tinNumber":null,"createdAt":"2026-09-22T10:16:21.202Z","updatedAt":"2026-09-22T10:16:21.201Z","verified":false,"classes":[],"trainerPass":{"feeTzs":0,"period":"monthly","enabled":false},"homepageVisible":true,"homepagePriority":900,"rating":"0.00","reviewCount":0},{"id":"gym_be3be6","name":"High priority gym b1de4282-743d-4d68-ad9b-69a68c223b95","tier":"standard","location":"Dar es Salaam","venueType":"physical","accessMode":"paid_visit","operatingHours":null,"perVisitRate":0,"ratePerDay":0,"ratePerWeek":0,"ratePerMonth":0,"commissionRate":12,"status":"active","images":[],"thumbnails":[],"coordinates":{"lat":null,"lng":null},"amenities":[],"equipment":[],"paymentBank":null,"paymentNumber":null,"paymentNotes":null,"tinNumber":null,"createdAt":"2026-09-22T10:16:39.543Z","updatedAt":"2026-09-22T10:16:39.542Z","verified":false,"classes":[],"trainerPass":{"feeTzs":0,"period":"monthly","enabled":false},"homepageVisible":true,"homepagePriority":900,"rating":"0.00","reviewCount":0},{"id":"gym_d235ae","name":"High priority gym 28e4ee05-f3ee-47ba-893a-1d1d4fd674bf","tier":"standard","location":"Dar es Salaam","venueType":"physical","accessMode":"paid_visit","operatingHours":null,"perVisitRate":0,"ratePerDay":0,"ratePerWeek":0,"ratePerMonth":0,"commissionRate":12,"status":"active","images":[],"thumbnails":[],"coordinates":{"lat":null,"lng":null},"amenities":[],"equipment":[],"paymentBank":null,"paymentNumber":null,"paymentNotes":null,"tinNumber":null,"createdAt":"2026-09-22T10:29:55.331Z","updatedAt":"2026-09-22T10:29:55.331Z","verified":false,"classes":[],"trainerPass":{"feeTzs":0,"period":"monthly","enabled":false},"homepageVisible":true,"homepagePriority":900,"rating":"0.00","reviewCount":0},{"id":"gym_adf56a","name":"High priority gym f2b13d73-a9e1-46c9-90ec-057675939825","tier":"standard","location":"Dar es Salaam","venueType":"physical","accessMode":"paid_visit","operatingHours":null,"perVisitRate":0,"ratePerDay":0,"ratePerWeek":0,"ratePerMonth":0,"commissionRate":12,"status":"active","images":[],"thumbnails":[],"coordinates":{"lat":null,"lng":null},"amenities":[],"equipment":[],"paymentBank":null,"paymentNumber":null,"paymentNotes":null,"tinNumber":null,"createdAt":"2026-09-22T10:30:02.148Z","updatedAt":"2026-09-22T10:30:02.148Z","verified":false,"classes":[],"trainerPass":{"feeTzs":0,"period":"monthly","enabled":false},"homepageVisible":true,"homepagePriority":900,"rating":"0.00","reviewCount":0},{"id":"gym_576ab0","name":"High priority gym 9b343a66-35ba-4efd-9276-6168fc0cc5bb","tier":"standard","location":"Dar es Salaam","venueType":"physical","accessMode":"paid_visit","operatingHours":null,"perVisitRate":0,"ratePerDay":0,"ratePerWeek":0,"ratePerMonth":0,"commissionRate":12,"status":"active","images":[],"thumbnails":[],"coordinates":{"lat":null,"lng":null},"amenities":[],"equipment":[],"paymentBank":null,"paymentNumber":null,"paymentNotes":null,"tinNumber":null,"createdAt":"2026-09-23T16:39:50.311Z","updatedAt":"2026-09-23T16:39:50.310Z","verified":false,"classes":[],"trainerPass":{"feeTzs":0,"period":"monthly","enabled":false},"homepageVisible":true,"homepagePriority":900,"rating":"0.00","reviewCount":0},{"id":"gym_d95ddb","name":"High priority gym b324a544-42f4-400b-9236-c95a7670b85e","tier":"standard","location":"Dar es Salaam","venueType":"physical","accessMode":"paid_visit","operatingHours":null,"perVisitRate":0,"ratePerDay":0,"ratePerWeek":0,"ratePerMonth":0,"commissionRate":12,"status":"active","images":[],"thumbnails":[],"coordinates":{"lat":null,"lng":null},"amenities"...<truncated>
+[REST] <-- 200 GET http://fixtures.local/trainers
+[REST] response: [{"id":"trn_e7781397","userId":null,"email":"high-priority-trainer-4f736656-1663-418e-a8ae-6c828f807f30@example.com","phone":null,"displayName":"High priority trainer 4f736656-1663-418e-a8ae-6c828f807f30","photoUrl":null,"gender":null,"specialties":["Strength"],"bio":"","rating":0,"reviewCount":0,"hourlyRateTzs":15000,"experienceYears":0,"status":"active","approvalStatus":"approved","pendingGymIds":[],"availability":[],"createdAt":"2026-09-22T10:16:21.207Z","updatedAt":"2026-09-22T10:16:21.207Z","verified":false,"images":[],"imageThumbnails":[],"sessionRateCurrency":"TZS","homepageVisible":true,"homepagePriority":900,"gymIds":[],"gyms":[],"pendingGyms":[]},{"id":"trn_3ed48f17","userId":null,"email":"high-priority-trainer-3773ab54-c32c-4a68-850b-ede6bbc41ed8@example.com","phone":null,"displayName":"High priority trainer 3773ab54-c32c-4a68-850b-ede6bbc41ed8","photoUrl":null,"gender":null,"specialties":["Strength"],"bio":"","rating":0,"reviewCount":0,"hourlyRateTzs":15000,"experienceYears":0,"status":"active","approvalStatus":"approved","pendingGymIds":[],"availability":[],"createdAt":"2026-09-22T10:16:39.548Z","updatedAt":"2026-09-22T10:16:39.548Z","verified":false,"images":[],"imageThumbnails":[],"sessionRateCurrency":"TZS","homepageVisible":true,"homepagePriority":900,"gymIds":[],"gyms":[],"pendingGyms":[]},{"id":"trn_1e3d362f","userId":null,"email":"high-priority-trainer-59eff0fb-e75c-429e-b569-fc9abcffcfab@example.com","phone":null,"displayName":"High priority trainer 59eff0fb-e75c-429e-b569-fc9abcffcfab","photoUrl":null,"gender":null,"specialties":["Strength"],"bio":"","rating":0,"reviewCount":0,"hourlyRateTzs":15000,"experienceYears":0,"status":"active","approvalStatus":"approved","pendingGymIds":[],"availability":[],"createdAt":"2026-09-22T10:29:55.337Z","updatedAt":"2026-09-22T10:29:55.336Z","verified":false,"images":[],"imageThumbnails":[],"sessionRateCurrency":"TZS","homepageVisible":true,"homepagePriority":900,"gymIds":[],"gyms":[],"pendingGyms":[]},{"id":"trn_216677a1","userId":null,"email":"high-priority-trainer-4d6854dd-9dcc-4f17-8b1a-f28243c1a769@example.com","phone":null,"displayName":"High priority trainer 4d6854dd-9dcc-4f17-8b1a-f28243c1a769","photoUrl":null,"gender":null,"specialties":["Strength"],"bio":"","rating":0,"reviewCount":0,"hourlyRateTzs":15000,"experienceYears":0,"status":"active","approvalStatus":"approved","pendingGymIds":[],"availability":[],"createdAt":"2026-09-22T10:30:02.154Z","updatedAt":"2026-09-22T10:30:02.154Z","verified":false,"images":[],"imageThumbnails":[],"sessionRateCurrency":"TZS","homepageVisible":true,"homepagePriority":900,"gymIds":[],"gyms":[],"pendingGyms":[]},{"id":"trn_aab7a07b","userId":null,"email":"high-priority-trainer-38a39bd0-f773-42ea-93c8-0245a9ebaca7@example.com","phone":null,"displayName":"High priority trainer 38a39bd0-f773-42ea-93c8-0245a9ebaca7","photoUrl":null,"gender":null,"specialties":["Strength"],"bio":"","rating":0,"reviewCount":0,"hourlyRateTzs":15000,"experienceYears":0,"status":"active","approvalStatus":"approved","pendingGymIds":[],"availability":[],"createdAt":"2026-09-23T16:39:50.317Z","updatedAt":"2026-09-23T16:39:50.317Z","verified":false,"images":[],"imageThumbnails":[],"sessionRateCurrency":"TZS","homepageVisible":true,"homepagePriority":900,"gymIds":[],"gyms":[],"pendingGyms":[]},{"id":"trn_8ecf5f36","userId":null,"email":"high-priority-trainer-b0b05e38-5bb9-4f85-8199-bf5e1df72099@example.com","phone":null,"displayName":"High priority trainer b0b05e38-5bb9-4f85-8199-bf5e1df72099","photoUrl":null,"gender":null,"specialties":["Strength"],"bio":"","rating":0,"reviewCount":0,"hourlyRateTzs":15000,"experienceYears":0,"status":"active","approvalStatus":"approved","pendingGymIds":[],"availability":[],"createdAt":"2026-09-23T16:58:46.677Z","updatedAt":"2026-09-23T16:58:46.676Z","verified":false,"images":[],"imageThumbnails":[],"sessionRateCurrency":"TZS","homepageVisible":true,"homepagePriority":900,"gymIds":[],"gyms":[],"pendingGyms":[]},{"id":"trn_1119...<truncated>
+[REST] <-- 200 GET http://fixtures.local/me/checkins
+[REST] response: [{"id":"e975eb7a-dee2-4c79-b2d4-0bbb27a4e670","memberId":"usr_dev_member","gymId":"gym_dev_owner","timestamp":"2026-09-24T08:05:16.658Z","method":"gym_scanned","subscriptionType":"platform_pass","passTier":"premium","visitNumberInCycle":1,"gymTier":"standard","creditsDeductedTzs":0,"visitConsumed":true,"gym":{"id":"gym_dev_owner","name":"Dev Owner Gym","tier":"standard","location":"Mikocheni, Dar es Salaam","venueType":"physical","accessMode":"paid_visit","operatingHours":null,"perVisitRate":5000,"ratePerDay":5000,"ratePerWeek":0,"ratePerMonth":0,"commissionRate":12,"status":"active","images":["https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800"],"thumbnails":[],"coordinates":{"lat":null,"lng":null},"amenities":["lockers","showers"],"equipment":[],"paymentBank":null,"paymentNumber":null,"paymentNotes":null,"tinNumber":null,"createdAt":"2026-09-22T10:16:22.944Z","updatedAt":"2026-09-24T08:10:29.289Z","verified":false,"classes":[],"trainerPass":{"enabled":false,"feeTzs":0,"period":"monthly"},"homepageVisible":true,"homepagePriority":0,"rating":"0.00","reviewCount":0}}]
+[REST] <-- 200 GET http://fixtures.local/subscription-tiers
+[REST] response: [{"key":"basic","label":"Basic","monthlyPrice":30000,"visits":12,"gymAccess":"standard"},{"key":"pro","label":"Pro","monthlyPrice":60000,"visits":30,"gymAccess":"midtier"},{"key":"premium","label":"Premium","monthlyPrice":100000,"visits":30,"gymAccess":"premium"},{"key":"executive","label":"Executive","monthlyPrice":200000,"visits":30,"gymAccess":"luxury_executive"}]
+[REST] <-- 200 GET http://fixtures.local/me/favorites/gyms
+[REST] response: {"favoriteGymIds":[]}
+[REST] <-- 200 GET http://fixtures.local/me/trainer-connections
+[REST] response: {"connections":[{"id":"tmr_661ecdaa-d73","trainerId":"trn_dev","memberId":"usr_dev_member","status":"active","permissions":{"goals":false,"steps":false,"streaks":false,"distance":false,"challenges":false,"activeMinutes":false,"workoutDetails":false,"workoutHistory":false},"requestedAt":"2026-09-24T08:02:26.715Z","connectedAt":"2026-09-24T08:02:26.730Z","endedAt":null,"endedBy":null,"createdAt":"2026-09-24T08:02:26.715Z","updatedAt":"2026-09-24T08:05:54.996Z","trainer":{"id":"trn_dev","displayName":"Dev Trainer","photoUrl":"https://images.unsplash.com/photo-1567013127542-490d757e51fc?w=400","specialties":["strength","mobility"]}}]}
+[REST] <-- 200 GET http://fixtures.local/me/gym-sharing
+[REST] response: {"gyms":[{"gym":{"id":"gym_dev_owner","name":"Dev Owner Gym","location":"Mikocheni, Dar es Salaam"},"reasons":["visited"],"permissions":{"classAttendance":false,"gymWorkouts":false,"challenges":false}}]}
+[REST] <-- 200 GET http://fixtures.local/me/challenges
+[REST] response: {"challenges":[{"id":"chl_ba8088b3-368","name":"Smoke 1790236946677","description":null,"type":"gym_attendance","target":3,"startDate":"2026-09-24","endDate":"2026-09-30","creatorType":"gym","creatorId":"gym_dev_owner","createdBy":"usr_dev_owner","rewards":[],"visibility":"public","status":"cancelled","createdAt":"2026-09-24T08:02:26.680Z","updatedAt":"2026-09-24T08:02:26.697Z","mode":"individual","participantCount":1,"phase":"cancelled","joined":true,"myTeamId":null,"leaderboardOptIn":false,"teams":[],"creator":{"type":"gym","id":"gym_dev_owner","name":"Dev Owner Gym"}},{"id":"chl_8bfb88a4-0ef","name":"Smoke 1790236998892","description":null,"type":"gym_attendance","target":3,"startDate":"2026-09-24","endDate":"2026-09-30","creatorType":"gym","creatorId":"gym_dev_owner","createdBy":"usr_dev_owner","rewards":[],"visibility":"public","status":"cancelled","createdAt":"2026-09-24T08:03:18.894Z","updatedAt":"2026-09-24T08:03:18.911Z","mode":"individual","participantCount":1,"phase":"cancelled","joined":true,"myTeamId":null,"leaderboardOptIn":false,"teams":[],"creator":{"type":"gym","id":"gym_dev_owner","name":"Dev Owner Gym"}},{"id":"chl_3c34a1a5-784","name":"Smoke 1790237058359","description":null,"type":"gym_attendance","target":3,"startDate":"2026-09-24","endDate":"2026-09-30","creatorType":"gym","creatorId":"gym_dev_owner","createdBy":"usr_dev_owner","rewards":[],"visibility":"public","status":"cancelled","createdAt":"2026-09-24T08:04:18.362Z","updatedAt":"2026-09-24T08:04:18.379Z","mode":"individual","participantCount":1,"phase":"cancelled","joined":true,"myTeamId":null,"leaderboardOptIn":false,"teams":[],"creator":{"type":"gym","id":"gym_dev_owner","name":"Dev Owner Gym"}},{"id":"chl_d208392e-9bc","name":"Smoke 1790237116688","description":null,"type":"gym_attendance","target":3,"startDate":"2026-09-24","endDate":"2026-09-30","creatorType":"gym","creatorId":"gym_dev_owner","createdBy":"usr_dev_owner","rewards":[],"visibility":"public","status":"cancelled","createdAt":"2026-09-24T08:05:16.691Z","updatedAt":"2026-09-24T08:05:16.708Z","mode":"individual","participantCount":1,"phase":"cancelled","joined":true,"myTeamId":null,"leaderboardOptIn":false,"teams":[],"creator":{"type":"gym","id":"gym_dev_owner","name":"Dev Owner Gym"}},{"id":"chl_601bb151-2b8","name":"Smoke 1790237154917","description":null,"type":"gym_attendance","target":3,"startDate":"2026-09-24","endDate":"2026-09-30","creatorType":"gym","creatorId":"gym_dev_owner","createdBy":"usr_dev_owner","rewards":[],"visibility":"public","status":"cancelled","createdAt":"2026-09-24T08:05:54.920Z","updatedAt":"2026-09-24T08:05:54.935Z","mode":"individual","participantCount":1,"phase":"cancelled","joined":true,"myTeamId":null,"leaderboardOptIn":false,"teams":[],"creator":{"type":"gym","id":"gym_dev_owner","name":"Dev Owner Gym"}}]}
+[REST] <-- 404 GET http://fixtures.local/b2b/me/benefits
+[REST] response: {"error":"not_recorded"}
+[REST] --> GET http://fixtures.local/me/qr
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 200 GET http://fixtures.local/me
+[REST] response: {"user":{"id":"usr_dev_member","firebaseUid":null,"phone":"+255700000010","email":"dev.member@fitflex.test","displayName":"Dev Member","photoUrl":null,"userType":"member","accountStatus":"active","approvalStatus":"approved","verified":false,"passwordHash":null,"approvalNote":null,"onboardingCompleted":true,"portalUser":false,"aclPermissions":[],"memberProfile":{"gender":null,"heightCm":null,"weightKg":null,"dateOfBirth":null,"fitnessGoal":null,"fitnessGoals":[],"fitnessLevel":null,"preferredWorkoutTimes":[],"notificationPreferences":{}},"gymId":null,"gymIds":[],"createdAt":"2026-09-24T07:39:40.576Z","updatedAt":"2026-09-24T08:13:39.452Z","vendorProfile":null,"vendorId":null,"vendorRole":null,"vendorPermissions":[],"corporateId":null,"publicId":"FM664","userCode":"FM664"},"subscription":{"id":"sub_dev_member","memberId":"usr_dev_member","type":"platform_pass","tier":"premium","status":"active","startedAt":"2026-09-24T08:13:39.452Z","cycleStartedAt":"2026-09-24T08:13:39.452Z","renewsAt":"2026-10-24T08:13:39.452Z","expiresAt":"2026-10-24T08:13:39.452Z","homeGymId":null,"paymentRef":"DEV_MOCK","createdAt":"2026-09-24T07:39:40.609Z","plan":null},"pendingPayment":null,"visitsUsed":0,"visitCap":30}
+[REST] <-- 200 GET http://fixtures.local/me/qr
+[REST] response: {"token":"<redacted>","expiresAt":"2026-09-24T08:14:00.000Z","rotatesEverySeconds":60}
+[REST] --> GET http://fixtures.local/me/recovery
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/me/recovery
+[REST] response: {"error":"not_recorded"}
+[REST] --> GET http://fixtures.local/discover/gyms?limit=50&session=53fe1dcb08272d03
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/discover/gyms?limit=50&session=53fe1dcb08272d03
+[REST] response: {"error":"not_recorded"}
+[REST] --> GET http://fixtures.local/shop/products
+[REST] headers: {X-FF-Shop-Caps: flash_sale, content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/me/shop-orders
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/shop/areas
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 200 GET http://fixtures.local/shop/products
+[REST] response: [{"id":"prd_fe82753a","vendorId":"usr_3cff1d08","name":"Priority Product 1790237265743-59139","description":null,"category":null,"priceTzs":25000,"stock":12,"images":[],"status":"active","createdAt":"2026-09-24T08:07:45.791Z","updatedAt":"2026-09-24T08:07:47.176Z","homepageVisible":true,"homepagePriority":9000,"brand":null,"sku":null,"visibility":"visible","approvalStatus":"approved","deletedAt":null,"discountPriceTzs":null,"reviewCount":0,"soldCount":0,"weightKg":null,"variants":[],"deliveryAvailable":true,"rating":"0.00","distanceKm":null},{"id":"prd_dev_marketplace","vendorId":"usr_dev_vendor","name":"FitFlex Resistance Bands","description":"Five-band training set for home or gym workouts.","category":"Equipment","priceTzs":45000,"stock":25,"images":["https://images.unsplash.com/photo-1598289431512-b97b0917affc?w=800"],"status":"active","createdAt":"2026-09-24T08:02:26.498Z","updatedAt":"2026-09-24T08:13:39.530Z","homepageVisible":true,"homepagePriority":5000,"brand":"FitFlex","sku":"FF-RB-5","visibility":"visible","approvalStatus":"approved","deletedAt":null,"discountPriceTzs":39000,"reviewCount":12,"soldCount":64,"weightKg":"0.700","variants":[{"name":"Five-band set","stock":25}],"deliveryAvailable":true,"rating":"4.80","distanceKm":"3.20"},{"id":"prd_eac2dad6","vendorId":"usr_vendor_26be3f45-0ed8-42a7-86ca-d9cbdf74bd12","name":"High priority product 26be3f45-0ed8-42a7-86ca-d9cbdf74bd12","description":null,"category":null,"priceTzs":10000,"stock":10,"images":[],"status":"active","createdAt":"2026-09-24T07:32:36.377Z","updatedAt":"2026-09-24T07:32:36.381Z","homepageVisible":true,"homepagePriority":900,"brand":null,"sku":null,"visibility":"visible","approvalStatus":"approved","deletedAt":null,"discountPriceTzs":null,"reviewCount":0,"soldCount":0,"weightKg":null,"variants":[],"deliveryAvailable":true,"rating":"0.00","distanceKm":null},{"id":"prd_089e2620","vendorId":"usr_vendor_effe99da-1268-42d8-9f05-982dc232e647","name":"High priority product effe99da-1268-42d8-9f05-982dc232e647","description":null,"category":null,"priceTzs":10000,"stock":10,"images":[],"status":"active","createdAt":"2026-09-24T07:26:58.839Z","updatedAt":"2026-09-24T07:26:58.842Z","homepageVisible":true,"homepagePriority":900,"brand":null,"sku":null,"visibility":"visible","approvalStatus":"approved","deletedAt":null,"discountPriceTzs":null,"reviewCount":0,"soldCount":0,"weightKg":null,"variants":[],"deliveryAvailable":true,"rating":"0.00","distanceKm":null},{"id":"prd_f41423b5","vendorId":"usr_vendor_9399511f-0ff5-4d0c-86a4-5c622e7db1ca","name":"High priority product 9399511f-0ff5-4d0c-86a4-5c622e7db1ca","description":null,"category":null,"priceTzs":10000,"stock":10,"images":[],"status":"active","createdAt":"2026-09-24T07:25:35.909Z","updatedAt":"2026-09-24T07:25:35.912Z","homepageVisible":true,"homepagePriority":900,"brand":null,"sku":null,"visibility":"visible","approvalStatus":"approved","deletedAt":null,"discountPriceTzs":null,"reviewCount":0,"soldCount":0,"weightKg":null,"variants":[],"deliveryAvailable":true,"rating":"0.00","distanceKm":null},{"id":"prd_ab0442f6","vendorId":"usr_vendor_78e0e2bb-ef2b-470e-b4b8-ea4793bda769","name":"High priority product 78e0e2bb-ef2b-470e-b4b8-ea4793bda769","description":null,"category":null,"priceTzs":10000,"stock":10,"images":[],"status":"active","createdAt":"2026-09-24T07:21:31.610Z","updatedAt":"2026-09-24T07:21:31.614Z","homepageVisible":true,"homepagePriority":900,"brand":null,"sku":null,"visibility":"visible","approvalStatus":"approved","deletedAt":null,"discountPriceTzs":null,"reviewCount":0,"soldCount":0,"weightKg":null,"variants":[],"deliveryAvailable":true,"rating":"0.00","distanceKm":null},{"id":"prd_f6ae9bad","vendorId":"usr_vendor_99b47a6c-ae0d-4622-aba1-f6022ccc259d","name":"High priority product 99b47a6c-ae0d-4622-aba1-f6022ccc259d","description":null,"category":null,"priceTzs":10000,"stock":10,"images":[],"status":"active","createdAt":"2026-09-24T07:05:59.799Z","updatedAt":"2026-09-24T07:05:59.803Z","...<truncated>
+[REST] <-- 200 GET http://fixtures.local/me/shop-orders
+[REST] response: []
+[REST] --> GET http://fixtures.local/discover/products?limit=50&session=53fe1dcb08272d03
+[REST] headers: {X-FF-Shop-Caps: flash_sale, content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/shop/areas
+[REST] response: {"error":"not_recorded"}
+[REST] <-- 404 GET http://fixtures.local/discover/products?limit=50&session=53fe1dcb08272d03
+[REST] response: {"error":"not_recorded"}
+::endgroup::
+::group::✅ member tabs (dark)
+[REST] --> GET http://fixtures.local/auth/options
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/me
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/auth/options
+[REST] response: {"error":"not_recorded"}
+[REST] --> POST http://fixtures.local/auth/pin/login
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] request: {}
+[REST] --> POST http://fixtures.local/auth/pin/reset/start
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] request: {}
+[REST] <-- 200 GET http://fixtures.local/me
+[REST] response: {"user":{"id":"usr_dev_member","firebaseUid":null,"phone":"+255700000010","email":"dev.member@fitflex.test","displayName":"Dev Member","photoUrl":null,"userType":"member","accountStatus":"active","approvalStatus":"approved","verified":false,"passwordHash":null,"approvalNote":null,"onboardingCompleted":true,"portalUser":false,"aclPermissions":[],"memberProfile":{"gender":null,"heightCm":null,"weightKg":null,"dateOfBirth":null,"fitnessGoal":null,"fitnessGoals":[],"fitnessLevel":null,"preferredWorkoutTimes":[],"notificationPreferences":{}},"gymId":null,"gymIds":[],"createdAt":"2026-09-24T07:39:40.576Z","updatedAt":"2026-09-24T08:13:39.452Z","vendorProfile":null,"vendorId":null,"vendorRole":null,"vendorPermissions":[],"corporateId":null,"publicId":"FM664","userCode":"FM664"},"subscription":{"id":"sub_dev_member","memberId":"usr_dev_member","type":"platform_pass","tier":"premium","status":"active","startedAt":"2026-09-24T08:13:39.452Z","cycleStartedAt":"2026-09-24T08:13:39.452Z","renewsAt":"2026-10-24T08:13:39.452Z","expiresAt":"2026-10-24T08:13:39.452Z","homeGymId":null,"paymentRef":"DEV_MOCK","createdAt":"2026-09-24T07:39:40.609Z","plan":null},"pendingPayment":null,"visitsUsed":0,"visitCap":30}
+[REST] --> GET http://fixtures.local/me/personas
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 200 POST http://fixtures.local/auth/pin/login
+[REST] response: {}
+[REST] <-- 200 POST http://fixtures.local/auth/pin/reset/start
+[REST] response: {}
+[REST] <-- 404 GET http://fixtures.local/me/personas
+[REST] response: {"error":"not_recorded"}
+[REST] --> GET http://fixtures.local/me/invitations
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/me/invitations
+[REST] response: {"error":"not_recorded"}
+[REST] --> GET http://fixtures.local/me/identifiers
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/me/identifiers
+[REST] response: {"error":"not_recorded"}
+[REST] --> GET http://fixtures.local/me/notifications
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> PUT http://fixtures.local/me/communication-preferences
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] request: {"locale":"en"}
+[REST] --> GET http://fixtures.local/me/recovery
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/me/notifications
+[REST] response: {"error":"not_recorded"}
+[REST] <-- 200 PUT http://fixtures.local/me/communication-preferences
+[REST] response: {}
+[REST] <-- 404 GET http://fixtures.local/me/recovery
+[REST] response: {"error":"not_recorded"}
+[REST] --> GET http://fixtures.local/me
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/gyms
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/trainers
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/me/checkins
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/subscription-tiers
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/me/favorites/gyms
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/me/trainer-connections
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/me/gym-sharing
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/me/challenges
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/b2b/me/benefits
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/me
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 200 GET http://fixtures.local/me
+[REST] response: {"user":{"id":"usr_dev_member","firebaseUid":null,"phone":"+255700000010","email":"dev.member@fitflex.test","displayName":"Dev Member","photoUrl":null,"userType":"member","accountStatus":"active","approvalStatus":"approved","verified":false,"passwordHash":null,"approvalNote":null,"onboardingCompleted":true,"portalUser":false,"aclPermissions":[],"memberProfile":{"gender":null,"heightCm":null,"weightKg":null,"dateOfBirth":null,"fitnessGoal":null,"fitnessGoals":[],"fitnessLevel":null,"preferredWorkoutTimes":[],"notificationPreferences":{}},"gymId":null,"gymIds":[],"createdAt":"2026-09-24T07:39:40.576Z","updatedAt":"2026-09-24T08:13:39.452Z","vendorProfile":null,"vendorId":null,"vendorRole":null,"vendorPermissions":[],"corporateId":null,"publicId":"FM664","userCode":"FM664"},"subscription":{"id":"sub_dev_member","memberId":"usr_dev_member","type":"platform_pass","tier":"premium","status":"active","startedAt":"2026-09-24T08:13:39.452Z","cycleStartedAt":"2026-09-24T08:13:39.452Z","renewsAt":"2026-10-24T08:13:39.452Z","expiresAt":"2026-10-24T08:13:39.452Z","homeGymId":null,"paymentRef":"DEV_MOCK","createdAt":"2026-09-24T07:39:40.609Z","plan":null},"pendingPayment":null,"visitsUsed":0,"visitCap":30}
+[REST] <-- 200 GET http://fixtures.local/gyms
+[REST] response: [{"id":"gym_50106d","name":"High priority gym b49b6e18-7cfa-43df-8419-8222dd41bfd7","tier":"standard","location":"Dar es Salaam","venueType":"physical","accessMode":"paid_visit","operatingHours":null,"perVisitRate":0,"ratePerDay":0,"ratePerWeek":0,"ratePerMonth":0,"commissionRate":12,"status":"active","images":[],"thumbnails":[],"coordinates":{"lat":null,"lng":null},"amenities":[],"equipment":[],"paymentBank":null,"paymentNumber":null,"paymentNotes":null,"tinNumber":null,"createdAt":"2026-09-22T10:16:21.202Z","updatedAt":"2026-09-22T10:16:21.201Z","verified":false,"classes":[],"trainerPass":{"feeTzs":0,"period":"monthly","enabled":false},"homepageVisible":true,"homepagePriority":900,"rating":"0.00","reviewCount":0},{"id":"gym_be3be6","name":"High priority gym b1de4282-743d-4d68-ad9b-69a68c223b95","tier":"standard","location":"Dar es Salaam","venueType":"physical","accessMode":"paid_visit","operatingHours":null,"perVisitRate":0,"ratePerDay":0,"ratePerWeek":0,"ratePerMonth":0,"commissionRate":12,"status":"active","images":[],"thumbnails":[],"coordinates":{"lat":null,"lng":null},"amenities":[],"equipment":[],"paymentBank":null,"paymentNumber":null,"paymentNotes":null,"tinNumber":null,"createdAt":"2026-09-22T10:16:39.543Z","updatedAt":"2026-09-22T10:16:39.542Z","verified":false,"classes":[],"trainerPass":{"feeTzs":0,"period":"monthly","enabled":false},"homepageVisible":true,"homepagePriority":900,"rating":"0.00","reviewCount":0},{"id":"gym_d235ae","name":"High priority gym 28e4ee05-f3ee-47ba-893a-1d1d4fd674bf","tier":"standard","location":"Dar es Salaam","venueType":"physical","accessMode":"paid_visit","operatingHours":null,"perVisitRate":0,"ratePerDay":0,"ratePerWeek":0,"ratePerMonth":0,"commissionRate":12,"status":"active","images":[],"thumbnails":[],"coordinates":{"lat":null,"lng":null},"amenities":[],"equipment":[],"paymentBank":null,"paymentNumber":null,"paymentNotes":null,"tinNumber":null,"createdAt":"2026-09-22T10:29:55.331Z","updatedAt":"2026-09-22T10:29:55.331Z","verified":false,"classes":[],"trainerPass":{"feeTzs":0,"period":"monthly","enabled":false},"homepageVisible":true,"homepagePriority":900,"rating":"0.00","reviewCount":0},{"id":"gym_adf56a","name":"High priority gym f2b13d73-a9e1-46c9-90ec-057675939825","tier":"standard","location":"Dar es Salaam","venueType":"physical","accessMode":"paid_visit","operatingHours":null,"perVisitRate":0,"ratePerDay":0,"ratePerWeek":0,"ratePerMonth":0,"commissionRate":12,"status":"active","images":[],"thumbnails":[],"coordinates":{"lat":null,"lng":null},"amenities":[],"equipment":[],"paymentBank":null,"paymentNumber":null,"paymentNotes":null,"tinNumber":null,"createdAt":"2026-09-22T10:30:02.148Z","updatedAt":"2026-09-22T10:30:02.148Z","verified":false,"classes":[],"trainerPass":{"feeTzs":0,"period":"monthly","enabled":false},"homepageVisible":true,"homepagePriority":900,"rating":"0.00","reviewCount":0},{"id":"gym_576ab0","name":"High priority gym 9b343a66-35ba-4efd-9276-6168fc0cc5bb","tier":"standard","location":"Dar es Salaam","venueType":"physical","accessMode":"paid_visit","operatingHours":null,"perVisitRate":0,"ratePerDay":0,"ratePerWeek":0,"ratePerMonth":0,"commissionRate":12,"status":"active","images":[],"thumbnails":[],"coordinates":{"lat":null,"lng":null},"amenities":[],"equipment":[],"paymentBank":null,"paymentNumber":null,"paymentNotes":null,"tinNumber":null,"createdAt":"2026-09-23T16:39:50.311Z","updatedAt":"2026-09-23T16:39:50.310Z","verified":false,"classes":[],"trainerPass":{"feeTzs":0,"period":"monthly","enabled":false},"homepageVisible":true,"homepagePriority":900,"rating":"0.00","reviewCount":0},{"id":"gym_d95ddb","name":"High priority gym b324a544-42f4-400b-9236-c95a7670b85e","tier":"standard","location":"Dar es Salaam","venueType":"physical","accessMode":"paid_visit","operatingHours":null,"perVisitRate":0,"ratePerDay":0,"ratePerWeek":0,"ratePerMonth":0,"commissionRate":12,"status":"active","images":[],"thumbnails":[],"coordinates":{"lat":null,"lng":null},"amenities"...<truncated>
+[REST] <-- 200 GET http://fixtures.local/trainers
+[REST] response: [{"id":"trn_e7781397","userId":null,"email":"high-priority-trainer-4f736656-1663-418e-a8ae-6c828f807f30@example.com","phone":null,"displayName":"High priority trainer 4f736656-1663-418e-a8ae-6c828f807f30","photoUrl":null,"gender":null,"specialties":["Strength"],"bio":"","rating":0,"reviewCount":0,"hourlyRateTzs":15000,"experienceYears":0,"status":"active","approvalStatus":"approved","pendingGymIds":[],"availability":[],"createdAt":"2026-09-22T10:16:21.207Z","updatedAt":"2026-09-22T10:16:21.207Z","verified":false,"images":[],"imageThumbnails":[],"sessionRateCurrency":"TZS","homepageVisible":true,"homepagePriority":900,"gymIds":[],"gyms":[],"pendingGyms":[]},{"id":"trn_3ed48f17","userId":null,"email":"high-priority-trainer-3773ab54-c32c-4a68-850b-ede6bbc41ed8@example.com","phone":null,"displayName":"High priority trainer 3773ab54-c32c-4a68-850b-ede6bbc41ed8","photoUrl":null,"gender":null,"specialties":["Strength"],"bio":"","rating":0,"reviewCount":0,"hourlyRateTzs":15000,"experienceYears":0,"status":"active","approvalStatus":"approved","pendingGymIds":[],"availability":[],"createdAt":"2026-09-22T10:16:39.548Z","updatedAt":"2026-09-22T10:16:39.548Z","verified":false,"images":[],"imageThumbnails":[],"sessionRateCurrency":"TZS","homepageVisible":true,"homepagePriority":900,"gymIds":[],"gyms":[],"pendingGyms":[]},{"id":"trn_1e3d362f","userId":null,"email":"high-priority-trainer-59eff0fb-e75c-429e-b569-fc9abcffcfab@example.com","phone":null,"displayName":"High priority trainer 59eff0fb-e75c-429e-b569-fc9abcffcfab","photoUrl":null,"gender":null,"specialties":["Strength"],"bio":"","rating":0,"reviewCount":0,"hourlyRateTzs":15000,"experienceYears":0,"status":"active","approvalStatus":"approved","pendingGymIds":[],"availability":[],"createdAt":"2026-09-22T10:29:55.337Z","updatedAt":"2026-09-22T10:29:55.336Z","verified":false,"images":[],"imageThumbnails":[],"sessionRateCurrency":"TZS","homepageVisible":true,"homepagePriority":900,"gymIds":[],"gyms":[],"pendingGyms":[]},{"id":"trn_216677a1","userId":null,"email":"high-priority-trainer-4d6854dd-9dcc-4f17-8b1a-f28243c1a769@example.com","phone":null,"displayName":"High priority trainer 4d6854dd-9dcc-4f17-8b1a-f28243c1a769","photoUrl":null,"gender":null,"specialties":["Strength"],"bio":"","rating":0,"reviewCount":0,"hourlyRateTzs":15000,"experienceYears":0,"status":"active","approvalStatus":"approved","pendingGymIds":[],"availability":[],"createdAt":"2026-09-22T10:30:02.154Z","updatedAt":"2026-09-22T10:30:02.154Z","verified":false,"images":[],"imageThumbnails":[],"sessionRateCurrency":"TZS","homepageVisible":true,"homepagePriority":900,"gymIds":[],"gyms":[],"pendingGyms":[]},{"id":"trn_aab7a07b","userId":null,"email":"high-priority-trainer-38a39bd0-f773-42ea-93c8-0245a9ebaca7@example.com","phone":null,"displayName":"High priority trainer 38a39bd0-f773-42ea-93c8-0245a9ebaca7","photoUrl":null,"gender":null,"specialties":["Strength"],"bio":"","rating":0,"reviewCount":0,"hourlyRateTzs":15000,"experienceYears":0,"status":"active","approvalStatus":"approved","pendingGymIds":[],"availability":[],"createdAt":"2026-09-23T16:39:50.317Z","updatedAt":"2026-09-23T16:39:50.317Z","verified":false,"images":[],"imageThumbnails":[],"sessionRateCurrency":"TZS","homepageVisible":true,"homepagePriority":900,"gymIds":[],"gyms":[],"pendingGyms":[]},{"id":"trn_8ecf5f36","userId":null,"email":"high-priority-trainer-b0b05e38-5bb9-4f85-8199-bf5e1df72099@example.com","phone":null,"displayName":"High priority trainer b0b05e38-5bb9-4f85-8199-bf5e1df72099","photoUrl":null,"gender":null,"specialties":["Strength"],"bio":"","rating":0,"reviewCount":0,"hourlyRateTzs":15000,"experienceYears":0,"status":"active","approvalStatus":"approved","pendingGymIds":[],"availability":[],"createdAt":"2026-09-23T16:58:46.677Z","updatedAt":"2026-09-23T16:58:46.676Z","verified":false,"images":[],"imageThumbnails":[],"sessionRateCurrency":"TZS","homepageVisible":true,"homepagePriority":900,"gymIds":[],"gyms":[],"pendingGyms":[]},{"id":"trn_1119...<truncated>
+[REST] <-- 200 GET http://fixtures.local/me/checkins
+[REST] response: [{"id":"e975eb7a-dee2-4c79-b2d4-0bbb27a4e670","memberId":"usr_dev_member","gymId":"gym_dev_owner","timestamp":"2026-09-24T08:05:16.658Z","method":"gym_scanned","subscriptionType":"platform_pass","passTier":"premium","visitNumberInCycle":1,"gymTier":"standard","creditsDeductedTzs":0,"visitConsumed":true,"gym":{"id":"gym_dev_owner","name":"Dev Owner Gym","tier":"standard","location":"Mikocheni, Dar es Salaam","venueType":"physical","accessMode":"paid_visit","operatingHours":null,"perVisitRate":5000,"ratePerDay":5000,"ratePerWeek":0,"ratePerMonth":0,"commissionRate":12,"status":"active","images":["https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800"],"thumbnails":[],"coordinates":{"lat":null,"lng":null},"amenities":["lockers","showers"],"equipment":[],"paymentBank":null,"paymentNumber":null,"paymentNotes":null,"tinNumber":null,"createdAt":"2026-09-22T10:16:22.944Z","updatedAt":"2026-09-24T08:10:29.289Z","verified":false,"classes":[],"trainerPass":{"enabled":false,"feeTzs":0,"period":"monthly"},"homepageVisible":true,"homepagePriority":0,"rating":"0.00","reviewCount":0}}]
+[REST] <-- 200 GET http://fixtures.local/subscription-tiers
+[REST] response: [{"key":"basic","label":"Basic","monthlyPrice":30000,"visits":12,"gymAccess":"standard"},{"key":"pro","label":"Pro","monthlyPrice":60000,"visits":30,"gymAccess":"midtier"},{"key":"premium","label":"Premium","monthlyPrice":100000,"visits":30,"gymAccess":"premium"},{"key":"executive","label":"Executive","monthlyPrice":200000,"visits":30,"gymAccess":"luxury_executive"}]
+[REST] <-- 200 GET http://fixtures.local/me/favorites/gyms
+[REST] response: {"favoriteGymIds":[]}
+[REST] <-- 200 GET http://fixtures.local/me/trainer-connections
+[REST] response: {"connections":[{"id":"tmr_661ecdaa-d73","trainerId":"trn_dev","memberId":"usr_dev_member","status":"active","permissions":{"goals":false,"steps":false,"streaks":false,"distance":false,"challenges":false,"activeMinutes":false,"workoutDetails":false,"workoutHistory":false},"requestedAt":"2026-09-24T08:02:26.715Z","connectedAt":"2026-09-24T08:02:26.730Z","endedAt":null,"endedBy":null,"createdAt":"2026-09-24T08:02:26.715Z","updatedAt":"2026-09-24T08:05:54.996Z","trainer":{"id":"trn_dev","displayName":"Dev Trainer","photoUrl":"https://images.unsplash.com/photo-1567013127542-490d757e51fc?w=400","specialties":["strength","mobility"]}}]}
+[REST] <-- 200 GET http://fixtures.local/me/gym-sharing
+[REST] response: {"gyms":[{"gym":{"id":"gym_dev_owner","name":"Dev Owner Gym","location":"Mikocheni, Dar es Salaam"},"reasons":["visited"],"permissions":{"classAttendance":false,"gymWorkouts":false,"challenges":false}}]}
+[REST] <-- 200 GET http://fixtures.local/me/challenges
+[REST] response: {"challenges":[{"id":"chl_ba8088b3-368","name":"Smoke 1790236946677","description":null,"type":"gym_attendance","target":3,"startDate":"2026-09-24","endDate":"2026-09-30","creatorType":"gym","creatorId":"gym_dev_owner","createdBy":"usr_dev_owner","rewards":[],"visibility":"public","status":"cancelled","createdAt":"2026-09-24T08:02:26.680Z","updatedAt":"2026-09-24T08:02:26.697Z","mode":"individual","participantCount":1,"phase":"cancelled","joined":true,"myTeamId":null,"leaderboardOptIn":false,"teams":[],"creator":{"type":"gym","id":"gym_dev_owner","name":"Dev Owner Gym"}},{"id":"chl_8bfb88a4-0ef","name":"Smoke 1790236998892","description":null,"type":"gym_attendance","target":3,"startDate":"2026-09-24","endDate":"2026-09-30","creatorType":"gym","creatorId":"gym_dev_owner","createdBy":"usr_dev_owner","rewards":[],"visibility":"public","status":"cancelled","createdAt":"2026-09-24T08:03:18.894Z","updatedAt":"2026-09-24T08:03:18.911Z","mode":"individual","participantCount":1,"phase":"cancelled","joined":true,"myTeamId":null,"leaderboardOptIn":false,"teams":[],"creator":{"type":"gym","id":"gym_dev_owner","name":"Dev Owner Gym"}},{"id":"chl_3c34a1a5-784","name":"Smoke 1790237058359","description":null,"type":"gym_attendance","target":3,"startDate":"2026-09-24","endDate":"2026-09-30","creatorType":"gym","creatorId":"gym_dev_owner","createdBy":"usr_dev_owner","rewards":[],"visibility":"public","status":"cancelled","createdAt":"2026-09-24T08:04:18.362Z","updatedAt":"2026-09-24T08:04:18.379Z","mode":"individual","participantCount":1,"phase":"cancelled","joined":true,"myTeamId":null,"leaderboardOptIn":false,"teams":[],"creator":{"type":"gym","id":"gym_dev_owner","name":"Dev Owner Gym"}},{"id":"chl_d208392e-9bc","name":"Smoke 1790237116688","description":null,"type":"gym_attendance","target":3,"startDate":"2026-09-24","endDate":"2026-09-30","creatorType":"gym","creatorId":"gym_dev_owner","createdBy":"usr_dev_owner","rewards":[],"visibility":"public","status":"cancelled","createdAt":"2026-09-24T08:05:16.691Z","updatedAt":"2026-09-24T08:05:16.708Z","mode":"individual","participantCount":1,"phase":"cancelled","joined":true,"myTeamId":null,"leaderboardOptIn":false,"teams":[],"creator":{"type":"gym","id":"gym_dev_owner","name":"Dev Owner Gym"}},{"id":"chl_601bb151-2b8","name":"Smoke 1790237154917","description":null,"type":"gym_attendance","target":3,"startDate":"2026-09-24","endDate":"2026-09-30","creatorType":"gym","creatorId":"gym_dev_owner","createdBy":"usr_dev_owner","rewards":[],"visibility":"public","status":"cancelled","createdAt":"2026-09-24T08:05:54.920Z","updatedAt":"2026-09-24T08:05:54.935Z","mode":"individual","participantCount":1,"phase":"cancelled","joined":true,"myTeamId":null,"leaderboardOptIn":false,"teams":[],"creator":{"type":"gym","id":"gym_dev_owner","name":"Dev Owner Gym"}}]}
+[REST] <-- 404 GET http://fixtures.local/b2b/me/benefits
+[REST] response: {"error":"not_recorded"}
+[REST] --> GET http://fixtures.local/me/qr
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 200 GET http://fixtures.local/me
+[REST] response: {"user":{"id":"usr_dev_member","firebaseUid":null,"phone":"+255700000010","email":"dev.member@fitflex.test","displayName":"Dev Member","photoUrl":null,"userType":"member","accountStatus":"active","approvalStatus":"approved","verified":false,"passwordHash":null,"approvalNote":null,"onboardingCompleted":true,"portalUser":false,"aclPermissions":[],"memberProfile":{"gender":null,"heightCm":null,"weightKg":null,"dateOfBirth":null,"fitnessGoal":null,"fitnessGoals":[],"fitnessLevel":null,"preferredWorkoutTimes":[],"notificationPreferences":{}},"gymId":null,"gymIds":[],"createdAt":"2026-09-24T07:39:40.576Z","updatedAt":"2026-09-24T08:13:39.452Z","vendorProfile":null,"vendorId":null,"vendorRole":null,"vendorPermissions":[],"corporateId":null,"publicId":"FM664","userCode":"FM664"},"subscription":{"id":"sub_dev_member","memberId":"usr_dev_member","type":"platform_pass","tier":"premium","status":"active","startedAt":"2026-09-24T08:13:39.452Z","cycleStartedAt":"2026-09-24T08:13:39.452Z","renewsAt":"2026-10-24T08:13:39.452Z","expiresAt":"2026-10-24T08:13:39.452Z","homeGymId":null,"paymentRef":"DEV_MOCK","createdAt":"2026-09-24T07:39:40.609Z","plan":null},"pendingPayment":null,"visitsUsed":0,"visitCap":30}
+[REST] <-- 200 GET http://fixtures.local/me/qr
+[REST] response: {"token":"<redacted>","expiresAt":"2026-09-24T08:14:00.000Z","rotatesEverySeconds":60}
+[REST] --> GET http://fixtures.local/me/recovery
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/me/recovery
+[REST] response: {"error":"not_recorded"}
+[REST] --> GET http://fixtures.local/discover/gyms?limit=50&session=53fe1dcb08272d03
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/discover/gyms?limit=50&session=53fe1dcb08272d03
+[REST] response: {"error":"not_recorded"}
+[REST] --> GET http://fixtures.local/shop/products
+[REST] headers: {X-FF-Shop-Caps: flash_sale, content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/me/shop-orders
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/shop/areas
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 200 GET http://fixtures.local/shop/products
+[REST] response: [{"id":"prd_fe82753a","vendorId":"usr_3cff1d08","name":"Priority Product 1790237265743-59139","description":null,"category":null,"priceTzs":25000,"stock":12,"images":[],"status":"active","createdAt":"2026-09-24T08:07:45.791Z","updatedAt":"2026-09-24T08:07:47.176Z","homepageVisible":true,"homepagePriority":9000,"brand":null,"sku":null,"visibility":"visible","approvalStatus":"approved","deletedAt":null,"discountPriceTzs":null,"reviewCount":0,"soldCount":0,"weightKg":null,"variants":[],"deliveryAvailable":true,"rating":"0.00","distanceKm":null},{"id":"prd_dev_marketplace","vendorId":"usr_dev_vendor","name":"FitFlex Resistance Bands","description":"Five-band training set for home or gym workouts.","category":"Equipment","priceTzs":45000,"stock":25,"images":["https://images.unsplash.com/photo-1598289431512-b97b0917affc?w=800"],"status":"active","createdAt":"2026-09-24T08:02:26.498Z","updatedAt":"2026-09-24T08:13:39.530Z","homepageVisible":true,"homepagePriority":5000,"brand":"FitFlex","sku":"FF-RB-5","visibility":"visible","approvalStatus":"approved","deletedAt":null,"discountPriceTzs":39000,"reviewCount":12,"soldCount":64,"weightKg":"0.700","variants":[{"name":"Five-band set","stock":25}],"deliveryAvailable":true,"rating":"4.80","distanceKm":"3.20"},{"id":"prd_eac2dad6","vendorId":"usr_vendor_26be3f45-0ed8-42a7-86ca-d9cbdf74bd12","name":"High priority product 26be3f45-0ed8-42a7-86ca-d9cbdf74bd12","description":null,"category":null,"priceTzs":10000,"stock":10,"images":[],"status":"active","createdAt":"2026-09-24T07:32:36.377Z","updatedAt":"2026-09-24T07:32:36.381Z","homepageVisible":true,"homepagePriority":900,"brand":null,"sku":null,"visibility":"visible","approvalStatus":"approved","deletedAt":null,"discountPriceTzs":null,"reviewCount":0,"soldCount":0,"weightKg":null,"variants":[],"deliveryAvailable":true,"rating":"0.00","distanceKm":null},{"id":"prd_089e2620","vendorId":"usr_vendor_effe99da-1268-42d8-9f05-982dc232e647","name":"High priority product effe99da-1268-42d8-9f05-982dc232e647","description":null,"category":null,"priceTzs":10000,"stock":10,"images":[],"status":"active","createdAt":"2026-09-24T07:26:58.839Z","updatedAt":"2026-09-24T07:26:58.842Z","homepageVisible":true,"homepagePriority":900,"brand":null,"sku":null,"visibility":"visible","approvalStatus":"approved","deletedAt":null,"discountPriceTzs":null,"reviewCount":0,"soldCount":0,"weightKg":null,"variants":[],"deliveryAvailable":true,"rating":"0.00","distanceKm":null},{"id":"prd_f41423b5","vendorId":"usr_vendor_9399511f-0ff5-4d0c-86a4-5c622e7db1ca","name":"High priority product 9399511f-0ff5-4d0c-86a4-5c622e7db1ca","description":null,"category":null,"priceTzs":10000,"stock":10,"images":[],"status":"active","createdAt":"2026-09-24T07:25:35.909Z","updatedAt":"2026-09-24T07:25:35.912Z","homepageVisible":true,"homepagePriority":900,"brand":null,"sku":null,"visibility":"visible","approvalStatus":"approved","deletedAt":null,"discountPriceTzs":null,"reviewCount":0,"soldCount":0,"weightKg":null,"variants":[],"deliveryAvailable":true,"rating":"0.00","distanceKm":null},{"id":"prd_ab0442f6","vendorId":"usr_vendor_78e0e2bb-ef2b-470e-b4b8-ea4793bda769","name":"High priority product 78e0e2bb-ef2b-470e-b4b8-ea4793bda769","description":null,"category":null,"priceTzs":10000,"stock":10,"images":[],"status":"active","createdAt":"2026-09-24T07:21:31.610Z","updatedAt":"2026-09-24T07:21:31.614Z","homepageVisible":true,"homepagePriority":900,"brand":null,"sku":null,"visibility":"visible","approvalStatus":"approved","deletedAt":null,"discountPriceTzs":null,"reviewCount":0,"soldCount":0,"weightKg":null,"variants":[],"deliveryAvailable":true,"rating":"0.00","distanceKm":null},{"id":"prd_f6ae9bad","vendorId":"usr_vendor_99b47a6c-ae0d-4622-aba1-f6022ccc259d","name":"High priority product 99b47a6c-ae0d-4622-aba1-f6022ccc259d","description":null,"category":null,"priceTzs":10000,"stock":10,"images":[],"status":"active","createdAt":"2026-09-24T07:05:59.799Z","updatedAt":"2026-09-24T07:05:59.803Z","...<truncated>
+[REST] <-- 200 GET http://fixtures.local/me/shop-orders
+[REST] response: []
+[REST] --> GET http://fixtures.local/discover/products?limit=50&session=53fe1dcb08272d03
+[REST] headers: {X-FF-Shop-Caps: flash_sale, content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/shop/areas
+[REST] response: {"error":"not_recorded"}
+[REST] <-- 404 GET http://fixtures.local/discover/products?limit=50&session=53fe1dcb08272d03
+[REST] response: {"error":"not_recorded"}
+::endgroup::
+::group::✅ trainer tabs (light)
+[REST] --> GET http://fixtures.local/auth/options
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/me
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/auth/options
+[REST] response: {"error":"not_recorded"}
+[REST] --> POST http://fixtures.local/auth/pin/login
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] request: {}
+[REST] --> POST http://fixtures.local/auth/pin/reset/start
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] request: {}
+[REST] <-- 200 GET http://fixtures.local/me
+[REST] response: {"user":{"id":"usr_dev_trainer","firebaseUid":null,"phone":"+255700000011","email":"dev.trainer@fitflex.test","displayName":"Dev Trainer","photoUrl":null,"userType":"trainer","accountStatus":"active","approvalStatus":"approved","verified":false,"passwordHash":null,"approvalNote":null,"onboardingCompleted":true,"portalUser":false,"aclPermissions":[],"memberProfile":null,"gymId":null,"gymIds":[],"createdAt":"2026-09-24T08:02:26.473Z","updatedAt":"2026-09-24T08:13:39.486Z","vendorProfile":null,"vendorId":null,"vendorRole":null,"vendorPermissions":[],"corporateId":null,"publicId":"FT341","userCode":"FT341"},"subscription":null,"pendingPayment":null,"visitsUsed":0,"visitCap":null}
+[REST] --> GET http://fixtures.local/me/personas
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 200 POST http://fixtures.local/auth/pin/login
+[REST] response: {}
+[REST] <-- 200 POST http://fixtures.local/auth/pin/reset/start
+[REST] response: {}
+[REST] <-- 404 GET http://fixtures.local/me/personas
+[REST] response: {"error":"not_recorded"}
+[REST] --> GET http://fixtures.local/me/invitations
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/me/invitations
+[REST] response: {"error":"not_recorded"}
+[REST] --> GET http://fixtures.local/me/identifiers
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/me/identifiers
+[REST] response: {"error":"not_recorded"}
+[REST] --> GET http://fixtures.local/me/notifications
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> PUT http://fixtures.local/me/communication-preferences
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] request: {"locale":"en"}
+[REST] --> GET http://fixtures.local/me/recovery
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/me/notifications
+[REST] response: {"error":"not_recorded"}
+[REST] <-- 200 PUT http://fixtures.local/me/communication-preferences
+[REST] response: {}
+[REST] <-- 404 GET http://fixtures.local/me/recovery
+[REST] response: {"error":"not_recorded"}
+[REST] --> GET http://fixtures.local/me
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/trainers
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/trainer/me
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/trainer/engagements
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/me/notifications
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/trainer/clients
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/trainer/plans
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/trainer/gyms
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/trainer/me
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/me/personal-details
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/trainer/clients
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/shop/products
+[REST] headers: {X-FF-Shop-Caps: flash_sale, content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/me/shop-orders
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/shop/areas
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 200 GET http://fixtures.local/me
+[REST] response: {"user":{"id":"usr_dev_trainer","firebaseUid":null,"phone":"+255700000011","email":"dev.trainer@fitflex.test","displayName":"Dev Trainer","photoUrl":null,"userType":"trainer","accountStatus":"active","approvalStatus":"approved","verified":false,"passwordHash":null,"approvalNote":null,"onboardingCompleted":true,"portalUser":false,"aclPermissions":[],"memberProfile":null,"gymId":null,"gymIds":[],"createdAt":"2026-09-24T08:02:26.473Z","updatedAt":"2026-09-24T08:13:39.486Z","vendorProfile":null,"vendorId":null,"vendorRole":null,"vendorPermissions":[],"corporateId":null,"publicId":"FT341","userCode":"FT341"},"subscription":null,"pendingPayment":null,"visitsUsed":0,"visitCap":null}
+[REST] <-- 200 GET http://fixtures.local/trainers
+[REST] response: [{"id":"trn_e7781397","userId":null,"email":"high-priority-trainer-4f736656-1663-418e-a8ae-6c828f807f30@example.com","phone":null,"displayName":"High priority trainer 4f736656-1663-418e-a8ae-6c828f807f30","photoUrl":null,"gender":null,"specialties":["Strength"],"bio":"","rating":0,"reviewCount":0,"hourlyRateTzs":15000,"experienceYears":0,"status":"active","approvalStatus":"approved","pendingGymIds":[],"availability":[],"createdAt":"2026-09-22T10:16:21.207Z","updatedAt":"2026-09-22T10:16:21.207Z","verified":false,"images":[],"imageThumbnails":[],"sessionRateCurrency":"TZS","homepageVisible":true,"homepagePriority":900,"gymIds":[],"gyms":[],"pendingGyms":[]},{"id":"trn_3ed48f17","userId":null,"email":"high-priority-trainer-3773ab54-c32c-4a68-850b-ede6bbc41ed8@example.com","phone":null,"displayName":"High priority trainer 3773ab54-c32c-4a68-850b-ede6bbc41ed8","photoUrl":null,"gender":null,"specialties":["Strength"],"bio":"","rating":0,"reviewCount":0,"hourlyRateTzs":15000,"experienceYears":0,"status":"active","approvalStatus":"approved","pendingGymIds":[],"availability":[],"createdAt":"2026-09-22T10:16:39.548Z","updatedAt":"2026-09-22T10:16:39.548Z","verified":false,"images":[],"imageThumbnails":[],"sessionRateCurrency":"TZS","homepageVisible":true,"homepagePriority":900,"gymIds":[],"gyms":[],"pendingGyms":[]},{"id":"trn_1e3d362f","userId":null,"email":"high-priority-trainer-59eff0fb-e75c-429e-b569-fc9abcffcfab@example.com","phone":null,"displayName":"High priority trainer 59eff0fb-e75c-429e-b569-fc9abcffcfab","photoUrl":null,"gender":null,"specialties":["Strength"],"bio":"","rating":0,"reviewCount":0,"hourlyRateTzs":15000,"experienceYears":0,"status":"active","approvalStatus":"approved","pendingGymIds":[],"availability":[],"createdAt":"2026-09-22T10:29:55.337Z","updatedAt":"2026-09-22T10:29:55.336Z","verified":false,"images":[],"imageThumbnails":[],"sessionRateCurrency":"TZS","homepageVisible":true,"homepagePriority":900,"gymIds":[],"gyms":[],"pendingGyms":[]},{"id":"trn_216677a1","userId":null,"email":"high-priority-trainer-4d6854dd-9dcc-4f17-8b1a-f28243c1a769@example.com","phone":null,"displayName":"High priority trainer 4d6854dd-9dcc-4f17-8b1a-f28243c1a769","photoUrl":null,"gender":null,"specialties":["Strength"],"bio":"","rating":0,"reviewCount":0,"hourlyRateTzs":15000,"experienceYears":0,"status":"active","approvalStatus":"approved","pendingGymIds":[],"availability":[],"createdAt":"2026-09-22T10:30:02.154Z","updatedAt":"2026-09-22T10:30:02.154Z","verified":false,"images":[],"imageThumbnails":[],"sessionRateCurrency":"TZS","homepageVisible":true,"homepagePriority":900,"gymIds":[],"gyms":[],"pendingGyms":[]},{"id":"trn_aab7a07b","userId":null,"email":"high-priority-trainer-38a39bd0-f773-42ea-93c8-0245a9ebaca7@example.com","phone":null,"displayName":"High priority trainer 38a39bd0-f773-42ea-93c8-0245a9ebaca7","photoUrl":null,"gender":null,"specialties":["Strength"],"bio":"","rating":0,"reviewCount":0,"hourlyRateTzs":15000,"experienceYears":0,"status":"active","approvalStatus":"approved","pendingGymIds":[],"availability":[],"createdAt":"2026-09-23T16:39:50.317Z","updatedAt":"2026-09-23T16:39:50.317Z","verified":false,"images":[],"imageThumbnails":[],"sessionRateCurrency":"TZS","homepageVisible":true,"homepagePriority":900,"gymIds":[],"gyms":[],"pendingGyms":[]},{"id":"trn_8ecf5f36","userId":null,"email":"high-priority-trainer-b0b05e38-5bb9-4f85-8199-bf5e1df72099@example.com","phone":null,"displayName":"High priority trainer b0b05e38-5bb9-4f85-8199-bf5e1df72099","photoUrl":null,"gender":null,"specialties":["Strength"],"bio":"","rating":0,"reviewCount":0,"hourlyRateTzs":15000,"experienceYears":0,"status":"active","approvalStatus":"approved","pendingGymIds":[],"availability":[],"createdAt":"2026-09-23T16:58:46.677Z","updatedAt":"2026-09-23T16:58:46.676Z","verified":false,"images":[],"imageThumbnails":[],"sessionRateCurrency":"TZS","homepageVisible":true,"homepagePriority":900,"gymIds":[],"gyms":[],"pendingGyms":[]},{"id":"trn_1119...<truncated>
+[REST] <-- 404 GET http://fixtures.local/trainer/me
+[REST] response: {"error":"not_recorded"}
+[REST] <-- 404 GET http://fixtures.local/trainer/engagements
+[REST] response: {"error":"not_recorded"}
+[REST] <-- 404 GET http://fixtures.local/me/notifications
+[REST] response: {"error":"not_recorded"}
+[REST] <-- 200 GET http://fixtures.local/trainer/clients
+[REST] response: {"clients":[{"id":"tmr_661ecdaa-d73","trainerId":"trn_dev","memberId":"usr_dev_member","status":"active","permissions":{"goals":false,"steps":false,"streaks":false,"distance":false,"challenges":false,"activeMinutes":false,"workoutDetails":false,"workoutHistory":false},"requestedAt":"2026-09-24T08:02:26.715Z","connectedAt":"2026-09-24T08:02:26.730Z","endedAt":null,"endedBy":null,"createdAt":"2026-09-24T08:02:26.715Z","updatedAt":"2026-09-24T08:05:54.996Z","member":{"id":"usr_dev_member","displayName":"Dev Member","photoUrl":null},"summary":{"weekStart":"2026-09-21","week":{},"attention":[],"plannedNext7Days":4}}]}
+[REST] <-- 200 GET http://fixtures.local/trainer/plans
+[REST] response: {"plans":[{"id":"wpl_286f2a71-065","trainerId":"trn_dev","name":"Smoke plan","description":null,"activityType":"strength","estimatedDuration":40,"exercises":[{"reps":10,"sets":3,"duration":null,"muscleGroup":"legs","exerciseName":"Goblet squat","instructions":null,"tracksWeight":false}],"createdAt":"2026-09-24T08:03:18.937Z","updatedAt":"2026-09-24T08:03:18.937Z"},{"id":"wpl_d106fb20-8e9","trainerId":"trn_dev","name":"Smoke plan","description":null,"activityType":"strength","estimatedDuration":40,"exercises":[{"reps":10,"sets":3,"duration":null,"muscleGroup":"legs","exerciseName":"Goblet squat","instructions":null,"tracksWeight":false}],"createdAt":"2026-09-24T08:04:18.407Z","updatedAt":"2026-09-24T08:04:18.407Z"},{"id":"wpl_1916c3a3-1c4","trainerId":"trn_dev","name":"Smoke plan","description":null,"activityType":"strength","estimatedDuration":40,"exercises":[{"reps":10,"sets":3,"duration":null,"muscleGroup":"legs","exerciseName":"Goblet squat","instructions":null,"tracksWeight":false}],"createdAt":"2026-09-24T08:05:16.734Z","updatedAt":"2026-09-24T08:05:16.734Z"},{"id":"wpl_5cccb531-4c0","trainerId":"trn_dev","name":"Smoke plan","description":null,"activityType":"strength","estimatedDuration":40,"exercises":[{"reps":10,"sets":3,"duration":null,"muscleGroup":"legs","exerciseName":"Goblet squat","instructions":null,"tracksWeight":false}],"createdAt":"2026-09-24T08:05:54.962Z","updatedAt":"2026-09-24T08:05:54.962Z"}]}
+[REST] <-- 404 GET http://fixtures.local/trainer/gyms
+[REST] response: {"error":"not_recorded"}
+[REST] <-- 404 GET http://fixtures.local/trainer/me
+[REST] response: {"error":"not_recorded"}
+[REST] <-- 404 GET http://fixtures.local/me/personal-details
+[REST] response: {"error":"not_recorded"}
+[REST] <-- 200 GET http://fixtures.local/trainer/clients
+[REST] response: {"clients":[{"id":"tmr_661ecdaa-d73","trainerId":"trn_dev","memberId":"usr_dev_member","status":"active","permissions":{"goals":false,"steps":false,"streaks":false,"distance":false,"challenges":false,"activeMinutes":false,"workoutDetails":false,"workoutHistory":false},"requestedAt":"2026-09-24T08:02:26.715Z","connectedAt":"2026-09-24T08:02:26.730Z","endedAt":null,"endedBy":null,"createdAt":"2026-09-24T08:02:26.715Z","updatedAt":"2026-09-24T08:05:54.996Z","member":{"id":"usr_dev_member","displayName":"Dev Member","photoUrl":null},"summary":{"weekStart":"2026-09-21","week":{},"attention":[],"plannedNext7Days":4}}]}
+[REST] <-- 404 GET http://fixtures.local/shop/products
+[REST] response: {"error":"not_recorded"}
+[REST] <-- 404 GET http://fixtures.local/me/shop-orders
+[REST] response: {"error":"not_recorded"}
+[REST] <-- 404 GET http://fixtures.local/shop/areas
+[REST] response: {"error":"not_recorded"}
+[REST] --> GET http://fixtures.local/me/recovery
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/me/recovery
+[REST] response: {"error":"not_recorded"}
+::endgroup::
+::group::✅ trainer tabs (dark)
+[REST] --> GET http://fixtures.local/auth/options
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/me
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/auth/options
+[REST] response: {"error":"not_recorded"}
+[REST] --> POST http://fixtures.local/auth/pin/login
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] request: {}
+[REST] --> POST http://fixtures.local/auth/pin/reset/start
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] request: {}
+[REST] <-- 200 GET http://fixtures.local/me
+[REST] response: {"user":{"id":"usr_dev_trainer","firebaseUid":null,"phone":"+255700000011","email":"dev.trainer@fitflex.test","displayName":"Dev Trainer","photoUrl":null,"userType":"trainer","accountStatus":"active","approvalStatus":"approved","verified":false,"passwordHash":null,"approvalNote":null,"onboardingCompleted":true,"portalUser":false,"aclPermissions":[],"memberProfile":null,"gymId":null,"gymIds":[],"createdAt":"2026-09-24T08:02:26.473Z","updatedAt":"2026-09-24T08:13:39.486Z","vendorProfile":null,"vendorId":null,"vendorRole":null,"vendorPermissions":[],"corporateId":null,"publicId":"FT341","userCode":"FT341"},"subscription":null,"pendingPayment":null,"visitsUsed":0,"visitCap":null}
+[REST] --> GET http://fixtures.local/me/personas
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 200 POST http://fixtures.local/auth/pin/login
+[REST] response: {}
+[REST] <-- 200 POST http://fixtures.local/auth/pin/reset/start
+[REST] response: {}
+[REST] <-- 404 GET http://fixtures.local/me/personas
+[REST] response: {"error":"not_recorded"}
+[REST] --> GET http://fixtures.local/me/invitations
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/me/invitations
+[REST] response: {"error":"not_recorded"}
+[REST] --> GET http://fixtures.local/me/identifiers
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/me/identifiers
+[REST] response: {"error":"not_recorded"}
+[REST] --> GET http://fixtures.local/me/notifications
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> PUT http://fixtures.local/me/communication-preferences
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] request: {"locale":"en"}
+[REST] --> GET http://fixtures.local/me/recovery
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/me/notifications
+[REST] response: {"error":"not_recorded"}
+[REST] <-- 200 PUT http://fixtures.local/me/communication-preferences
+[REST] response: {}
+[REST] <-- 404 GET http://fixtures.local/me/recovery
+[REST] response: {"error":"not_recorded"}
+[REST] --> GET http://fixtures.local/me
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/trainers
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/trainer/me
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/trainer/engagements
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/me/notifications
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/trainer/clients
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/trainer/plans
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/trainer/gyms
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/trainer/me
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/me/personal-details
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/trainer/clients
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/shop/products
+[REST] headers: {X-FF-Shop-Caps: flash_sale, content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/me/shop-orders
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/shop/areas
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 200 GET http://fixtures.local/me
+[REST] response: {"user":{"id":"usr_dev_trainer","firebaseUid":null,"phone":"+255700000011","email":"dev.trainer@fitflex.test","displayName":"Dev Trainer","photoUrl":null,"userType":"trainer","accountStatus":"active","approvalStatus":"approved","verified":false,"passwordHash":null,"approvalNote":null,"onboardingCompleted":true,"portalUser":false,"aclPermissions":[],"memberProfile":null,"gymId":null,"gymIds":[],"createdAt":"2026-09-24T08:02:26.473Z","updatedAt":"2026-09-24T08:13:39.486Z","vendorProfile":null,"vendorId":null,"vendorRole":null,"vendorPermissions":[],"corporateId":null,"publicId":"FT341","userCode":"FT341"},"subscription":null,"pendingPayment":null,"visitsUsed":0,"visitCap":null}
+[REST] <-- 200 GET http://fixtures.local/trainers
+[REST] response: [{"id":"trn_e7781397","userId":null,"email":"high-priority-trainer-4f736656-1663-418e-a8ae-6c828f807f30@example.com","phone":null,"displayName":"High priority trainer 4f736656-1663-418e-a8ae-6c828f807f30","photoUrl":null,"gender":null,"specialties":["Strength"],"bio":"","rating":0,"reviewCount":0,"hourlyRateTzs":15000,"experienceYears":0,"status":"active","approvalStatus":"approved","pendingGymIds":[],"availability":[],"createdAt":"2026-09-22T10:16:21.207Z","updatedAt":"2026-09-22T10:16:21.207Z","verified":false,"images":[],"imageThumbnails":[],"sessionRateCurrency":"TZS","homepageVisible":true,"homepagePriority":900,"gymIds":[],"gyms":[],"pendingGyms":[]},{"id":"trn_3ed48f17","userId":null,"email":"high-priority-trainer-3773ab54-c32c-4a68-850b-ede6bbc41ed8@example.com","phone":null,"displayName":"High priority trainer 3773ab54-c32c-4a68-850b-ede6bbc41ed8","photoUrl":null,"gender":null,"specialties":["Strength"],"bio":"","rating":0,"reviewCount":0,"hourlyRateTzs":15000,"experienceYears":0,"status":"active","approvalStatus":"approved","pendingGymIds":[],"availability":[],"createdAt":"2026-09-22T10:16:39.548Z","updatedAt":"2026-09-22T10:16:39.548Z","verified":false,"images":[],"imageThumbnails":[],"sessionRateCurrency":"TZS","homepageVisible":true,"homepagePriority":900,"gymIds":[],"gyms":[],"pendingGyms":[]},{"id":"trn_1e3d362f","userId":null,"email":"high-priority-trainer-59eff0fb-e75c-429e-b569-fc9abcffcfab@example.com","phone":null,"displayName":"High priority trainer 59eff0fb-e75c-429e-b569-fc9abcffcfab","photoUrl":null,"gender":null,"specialties":["Strength"],"bio":"","rating":0,"reviewCount":0,"hourlyRateTzs":15000,"experienceYears":0,"status":"active","approvalStatus":"approved","pendingGymIds":[],"availability":[],"createdAt":"2026-09-22T10:29:55.337Z","updatedAt":"2026-09-22T10:29:55.336Z","verified":false,"images":[],"imageThumbnails":[],"sessionRateCurrency":"TZS","homepageVisible":true,"homepagePriority":900,"gymIds":[],"gyms":[],"pendingGyms":[]},{"id":"trn_216677a1","userId":null,"email":"high-priority-trainer-4d6854dd-9dcc-4f17-8b1a-f28243c1a769@example.com","phone":null,"displayName":"High priority trainer 4d6854dd-9dcc-4f17-8b1a-f28243c1a769","photoUrl":null,"gender":null,"specialties":["Strength"],"bio":"","rating":0,"reviewCount":0,"hourlyRateTzs":15000,"experienceYears":0,"status":"active","approvalStatus":"approved","pendingGymIds":[],"availability":[],"createdAt":"2026-09-22T10:30:02.154Z","updatedAt":"2026-09-22T10:30:02.154Z","verified":false,"images":[],"imageThumbnails":[],"sessionRateCurrency":"TZS","homepageVisible":true,"homepagePriority":900,"gymIds":[],"gyms":[],"pendingGyms":[]},{"id":"trn_aab7a07b","userId":null,"email":"high-priority-trainer-38a39bd0-f773-42ea-93c8-0245a9ebaca7@example.com","phone":null,"displayName":"High priority trainer 38a39bd0-f773-42ea-93c8-0245a9ebaca7","photoUrl":null,"gender":null,"specialties":["Strength"],"bio":"","rating":0,"reviewCount":0,"hourlyRateTzs":15000,"experienceYears":0,"status":"active","approvalStatus":"approved","pendingGymIds":[],"availability":[],"createdAt":"2026-09-23T16:39:50.317Z","updatedAt":"2026-09-23T16:39:50.317Z","verified":false,"images":[],"imageThumbnails":[],"sessionRateCurrency":"TZS","homepageVisible":true,"homepagePriority":900,"gymIds":[],"gyms":[],"pendingGyms":[]},{"id":"trn_8ecf5f36","userId":null,"email":"high-priority-trainer-b0b05e38-5bb9-4f85-8199-bf5e1df72099@example.com","phone":null,"displayName":"High priority trainer b0b05e38-5bb9-4f85-8199-bf5e1df72099","photoUrl":null,"gender":null,"specialties":["Strength"],"bio":"","rating":0,"reviewCount":0,"hourlyRateTzs":15000,"experienceYears":0,"status":"active","approvalStatus":"approved","pendingGymIds":[],"availability":[],"createdAt":"2026-09-23T16:58:46.677Z","updatedAt":"2026-09-23T16:58:46.676Z","verified":false,"images":[],"imageThumbnails":[],"sessionRateCurrency":"TZS","homepageVisible":true,"homepagePriority":900,"gymIds":[],"gyms":[],"pendingGyms":[]},{"id":"trn_1119...<truncated>
+[REST] <-- 404 GET http://fixtures.local/trainer/me
+[REST] response: {"error":"not_recorded"}
+[REST] <-- 404 GET http://fixtures.local/trainer/engagements
+[REST] response: {"error":"not_recorded"}
+[REST] <-- 404 GET http://fixtures.local/me/notifications
+[REST] response: {"error":"not_recorded"}
+[REST] <-- 200 GET http://fixtures.local/trainer/clients
+[REST] response: {"clients":[{"id":"tmr_661ecdaa-d73","trainerId":"trn_dev","memberId":"usr_dev_member","status":"active","permissions":{"goals":false,"steps":false,"streaks":false,"distance":false,"challenges":false,"activeMinutes":false,"workoutDetails":false,"workoutHistory":false},"requestedAt":"2026-09-24T08:02:26.715Z","connectedAt":"2026-09-24T08:02:26.730Z","endedAt":null,"endedBy":null,"createdAt":"2026-09-24T08:02:26.715Z","updatedAt":"2026-09-24T08:05:54.996Z","member":{"id":"usr_dev_member","displayName":"Dev Member","photoUrl":null},"summary":{"weekStart":"2026-09-21","week":{},"attention":[],"plannedNext7Days":4}}]}
+[REST] <-- 200 GET http://fixtures.local/trainer/plans
+[REST] response: {"plans":[{"id":"wpl_286f2a71-065","trainerId":"trn_dev","name":"Smoke plan","description":null,"activityType":"strength","estimatedDuration":40,"exercises":[{"reps":10,"sets":3,"duration":null,"muscleGroup":"legs","exerciseName":"Goblet squat","instructions":null,"tracksWeight":false}],"createdAt":"2026-09-24T08:03:18.937Z","updatedAt":"2026-09-24T08:03:18.937Z"},{"id":"wpl_d106fb20-8e9","trainerId":"trn_dev","name":"Smoke plan","description":null,"activityType":"strength","estimatedDuration":40,"exercises":[{"reps":10,"sets":3,"duration":null,"muscleGroup":"legs","exerciseName":"Goblet squat","instructions":null,"tracksWeight":false}],"createdAt":"2026-09-24T08:04:18.407Z","updatedAt":"2026-09-24T08:04:18.407Z"},{"id":"wpl_1916c3a3-1c4","trainerId":"trn_dev","name":"Smoke plan","description":null,"activityType":"strength","estimatedDuration":40,"exercises":[{"reps":10,"sets":3,"duration":null,"muscleGroup":"legs","exerciseName":"Goblet squat","instructions":null,"tracksWeight":false}],"createdAt":"2026-09-24T08:05:16.734Z","updatedAt":"2026-09-24T08:05:16.734Z"},{"id":"wpl_5cccb531-4c0","trainerId":"trn_dev","name":"Smoke plan","description":null,"activityType":"strength","estimatedDuration":40,"exercises":[{"reps":10,"sets":3,"duration":null,"muscleGroup":"legs","exerciseName":"Goblet squat","instructions":null,"tracksWeight":false}],"createdAt":"2026-09-24T08:05:54.962Z","updatedAt":"2026-09-24T08:05:54.962Z"}]}
+[REST] <-- 404 GET http://fixtures.local/trainer/gyms
+[REST] response: {"error":"not_recorded"}
+[REST] <-- 404 GET http://fixtures.local/trainer/me
+[REST] response: {"error":"not_recorded"}
+[REST] <-- 404 GET http://fixtures.local/me/personal-details
+[REST] response: {"error":"not_recorded"}
+[REST] <-- 200 GET http://fixtures.local/trainer/clients
+[REST] response: {"clients":[{"id":"tmr_661ecdaa-d73","trainerId":"trn_dev","memberId":"usr_dev_member","status":"active","permissions":{"goals":false,"steps":false,"streaks":false,"distance":false,"challenges":false,"activeMinutes":false,"workoutDetails":false,"workoutHistory":false},"requestedAt":"2026-09-24T08:02:26.715Z","connectedAt":"2026-09-24T08:02:26.730Z","endedAt":null,"endedBy":null,"createdAt":"2026-09-24T08:02:26.715Z","updatedAt":"2026-09-24T08:05:54.996Z","member":{"id":"usr_dev_member","displayName":"Dev Member","photoUrl":null},"summary":{"weekStart":"2026-09-21","week":{},"attention":[],"plannedNext7Days":4}}]}
+[REST] <-- 404 GET http://fixtures.local/shop/products
+[REST] response: {"error":"not_recorded"}
+[REST] <-- 404 GET http://fixtures.local/me/shop-orders
+[REST] response: {"error":"not_recorded"}
+[REST] <-- 404 GET http://fixtures.local/shop/areas
+[REST] response: {"error":"not_recorded"}
+[REST] --> GET http://fixtures.local/me/recovery
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/me/recovery
+[REST] response: {"error":"not_recorded"}
+::endgroup::
+::group::✅ gym_operator tabs (light)
+[REST] --> GET http://fixtures.local/auth/options
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/me
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/auth/options
+[REST] response: {"error":"not_recorded"}
+[REST] --> POST http://fixtures.local/auth/pin/login
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] request: {}
+[REST] --> POST http://fixtures.local/auth/pin/reset/start
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] request: {}
+[REST] <-- 200 GET http://fixtures.local/me
+[REST] response: {"user":{"id":"usr_dev_owner","firebaseUid":null,"phone":"+255700000012","email":"dev.owner@fitflex.test","displayName":"Dev Owner","photoUrl":null,"userType":"gym_operator","accountStatus":"active","approvalStatus":"approved","verified":false,"passwordHash":null,"approvalNote":null,"onboardingCompleted":true,"portalUser":false,"aclPermissions":[],"memberProfile":null,"gymId":"gym_dev_owner","gymIds":["gym_dev_owner"],"createdAt":"2026-09-22T10:16:22.907Z","updatedAt":"2026-09-24T08:13:39.506Z","vendorProfile":null,"vendorId":null,"vendorRole":null,"vendorPermissions":[],"corporateId":null,"publicId":"FO040","userCode":"FO040"},"subscription":null,"pendingPayment":null,"visitsUsed":0,"visitCap":null}
+[REST] --> GET http://fixtures.local/me/personas
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 200 POST http://fixtures.local/auth/pin/login
+[REST] response: {}
+[REST] <-- 200 POST http://fixtures.local/auth/pin/reset/start
+[REST] response: {}
+[REST] <-- 404 GET http://fixtures.local/me/personas
+[REST] response: {"error":"not_recorded"}
+[REST] --> GET http://fixtures.local/me/invitations
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/me/invitations
+[REST] response: {"error":"not_recorded"}
+[REST] --> GET http://fixtures.local/me/identifiers
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/me/identifiers
+[REST] response: {"error":"not_recorded"}
+[REST] --> GET http://fixtures.local/me/notifications
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> PUT http://fixtures.local/me/communication-preferences
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] request: {"locale":"en"}
+[REST] --> GET http://fixtures.local/me/recovery
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/me/notifications
+[REST] response: {"error":"not_recorded"}
+[REST] <-- 200 PUT http://fixtures.local/me/communication-preferences
+[REST] response: {}
+[REST] <-- 404 GET http://fixtures.local/me/recovery
+[REST] response: {"error":"not_recorded"}
+[REST] --> GET http://fixtures.local/me
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/owner/gyms
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 200 GET http://fixtures.local/me
+[REST] response: {"user":{"id":"usr_dev_owner","firebaseUid":null,"phone":"+255700000012","email":"dev.owner@fitflex.test","displayName":"Dev Owner","photoUrl":null,"userType":"gym_operator","accountStatus":"active","approvalStatus":"approved","verified":false,"passwordHash":null,"approvalNote":null,"onboardingCompleted":true,"portalUser":false,"aclPermissions":[],"memberProfile":null,"gymId":"gym_dev_owner","gymIds":["gym_dev_owner"],"createdAt":"2026-09-22T10:16:22.907Z","updatedAt":"2026-09-24T08:13:39.506Z","vendorProfile":null,"vendorId":null,"vendorRole":null,"vendorPermissions":[],"corporateId":null,"publicId":"FO040","userCode":"FO040"},"subscription":null,"pendingPayment":null,"visitsUsed":0,"visitCap":null}
+[REST] <-- 200 GET http://fixtures.local/owner/gyms
+[REST] response: [{"id":"gym_dev_owner","name":"Dev Owner Gym","tier":"standard","location":"Mikocheni, Dar es Salaam","venueType":"physical","accessMode":"paid_visit","operatingHours":null,"perVisitRate":5000,"ratePerDay":5000,"ratePerWeek":0,"ratePerMonth":0,"commissionRate":12,"status":"active","images":["https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800"],"thumbnails":[],"coordinates":{"lat":null,"lng":null},"amenities":["lockers","showers"],"equipment":[],"paymentBank":null,"paymentNumber":null,"paymentNotes":null,"tinNumber":null,"createdAt":"2026-09-22T10:16:22.944Z","updatedAt":"2026-09-24T08:13:43.782Z","verified":false,"classes":[],"trainerPass":{"feeTzs":0,"period":"monthly","enabled":false},"homepageVisible":true,"homepagePriority":0,"rating":"0.00","reviewCount":0}]
+[REST] --> GET http://fixtures.local/operator/dashboard?gymId=gym_dev_owner&memberType=all
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/owner/trainers?gymId=gym_dev_owner
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/owner/trainers/pending
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 200 GET http://fixtures.local/operator/dashboard?gymId=gym_dev_owner&memberType=all
+[REST] response: {"gym":{"id":"gym_dev_owner","name":"Dev Owner Gym","tier":"standard","location":"Mikocheni, Dar es Salaam","venueType":"physical","accessMode":"paid_visit","operatingHours":null,"perVisitRate":5000,"ratePerDay":5000,"ratePerWeek":0,"ratePerMonth":0,"commissionRate":12,"status":"active","images":["https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800"],"thumbnails":[],"coordinates":{"lat":null,"lng":null},"amenities":["lockers","showers"],"equipment":[],"paymentBank":null,"paymentNumber":null,"paymentNotes":null,"tinNumber":null,"createdAt":"2026-09-22T10:16:22.944Z","updatedAt":"2026-09-24T08:13:43.782Z","verified":false,"classes":[],"trainerPass":{"feeTzs":0,"period":"monthly","enabled":false},"homepageVisible":true,"homepagePriority":0,"rating":"0.00","reviewCount":0},"gyms":[{"id":"gym_dev_owner","name":"Dev Owner Gym","tier":"standard","location":"Mikocheni, Dar es Salaam","venueType":"physical","accessMode":"paid_visit","operatingHours":null,"perVisitRate":5000,"ratePerDay":5000,"ratePerWeek":0,"ratePerMonth":0,"commissionRate":12,"status":"active","images":["https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800"],"thumbnails":[],"coordinates":{"lat":null,"lng":null},"amenities":["lockers","showers"],"equipment":[],"paymentBank":null,"paymentNumber":null,"paymentNotes":null,"tinNumber":null,"createdAt":"2026-09-22T10:16:22.944Z","updatedAt":"2026-09-24T08:13:43.782Z","verified":false,"classes":[],"trainerPass":{"feeTzs":0,"period":"monthly","enabled":false},"homepageVisible":true,"homepagePriority":0,"rating":"0.00","reviewCount":0}],"todayCount":1,"monthVisits":1,"periodStart":"2026-09-01","periodEnd":"2026-09-24","memberType":"all","totalMembers":1,"activeTodayMembers":1,"expiringSoonMembers":0,"periodVisits":1,"periodMembers":1,"prevPeriodVisits":0,"prevPeriodMembers":0,"directVisits":0,"directMembers":0,"fitflexVisits":1,"fitflexMembers":1,"overall":{"gymCount":1,"totalVisits":1,"uniqueMembers":1,"directVisits":0,"directMembers":0,"fitflexVisits":1,"fitflexMembers":1},"gymSummaries":[{"gymId":"gym_dev_owner","gymName":"Dev Owner Gym","tier":"standard","totalVisits":1,"uniqueMembers":1,"directVisits":0,"directMembers":0,"fitflexVisits":1,"fitflexMembers":1}],"payout":{"band":1,"commissionPct":25,"gross":5000,"commission":1250,"net":3750,"payoutDelayDays":30,"flatFee":false},"chartSeries":[{"label":"9/1","direct":0,"fitflex":0},{"label":"9/5","direct":0,"fitflex":0},{"label":"9/10","direct":0,"fitflex":0},{"label":"9/15","direct":0,"fitflex":0},{"label":"9/19","direct":0,"fitflex":1}]}
+[REST] <-- 200 GET http://fixtures.local/owner/trainers?gymId=gym_dev_owner
+[REST] response: []
+[REST] <-- 200 GET http://fixtures.local/owner/trainers/pending
+[REST] response: []
+[REST] --> GET http://fixtures.local/me/personal-details
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/owner/gyms/gym_dev_owner/checkins
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/owner/engagement?gymId=gym_dev_owner
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/me/personal-details
+[REST] response: {"error":"not_recorded"}
+[REST] <-- 404 GET http://fixtures.local/owner/gyms/gym_dev_owner/checkins
+[REST] response: {"error":"not_recorded"}
+[REST] <-- 200 GET http://fixtures.local/owner/engagement?gymId=gym_dev_owner
+[REST] response: {"members":1,"active":1,"slipping":0,"at_risk":0,"lapsed":0,"newThisMonth":1,"visits30":1,"previous30":0,"checkIn":[]}
+[REST] --> GET http://fixtures.local/me/recovery
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/me/recovery
+[REST] response: {"error":"not_recorded"}
+[REST] --> GET http://fixtures.local/owner/members?gymId=gym_dev_owner
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 200 GET http://fixtures.local/owner/members?gymId=gym_dev_owner
+[REST] response: {"members":[{"id":"usr_dev_member","publicId":"FM664","displayName":"Dev Member","phone":"+255700000010","photoUrl":null,"memberType":"fitflex","tier":null,"status":"checked_in","lastCheckinAt":"2026-09-24T08:05:16.658Z","startDate":null,"expiresAt":null,"daysLeft":null}],"stats":{"totalMembers":1,"activeToday":1,"expiringSoon":0}}
+[REST] --> GET http://fixtures.local/shop/products
+[REST] headers: {X-FF-Shop-Caps: flash_sale, content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/me/shop-orders
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/shop/areas
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/shop/products
+[REST] response: {"error":"not_recorded"}
+[REST] <-- 404 GET http://fixtures.local/me/shop-orders
+[REST] response: {"error":"not_recorded"}
+[REST] <-- 404 GET http://fixtures.local/shop/areas
+[REST] response: {"error":"not_recorded"}
+::endgroup::
+::group::✅ gym_operator tabs (dark)
+[REST] --> GET http://fixtures.local/auth/options
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/me
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/auth/options
+[REST] response: {"error":"not_recorded"}
+[REST] --> POST http://fixtures.local/auth/pin/login
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] request: {}
+[REST] --> POST http://fixtures.local/auth/pin/reset/start
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] request: {}
+[REST] <-- 200 GET http://fixtures.local/me
+[REST] response: {"user":{"id":"usr_dev_owner","firebaseUid":null,"phone":"+255700000012","email":"dev.owner@fitflex.test","displayName":"Dev Owner","photoUrl":null,"userType":"gym_operator","accountStatus":"active","approvalStatus":"approved","verified":false,"passwordHash":null,"approvalNote":null,"onboardingCompleted":true,"portalUser":false,"aclPermissions":[],"memberProfile":null,"gymId":"gym_dev_owner","gymIds":["gym_dev_owner"],"createdAt":"2026-09-22T10:16:22.907Z","updatedAt":"2026-09-24T08:13:39.506Z","vendorProfile":null,"vendorId":null,"vendorRole":null,"vendorPermissions":[],"corporateId":null,"publicId":"FO040","userCode":"FO040"},"subscription":null,"pendingPayment":null,"visitsUsed":0,"visitCap":null}
+[REST] --> GET http://fixtures.local/me/personas
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 200 POST http://fixtures.local/auth/pin/login
+[REST] response: {}
+[REST] <-- 200 POST http://fixtures.local/auth/pin/reset/start
+[REST] response: {}
+[REST] <-- 404 GET http://fixtures.local/me/personas
+[REST] response: {"error":"not_recorded"}
+[REST] --> GET http://fixtures.local/me/invitations
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/me/invitations
+[REST] response: {"error":"not_recorded"}
+[REST] --> GET http://fixtures.local/me/identifiers
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/me/identifiers
+[REST] response: {"error":"not_recorded"}
+[REST] --> GET http://fixtures.local/me/notifications
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> PUT http://fixtures.local/me/communication-preferences
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] request: {"locale":"en"}
+[REST] --> GET http://fixtures.local/me/recovery
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/me/notifications
+[REST] response: {"error":"not_recorded"}
+[REST] <-- 200 PUT http://fixtures.local/me/communication-preferences
+[REST] response: {}
+[REST] <-- 404 GET http://fixtures.local/me/recovery
+[REST] response: {"error":"not_recorded"}
+[REST] --> GET http://fixtures.local/me
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/owner/gyms
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 200 GET http://fixtures.local/me
+[REST] response: {"user":{"id":"usr_dev_owner","firebaseUid":null,"phone":"+255700000012","email":"dev.owner@fitflex.test","displayName":"Dev Owner","photoUrl":null,"userType":"gym_operator","accountStatus":"active","approvalStatus":"approved","verified":false,"passwordHash":null,"approvalNote":null,"onboardingCompleted":true,"portalUser":false,"aclPermissions":[],"memberProfile":null,"gymId":"gym_dev_owner","gymIds":["gym_dev_owner"],"createdAt":"2026-09-22T10:16:22.907Z","updatedAt":"2026-09-24T08:13:39.506Z","vendorProfile":null,"vendorId":null,"vendorRole":null,"vendorPermissions":[],"corporateId":null,"publicId":"FO040","userCode":"FO040"},"subscription":null,"pendingPayment":null,"visitsUsed":0,"visitCap":null}
+[REST] <-- 200 GET http://fixtures.local/owner/gyms
+[REST] response: [{"id":"gym_dev_owner","name":"Dev Owner Gym","tier":"standard","location":"Mikocheni, Dar es Salaam","venueType":"physical","accessMode":"paid_visit","operatingHours":null,"perVisitRate":5000,"ratePerDay":5000,"ratePerWeek":0,"ratePerMonth":0,"commissionRate":12,"status":"active","images":["https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800"],"thumbnails":[],"coordinates":{"lat":null,"lng":null},"amenities":["lockers","showers"],"equipment":[],"paymentBank":null,"paymentNumber":null,"paymentNotes":null,"tinNumber":null,"createdAt":"2026-09-22T10:16:22.944Z","updatedAt":"2026-09-24T08:13:43.782Z","verified":false,"classes":[],"trainerPass":{"feeTzs":0,"period":"monthly","enabled":false},"homepageVisible":true,"homepagePriority":0,"rating":"0.00","reviewCount":0}]
+[REST] --> GET http://fixtures.local/operator/dashboard?gymId=gym_dev_owner&memberType=all
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/owner/trainers?gymId=gym_dev_owner
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/owner/trainers/pending
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 200 GET http://fixtures.local/operator/dashboard?gymId=gym_dev_owner&memberType=all
+[REST] response: {"gym":{"id":"gym_dev_owner","name":"Dev Owner Gym","tier":"standard","location":"Mikocheni, Dar es Salaam","venueType":"physical","accessMode":"paid_visit","operatingHours":null,"perVisitRate":5000,"ratePerDay":5000,"ratePerWeek":0,"ratePerMonth":0,"commissionRate":12,"status":"active","images":["https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800"],"thumbnails":[],"coordinates":{"lat":null,"lng":null},"amenities":["lockers","showers"],"equipment":[],"paymentBank":null,"paymentNumber":null,"paymentNotes":null,"tinNumber":null,"createdAt":"2026-09-22T10:16:22.944Z","updatedAt":"2026-09-24T08:13:43.782Z","verified":false,"classes":[],"trainerPass":{"feeTzs":0,"period":"monthly","enabled":false},"homepageVisible":true,"homepagePriority":0,"rating":"0.00","reviewCount":0},"gyms":[{"id":"gym_dev_owner","name":"Dev Owner Gym","tier":"standard","location":"Mikocheni, Dar es Salaam","venueType":"physical","accessMode":"paid_visit","operatingHours":null,"perVisitRate":5000,"ratePerDay":5000,"ratePerWeek":0,"ratePerMonth":0,"commissionRate":12,"status":"active","images":["https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800"],"thumbnails":[],"coordinates":{"lat":null,"lng":null},"amenities":["lockers","showers"],"equipment":[],"paymentBank":null,"paymentNumber":null,"paymentNotes":null,"tinNumber":null,"createdAt":"2026-09-22T10:16:22.944Z","updatedAt":"2026-09-24T08:13:43.782Z","verified":false,"classes":[],"trainerPass":{"feeTzs":0,"period":"monthly","enabled":false},"homepageVisible":true,"homepagePriority":0,"rating":"0.00","reviewCount":0}],"todayCount":1,"monthVisits":1,"periodStart":"2026-09-01","periodEnd":"2026-09-24","memberType":"all","totalMembers":1,"activeTodayMembers":1,"expiringSoonMembers":0,"periodVisits":1,"periodMembers":1,"prevPeriodVisits":0,"prevPeriodMembers":0,"directVisits":0,"directMembers":0,"fitflexVisits":1,"fitflexMembers":1,"overall":{"gymCount":1,"totalVisits":1,"uniqueMembers":1,"directVisits":0,"directMembers":0,"fitflexVisits":1,"fitflexMembers":1},"gymSummaries":[{"gymId":"gym_dev_owner","gymName":"Dev Owner Gym","tier":"standard","totalVisits":1,"uniqueMembers":1,"directVisits":0,"directMembers":0,"fitflexVisits":1,"fitflexMembers":1}],"payout":{"band":1,"commissionPct":25,"gross":5000,"commission":1250,"net":3750,"payoutDelayDays":30,"flatFee":false},"chartSeries":[{"label":"9/1","direct":0,"fitflex":0},{"label":"9/5","direct":0,"fitflex":0},{"label":"9/10","direct":0,"fitflex":0},{"label":"9/15","direct":0,"fitflex":0},{"label":"9/19","direct":0,"fitflex":1}]}
+[REST] <-- 200 GET http://fixtures.local/owner/trainers?gymId=gym_dev_owner
+[REST] response: []
+[REST] <-- 200 GET http://fixtures.local/owner/trainers/pending
+[REST] response: []
+[REST] --> GET http://fixtures.local/me/personal-details
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/owner/gyms/gym_dev_owner/checkins
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/owner/engagement?gymId=gym_dev_owner
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/me/personal-details
+[REST] response: {"error":"not_recorded"}
+[REST] <-- 404 GET http://fixtures.local/owner/gyms/gym_dev_owner/checkins
+[REST] response: {"error":"not_recorded"}
+[REST] <-- 200 GET http://fixtures.local/owner/engagement?gymId=gym_dev_owner
+[REST] response: {"members":1,"active":1,"slipping":0,"at_risk":0,"lapsed":0,"newThisMonth":1,"visits30":1,"previous30":0,"checkIn":[]}
+[REST] --> GET http://fixtures.local/me/recovery
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/me/recovery
+[REST] response: {"error":"not_recorded"}
+[REST] --> GET http://fixtures.local/owner/members?gymId=gym_dev_owner
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 200 GET http://fixtures.local/owner/members?gymId=gym_dev_owner
+[REST] response: {"members":[{"id":"usr_dev_member","publicId":"FM664","displayName":"Dev Member","phone":"+255700000010","photoUrl":null,"memberType":"fitflex","tier":null,"status":"checked_in","lastCheckinAt":"2026-09-24T08:05:16.658Z","startDate":null,"expiresAt":null,"daysLeft":null}],"stats":{"totalMembers":1,"activeToday":1,"expiringSoon":0}}
+[REST] --> GET http://fixtures.local/shop/products
+[REST] headers: {X-FF-Shop-Caps: flash_sale, content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/me/shop-orders
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/shop/areas
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/shop/products
+[REST] response: {"error":"not_recorded"}
+[REST] <-- 404 GET http://fixtures.local/me/shop-orders
+[REST] response: {"error":"not_recorded"}
+[REST] <-- 404 GET http://fixtures.local/shop/areas
+[REST] response: {"error":"not_recorded"}
+::endgroup::
+::group::✅ vendor tabs (light)
+[REST] --> GET http://fixtures.local/auth/options
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/me
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/auth/options
+[REST] response: {"error":"not_recorded"}
+[REST] --> POST http://fixtures.local/auth/pin/login
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] request: {}
+[REST] --> POST http://fixtures.local/auth/pin/reset/start
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] request: {}
+[REST] <-- 200 GET http://fixtures.local/me
+[REST] response: {"user":{"id":"usr_dev_vendor","firebaseUid":null,"phone":"+255700000013","email":"dev.vendor@fitflex.test","displayName":"Dev Vendor","photoUrl":null,"userType":"vendor","accountStatus":"active","approvalStatus":"approved","verified":false,"passwordHash":null,"approvalNote":null,"onboardingCompleted":true,"portalUser":false,"aclPermissions":[],"memberProfile":null,"gymId":null,"gymIds":[],"createdAt":"2026-09-24T08:02:26.498Z","updatedAt":"2026-09-24T08:13:39.530Z","vendorProfile":{"logo":"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=300","email":"dev.vendor@fitflex.test","banner":"https://images.unsplash.com/photo-1599058917212-d750089bc07e?w=900","status":"published","address":"Masaki, Dar es Salaam","vendorId":"usr_dev_vendor","updatedAt":"2026-09-24T08:13:39.530Z","description":"Trusted fitness equipment and nutrition in Tanzania.","businessName":"FitFlex Performance Store","businessHours":{"summary":"Mon-Sat 08:00-18:00"},"contactNumber":"+255700000013","deliveryRegions":["Dar es Salaam","Arusha"],"businessCategory":"Fitness equipment","settlementAccount":{"account":"+255700000013","provider":"M-Pesa"}},"vendorId":null,"vendorRole":null,"vendorPermissions":[],"corporateId":null,"publicId":"FM103","userCode":"FM103"},"subscription":null,"pendingPayment":null,"visitsUsed":0,"visitCap":null}
+[REST] --> GET http://fixtures.local/me/personas
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 200 POST http://fixtures.local/auth/pin/login
+[REST] response: {}
+[REST] <-- 200 POST http://fixtures.local/auth/pin/reset/start
+[REST] response: {}
+[REST] <-- 404 GET http://fixtures.local/me/personas
+[REST] response: {"error":"not_recorded"}
+[REST] --> GET http://fixtures.local/me/invitations
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/me/invitations
+[REST] response: {"error":"not_recorded"}
+[REST] --> GET http://fixtures.local/me/identifiers
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/me/identifiers
+[REST] response: {"error":"not_recorded"}
+[REST] --> GET http://fixtures.local/me/notifications
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> PUT http://fixtures.local/me/communication-preferences
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] request: {"locale":"en"}
+[REST] --> GET http://fixtures.local/me/recovery
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/me/notifications
+[REST] response: {"error":"not_recorded"}
+[REST] <-- 200 PUT http://fixtures.local/me/communication-preferences
+[REST] response: {}
+[REST] <-- 404 GET http://fixtures.local/me/recovery
+[REST] response: {"error":"not_recorded"}
+[REST] --> GET http://fixtures.local/me/kyc
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/me/terms?lang=en
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/vendor/tools/options
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/vendor/products
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/vendor/orders
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/vendor/profile
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/vendor/payments
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/vendor/enquiries
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/vendor/staff
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/me/kyc
+[REST] response: {"error":"not_recorded"}
+[REST] <-- 404 GET http://fixtures.local/me/terms?lang=en
+[REST] response: {"error":"not_recorded"}
+[REST] <-- 404 GET http://fixtures.local/vendor/tools/options
+[REST] response: {"error":"not_recorded"}
+[REST] <-- 200 GET http://fixtures.local/vendor/products
+[REST] response: [{"id":"prd_dev_marketplace","vendorId":"usr_dev_vendor","name":"FitFlex Resistance Bands","description":"Five-band training set for home or gym workouts.","category":"Equipment","priceTzs":45000,"stock":25,"images":["https://images.unsplash.com/photo-1598289431512-b97b0917affc?w=800"],"status":"active","createdAt":"2026-09-24T08:02:26.498Z","updatedAt":"2026-09-24T08:13:43.808Z","homepageVisible":true,"homepagePriority":5000,"brand":"FitFlex","sku":"FF-RB-5","visibility":"visible","approvalStatus":"approved","deletedAt":null,"discountPriceTzs":39000,"reviewCount":12,"soldCount":64,"weightKg":"0.700","variants":[{"name":"Five-band set","stock":25}],"deliveryAvailable":true,"rating":"4.80","distanceKm":"3.20"}]
+[REST] <-- 200 GET http://fixtures.local/vendor/orders
+[REST] response: []
+[REST] <-- 200 GET http://fixtures.local/vendor/profile
+[REST] response: {"logo":"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=300","email":"dev.vendor@fitflex.test","banner":"https://images.unsplash.com/photo-1599058917212-d750089bc07e?w=900","status":"published","address":"Masaki, Dar es Salaam","vendorId":"usr_dev_vendor","updatedAt":"2026-09-24T08:13:43.808Z","description":"Trusted fitness equipment and nutrition in Tanzania.","businessName":"FitFlex Performance Store","businessHours":{"summary":"Mon-Sat 08:00-18:00"},"contactNumber":"+255700000013","deliveryRegions":["Dar es Salaam","Arusha"],"businessCategory":"Fitness equipment","settlementAccount":{"account":"+255700000013","provider":"M-Pesa"}}
+[REST] <-- 200 GET http://fixtures.local/vendor/payments
+[REST] response: {"todaySalesTzs":0,"weeklySalesTzs":0,"monthlySalesTzs":0,"pendingSettlementTzs":0,"settledPaymentsTzs":0,"settlements":[]}
+[REST] <-- 200 GET http://fixtures.local/vendor/enquiries
+[REST] response: [{"id":"enq_50c9028d","buyerId":"usr_dev_member","vendorId":"usr_dev_vendor","productId":"prd_dev_marketplace","subject":null,"status":"resolved","messages":[{"at":"2026-09-24T08:05:55.004Z","message":"Smoke: is this in stock?","senderId":"usr_dev_member","senderRole":"customer"},{"at":"2026-09-24T08:05:55.006Z","message":"Yes, in stock.","senderId":"usr_dev_vendor","senderRole":"vendor"}],"createdAt":"2026-09-24T08:05:55.004Z","updatedAt":"2026-09-24T08:05:55.011Z"},{"id":"enq_555fe42a","buyerId":"usr_dev_member","vendorId":"usr_dev_vendor","productId":"prd_dev_marketplace","subject":null,"status":"resolved","messages":[{"at":"2026-09-24T08:05:16.775Z","message":"Smoke: is this in stock?","senderId":"usr_dev_member","senderRole":"customer"},{"at":"2026-09-24T08:05:16.779Z","message":"Yes, in stock.","senderId":"usr_dev_vendor","senderRole":"vendor"}],"createdAt":"2026-09-24T08:05:16.775Z","updatedAt":"2026-09-24T08:05:16.784Z"},{"id":"enq_b1eded77","buyerId":"usr_dev_member","vendorId":"usr_dev_vendor","productId":"prd_dev_marketplace","subject":null,"status":"resolved","messages":[{"at":"2026-09-24T08:04:18.451Z","message":"Smoke: is this in stock?","senderId":"usr_dev_member","senderRole":"customer"},{"at":"2026-09-24T08:04:18.455Z","message":"Yes, in stock.","senderId":"usr_dev_vendor","senderRole":"vendor"}],"createdAt":"2026-09-24T08:04:18.451Z","updatedAt":"2026-09-24T08:04:18.461Z"},{"id":"enq_c6f5936a","buyerId":"usr_dev_member","vendorId":"usr_dev_vendor","productId":"prd_dev_marketplace","subject":null,"status":"resolved","messages":[{"at":"2026-09-24T08:03:18.978Z","message":"Smoke: is this in stock?","senderId":"usr_dev_member","senderRole":"customer"},{"at":"2026-09-24T08:03:18.982Z","message":"Yes, in stock.","senderId":"usr_dev_vendor","senderRole":"vendor"}],"createdAt":"2026-09-24T08:03:18.978Z","updatedAt":"2026-09-24T08:03:18.988Z"},{"id":"enq_3f33de8b","buyerId":"usr_dev_member","vendorId":"usr_dev_vendor","productId":"prd_dev_marketplace","subject":null,"status":"resolved","messages":[{"at":"2026-09-24T08:02:26.774Z","message":"Smoke: is this in stock?","senderId":"usr_dev_member","senderRole":"customer"},{"at":"2026-09-24T08:02:26.779Z","message":"Yes, in stock.","senderId":"usr_dev_vendor","senderRole":"vendor"}],"createdAt":"2026-09-24T08:02:26.774Z","updatedAt":"2026-09-24T08:02:26.785Z"}]
+[REST] <-- 200 GET http://fixtures.local/vendor/staff
+[REST] response: []
+[REST] --> GET http://fixtures.local/me/recovery
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/me/recovery
+[REST] response: {"error":"not_recorded"}
+::endgroup::
+::group::✅ vendor tabs (dark)
+[REST] --> GET http://fixtures.local/auth/options
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/me
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/auth/options
+[REST] response: {"error":"not_recorded"}
+[REST] --> POST http://fixtures.local/auth/pin/login
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] request: {}
+[REST] --> POST http://fixtures.local/auth/pin/reset/start
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] request: {}
+[REST] <-- 200 GET http://fixtures.local/me
+[REST] response: {"user":{"id":"usr_dev_vendor","firebaseUid":null,"phone":"+255700000013","email":"dev.vendor@fitflex.test","displayName":"Dev Vendor","photoUrl":null,"userType":"vendor","accountStatus":"active","approvalStatus":"approved","verified":false,"passwordHash":null,"approvalNote":null,"onboardingCompleted":true,"portalUser":false,"aclPermissions":[],"memberProfile":null,"gymId":null,"gymIds":[],"createdAt":"2026-09-24T08:02:26.498Z","updatedAt":"2026-09-24T08:13:39.530Z","vendorProfile":{"logo":"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=300","email":"dev.vendor@fitflex.test","banner":"https://images.unsplash.com/photo-1599058917212-d750089bc07e?w=900","status":"published","address":"Masaki, Dar es Salaam","vendorId":"usr_dev_vendor","updatedAt":"2026-09-24T08:13:39.530Z","description":"Trusted fitness equipment and nutrition in Tanzania.","businessName":"FitFlex Performance Store","businessHours":{"summary":"Mon-Sat 08:00-18:00"},"contactNumber":"+255700000013","deliveryRegions":["Dar es Salaam","Arusha"],"businessCategory":"Fitness equipment","settlementAccount":{"account":"+255700000013","provider":"M-Pesa"}},"vendorId":null,"vendorRole":null,"vendorPermissions":[],"corporateId":null,"publicId":"FM103","userCode":"FM103"},"subscription":null,"pendingPayment":null,"visitsUsed":0,"visitCap":null}
+[REST] --> GET http://fixtures.local/me/personas
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 200 POST http://fixtures.local/auth/pin/login
+[REST] response: {}
+[REST] <-- 200 POST http://fixtures.local/auth/pin/reset/start
+[REST] response: {}
+[REST] <-- 404 GET http://fixtures.local/me/personas
+[REST] response: {"error":"not_recorded"}
+[REST] --> GET http://fixtures.local/me/invitations
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/me/invitations
+[REST] response: {"error":"not_recorded"}
+[REST] --> GET http://fixtures.local/me/identifiers
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/me/identifiers
+[REST] response: {"error":"not_recorded"}
+[REST] --> GET http://fixtures.local/me/notifications
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> PUT http://fixtures.local/me/communication-preferences
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] request: {"locale":"en"}
+[REST] --> GET http://fixtures.local/me/recovery
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/me/notifications
+[REST] response: {"error":"not_recorded"}
+[REST] <-- 200 PUT http://fixtures.local/me/communication-preferences
+[REST] response: {}
+[REST] <-- 404 GET http://fixtures.local/me/recovery
+[REST] response: {"error":"not_recorded"}
+[REST] --> GET http://fixtures.local/me/kyc
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/me/terms?lang=en
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/vendor/tools/options
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/vendor/products
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/vendor/orders
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/vendor/profile
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/vendor/payments
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/vendor/enquiries
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] --> GET http://fixtures.local/vendor/staff
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/me/kyc
+[REST] response: {"error":"not_recorded"}
+[REST] <-- 404 GET http://fixtures.local/me/terms?lang=en
+[REST] response: {"error":"not_recorded"}
+[REST] <-- 404 GET http://fixtures.local/vendor/tools/options
+[REST] response: {"error":"not_recorded"}
+[REST] <-- 200 GET http://fixtures.local/vendor/products
+[REST] response: [{"id":"prd_dev_marketplace","vendorId":"usr_dev_vendor","name":"FitFlex Resistance Bands","description":"Five-band training set for home or gym workouts.","category":"Equipment","priceTzs":45000,"stock":25,"images":["https://images.unsplash.com/photo-1598289431512-b97b0917affc?w=800"],"status":"active","createdAt":"2026-09-24T08:02:26.498Z","updatedAt":"2026-09-24T08:13:43.808Z","homepageVisible":true,"homepagePriority":5000,"brand":"FitFlex","sku":"FF-RB-5","visibility":"visible","approvalStatus":"approved","deletedAt":null,"discountPriceTzs":39000,"reviewCount":12,"soldCount":64,"weightKg":"0.700","variants":[{"name":"Five-band set","stock":25}],"deliveryAvailable":true,"rating":"4.80","distanceKm":"3.20"}]
+[REST] <-- 200 GET http://fixtures.local/vendor/orders
+[REST] response: []
+[REST] <-- 200 GET http://fixtures.local/vendor/profile
+[REST] response: {"logo":"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=300","email":"dev.vendor@fitflex.test","banner":"https://images.unsplash.com/photo-1599058917212-d750089bc07e?w=900","status":"published","address":"Masaki, Dar es Salaam","vendorId":"usr_dev_vendor","updatedAt":"2026-09-24T08:13:43.808Z","description":"Trusted fitness equipment and nutrition in Tanzania.","businessName":"FitFlex Performance Store","businessHours":{"summary":"Mon-Sat 08:00-18:00"},"contactNumber":"+255700000013","deliveryRegions":["Dar es Salaam","Arusha"],"businessCategory":"Fitness equipment","settlementAccount":{"account":"+255700000013","provider":"M-Pesa"}}
+[REST] <-- 200 GET http://fixtures.local/vendor/payments
+[REST] response: {"todaySalesTzs":0,"weeklySalesTzs":0,"monthlySalesTzs":0,"pendingSettlementTzs":0,"settledPaymentsTzs":0,"settlements":[]}
+[REST] <-- 200 GET http://fixtures.local/vendor/enquiries
+[REST] response: [{"id":"enq_50c9028d","buyerId":"usr_dev_member","vendorId":"usr_dev_vendor","productId":"prd_dev_marketplace","subject":null,"status":"resolved","messages":[{"at":"2026-09-24T08:05:55.004Z","message":"Smoke: is this in stock?","senderId":"usr_dev_member","senderRole":"customer"},{"at":"2026-09-24T08:05:55.006Z","message":"Yes, in stock.","senderId":"usr_dev_vendor","senderRole":"vendor"}],"createdAt":"2026-09-24T08:05:55.004Z","updatedAt":"2026-09-24T08:05:55.011Z"},{"id":"enq_555fe42a","buyerId":"usr_dev_member","vendorId":"usr_dev_vendor","productId":"prd_dev_marketplace","subject":null,"status":"resolved","messages":[{"at":"2026-09-24T08:05:16.775Z","message":"Smoke: is this in stock?","senderId":"usr_dev_member","senderRole":"customer"},{"at":"2026-09-24T08:05:16.779Z","message":"Yes, in stock.","senderId":"usr_dev_vendor","senderRole":"vendor"}],"createdAt":"2026-09-24T08:05:16.775Z","updatedAt":"2026-09-24T08:05:16.784Z"},{"id":"enq_b1eded77","buyerId":"usr_dev_member","vendorId":"usr_dev_vendor","productId":"prd_dev_marketplace","subject":null,"status":"resolved","messages":[{"at":"2026-09-24T08:04:18.451Z","message":"Smoke: is this in stock?","senderId":"usr_dev_member","senderRole":"customer"},{"at":"2026-09-24T08:04:18.455Z","message":"Yes, in stock.","senderId":"usr_dev_vendor","senderRole":"vendor"}],"createdAt":"2026-09-24T08:04:18.451Z","updatedAt":"2026-09-24T08:04:18.461Z"},{"id":"enq_c6f5936a","buyerId":"usr_dev_member","vendorId":"usr_dev_vendor","productId":"prd_dev_marketplace","subject":null,"status":"resolved","messages":[{"at":"2026-09-24T08:03:18.978Z","message":"Smoke: is this in stock?","senderId":"usr_dev_member","senderRole":"customer"},{"at":"2026-09-24T08:03:18.982Z","message":"Yes, in stock.","senderId":"usr_dev_vendor","senderRole":"vendor"}],"createdAt":"2026-09-24T08:03:18.978Z","updatedAt":"2026-09-24T08:03:18.988Z"},{"id":"enq_3f33de8b","buyerId":"usr_dev_member","vendorId":"usr_dev_vendor","productId":"prd_dev_marketplace","subject":null,"status":"resolved","messages":[{"at":"2026-09-24T08:02:26.774Z","message":"Smoke: is this in stock?","senderId":"usr_dev_member","senderRole":"customer"},{"at":"2026-09-24T08:02:26.779Z","message":"Yes, in stock.","senderId":"usr_dev_vendor","senderRole":"vendor"}],"createdAt":"2026-09-24T08:02:26.774Z","updatedAt":"2026-09-24T08:02:26.785Z"}]
+[REST] <-- 200 GET http://fixtures.local/vendor/staff
+[REST] response: []
+[REST] --> GET http://fixtures.local/me/recovery
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2, authorization: <redacted>}
+[REST] <-- 404 GET http://fixtures.local/me/recovery
+[REST] response: {"error":"not_recorded"}
+::endgroup::
+
+🎉 8 tests passed.
