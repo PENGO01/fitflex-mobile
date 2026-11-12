@@ -708,6 +708,13 @@ class FFLocale extends ChangeNotifier {
       'member.prefs': 'Language and theme',
       // Bottom-bar label of the central check-in action.
       'member.checkInNav': 'Check in',
+      'activity.period.week': 'Week',
+      'activity.period.month': 'Month',
+      'activity.period.year': 'Year',
+      'activity.stat.activeDays': 'Active days',
+      'activity.stat.visits': 'Gym visits',
+      'activity.stat.minutes': 'Active minutes',
+      'activity.chart.summary': 'Active on {n} days in this period',
       'member.findGym': 'Find your gym',
       'member.allGyms': 'All gyms',
       'gym.view': 'View',
@@ -8996,6 +9003,20 @@ class FFLocale extends ChangeNotifier {
       'member.profile': 'Wasifu',
       'member.prefs': 'Lugha na mwonekano',
       'member.checkInNav': 'Ingia',
+      // TODO(sw-review)
+      'activity.period.week': 'Wiki',
+      // TODO(sw-review)
+      'activity.period.month': 'Mwezi',
+      // TODO(sw-review)
+      'activity.period.year': 'Mwaka',
+      // TODO(sw-review)
+      'activity.stat.activeDays': 'Siku za mazoezi',
+      // TODO(sw-review)
+      'activity.stat.visits': 'Ziara za gym',
+      // TODO(sw-review)
+      'activity.stat.minutes': 'Dakika za mazoezi',
+      // TODO(sw-review)
+      'activity.chart.summary': 'Ulifanya mazoezi siku {n} katika kipindi hiki',
       // TODO(sw-review)
       'member.findGym': 'Tafuta gym yako',
       // TODO(sw-review)

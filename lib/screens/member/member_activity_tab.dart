@@ -16,6 +16,7 @@ import '../../shared/photo_footer_flag.dart';
 import '../../shared/photo_hero_flag.dart';
 import 'member_shell.dart';
 import 'events/events_discovery_view.dart';
+import 'widgets/activity_period_card.dart';
 import 'widgets/home_hero.dart';
 import 'widgets/phone_steps_card.dart';
 import 'widgets/run_widgets.dart';
@@ -363,6 +364,9 @@ class _MemberActivityTabState extends State<MemberActivityTab> {
     // Gym visits sit in the same list, with what was logged during them.
     final recent = recentTimeline(activities, data.checkins);
     return [
+      // DS v1.0 Activity board: Week / Month / Year, three tiles, bars.
+      ActivityPeriodCard(data: data, now: today),
+      const SizedBox(height: FFTokens.spacingMd),
       // Planning lives on the Workouts tab; Overview only surfaces a
       // workout that's actually on for today.
       if (todaysWorkouts(data.workouts, today).isNotEmpty)
