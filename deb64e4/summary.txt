@@ -1,0 +1,4 @@
+commit=deb64e4aa87da12be9a7e06e2011c293e08f9be8
+analyze=success
+test=success
+shots=success
