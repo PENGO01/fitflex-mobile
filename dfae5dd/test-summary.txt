@@ -1,0 +1,52 @@
+01:44 +961 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_compact_spacing_test.dart: Language: compact hero, content right under it 390x844 en light: hero <= 48%, >= 80px clear photo, prompt and Continue close, scrim rule [E]
+01:45 +962 -2: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_compact_spacing_test.dart: Language: compact hero, content right under it 390x844 en dark: hero <= 48%, >= 80px clear photo, prompt and Continue close, scrim rule [E]
+01:45 +968 -3: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_compact_spacing_test.dart: Language: compact hero, content right under it 390x844 sw light: hero <= 48%, >= 80px clear photo, prompt and Continue close, scrim rule [E]
+01:45 +968 -4: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_compact_spacing_test.dart: Language: compact hero, content right under it 390x844 sw dark: hero <= 48%, >= 80px clear photo, prompt and Continue close, scrim rule [E]
+02:34 +1396 -5: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_taller_test.dart: Sign in 390x844 en light: clear photo, Continue and the Create account link on screen [E]
+[REST] error: TimeoutException: slow
+02:35 +1406 -6: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_taller_test.dart: Sign in 390x844 en dark: clear photo, Continue and the Create account link on screen [E]
+02:36 +1413 -7: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_taller_test.dart: Sign in 390x844 sw light: clear photo, Continue and the Create account link on screen [E]
+02:37 +1420 -8: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_taller_test.dart: Sign in 390x844 sw dark: clear photo, Continue and the Create account link on screen [E]
+02:42 +1463 -9: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_taller_test.dart: Sign in: Create account link on screen (owner 2026-10-20) 390x844 1.0x en light: link fully visible, Continue visible, >= 125px clear [E]
+02:42 +1464 -10: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_taller_test.dart: Sign in: Create account link on screen (owner 2026-10-20) 390x844 1.0x en dark: link fully visible, Continue visible, >= 125px clear [E]
+02:43 +1467 -11: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_taller_test.dart: Sign in: Create account link on screen (owner 2026-10-20) 390x844 1.0x sw light: link fully visible, Continue visible, >= 125px clear [E]
+02:43 +1470 -12: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_taller_test.dart: Sign in: Create account link on screen (owner 2026-10-20) 390x844 1.0x sw dark: link fully visible, Continue visible, >= 125px clear [E]
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+08:36 +4058 ~8 -13: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_bands_test.dart: 390x844: clear photo above the text, first control above 55% gyms en dark [E]
+08:37 +4059 ~8 -14: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_bands_test.dart: 390x844: clear photo above the text, first control above 55% gyms en light [E]
+08:37 +4060 ~8 -15: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_bands_test.dart: 390x844: clear photo above the text, first control above 55% gyms sw dark [E]
+08:38 +4062 ~8 -16: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_bands_test.dart: 390x844: clear photo above the text, first control above 55% gyms sw light [E]
+08:38 +4063 ~8 -17: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_bands_test.dart: 390x844: clear photo above the text, first control above 55% trainers en dark [E]
+08:38 +4065 ~8 -18: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_bands_test.dart: 390x844: clear photo above the text, first control above 55% trainers en light [E]
+08:39 +4065 ~8 -19: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_bands_test.dart: 390x844: clear photo above the text, first control above 55% trainers sw dark [E]
+08:39 +4067 ~8 -20: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_bands_test.dart: 390x844: clear photo above the text, first control above 55% trainers sw light [E]
+08:41 +4090 ~8 -21: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_bands_test.dart: 390x844: clear photo above the text, first control above 55% activity en dark [E]
+08:42 +4094 ~8 -22: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_bands_test.dart: 390x844: clear photo above the text, first control above 55% activity en light [E]
+08:42 +4094 ~8 -23: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_bands_test.dart: 390x844: clear photo above the text, first control above 55% activity sw dark [E]
+08:43 +4094 ~8 -24: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_bands_test.dart: 390x844: clear photo above the text, first control above 55% activity sw light [E]
+08:44 +4096 ~8 -25: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_bands_test.dart: 390x844: clear photo above the text, first control above 55% trainer-home en dark [E]
+08:44 +4101 ~8 -26: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_bands_test.dart: 390x844: clear photo above the text, first control above 55% trainer-home en light [E]
+08:46 +4106 ~8 -27: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_bands_test.dart: 390x844: clear photo above the text, first control above 55% vendor-home en dark [E]
+08:46 +4107 ~8 -28: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_bands_test.dart: 390x844: clear photo above the text, first control above 55% vendor-home en light [E]
+08:47 +4111 ~8 -29: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_bands_test.dart: 390x844: clear photo above the text, first control above 55% vendor-home sw dark [E]
+08:47 +4115 ~8 -30: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_bands_test.dart: 390x844: clear photo above the text, first control above 55% vendor-home sw light [E]
+08:48 +4118 ~8 -31: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_bands_test.dart: 390x844: clear photo above the text, first control above 55% owner-home en dark [E]
+08:48 +4122 ~8 -32: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_bands_test.dart: 390x844: clear photo above the text, first control above 55% owner-home en light [E]
+08:48 +4124 ~8 -33: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_bands_test.dart: 390x844: clear photo above the text, first control above 55% owner-home sw dark [E]
+08:48 +4124 ~8 -34: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_bands_test.dart: 390x844: clear photo above the text, first control above 55% owner-home sw light [E]
+09:11 +4318 ~9 -35: /home/runner/work/fitflex-mobile/fitflex-mobile/test/trainer_goals_test.dart: member sees trainer goals first, labelled, with who assigned them [E]
+09:11 +4318 ~9 -36: /home/runner/work/fitflex-mobile/fitflex-mobile/test/trainer_goals_test.dart: member sees a coaching goal is marked done and undone [E]
+09:42 +4603 ~9 -36: Some tests failed.
+09:42 +4603 ~9 -36: Some tests failed.
+
+Failing tests:
+  /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_bands_test.dart: 390x844: clear photo above the text, first control above 55% activity en dark
+  /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_bands_test.dart: 390x844: clear photo above the text, first control above 55% activity en light
+  /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_bands_test.dart: 390x844: clear photo above the text, first control above 55% activity sw dark
+  /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_bands_test.dart: 390x844: clear photo above the text, first control above 55% activity sw light
+  ... and 32 more
