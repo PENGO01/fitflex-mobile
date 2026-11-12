@@ -14,6 +14,7 @@ import '../../shared/models.dart';
 import '../../shared/photo_footer_flag.dart';
 import '../../shared/photo_hero_flag.dart';
 import '../../shared/pin_credentials.dart';
+import '../../shared/tone_theme.dart';
 import 'member_shell.dart';
 import 'widgets/home_hero.dart';
 import 'widgets/membership_card.dart';
@@ -286,27 +287,39 @@ class _MemberProfileTabState extends State<MemberProfileTab> {
     return ListView(
       padding: const EdgeInsets.all(FFTokens.spacingLg),
       children: [
-        // Profile header
+        // Profile card (DS v1.0): avatar, name, member ID, plan chip.
         FFCard(
+          key: const Key('profile-card'),
+          padding: const EdgeInsets.all(20),
           child: Row(
             children: [
               FFAvatar(
                 name: displayName,
                 src: me?.user.photoUrl,
-                size: FFAvatarSize.lg,
+                size: FFAvatarSize.xl,
               ),
-              const SizedBox(width: 14),
+              const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       displayName,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    if (me?.user.publicId case final id?) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        id,
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ],
+                    const SizedBox(height: 8),
                     badge,
                   ],
                 ),
@@ -338,6 +351,8 @@ class _MemberProfileTabState extends State<MemberProfileTab> {
 
   /// Account settings, the tiles and Sign out (the same in both layouts).
   List<Widget> _settings(BuildContext context) => [
+    // DS v1.0: the dark "Own a gym, train or sell?" card (or Switch role).
+    const PersonaSwitcherTile(prominent: true),
     // Settings
     FFSectionTitle(context.tr('member.accountSettings')),
     // Language and theme (moved here from the app bar, DS v1.0).
@@ -355,71 +370,84 @@ class _MemberProfileTabState extends State<MemberProfileTab> {
         ],
       ),
     ),
-    FFActionTile(
-      key: const Key('profile-edit'),
-      icon: Icons.edit,
-      title: context.tr('member.editProfile'),
-      subtitle: context.tr('member.editProfileSubtitle'),
-      onTap: _openEditProfile,
+    FFTileGroup(
+      key: const Key('profile-group-account'),
+      children: [
+        FFActionTile(
+          key: const Key('profile-edit'),
+          icon: Icons.edit,
+          title: context.tr('member.editProfile'),
+          subtitle: context.tr('member.editProfileSubtitle'),
+          onTap: _openEditProfile,
+        ),
+        FFActionTile(
+          key: const Key('profile-community'),
+          icon: Icons.people_outline,
+          title: context.tr('community.title'),
+          subtitle: context.tr('community.profileHint'),
+          onTap: () => context.push(AppRoutes.memberCommunity),
+        ),
+        FFActionTile(
+          key: const Key('profile-benefits'),
+          icon: Icons.volunteer_activism_outlined,
+          title: context.tr('benefits.title'),
+          subtitle: context.tr('benefits.tile'),
+          onTap: () => context.push(AppRoutes.memberBenefits),
+        ),
+        FFActionTile(
+          key: const Key('profile-sessions'),
+          icon: Icons.event_repeat_outlined,
+          title: context.tr('sessions.title'),
+          subtitle: context.tr('sessions.tile'),
+          onTap: () => context.push(AppRoutes.memberSessions),
+        ),
+        // Events S3 §4: always when registration is on.
+        if (MemberDataScope.of(context).eventsDiscovery &&
+            MemberDataScope.of(context).eventsOptions.registration)
+          FFActionTile(
+            key: const Key('profile-event-registrations'),
+            icon: Icons.confirmation_number_outlined,
+            title: context.tr('events.mine.title'),
+            subtitle: context.tr('events.mine.empty.body'),
+            onTap: () => context.push(AppRoutes.memberEventOrders),
+          ),
+      ],
     ),
-    FFActionTile(
-      key: const Key('profile-community'),
-      icon: Icons.people_outline,
-      title: context.tr('community.title'),
-      subtitle: context.tr('community.profileHint'),
-      onTap: () => context.push(AppRoutes.memberCommunity),
+    FFTileGroup(
+      key: const Key('profile-group-settings'),
+      children: [
+        FFActionTile(
+          key: const Key('profile-privacy'),
+          icon: Icons.privacy_tip_outlined,
+          title: context.tr('privacy.title'),
+          onTap: () => context.go(AppRoutes.memberPrivacy),
+        ),
+        FFActionTile(
+          icon: Icons.lock_outline,
+          title: context.tr('member.changePin'),
+          onTap: _openChangePinDialog,
+        ),
+        FFActionTile(
+          icon: Icons.help_outline,
+          title: context.tr('member.help'),
+          onTap: _openWhatsAppSupport,
+        ),
+        const InvitationsTile(),
+        const ContactDetailsTile(),
+      ],
     ),
-    FFActionTile(
-      key: const Key('profile-benefits'),
-      icon: Icons.volunteer_activism_outlined,
-      title: context.tr('benefits.title'),
-      subtitle: context.tr('benefits.tile'),
-      onTap: () => context.push(AppRoutes.memberBenefits),
-    ),
-    FFActionTile(
-      key: const Key('profile-sessions'),
-      icon: Icons.event_repeat_outlined,
-      title: context.tr('sessions.title'),
-      subtitle: context.tr('sessions.tile'),
-      onTap: () => context.push(AppRoutes.memberSessions),
-    ),
-    // Events S3 §4: always when registration is on.
-    if (MemberDataScope.of(context).eventsDiscovery &&
-        MemberDataScope.of(context).eventsOptions.registration)
-      FFActionTile(
-        key: const Key('profile-event-registrations'),
-        icon: Icons.confirmation_number_outlined,
-        title: context.tr('events.mine.title'),
-        subtitle: context.tr('events.mine.empty.body'),
-        onTap: () => context.push(AppRoutes.memberEventOrders),
-      ),
-    FFActionTile(
-      key: const Key('profile-privacy'),
-      icon: Icons.privacy_tip_outlined,
-      title: context.tr('privacy.title'),
-      onTap: () => context.go(AppRoutes.memberPrivacy),
-    ),
-    FFActionTile(
-      icon: Icons.lock_outline,
-      title: context.tr('member.changePin'),
-      onTap: _openChangePinDialog,
-    ),
-    FFActionTile(
-      icon: Icons.help_outline,
-      title: context.tr('member.help'),
-      onTap: _openWhatsAppSupport,
-    ),
-    const InvitationsTile(),
-    const ContactDetailsTile(),
-    const PersonaSwitcherTile(),
     const SizedBox(height: 16),
-    OutlinedButton.icon(
+    // DS v1.0: Sign out is a soft red pill.
+    FilledButton.icon(
+      key: const Key('profile-signout'),
       onPressed: _confirmSignOut,
-      icon: Icon(Icons.logout, color: Theme.of(context).colorScheme.onSurface),
-      label: Text(
-        context.tr('home.signout'),
-        style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+      style: FilledButton.styleFrom(
+        backgroundColor: FFToneTheme.of(context).danger.bg,
+        foregroundColor: FFToneTheme.of(context).danger.fg,
+        minimumSize: const Size.fromHeight(48),
       ),
+      icon: const Icon(Icons.logout),
+      label: Text(context.tr('home.signout')),
     ),
     const SizedBox(height: FFTokens.spacingXs),
     const DeleteAccountButton(),

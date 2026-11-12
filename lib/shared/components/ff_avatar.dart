@@ -3,7 +3,7 @@ import '../tone_theme.dart';
 import 'ff_remote_image.dart';
 
 /// Avatar size variants.
-enum FFAvatarSize { sm, md, lg }
+enum FFAvatarSize { sm, md, lg, xl }
 
 /// User avatar with initials fallback — matches portal's Avatar component.
 class FFAvatar extends StatelessWidget {
@@ -17,12 +17,14 @@ class FFAvatar extends StatelessWidget {
     FFAvatarSize.sm => 14,
     FFAvatarSize.md => 18,
     FFAvatarSize.lg => 22,
+    FFAvatarSize.xl => 32,
   };
 
   double get _fontSize => switch (size) {
     FFAvatarSize.sm => 12,
     FFAvatarSize.md => 14,
     FFAvatarSize.lg => 16,
+    FFAvatarSize.xl => 22,
   };
 
   String get _initials {

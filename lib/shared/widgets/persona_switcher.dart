@@ -187,7 +187,11 @@ Future<void> showPersonaSwitcher(BuildContext context) {
 /// "Switch role" tile for profile pages. Renders nothing unless the Person
 /// has another usable persona or can add one, so nothing shows before V2.
 class PersonaSwitcherTile extends StatelessWidget {
-  const PersonaSwitcherTile({super.key});
+  const PersonaSwitcherTile({super.key, this.prominent = false});
+
+  /// Member profile (DS v1.0): with no other role yet, a dark card asking
+  /// "Own a gym, train or sell?" with a lime "Add role" pill.
+  final bool prominent;
 
   @override
   Widget build(BuildContext context) {
@@ -199,6 +203,7 @@ class PersonaSwitcherTile extends StatelessWidget {
         if (others.isEmpty && auth.addablePersonaTypes.isEmpty) {
           return const SizedBox.shrink();
         }
+        if (prominent && others.isEmpty) return const _AddRoleCard();
         return FFActionTile(
           key: const Key('persona-switch'),
           icon: Icons.swap_horiz,
@@ -213,6 +218,87 @@ class PersonaSwitcherTile extends StatelessWidget {
           onTap: () => showPersonaSwitcher(context),
         );
       },
+    );
+  }
+}
+
+class _AddRoleCard extends StatelessWidget {
+  const _AddRoleCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: FFTokens.spacingSm),
+      child: Material(
+        color: dark ? FFTokens.darkRaised : FFTokens.ink,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(FFTokens.radiusXl),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          key: const Key('persona-switch'),
+          onTap: () => showPersonaSwitcher(context),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 18, 16, 18),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        context.tr('persona.addPrompt'),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        context.tr('persona.addPromptBody'),
+                        style: const TextStyle(
+                          color: Color(0xFFB9C6BF),
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 12),
+                ExcludeSemantics(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 10,
+                    ),
+                    decoration: const ShapeDecoration(
+                      color: FFTokens.volt,
+                      shape: StadiumBorder(),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.add, size: 16, color: FFTokens.ink),
+                        const SizedBox(width: 4),
+                        Text(
+                          context.tr('persona.addTitle'),
+                          style: const TextStyle(
+                            color: FFTokens.ink,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

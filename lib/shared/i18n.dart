@@ -321,6 +321,8 @@ class FFLocale extends ChangeNotifier {
       'persona.switch': 'Switch role',
       'persona.roles': 'Roles',
       'persona.addTitle': 'Add a role',
+      'persona.addPrompt': 'Own a gym, train or sell?',
+      'persona.addPromptBody': 'Run it from this same account.',
       'persona.addMember': 'Use FitFlex as a member',
       'persona.addTrainer': 'Become a trainer',
       'persona.addOwner': 'Register a gym',
@@ -8545,6 +8547,10 @@ class FFLocale extends ChangeNotifier {
       'persona.switch': 'Badilisha nafasi',
       'persona.roles': 'Nafasi',
       'persona.addTitle': 'Ongeza nafasi',
+      // TODO(sw-review)
+      'persona.addPrompt': 'Una gym, unafundisha au unauza?',
+      // TODO(sw-review)
+      'persona.addPromptBody': 'Endesha kwa akaunti hii hii.',
       'persona.addMember': 'Tumia FitFlex kama mwanachama',
       'persona.addTrainer': 'Kuwa trainer',
       'persona.addOwner': 'Sajili gym',
