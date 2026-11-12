@@ -1,0 +1,17 @@
+[REST] error: TimeoutException: slow
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+08:06 +4150 ~8 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_bands_test.dart: under 760 tall: today's bands (Shop keeps its clear photo) 360x640 upgrade-plan [E]
+08:56 +4638 ~9 -1: Some tests failed.
+08:56 +4634 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/delete_account_test.dart: who sees it gym_staff does not
+08:56 +4635 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/delete_account_test.dart: who sees it vendor_staff does not
+08:56 +4636 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/delete_account_test.dart: who sees it every account area carries it
+08:56 +4637 ~9 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/delete_account_test.dart: every string has English and Swahili
+08:56 +4638 ~9 -1: Some tests failed.
+
+Failing tests:
+  /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_bands_test.dart: under 760 tall: today's bands (Shop keeps its clear photo) 360x640 upgrade-plan
