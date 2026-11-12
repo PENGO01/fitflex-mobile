@@ -1749,9 +1749,38 @@ class _VendorHomePageState extends State<VendorHomePage> {
     ),
   );
 
+  /// DS v1.0 seller "Today" card: open orders to pack, on lime, with a
+  /// button to the Orders tab.
+  Widget _todayCard() {
+    final open = _orders
+        .where((o) => !shopOrderIsFinal(o['status']?.toString() ?? 'pending'))
+        .length;
+    return FFTodayCard(
+      key: const Key('vendor-today'),
+      chipIcon: Icons.inventory_2_outlined,
+      chipLabel: formatDayMonth(
+        DateTime.now(),
+        locale: FFLocaleScope.of(context).locale.languageCode,
+      ),
+      value: '$open',
+      valueLabel: context.tr('vendor.today.toPack'),
+      action: FFButton(
+        key: const Key('vendor-today-orders'),
+        fullWidth: true,
+        icon: Icons.receipt_long_outlined,
+        label: context.tr('vendor.orders'),
+        onPressed: () {
+          setState(() => _tab = 1);
+          _syncAddress();
+        },
+      ),
+    );
+  }
+
   Widget _productsTab() {
     final lead = [
       if (_heroOn(0)) ..._productsLead(),
+      if (!_heroOn(0) && _sections.contains(1)) _todayCard(),
       if (_merch) _merchEntry(),
       if (_barcodesOn) _scanEntry(),
     ];
