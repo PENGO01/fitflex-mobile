@@ -287,6 +287,7 @@ class _MemberProfileTabState extends State<MemberProfileTab> {
     return ListView(
       padding: const EdgeInsets.all(FFTokens.spacingLg),
       children: [
+        FFPageHeader(title: context.tr('member.profile')),
         // Profile card (DS v1.0): avatar, name, member ID, plan chip.
         FFCard(
           key: const Key('profile-card'),
@@ -355,24 +356,45 @@ class _MemberProfileTabState extends State<MemberProfileTab> {
     const PersonaSwitcherTile(prominent: true),
     // Settings
     FFSectionTitle(context.tr('member.accountSettings')),
-    // Language and theme (moved here from the app bar, DS v1.0).
-    FFCard(
-      key: const Key('profile-prefs'),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              context.tr('member.prefs'),
-              style: Theme.of(context).textTheme.titleSmall,
-            ),
-          ),
-          const AppPrefsButtons(),
-        ],
-      ),
-    ),
     FFTileGroup(
       key: const Key('profile-group-account'),
       children: [
+        // Language and theme (moved here from the app bar, DS v1.0): the
+        // first row of the group, its toggles as the value.
+        Padding(
+          key: const Key('profile-prefs'),
+          padding: const EdgeInsets.fromLTRB(
+            FFTokens.spacingMd,
+            6,
+            FFTokens.spacingSm,
+            6,
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: FFTokens.iconBox,
+                height: FFTokens.iconBox,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.translate,
+                  size: FFTokens.iconMd,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+              const SizedBox(width: FFTokens.spacingSm),
+              Expanded(
+                child: Text(
+                  context.tr('member.prefs'),
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+              ),
+              const AppPrefsButtons(),
+            ],
+          ),
+        ),
         FFActionTile(
           key: const Key('profile-edit'),
           icon: Icons.edit,

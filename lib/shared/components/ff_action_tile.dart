@@ -32,14 +32,11 @@ class FFActionTile extends StatelessWidget {
     final Widget tile;
     if (grouped != null) {
       // Inside an [FFTileGroup]: a flat row, hairline above all but the first.
-      tile = DecoratedBox(
-        decoration: BoxDecoration(
-          border: grouped.first
-              ? null
-              : Border(
-                  top: BorderSide(color: theme.colorScheme.outlineVariant),
-                ),
-        ),
+      // Hairline from the text, not the card edge (inset 64).
+      tile = Container(
+        foregroundDecoration: grouped.first
+            ? null
+            : _InsetTopLine(theme.colorScheme.outlineVariant),
         child: InkWell(
           onTap: onTap,
           child: ConstrainedBox(
@@ -143,4 +140,37 @@ class _FFTileSlot extends InheritedWidget {
 
   @override
   bool updateShouldNotify(_FFTileSlot old) => old.first != first;
+}
+
+/// A 1px line along the top, starting 64px in (past the icon).
+class _InsetTopLine extends Decoration {
+  const _InsetTopLine(this.color);
+
+  final Color color;
+
+  @override
+  BoxPainter createBoxPainter([VoidCallback? onChanged]) => _InsetTopPainter(color);
+}
+
+class _InsetTopPainter extends BoxPainter {
+  _InsetTopPainter(this.color);
+
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Offset offset, ImageConfiguration configuration) {
+    final size = configuration.size;
+    if (size == null) return;
+    final rtl = configuration.textDirection == TextDirection.rtl;
+    const inset = 64.0;
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 1;
+    final y = offset.dy + 0.5;
+    canvas.drawLine(
+      Offset(offset.dx + (rtl ? 0 : inset), y),
+      Offset(offset.dx + size.width - (rtl ? inset : 0), y),
+      paint,
+    );
+  }
 }

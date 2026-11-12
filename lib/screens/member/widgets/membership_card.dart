@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../shared/components/components.dart';
+import '../../../shared/formatters.dart';
 import '../../../shared/i18n.dart';
 import '../../../shared/models.dart';
 
@@ -12,15 +13,6 @@ class MembershipCard extends StatelessWidget {
   const MembershipCard({super.key, required this.subscription});
 
   final Subscription? subscription;
-
-  String _formatDate(String? iso) {
-    if (iso == null) return '-';
-    final d = DateTime.tryParse(iso);
-    if (d == null) return '-';
-    final local = d.toLocal();
-    return '${local.day.toString().padLeft(2, '0')}/'
-        '${local.month.toString().padLeft(2, '0')}/${local.year}';
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +41,7 @@ class MembershipCard extends StatelessWidget {
     final expired = sub.isExpired;
     final planLabel = sub.isDirect
         ? context.tr('member.plan_${sub.plan ?? 'monthly'}')
-        : (sub.tier ?? '-').toUpperCase();
+        : _titleCase(sub.tier ?? '-');
     final statusTone = expired
         ? FFBadgeTone.danger
         : sub.isActive
@@ -83,12 +75,12 @@ class MembershipCard extends StatelessWidget {
           ),
           _MembershipRow(
             label: context.tr('member.membershipStart'),
-            value: _formatDate(sub.startedAt),
+            value: context.localDate(sub.startedAt),
           ),
           _MembershipRow(
             key: const Key('membership-expiry'),
             label: context.tr('member.membershipExpiry'),
-            value: _formatDate(sub.expiresAt),
+            value: context.localDate(sub.expiresAt),
           ),
           if (daysLeft != null && !expired)
             _MembershipRow(
@@ -168,3 +160,7 @@ class _MembershipRow extends StatelessWidget {
     );
   }
 }
+
+/// "premium" → "Premium" (DS v1.0: sentence case, no capitals).
+String _titleCase(String s) =>
+    s.isEmpty ? s : s[0].toUpperCase() + s.substring(1).toLowerCase();
