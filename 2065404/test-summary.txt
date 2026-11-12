@@ -1,0 +1,29 @@
+00:31 +239 -1: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_test.dart: Home states under the flag active: compact hero, Find a gym, card shown, no numbers [E]
+00:31 +246 -2: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_test.dart: Home states under the flag offline with cached data keeps the cached state [E]
+01:37 +851 -3: /home/runner/work/fitflex-mobile/fitflex-mobile/test/home_feed_test.dart: Home renders the picks in order without the old lists [E]
+01:45 +918 -4: /home/runner/work/fitflex-mobile/fitflex-mobile/test/partner_media/partner_media_qa_test.dart: settings page Swahili title keeps off the bar edges at 1.3x (QA L3) [E]
+02:37 +1375 -5: /home/runner/work/fitflex-mobile/fitflex-mobile/test/shop_home_test.dart: language and size old list Featured strip grows with text (image not squeezed) [E]
+[REST] error: TimeoutException: slow
+02:50 +1500 -6: /home/runner/work/fitflex-mobile/fitflex-mobile/test/phase_a_design_qa_test.dart: H3 gym grid card at 360px an unverified gym keeps its name (en) [E]
+02:50 +1500 -7: /home/runner/work/fitflex-mobile/fitflex-mobile/test/phase_a_design_qa_test.dart: H3 gym grid card at 360px an unverified gym keeps its name (sw) [E]
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+06:45 +3090 ~8 -8: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_app_bar_test.dart: AC-B10 (dark): the bar paints solid surface once scrolled [E]
+06:45 +3090 ~8 -9: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_app_bar_test.dart: AC-B10 (light): the bar paints solid surface once scrolled [E]
+06:45 +3091 ~8 -10: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_app_bar_test.dart: AC-B10: reduced motion turns the bar solid instantly [E]
+09:02 +4112 ~8 -11: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_bands_test.dart: 390x844: clear photo above the text, first control above 55% trainer-home sw dark [E]
+09:03 +4116 ~8 -12: /home/runner/work/fitflex-mobile/fitflex-mobile/test/photo_hero_bands_test.dart: 390x844: clear photo above the text, first control above 55% trainer-home sw light [E]
+09:51 +4549 ~9 -13: /home/runner/work/fitflex-mobile/fitflex-mobile/test/pass_state_test.dart: status badge when the pass is ending soon (owner 2026-10-19) an active pass still reads Active [E]
+10:01 +4626 ~9 -13: Some tests failed.
+10:01 +4626 ~9 -13: Some tests failed.
+
+Failing tests:
+  /home/runner/work/fitflex-mobile/fitflex-mobile/test/home_feed_test.dart: Home renders the picks in order without the old lists
+  /home/runner/work/fitflex-mobile/fitflex-mobile/test/partner_media/partner_media_qa_test.dart: settings page Swahili title keeps off the bar edges at 1.3x (QA L3)
+  /home/runner/work/fitflex-mobile/fitflex-mobile/test/pass_state_test.dart: status badge when the pass is ending soon (owner 2026-10-19) an active pass still reads Active
+  /home/runner/work/fitflex-mobile/fitflex-mobile/test/phase_a_design_qa_test.dart: H3 gym grid card at 360px an unverified gym keeps its name (en)
+  ... and 9 more
