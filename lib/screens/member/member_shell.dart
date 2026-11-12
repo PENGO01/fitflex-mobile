@@ -1013,8 +1013,8 @@ class _OfflineBanner extends StatelessWidget {
 
 
 /// The member bar's centre slot: a raised round check-in button (forest with
-/// a lime QR icon in light, lime with a forest icon in dark). 48dp keeps the
-/// slot inside the 72dp bar; the lift is visual only.
+/// a lime QR icon in light, lime with a forest icon in dark). It takes a
+/// normal icon's space; the lift above the bar is visual only.
 class _CheckInAction extends StatelessWidget {
   const _CheckInAction();
 
@@ -1023,21 +1023,30 @@ class _CheckInAction extends StatelessWidget {
     final dark = Theme.of(context).brightness == Brightness.dark;
     final ring = Theme.of(context).navigationBarTheme.backgroundColor ??
         Theme.of(context).colorScheme.surface;
-    return Transform.translate(
-      offset: const Offset(0, -12),
-      child: Container(
-        width: 52,
-        height: 52,
-        decoration: BoxDecoration(
-          color: dark ? FFTokens.volt : FFTokens.ink,
-          shape: BoxShape.circle,
-          border: Border.all(color: ring, width: 4),
-        ),
-        alignment: Alignment.center,
-        child: Icon(
-          Icons.qr_code_2,
-          size: 24,
-          color: dark ? FFTokens.onVolt : FFTokens.volt,
+    // Laid out as a normal 24dp icon so its label lines up with the other
+    // tabs; the 52dp circle overflows upwards out of the bar.
+    return SizedBox(
+      width: 52,
+      height: 24,
+      child: OverflowBox(
+        maxHeight: 52,
+        child: Transform.translate(
+          offset: const Offset(0, -14),
+          child: Container(
+            width: 52,
+            height: 52,
+            decoration: BoxDecoration(
+              color: dark ? FFTokens.volt : FFTokens.ink,
+              shape: BoxShape.circle,
+              border: Border.all(color: ring, width: 4),
+            ),
+            alignment: Alignment.center,
+            child: Icon(
+              Icons.qr_code_2,
+              size: 24,
+              color: dark ? FFTokens.onVolt : FFTokens.volt,
+            ),
+          ),
         ),
       ),
     );
