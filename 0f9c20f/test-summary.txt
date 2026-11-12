@@ -1,0 +1,4 @@
+09:52 +4639 ~9: All tests passed!
+09:52 +4637 ~9: /home/runner/work/fitflex-mobile/fitflex-mobile/test/latest_checkins_card_test.dart: checkinVisitorLabel falls back through the identifiers
+09:52 +4638 ~9: /home/runner/work/fitflex-mobile/fitflex-mobile/test/latest_checkins_card_test.dart: the full list shows the name, then public ID, plan and time
+09:52 +4639 ~9: All tests passed!
