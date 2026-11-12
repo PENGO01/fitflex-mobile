@@ -373,7 +373,13 @@ class FFTokens {
 
   /// Hero eyebrow: uppercase mono label, tracking 0.18em.
   static TextStyle heroEyebrow({Color color = heroText}) =>
-      monoLabel(color, size: 11).copyWith(letterSpacing: 11 * 0.18);
+      TextStyle(
+        fontFamily: fontMono,
+        fontSize: 11,
+        fontWeight: FontWeight.w500,
+        letterSpacing: 11 * 0.18,
+        color: color,
+      );
 
   // ── Canon role colours (photo hero role tiles, F-6) ──
   static const Color roleMemberLight = Color(0xFF1F7A3A);
