@@ -80,6 +80,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Gradle 8.14 cannot read Java 25, which ubuntu-latest (now 26.04) ships
+      # by default. The app compiles for Java 17, so pin it, as the Play Store
+      # release workflow already does.
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
       # pubspec.yaml requires Dart ^3.10.8, i.e. Flutter 3.38 or newer.
       - name: Setup Flutter
         uses: subosito/flutter-action@v2

@@ -142,15 +142,23 @@ class _SignUpScreenState extends State<SignUpScreen>
     context.go(routeForSignedInUser(auth));
   }
 
-  void _attemptContinue() {
+  Future<void> _attemptContinue() async {
     if (!_isValidInput) {
       setState(() => _inputError = context.tr('auth.invalidEmailOrPhone'));
       return;
     }
     setState(() => _inputError = null);
+    // The sign-in options are asked for at launch; if that failed (a weak
+    // connection), ask again now rather than register on the wrong path.
+    final auth = AppScope.of(context).auth;
+    if (!auth.signInOptionsKnown) {
+      setState(() => _busy = true);
+      await auth.loadSignInOptions();
+      if (!mounted) return;
+      setState(() => _busy = false);
+    }
     // When FitFlex keeps the PIN: prove the number or email with a code, then
     // choose the PIN. Otherwise the Firebase email + PIN path, as before.
-    final auth = AppScope.of(context).auth;
     final contact = _emailCtrl.text.trim();
     if (auth.pinLoginEnabled &&
         !contact.contains('@') &&

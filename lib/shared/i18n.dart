@@ -2391,6 +2391,9 @@ class FFLocale extends ChangeNotifier {
       'friendInvite.sentBy.both': 'Sent by FitFlex on WhatsApp and SMS',
       'friendInvite.sentBy.smsInstead':
           'Not on WhatsApp, so FitFlex sent an SMS',
+      'friendInvite.smsDelivery.delivered': 'SMS delivered',
+      'friendInvite.smsDelivery.undelivered':
+          'SMS could not be delivered, so please send the invitation yourself',
       'friendInvite.notSentByFitflex':
           'FitFlex could not send this invitation, so please send it yourself.',
       'friendInvite.reason.smsNotSetUp': 'SMS is not set up yet.',
@@ -10785,6 +10788,9 @@ class FFLocale extends ChangeNotifier {
       'friendInvite.sentBy.both': 'Imetumwa na FitFlex kwa WhatsApp na SMS',
       'friendInvite.sentBy.smsInstead':
           'Hayupo WhatsApp, kwa hiyo FitFlex ilituma SMS',
+      'friendInvite.smsDelivery.delivered': 'SMS imefika',
+      'friendInvite.smsDelivery.undelivered':
+          'SMS haikufika, kwa hiyo tafadhali utume mwaliko mwenyewe',
       'friendInvite.notSentByFitflex':
           'FitFlex haikuweza kutuma mwaliko huu, tafadhali utume mwenyewe.',
       'friendInvite.reason.smsNotSetUp': 'SMS bado haijawekwa.',
