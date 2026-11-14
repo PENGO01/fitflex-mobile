@@ -48,6 +48,7 @@ class AuthState extends ChangeNotifier {
   bool _emailCodesAvailable = true;
   bool _smsCodesAvailable = true;
   bool _signInOptionsLoaded = false;
+  Future<void>? _signInOptionsLoading;
   // Identity V2 identifiers: what this Person has proved is theirs.
   bool _identifiersEnabled = false;
   List<Map<String, dynamic>> _verifiedIdentifiers = const [];
@@ -149,35 +150,58 @@ class AuthState extends ChangeNotifier {
   /// accounts stay on the Firebase path.
   bool get emailCodesAvailable => _emailCodesAvailable;
 
+  /// True once the backend (or a probe of it) has answered, not only failed.
+  bool get signInOptionsKnown => _signInOptionsLoaded;
+
   /// True when FitFlex can send codes to a mobile number.
   bool get smsCodesAvailable => _smsCodesAvailable;
 
   /// Ask the backend which sign-in options are on. Safe to call repeatedly;
-  /// it asks once unless [force] is set. Offline leaves the options off.
-  Future<void> loadSignInOptions({bool force = false}) async {
-    if (_signInOptionsLoaded && !force) return;
+  /// once it has an answer it asks no more unless [force] is set. A request
+  /// that failed on the network (a weak connection at launch, say) is not an
+  /// answer: the options stay off for now and the next call asks again, so
+  /// one bad moment does not turn registration by code off until the app is
+  /// restarted.
+  Future<void> loadSignInOptions({bool force = false}) {
+    if (_signInOptionsLoaded && !force) return Future.value();
+    return _signInOptionsLoading ??= _askSignInOptions().whenComplete(
+      () => _signInOptionsLoading = null,
+    );
+  }
+
+  Future<void> _askSignInOptions() async {
     Map<String, dynamic>? options;
+    var answered = true;
     try {
       options = await api.signInOptions();
-    } catch (_) {
+    } catch (e) {
       options = null; // older server (404) or offline: probe the routes
+      answered = e is ApiException;
     }
+    var pinLogin = false, pinReset = false, emailCodes = true, smsCodes = true;
     if (options != null && options['pinLogin'] is bool) {
-      _pinLoginEnabled = options['pinLogin'] == true;
-      _pinResetEnabled = options['pinReset'] == true;
-      _emailCodesAvailable = options['emailCodes'] != false;
-      _smsCodesAvailable = options['smsCodes'] != false;
+      pinLogin = options['pinLogin'] == true;
+      pinReset = options['pinReset'] == true;
+      emailCodes = options['emailCodes'] != false;
+      smsCodes = options['smsCodes'] != false;
     } else {
       final results = await Future.wait([
         api.pinLoginAvailable(),
         api.pinResetAvailable(),
       ]);
-      _pinLoginEnabled = results[0];
-      _pinResetEnabled = results[1];
-      _emailCodesAvailable = true;
-      _smsCodesAvailable = true;
+      pinLogin = results[0];
+      pinReset = results[1];
+      // A probe that found the route on is an answer; one that found it off
+      // may only be the network, unless the server itself said so.
+      answered = answered || pinLogin;
     }
-    _signInOptionsLoaded = true;
+    // Do not let a failed request undo what an earlier one found.
+    if (!answered && _signInOptionsLoaded) return;
+    _pinLoginEnabled = pinLogin;
+    _pinResetEnabled = pinReset;
+    _emailCodesAvailable = emailCodes;
+    _smsCodesAvailable = smsCodes;
+    _signInOptionsLoaded = answered;
     notifyListeners();
   }
 
