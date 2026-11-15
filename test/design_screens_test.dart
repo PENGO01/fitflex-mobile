@@ -16,6 +16,7 @@ import 'package:fitflexmobile/main.dart';
 import 'package:fitflexmobile/shared/api_client.dart';
 import 'package:fitflexmobile/shared/auth_state.dart';
 import 'package:fitflexmobile/shared/i18n.dart';
+import 'package:fitflexmobile/shared/shop_home.dart';
 import 'package:fitflexmobile/shared/theme_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -99,6 +100,8 @@ Future<void> _shot(WidgetTester tester, String name) async {
 
 void main() {
   setUpAll(_loadFonts);
+  // Shop home v2 is going live (15 Nov): review it, not the old catalogue.
+  debugShopHomeV2Override = true;
 
   for (final role in _roles) {
     for (final mode in ['light', 'dark']) {

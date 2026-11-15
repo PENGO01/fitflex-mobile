@@ -17,6 +17,7 @@ import 'package:fitflexmobile/main.dart';
 import 'package:fitflexmobile/shared/api_client.dart';
 import 'package:fitflexmobile/shared/auth_state.dart';
 import 'package:fitflexmobile/shared/i18n.dart';
+import 'package:fitflexmobile/shared/shop_home.dart';
 import 'package:fitflexmobile/shared/theme_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -99,7 +100,101 @@ Future<void> _shot(WidgetTester tester, String name) async {
 }
 
 
+/// Member states that the recorded fixtures don't cover: built from the
+/// member's own fixtures with `/me` changed (and Shop home v2 data).
+void _addVariants() {
+  final base = Map<String, dynamic>.from((_fixtures['member'] as Map?) ?? {});
+  if (base.isEmpty) return;
+  Map<String, dynamic> me(void Function(Map<String, dynamic>) edit) {
+    final m = jsonDecode(jsonEncode(base['GET /me'])) as Map<String, dynamic>;
+    edit(m);
+    return {...base, 'GET /me': m};
+  }
+
+  _fixtures['member-nopass'] = me((m) {
+    m['subscription'] = null;
+    m['pendingPayment'] = null;
+  });
+  _fixtures['member-pending'] = me((m) {
+    m['subscription'] = null;
+    m['pendingPayment'] = {
+      'id': 'pay_1',
+      'memberId': 'usr_dev_member',
+      'subscriptionId': '',
+      'tier': 'pro',
+      'productType': 'FITFLEX_PASS',
+      'amountTzs': 60000,
+      'status': 'pending',
+      'provider': 'mpesa',
+      'createdAt': '2026-11-15T08:00:00Z',
+    };
+  });
+  _fixtures['member-expired'] = me((m) {
+    final sub = Map<String, dynamic>.from(m['subscription'] as Map);
+    sub['status'] = 'expired';
+    sub['expiresAt'] = '2026-11-10T00:00:00Z';
+    sub['renewsAt'] = '2026-11-10T00:00:00Z';
+    m['subscription'] = sub;
+  });
+  final products = <String, dynamic>{
+    for (final p in [
+      ['p1', 'Whey Protein 2kg', 'supplements_nutrition', 85000, null, 12],
+      ['p2', 'Yoga Mat', 'equipment', 30000, 24000, 8],
+      ['p3', 'Kettlebell 12kg', 'equipment', 45000, null, 0],
+      ['p4', 'Running Shoes', 'sportswear_footwear', 120000, null, 5],
+    ])
+      p[0] as String: {
+        'id': p[0],
+        'vendorId': 'v1',
+        'name': p[1],
+        'category': p[2],
+        'priceTzs': p[3],
+        'discountPriceTzs': p[4],
+        'stock': p[5],
+        'rating': 4.5,
+        'reviewCount': 12,
+        'soldCount': 40,
+        'deliveryAvailable': true,
+      },
+  };
+  _fixtures['member-shop'] = {
+    ...base,
+    'GET /shop/home': {
+      'serverNow': '2026-11-15T08:00:00Z',
+      'currency': 'TZS',
+      'mode': 'member',
+      'personalised': false,
+      'signalsUsed': <String>[],
+      'categories': [
+        {'key': 'sportswear_footwear', 'en': 'Sportswear & footwear', 'sw': 'Mavazi'},
+        {'key': 'supplements_nutrition', 'en': 'Supplements & nutrition', 'sw': 'Virutubisho'},
+        {'key': 'equipment', 'en': 'Gym & fitness equipment', 'sw': 'Vifaa'},
+        {'key': 'accessories_gear', 'en': 'Accessories & gear', 'sw': 'Zana'},
+      ],
+      'sections': [
+        {
+          'key': 'best_sellers',
+          'title': {'en': 'Best sellers', 'sw': 'Zinazouzwa zaidi'},
+          'viewAll': {'query': {'sort': 'popularity'}},
+          'productIds': ['p1', 'p3', 'p4'],
+        },
+        {
+          'key': 'deals',
+          'title': {'en': 'Deals', 'sw': 'Ofa'},
+          'viewAll': {'query': {'promotions': 'true'}},
+          'productIds': ['p2'],
+        },
+      ],
+      'products': products,
+    },
+  };
+}
+
 const _routes = <String, List<String>>{
+  'member-nopass': ['/member', '/member/qr', '/member/passes'],
+  'member-pending': ['/member', '/member/qr', '/member/payment'],
+  'member-expired': ['/member', '/member/qr', '/member/profile'],
+  'member-shop': ['/member/shop', '/member/profile'],
   'guest': [
     '/language',
     '/role',
@@ -158,6 +253,8 @@ const _routes = <String, List<String>>{
 
 void main() {
   setUpAll(_loadFonts);
+  _addVariants();
+  debugShopHomeV2Override = true;
 
   for (final entry in _routes.entries) {
     final role = entry.key;
@@ -170,7 +267,7 @@ void main() {
         final me = ((_fixtures[role] as Map?)?['GET /me'] as Map?)?['user'];
         SharedPreferences.setMockInitialValues({
           if (!guest) 'token': role,
-          if (!guest) 'role': role,
+          if (!guest) 'role': role.startsWith('member') ? 'member' : role,
           if (!guest)
             'user': jsonEncode(me ?? {'id': 'u_$role', 'userType': role}),
           'locale': 'en',
