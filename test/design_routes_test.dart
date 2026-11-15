@@ -27,6 +27,8 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'vendor/reports_s6_test.dart' show ownerSummary;
+
 const _shots = bool.fromEnvironment('DESIGN_SHOTS');
 
 final Map<String, dynamic> _fixtures = () {
@@ -136,6 +138,19 @@ void _addVariants() {
     sub['renewsAt'] = '2026-11-10T00:00:00Z';
     m['subscription'] = sub;
   });
+  final vendor = Map<String, dynamic>.from((_fixtures['vendor'] as Map?) ?? {});
+  if (vendor.isNotEmpty) {
+    _fixtures['vendor-reports'] = {
+      ...vendor,
+      'GET /vendor/tools/options': {
+        'reports': true,
+        'canSeeCost': true,
+        'canSeeOrderMoney': true,
+      },
+      'GET /vendor/reports/summary': ownerSummary(),
+      'GET /vendor/sales': {'sales': <Object>[], 'nextCursor': null},
+    };
+  }
   final products = <String, dynamic>{
     for (final p in [
       ['p1', 'Whey Protein 2kg', 'supplements_nutrition', 85000, null, 12],
@@ -190,7 +205,33 @@ void _addVariants() {
   };
 }
 
+/// Pages reached by a tap (pushed, not routed): [home, nav index, key].
+const _taps = <String, List<(String, int, String)>>{
+  'trainer': [
+    ('/trainer/home', 0, 'trainer-tile-sessions'),
+    ('/trainer/home', 0, 'trainer-tile-earnings'),
+    ('/trainer/home', 0, 'trainer-tile-payouts'),
+    ('/trainer/home', 0, 'trainer-engagement-inbox'),
+    ('/trainer/home', 0, 'trainer-tile-schedule'),
+    ('/trainer/home', 4, 'trainer-tile-professional'),
+    ('/trainer/home', 4, 'trainer-reviews'),
+    ('/trainer/home', 4, 'trainer-verification'),
+  ],
+  'vendor': [
+    ('/vendor/home', 0, 'vendor-add-product'),
+    ('/vendor/home', 4, 'vendor-edit-profile'),
+    ('/vendor/home', 4, 'vendor-payouts'),
+    ('/vendor/home', 4, 'vendor-tax-entry'),
+    ('/vendor/home', 4, 'vendor-message-settings'),
+    ('/vendor/home', 4, 'vendor-add-staff'),
+  ],
+  'gym_operator': [
+    ('/owner/home', 0, 'owner-checkin-primary'),
+  ],
+};
+
 const _routes = <String, List<String>>{
+  'vendor-reports': ['/vendor/home?open=reports', '/vendor/home?open=orders'],
   'member-nopass': ['/member', '/member/qr', '/member/passes'],
   'member-pending': ['/member', '/member/qr', '/member/payment'],
   'member-expired': ['/member', '/member/qr', '/member/profile'],
@@ -237,6 +278,13 @@ const _routes = <String, List<String>>{
   ],
   'trainer': ['/trainer/brand-media', '/inbox', '/verification'],
   'gym_operator': [
+    '/owner/gyms/gym_dev_owner/checkins',
+    '/owner/members/usr_dev_member',
+    '/owner/members/usr_dev_member/checkins',
+    '/owner/members/usr_dev_member/payments',
+    '/owner/members/usr_dev_member/messages',
+    '/owner/communications/new',
+    '/owner/communications/templates/new',
     '/owner/gyms',
     '/owner/members',
     '/owner/trainers',
@@ -267,7 +315,7 @@ void main() {
         final me = ((_fixtures[role] as Map?)?['GET /me'] as Map?)?['user'];
         SharedPreferences.setMockInitialValues({
           if (!guest) 'token': role,
-          if (!guest) 'role': role.startsWith('member') ? 'member' : role,
+          if (!guest) 'role': role.split('-').first,
           if (!guest)
             'user': jsonEncode(me ?? {'id': 'u_$role', 'userType': role}),
           'locale': 'en',
@@ -300,6 +348,44 @@ void main() {
           } catch (e) {
             // A page that throws is a finding too; note it and go on.
             File('test/design_routes/$role--$name.error.txt')
+              ..createSync(recursive: true)
+              ..writeAsStringSync('$e');
+          }
+        }
+        for (final (home, tab, key) in _taps[role] ?? const <(String, int, String)>[]) {
+          final name = '$role--tap-$key';
+          try {
+            final nav0 = tester.state<NavigatorState>(
+              find.byType(Navigator).first,
+            );
+            while (nav0.canPop()) {
+              nav0.pop();
+              await tester.pump();
+            }
+            GoRouter.of(tester.element(find.byType(Navigator).first)).go(home);
+            await _settle(tester, 6);
+            final dests = find.byType(NavigationDestination);
+            if (dests.evaluate().length > tab) {
+              await tester.tap(dests.at(tab));
+              await _settle(tester, 4);
+            }
+            final target = find.byKey(Key(key));
+            final list = find.byType(Scrollable);
+            if (target.evaluate().isEmpty && list.evaluate().isNotEmpty) {
+              await tester.scrollUntilVisible(
+                target,
+                300,
+                scrollable: list.first,
+                maxScrolls: 20,
+              );
+            }
+            await tester.ensureVisible(target.first);
+            await tester.pump();
+            await tester.tap(target.first, warnIfMissed: false);
+            await _settle(tester, 8);
+            await _shot(tester, 'design_routes/$name.png');
+          } catch (e) {
+            File('test/design_routes/$name.error.txt')
               ..createSync(recursive: true)
               ..writeAsStringSync('$e');
           }
