@@ -41,10 +41,12 @@ jobs:
       - name: Screens
         id: shots
         continue-on-error: true
-        timeout-minutes: 15
+        timeout-minutes: 25
         run: |
           flutter test test/design_screens_test.dart \
             --dart-define=DESIGN_SHOTS=true --update-goldens > shots.txt 2>&1
+          flutter test test/design_routes_test.dart \
+            --dart-define=DESIGN_SHOTS=true --update-goldens >> shots.txt 2>&1 || true
 
       - name: Save results to design/results
         if: ${{ !cancelled() }}
@@ -58,6 +60,7 @@ jobs:
           grep -E "\[E\]|Some tests failed|All tests passed|TimeoutException" test.txt | tail -n 300 > "$out/test-summary.txt" || true
           tail -n 8 test.txt >> "$out/test-summary.txt" || true
           cp -r test/design_shots "$out/shots" 2>/dev/null || true
+          cp -r test/design_routes "$out/routes" 2>/dev/null || true
           {
             echo "commit=$GITHUB_SHA"
             echo "analyze=${{ steps.analyze.outcome }}"
