@@ -26,6 +26,7 @@ import '../../shared/widgets/invitations.dart';
 import '../../shared/widgets/verify_identifier.dart';
 import '../pin_flows.dart';
 import '../../shared/auth_error_message.dart';
+import '../security/security_activity_tile.dart';
 
 class MemberProfileTab extends StatefulWidget {
   const MemberProfileTab({super.key});
@@ -449,6 +450,7 @@ class _MemberProfileTabState extends State<MemberProfileTab> {
           title: context.tr('member.changePin'),
           onTap: _openChangePinDialog,
         ),
+        const SecurityActivityTile(key: Key('profile-security-activity')),
         FFActionTile(
           icon: Icons.help_outline,
           title: context.tr('member.help'),

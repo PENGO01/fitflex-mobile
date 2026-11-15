@@ -350,6 +350,7 @@ class _TrainerRegistrationPageState extends State<TrainerRegistrationPage> {
           PartnerDobField(
             key: const Key('trainer-reg-dob'),
             controller: _dobCtrl,
+            role: PartnerRole.trainer,
             errorText: _dobError,
             onChanged: () => setState(() => _dobError = _dobProblem()),
           ),

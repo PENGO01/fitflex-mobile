@@ -84,6 +84,21 @@ String pinErrorMessage(BuildContext context, Object error) {
       : errorMessage(FFLocaleScope.of(context), error);
 }
 
+/// Message for a failed registration code request. The backend limits
+/// sign-up starts per network address, so `too_many_attempts` here is not
+/// about a wrong PIN; every other failure uses [pinErrorMessage].
+String registerStartErrorMessage(BuildContext context, Object error) {
+  if (error is ApiException && error.code == 'too_many_attempts') {
+    final body = error.body is Map ? error.body as Map : const {};
+    final seconds = (body['retryAfterSeconds'] as num?)?.toInt() ?? 900;
+    final minutes = (seconds / 60).ceil().clamp(1, 1 << 30);
+    return context
+        .tr('register.errTooManyNetwork')
+        .replaceAll('{n}', '$minutes');
+  }
+  return pinErrorMessage(context, error);
+}
+
 String _locale(BuildContext context) =>
     FFLocaleScope.of(context).locale.languageCode;
 
@@ -546,7 +561,7 @@ class _RegisterFlowScreenState extends State<RegisterFlowScreen> {
       setState(() {
         _alreadyRegistered =
             e is ApiException && e.code == 'already_registered';
-        _error = pinErrorMessage(context, e);
+        _error = registerStartErrorMessage(context, e);
         // A code sent a moment ago is still good.
         if (e is ApiException && e.code == 'code_resend_too_soon') {
           _sentTo ??= widget.contact;

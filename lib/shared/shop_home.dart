@@ -601,9 +601,16 @@ class ShopPreferences {
     this.historyDays,
     this.uses,
     this.mode,
+    this.profileSignals = false,
   });
   final bool personalised;
   final bool available;
+
+  /// Partner DOB slice 4 (functions#346): true only in trainer and owner
+  /// mode while the server uses a partner's own date of birth for gender
+  /// and age (SHOP_PERSONALISATION_PARTNERS and PARTNER_DOB_REQUIRED on).
+  /// Absent (any older server, or a flag off) = false.
+  final bool profileSignals;
 
   /// The shopping mode the answer is for (`member`, `trainer`, `owner`,
   /// `vendor_personal`); null from a backend that does not say.
@@ -636,6 +643,7 @@ class ShopPreferences {
       // Default on (O-6): only an explicit false is off.
       personalised: m['personalised'] != false,
       available: m['available'] == true,
+      profileSignals: m['profileSignals'] == true,
       mode: m['mode'] is String ? m['mode'] as String : null,
       historyDays: m['historyDays'] is num
           ? (m['historyDays'] as num).toInt()

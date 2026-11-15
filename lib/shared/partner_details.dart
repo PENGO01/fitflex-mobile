@@ -14,6 +14,10 @@ import 'api_error_message.dart';
 import 'date_of_birth.dart';
 import 'i18n.dart';
 
+/// Which partner role a date-of-birth screen or explanation is for: the
+/// wording differs (a Trainer's gender comes from the trainer profile).
+enum PartnerRole { trainer, owner }
+
 /// Trainers and gym owners must be this old (owner decision 2026-10-22).
 const int partnerMinAge = 18;
 

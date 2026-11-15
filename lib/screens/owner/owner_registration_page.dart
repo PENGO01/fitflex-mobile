@@ -50,15 +50,10 @@ class _OwnerRegistrationPageState extends State<OwnerRegistrationPage> {
   // Step 1 — Gym list
   final List<_GymDraft> _gyms = [_GymDraft()];
 
-  // Available trainers for selection
-  List<Map<String, dynamic>> _trainers = [];
-  bool _loadingTrainers = false;
-
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _loadTrainers();
       _loadDetails();
     });
   }
@@ -77,22 +72,6 @@ class _OwnerRegistrationPageState extends State<OwnerRegistrationPage> {
     if (!_askDob) return null;
     final key = partnerDobProblemKey(_dobCtrl.text);
     return key == null ? null : context.tr(key);
-  }
-
-  Future<void> _loadTrainers() async {
-    setState(() => _loadingTrainers = true);
-    try {
-      final api = AppScope.of(context).api;
-      final result = await api.listTrainers();
-      if (mounted) {
-        setState(() {
-          _trainers = result.cast<Map<String, dynamic>>();
-          _loadingTrainers = false;
-        });
-      }
-    } catch (_) {
-      if (mounted) setState(() => _loadingTrainers = false);
-    }
   }
 
   @override
@@ -413,6 +392,7 @@ class _OwnerRegistrationPageState extends State<OwnerRegistrationPage> {
           PartnerDobField(
             key: const Key('owner-reg-dob'),
             controller: _dobCtrl,
+            role: PartnerRole.owner,
             errorText: _dobError,
             onChanged: () => setState(() => _dobError = _dobProblem()),
           ),
@@ -455,8 +435,6 @@ class _OwnerRegistrationPageState extends State<OwnerRegistrationPage> {
             canRemove: _gyms.length > 1,
             onRemove: () => _removeGym(i),
             onChanged: () => setState(() {}),
-            trainers: _trainers,
-            loadingTrainers: _loadingTrainers,
           );
         }),
         const SizedBox(height: 12),
@@ -480,8 +458,6 @@ class _GymCardWidget extends StatefulWidget {
   final bool canRemove;
   final VoidCallback onRemove;
   final VoidCallback onChanged;
-  final List<Map<String, dynamic>> trainers;
-  final bool loadingTrainers;
 
   const _GymCardWidget({
     required this.gym,
@@ -489,8 +465,6 @@ class _GymCardWidget extends StatefulWidget {
     required this.canRemove,
     required this.onRemove,
     required this.onChanged,
-    required this.trainers,
-    required this.loadingTrainers,
   });
 
   @override
@@ -602,57 +576,13 @@ class _GymCardWidgetState extends State<_GymCardWidget> {
             ),
             const SizedBox(height: FFTokens.spacingSm),
 
-            // Trainer selection
+            // Trainers join through their own join request, which the owner
+            // approves once the gym exists; a new gym has no one to pick yet.
             FFFieldLabel(context.tr('ownerReg.trainersLabel')),
             Text(
-              context.tr('ownerReg.trainersHint'),
+              context.tr('ownerReg.trainersJoinHint'),
+              key: const Key('owner-reg-trainers-join-hint'),
               style: Theme.of(context).textTheme.bodySmall,
-            ),
-            const SizedBox(height: FFTokens.spacingSm),
-            // Selected trainers chips
-            if (gym.trainerIds.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Wrap(
-                  spacing: 6,
-                  runSpacing: 6,
-                  children: gym.trainerIds.map((id) {
-                    final t = widget.trainers
-                        .cast<Map<String, dynamic>?>()
-                        .firstWhere(
-                          (tr) => tr?['id'] == id,
-                          orElse: () => null,
-                        );
-                    final name = t != null
-                        ? ((t['displayName'] as String?) ??
-                              (t['email'] as String?) ??
-                              id)
-                        : id;
-                    return Chip(
-                      label: Text(name, style: const TextStyle(fontSize: 12)),
-                      deleteIcon: const Icon(Icons.close, size: 16),
-                      onDeleted: () {
-                        setState(() => gym.trainerIds.remove(id));
-                        widget.onChanged();
-                      },
-                      backgroundColor: Theme.of(
-                        context,
-                      ).colorScheme.primary.withValues(alpha: 0.08),
-                      side: BorderSide(
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.primary.withValues(alpha: 0.3),
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ),
-            // Select trainer button — opens fullscreen search dialog
-            FFButton(
-              label: context.tr('ownerReg.searchTrainers'),
-              onPressed: () => _openTrainerSearchDialog(context, gym),
-              variant: FFButtonVariant.secondary,
-              icon: Icons.person_add_alt_1,
             ),
             const SizedBox(height: 16),
 
@@ -740,156 +670,6 @@ class _GymCardWidgetState extends State<_GymCardWidget> {
       ),
     );
   }
-
-  Future<void> _openTrainerSearchDialog(
-    BuildContext context,
-    _GymDraft gym,
-  ) async {
-    final result = await Navigator.of(context).push<_TrainerDialogResult>(
-      MaterialPageRoute(
-        fullscreenDialog: true,
-        builder: (_) => _TrainerSearchDialog(
-          trainers: widget.trainers,
-          selectedIds: gym.trainerIds,
-        ),
-      ),
-    );
-    if (result != null && mounted) {
-      setState(() {
-        gym.trainerIds
-          ..clear()
-          ..addAll(result.selectedIds);
-      });
-      widget.onChanged();
-    }
-  }
-}
-
-// ─── Result types for fullscreen dialogs ───
-
-class _TrainerDialogResult {
-  final List<String> selectedIds;
-  _TrainerDialogResult(this.selectedIds);
-}
-
-// ─── Fullscreen Trainer Search & Select Dialog ───
-
-class _TrainerSearchDialog extends StatefulWidget {
-  final List<Map<String, dynamic>> trainers;
-  final List<String> selectedIds;
-
-  const _TrainerSearchDialog({
-    required this.trainers,
-    required this.selectedIds,
-  });
-
-  @override
-  State<_TrainerSearchDialog> createState() => _TrainerSearchDialogState();
-}
-
-class _TrainerSearchDialogState extends State<_TrainerSearchDialog> {
-  final _searchCtrl = TextEditingController();
-  late List<String> _selected;
-
-  @override
-  void initState() {
-    super.initState();
-    _selected = List.from(widget.selectedIds);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final query = _searchCtrl.text.toLowerCase();
-    final filtered = widget.trainers.where((t) {
-      final name =
-          ((t['displayName'] as String?) ?? (t['email'] as String?) ?? '')
-              .toLowerCase();
-      return name.contains(query);
-    }).toList();
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(context.tr('ownerReg.trainersLabel')),
-        leading: IconButton(
-          tooltip: context.tr('common.close'),
-          icon: const Icon(Icons.close),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () =>
-                Navigator.of(context).pop(_TrainerDialogResult(_selected)),
-            child: Text(context.tr('ownerReg.done')),
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(FFTokens.spacingMd),
-            child: FFTextField(
-              controller: _searchCtrl,
-              hint: context.tr('ownerReg.searchTrainers'),
-              onChanged: (_) => setState(() {}),
-              autofocus: true,
-              prefixIcon: const Icon(Icons.search, size: 20),
-            ),
-          ),
-          Expanded(
-            child: filtered.isEmpty
-                ? Center(
-                    child: Text(
-                      context.tr('ownerReg.noTrainersFound'),
-                      style: TextStyle(
-                        color: Theme.of(context).textTheme.bodySmall?.color,
-                      ),
-                    ),
-                  )
-                : ListView.separated(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: FFTokens.spacingMd,
-                    ),
-                    itemCount: filtered.length,
-                    separatorBuilder: (context, index) =>
-                        const Divider(height: 1),
-                    itemBuilder: (context, i) {
-                      final t = filtered[i];
-                      final id = t['id'] as String;
-                      final name =
-                          (t['displayName'] as String?) ??
-                          (t['email'] as String?) ??
-                          id;
-                      final email = t['email'] as String? ?? '';
-                      final isSelected = _selected.contains(id);
-                      return ListTile(
-                        title: Text(name),
-                        subtitle: email.isNotEmpty ? Text(email) : null,
-                        trailing: isSelected
-                            ? Icon(
-                                Icons.check_circle,
-                                color: Theme.of(context).colorScheme.primary,
-                              )
-                            : Icon(
-                                Icons.circle_outlined,
-                                color: Theme.of(context).colorScheme.outline,
-                              ),
-                        onTap: () {
-                          setState(() {
-                            if (isSelected) {
-                              _selected.remove(id);
-                            } else {
-                              _selected.add(id);
-                            }
-                          });
-                        },
-                      );
-                    },
-                  ),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 // ─── Gym Draft Model ───
@@ -904,7 +684,6 @@ class _GymDraft {
   double? lat;
   double? lng;
   List<String> imagePaths = [];
-  List<String> trainerIds = [];
 
   Map<String, dynamic> toJson() => {
     'name': nameCtrl.text.trim(),
@@ -919,7 +698,6 @@ class _GymDraft {
     'accessMode': 'paid_visit',
     if (lat != null && lng != null) 'coordinates': {'lat': lat, 'lng': lng},
     // images are encoded by _submit() and set separately
-    if (trainerIds.isNotEmpty) 'trainerIds': trainerIds,
   };
 
   void dispose() {

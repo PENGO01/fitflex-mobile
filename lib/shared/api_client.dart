@@ -1498,6 +1498,32 @@ class ApiClient {
   Future<Map<String, dynamic>> clearUsername() =>
       _map('DELETE', '/me/username');
 
+  /// Check-ins made from a web browser with this account, newest first
+  /// (member and trainer). [before] is the opaque `next` cursor of the
+  /// previous page, passed back unchanged. 404 `not_found`: feature off.
+  Future<Map<String, dynamic>> securityActivity({
+    int limit = 20,
+    String? before,
+  }) => _map(
+    'GET',
+    '/me/security-activity?${Uri(queryParameters: {'limit': '$limit', if (before != null && before.isNotEmpty) 'before': before}).query}',
+  );
+
+  /// "This wasn't me" for one event of the security activity list
+  /// (fitflex-functions docs/security-incident-report-api.md). With
+  /// [secureAccount] the server ends every session and answers
+  /// `signedOut: true`: the caller must then end the session here too.
+  /// A repeat returns the same incident. 404: off or not this member's
+  /// event; 429: `report_limit_reached` with `retryAfterSeconds`.
+  Future<Map<String, dynamic>> reportSecurityActivity(
+    String eventId, {
+    bool secureAccount = true,
+  }) => _map(
+    'POST',
+    '/me/security-activity/${_e(eventId)}/report',
+    body: {'secureAccount': secureAccount},
+  );
+
   Future<Map<String, dynamic>> myGroups() => _map('GET', '/me/groups');
   Future<Map<String, dynamic>> createMyGroup(Map<String, dynamic> body) =>
       _map('POST', '/me/groups', body: body);

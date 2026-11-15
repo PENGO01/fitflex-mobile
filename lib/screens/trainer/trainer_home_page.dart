@@ -43,6 +43,7 @@ import '../../shared/widgets/persona_switcher.dart';
 import '../../shared/widgets/invitations.dart';
 import '../../shared/widgets/verify_identifier.dart';
 import '../pin_flows.dart';
+import '../security/security_activity_tile.dart';
 
 /// PHOTO_HERO_UI (owner 2026-10-22, bands "too dark"): the band grows for
 /// [FFTokens.heroBandClearPhoto] of clear photo above its text, but no taller
@@ -708,6 +709,7 @@ class _TrainerHomePageState extends State<TrainerHomePage> {
     const InvitationsTile(),
     const ContactDetailsTile(),
     const ChangePinTile(),
+    const SecurityActivityTile(key: Key('trainer-security-activity')),
     const PartnerDetailsTile(canEditGender: false),
     const PersonaSwitcherTile(),
     const SizedBox(height: 16),

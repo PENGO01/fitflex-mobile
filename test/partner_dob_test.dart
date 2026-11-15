@@ -305,7 +305,7 @@ void main() {
             k == 'error.reason.invalidGender' ||
             k == 'error.reason.rateLimitedSeconds',
       );
-      expect(mine.length, 17);
+      expect(mine.length, 18); // + partnerDob.whyLink (slice 5)
       for (final k in mine) {
         expect(sw, contains(k), reason: k);
         expect(FFLocale.textOf('sw', k), isNot(FFLocale.textOf('en', k)));
@@ -356,8 +356,8 @@ void main() {
       expect(find.byKey(const Key('trainer-reg-dob')), findsOneWidget);
       expect(
         find.text(
-          'Used to suggest shop products for your age group. Not shown on '
-          'your profile.',
+          'Used to check you are 18 or over and to suggest shop products '
+          'for your age group. Not shown on your profile.',
         ),
         findsOneWidget,
       );
@@ -702,7 +702,7 @@ void main() {
       );
       await _pump(tester, api, const PartnerDetailsTile(canEditGender: false));
       expect(find.text('Date of birth and gender'), findsOneWidget);
-      expect(find.text('Used only for shop suggestions'), findsOneWidget);
+      expect(find.text('Used for the 18+ check and shop suggestions'), findsOneWidget);
       await tester.tap(find.byKey(const Key('partner-details-tile')));
       await tester.pumpAndSettle();
       expect(find.byKey(const Key('partner-gender')), findsNothing);

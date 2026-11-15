@@ -266,6 +266,17 @@ String? memberRouteFor({
   };
 }
 
+/// The read-only list of check-ins made from a web browser.
+const securityActivityRoute = '/security-activity';
+
+/// The inbox notice type sent when a check-in is made from a web browser.
+const webCheckinRecordedType = 'web_checkin_recorded';
+
+/// Whether a notice (or its push data) leads to the security activity page.
+bool isSecurityActivityNotice(String type, Map<String, dynamic> data) =>
+    data['open']?.toString() == 'security_activity' ||
+    type == webCheckinRecordedType;
+
 /// Where a tapped push takes the signed-in user: `go` replaces the stack
 /// with a screen; otherwise the location is pushed over it. Members with a
 /// plan from their trainer, and partners with news about one of their
@@ -277,6 +288,11 @@ String? memberRouteFor({
   InboxMessage? message,
 }) {
   final type = data['type']?.toString() ?? '';
+  // A check-in from a web browser: the security activity page, for every
+  // role. Checked first so the gym id in the data never opens a gym screen.
+  if (isSecurityActivityNotice(type, data)) {
+    return (location: securityActivityRoute, go: false);
+  }
   // An organisation asked to add them: open the requests, where they accept
   // or decline (any side; an organisation role can go to anyone).
   if (isB2BMemberRequest(type, data)) {

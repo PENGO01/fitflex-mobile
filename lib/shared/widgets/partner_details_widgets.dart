@@ -26,6 +26,7 @@ class PartnerDobField extends StatelessWidget {
   const PartnerDobField({
     super.key,
     required this.controller,
+    required this.role,
     this.required = true,
     this.enabled = true,
     this.errorText,
@@ -34,6 +35,9 @@ class PartnerDobField extends StatelessWidget {
   });
 
   final TextEditingController controller;
+
+  /// Whose explanation "How we use it" opens.
+  final PartnerRole role;
   final bool required;
   final bool enabled;
 
@@ -68,7 +72,7 @@ class PartnerDobField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FFTextField(
+    final field = FFTextField(
       key: const Key('partner-dob'),
       controller: controller,
       readOnly: true,
@@ -92,8 +96,118 @@ class PartnerDobField extends StatelessWidget {
         onPressed: enabled ? () => _pick(context) : null,
       ),
     );
+    if (!showHelp) return field;
+    // Slice 5: the "why we ask" line is the helper text; this links to the
+    // full explanation.
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        field,
+        FFButton(
+          key: const Key('partner-dob-why'),
+          label: context.tr('partnerDob.whyLink'),
+          variant: FFButtonVariant.ghost,
+          visualDensity: VisualDensity.standard,
+          maxLines: 3,
+          onPressed: () => showPartnerShopExplainer(context, role: role),
+        ),
+      ],
+    );
   }
 }
+
+/// Partner DOB slice 5: how a Trainer's or gym owner's date of birth and
+/// gender are used in the shop. Draft text pending Tanzanian counsel.
+class PartnerShopExplainer extends StatelessWidget {
+  const PartnerShopExplainer({
+    super.key,
+    required this.role,
+    this.showTitle = false,
+    this.showDraft = true,
+  });
+
+  final PartnerRole role;
+
+  /// Shown inside another sheet: a heading of its own.
+  final bool showTitle;
+
+  /// The "draft" note (off where the host already shows it).
+  final bool showDraft;
+
+  /// The lines for [role], in order (review round 1, 2026-11-10).
+  static List<String> linesFor(PartnerRole role) => [
+    role == PartnerRole.trainer
+        ? 'shop.partnerAbout.askedTrainer'
+        : 'shop.partnerAbout.askedOwner',
+    'shop.partnerAbout.use',
+    if (role == PartnerRole.trainer) 'shop.partnerAbout.useTrainer',
+    'shop.partnerAbout.memberDob',
+    'shop.partnerAbout.noDob',
+    'shop.partnerAbout.under18',
+    'shop.partnerAbout.switchOff',
+    'shop.partnerAbout.never',
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      key: const Key('partner-shop-explainer'),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (showTitle) ...[
+          Semantics(
+            header: true,
+            child: Text(
+              context.tr('shop.partnerAbout.title'),
+              style: theme.textTheme.titleSmall,
+            ),
+          ),
+          const SizedBox(height: FFTokens.spacingXs),
+        ],
+        for (final key in linesFor(role))
+          Padding(
+            padding: const EdgeInsets.only(bottom: FFTokens.spacingXs),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ExcludeSemantics(
+                  child: Text('•  ', style: theme.textTheme.bodyMedium),
+                ),
+                Expanded(
+                  child: Text(
+                    context.tr(key),
+                    key: Key('partner-shop-explainer-$key'),
+                    style: theme.textTheme.bodyMedium,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        if (showDraft)
+          Text(
+            context.tr('privacy.shop.draft'),
+            key: const Key('partner-shop-explainer-draft'),
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+/// Opens [PartnerShopExplainer] in a sheet of its own.
+Future<void> showPartnerShopExplainer(
+  BuildContext context, {
+  required PartnerRole role,
+}) => showFFSheet<void>(
+  context,
+  title: context.tr('shop.partnerAbout.title'),
+  child: PartnerShopExplainer(role: role),
+);
 
 /// A gym owner's optional gender: Male, Female, Other or Prefer not to say
 /// ([partnerGenderPreferNot], sent as null).
@@ -152,11 +266,16 @@ Future<PersonalDetails?> showPartnerDetailsSheet(
   BuildContext context, {
   required PersonalDetails details,
   required bool canEditGender,
+  PartnerRole? role,
 }) {
   return showFFSheet<PersonalDetails>(
     context,
     title: context.tr('partnerDob.tileTitle'),
-    child: PartnerDetailsForm(details: details, canEditGender: canEditGender),
+    child: PartnerDetailsForm(
+      details: details,
+      canEditGender: canEditGender,
+      role: role,
+    ),
   );
 }
 
@@ -166,10 +285,17 @@ class PartnerDetailsForm extends StatefulWidget {
     super.key,
     required this.details,
     required this.canEditGender,
-  });
+    PartnerRole? role,
+  }) : _role = role;
 
   final PersonalDetails details;
   final bool canEditGender;
+  final PartnerRole? _role;
+
+  /// Whose wording the explanation uses. Without one: gym owners are the
+  /// ones who choose their gender here, Trainers are not.
+  PartnerRole get role =>
+      _role ?? (canEditGender ? PartnerRole.owner : PartnerRole.trainer);
 
   @override
   State<PartnerDetailsForm> createState() => _PartnerDetailsFormState();
@@ -254,6 +380,7 @@ class _PartnerDetailsFormState extends State<PartnerDetailsForm> {
         children: [
           PartnerDobField(
             controller: _dob,
+            role: widget.role,
             required: widget.details.required,
             enabled: !_busy,
             errorText: _dobError,

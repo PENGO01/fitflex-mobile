@@ -64,6 +64,8 @@ String _when(BuildContext context, DateTime? at) {
 /// Where a message's button goes, for the signed-in role: members,
 /// trainers, vendors and gyms each get their own screens.
 String? routeForMessage(BuildContext context, InboxMessage m) {
+  // A web-browser check-in: the security activity page, on every side.
+  if (isSecurityActivityNotice(m.type, m.data)) return securityActivityRoute;
   // An organisation's request is answered on its own screen, on any side.
   if (isB2BMemberRequest(m.type, m.data)) return b2bMemberRequestsRoute;
   final role =
@@ -110,6 +112,9 @@ String inboxButtonLabel(BuildContext context, InboxMessage m) {
       AppScope.of(context).auth.user?['userType']?.toString() ??
       AppScope.of(context).auth.role;
   final side = partnerSide(role);
+  if (isSecurityActivityNotice(m.type, m.data)) {
+    return context.tr('secAct.review');
+  }
   final link = isB2BMemberRequest(m.type, m.data)
       ? 'memberRequests'
       : m.type == b2bAdminAddedType

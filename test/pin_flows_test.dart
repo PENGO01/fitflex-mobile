@@ -288,6 +288,49 @@ void main() {
     expect(find.text('sign-in screen'), findsOneWidget);
   });
 
+  testWidgets('register: a network sign-up limit is not called wrong tries', (
+    tester,
+  ) async {
+    final api = _FakeApi()
+      ..errors['registerStart'] = ApiException(429, {
+        'error': 'too_many_attempts',
+        'retryAfterSeconds': 61,
+      });
+    final auth = await _auth(api);
+    await tester.pumpWidget(
+      _app(auth, const RegisterFlowScreen(contact: '0712345678')),
+    );
+    await tester.pumpAndSettle();
+    expect(
+      find.text(
+        'Too many sign-ups are coming from your network right now. Try again in 2 minutes, or switch between Wi-Fi and mobile data.',
+      ),
+      findsOneWidget,
+    );
+    expect(find.textContaining('wrong tries'), findsNothing);
+  });
+
+  testWidgets('register: send failures keep the could-not-send message', (
+    tester,
+  ) async {
+    for (final code in ['code_not_sent', 'registration_busy']) {
+      final api = _FakeApi()
+        ..errors['registerStart'] = ApiException(503, {'error': code});
+      final auth = await _auth(api);
+      await tester.pumpWidget(
+        _app(auth, const RegisterFlowScreen(contact: '0712345678')),
+      );
+      await tester.pumpAndSettle();
+      expect(
+        find.text('We could not send the code right now. Try again later.'),
+        findsOneWidget,
+        reason: code,
+      );
+      expect(find.textContaining('wrong tries'), findsNothing, reason: code);
+      expect(find.byKey(const Key('pin-flow-code')), findsNothing);
+    }
+  });
+
   testWidgets('sign-up opens the code flow only when FitFlex keeps the PIN', (
     tester,
   ) async {

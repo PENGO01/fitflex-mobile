@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import 'shared/auth_state.dart';
 import 'shared/held_nav_extras.dart';
-import 'shared/inbox/inbox_controller.dart' show b2bMemberRequestsRoute;
+import 'shared/inbox/inbox_controller.dart' show b2bMemberRequestsRoute, securityActivityRoute;
 import 'screens/splash_screen.dart';
 import 'screens/route_status_pages.dart';
 import 'screens/language_screen.dart';
@@ -70,6 +70,7 @@ import 'screens/owner/communications/history_pages.dart';
 import 'screens/owner/communications/automation_pages.dart';
 import 'screens/member/member_benefits_page.dart';
 import 'screens/member/member_requests_page.dart';
+import 'screens/security/security_activity_page.dart';
 import 'screens/member/member_sessions_page.dart';
 import 'screens/member/member_message_settings_page.dart';
 import 'shared/friend_invites.dart';
@@ -172,6 +173,7 @@ abstract class AppRoutes {
   static const ownerMemberCheckins = '/owner/members/:memberId/checkins';
   static const ownerMemberPayments = '/owner/members/:memberId/payments';
   static const inbox = '/inbox';
+  static const securityActivity = securityActivityRoute;
 
   /// The friend-invitation page; the token is kept on the device, never in
   /// the location.
@@ -1377,6 +1379,11 @@ GoRouter buildRouter(AuthState auth) {
         path: AppRoutes.inbox,
         name: 'inbox',
         builder: (context, state) => const InboxPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.securityActivity,
+        name: 'securityActivity',
+        builder: (context, state) => const SecurityActivityPage(),
       ),
       GoRoute(
         path: AppRoutes.inboxMessage,

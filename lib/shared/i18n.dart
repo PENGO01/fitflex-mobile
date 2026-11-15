@@ -286,8 +286,10 @@ class FFLocale extends ChangeNotifier {
       'staffPin.signInAgainAction': 'Sign in again',
       'pin.errInvalid': 'That mobile number, email or PIN is not right.',
       'pin.errTooMany': 'Too many wrong tries. Try again in {n} minutes.',
+      'register.errTooManyNetwork':
+          'Too many sign-ups are coming from your network right now. Try again in {n} minutes, or switch between Wi-Fi and mobile data.',
       'pin.errResetRequired':
-          'Too many wrong tries. Reset your PIN to sign in again.',
+          'You need a new PIN to sign in. Use Forgot PIN to set one.',
       'pin.errAlreadyRegistered':
           'An account already uses this mobile number or email.',
       'pin.errCurrentWrong': 'Your current PIN is not right.',
@@ -2410,6 +2412,9 @@ class FFLocale extends ChangeNotifier {
       'friendInvite.sentBy.both': 'Sent by FitFlex on WhatsApp and SMS',
       'friendInvite.sentBy.smsInstead':
           'Not on WhatsApp, so FitFlex sent an SMS',
+      'friendInvite.smsDelivery.delivered': 'SMS delivered',
+      'friendInvite.smsDelivery.undelivered':
+          'SMS could not be delivered, so please send the invitation yourself',
       'friendInvite.notSentByFitflex':
           'FitFlex could not send this invitation, so please send it yourself.',
       'friendInvite.reason.smsNotSetUp': 'SMS is not set up yet.',
@@ -2853,7 +2858,7 @@ class FFLocale extends ChangeNotifier {
       'onboarding.dob': 'Date of birth',
       // Partner date of birth (fitflex-functions#253).
       'partnerDob.help':
-          'Used to suggest shop products for your age group. Not shown on your profile.',
+          'Used to check you are 18 or over and to suggest shop products for your age group. Not shown on your profile.',
       'partnerDob.errRateLimited':
           'Too many changes. Try again in {seconds} seconds.',
       'partnerDob.promptTitle': 'Add your date of birth',
@@ -2863,7 +2868,7 @@ class FFLocale extends ChangeNotifier {
       'partnerDob.tapToChoose': 'Tap to choose',
       'partnerDob.notNow': 'Not now',
       'partnerDob.tileTitle': 'Date of birth and gender',
-      'partnerDob.tileSubtitle': 'Used only for shop suggestions',
+      'partnerDob.tileSubtitle': 'Used for the 18+ check and shop suggestions',
       'partnerDob.saved': 'Saved',
       'partnerGender.optional': 'Gender (optional)',
       'partnerGender.preferNot': 'Prefer not to say',
@@ -2962,9 +2967,13 @@ class FFLocale extends ChangeNotifier {
       'ownerReg.phone': 'Phone number',
       'ownerReg.email': 'Email address',
       'ownerReg.trainersLabel': 'Trainers',
-      'ownerReg.trainersHint': 'Select trainers for this gym (optional).',
-      'ownerReg.searchTrainers': 'Search trainers...',
-      'ownerReg.noTrainersFound': 'No trainers found.',
+      'ownerReg.trainersJoinHint':
+          'Trainers join your gym by sending a join request from the FitFlex app. You approve requests on the Trainers page.',
+      'ownerReg.trainersLinkedHint':
+          'Trainers linked to this gym. Untick a trainer to remove them from this gym.',
+      'ownerReg.noLinkedTrainers': 'No trainers are linked to this gym yet.',
+      'ownerReg.trainersLoadFailed':
+          "Couldn't load this gym's trainers. Saving won't change them.",
       'ownerReg.createTrainer': 'Create new trainer',
       'ownerReg.trainerName': 'Trainer name',
       'ownerReg.trainerEmail': 'Trainer email',
@@ -2983,7 +2992,6 @@ class FFLocale extends ChangeNotifier {
       'ownerReg.trainerPassEnabled': 'Enable trainer pass',
       'ownerReg.trainerPassFee': 'Trainer pass fee (TSh)',
       'ownerReg.trainerPassPeriod': 'Trainer pass period',
-      'ownerReg.done': 'Done',
       'home.back': 'Back',
       'member.pricing': 'Pricing',
       'member.noAvailability': 'No availability listed.',
@@ -3852,6 +3860,56 @@ class FFLocale extends ChangeNotifier {
       'inbox.title': 'Messages',
       'inbox.markAllRead': 'Mark all read',
       'inbox.loadFailed': 'Couldn\'t load your messages',
+      'secAct.title': "Security activity",
+      'secAct.tile.subtitle': "Check-ins made from web browsers",
+      'secAct.intro': "Check-ins made from a web browser with your account.",
+      'secAct.row.title': "Check-in from a web browser",
+      'secAct.row.gymUnknown': "a FitFlex gym",
+      'secAct.status.inbox': "Alert sent",
+      'secAct.status.recorded': "Recorded",
+      'secAct.kind.other': "Security event",
+      'secAct.empty.title': "Nothing to review",
+      'secAct.empty.body': "If someone checks in to a gym from a web browser using your account, it will show here.",
+      'secAct.off.title': "Not available yet",
+      'secAct.off.body': "Security activity is not switched on yet.",
+      'secAct.loadMore': "Load more",
+      'secAct.loadFailed': "Couldn't load your security activity",
+      'secAct.review': "Review activity",
+      // "This wasn't me" report (S4c).
+      'secAct.report.action': "This wasn't me",
+      'secAct.report.actionHint': "Report this check-in to FitFlex support",
+      'secAct.report.sheet.title': "Report this check-in",
+      'secAct.report.sheet.body': "We will record a report for FitFlex support to review.",
+      'secAct.report.sheet.notRemoved': "The visit is not removed automatically.",
+      'secAct.report.sheet.secure': "Report and secure my account",
+      'secAct.report.sheet.secureHint': "Signs you out on every device. If you sign in with a PIN, you then set a new one with Forgot PIN.",
+      'secAct.report.sheet.only': "Report only",
+      'secAct.report.sheet.onlyHint': "Sends the report. Nothing else changes on your account.",
+      'secAct.report.status.open': "Reported",
+      'secAct.report.status.acknowledged': "Being reviewed",
+      'secAct.report.status.resolved': "Reviewed",
+      'secAct.report.done': "Report sent. FitFlex support will review it.",
+      'secAct.report.limited': "Report recorded. Your account was already secured recently, so nothing more was changed.",
+      'secAct.report.failed': "Report recorded, but we could not secure your account.",
+      'secAct.report.failedChangePin': "Report recorded, but we could not secure your account. Change your PIN now.",
+      'secAct.report.failedForgotPin': "Report recorded, but we could not finish securing your account. Your PIN no longer works. Set a new one with Forgot PIN.",
+      'secAct.report.failedRetry': "Try securing again",
+      'secAct.report.failedSupport': "Report recorded, but we could not secure your account. Contact FitFlex support.",
+      'secAct.report.support': "Trying again here will not secure your account. Contact FitFlex support.",
+      'secAct.report.retryWait': "Wait a minute, then try again.",
+      'secAct.report.signedOut.title': "You have been signed out",
+      'secAct.report.signedOut.pin': "Report recorded and your account is secured. You are signed out on every device. To sign in, use Forgot PIN and set a new PIN.",
+      'secAct.report.signedOut.again': "Report recorded and your account is secured. You are signed out on every device. Sign in again to continue.",
+      'secAct.report.signedOut.action': "Go to sign in",
+      'secAct.report.err.limit': "You have sent the most reports allowed for now. Try again later.",
+      'secAct.report.err.limitMinute': "You have sent the most reports allowed for now. Try again in about a minute.",
+      'secAct.report.err.limitMinutes': "You have sent the most reports allowed for now. Try again in about {n} minutes.",
+      'secAct.report.err.limitHour': "You have sent the most reports allowed for now. Try again in about an hour.",
+      'secAct.report.err.limitHours': "You have sent the most reports allowed for now. Try again in about {n} hours.",
+      'secAct.report.err.unavailable': "Reporting is not available for this check-in.",
+      'secAct.report.err.failed': "We couldn't send your report. Try again.",
+      'secAct.report.err.retryFailed': "We could not reach FitFlex to secure your account. Try again.",
+      'secAct.report.err.network': "No connection. Check your internet and try again.",
       'inbox.filter.all': 'All',
       'inbox.filter.membership': 'Membership',
       'inbox.filter.payments': 'Payments',
@@ -4627,6 +4685,57 @@ class FFLocale extends ChangeNotifier {
       'privacy.shop.never':
           'We never use your activity, health, training or company data.',
       'privacy.shop.draft': 'This text is a draft and may change.',
+      // Partner DOB slices 4-5 (shop personalisation for Trainers and gym
+      // owners, SHOP_PERSONALISATION_PARTNERS). Draft pending Tanzanian
+      // counsel (review round 1, 2026-11-10).
+      'shop.why.switchHintPartnerGender':
+          'Use my purchases, my age and my gender to order the shop for me.',
+      'shop.why.switchHintPartnerGenderArea':
+          'Use my purchases, my age, my gender and my current area to order the shop for me.',
+      'shop.why.switchHintPartnerGenderSpecialty':
+          'Use my purchases, my age, my gender and my trainer specialties to order the shop for me.',
+      'shop.why.switchHintPartnerGenderSpecialtyArea':
+          'Use my purchases, my age, my gender, my trainer specialties and my current area to order the shop for me.',
+      'shop.why.switchHintPartnerAge':
+          'Use my purchases and my age to order the shop for me.',
+      'shop.why.switchHintPartnerAgeArea':
+          'Use my purchases, my age and my current area to order the shop for me.',
+      'shop.why.switchHintPartnerAgeSpecialty':
+          'Use my purchases, my age and my trainer specialties to order the shop for me.',
+      'shop.why.switchHintPartnerAgeSpecialtyArea':
+          'Use my purchases, my age, my trainer specialties and my current area to order the shop for me.',
+      'shop.why.genderTrainer': 'The gender on your trainer profile.',
+      'shop.why.genderOwner': 'The gender you gave FitFlex.',
+      'shop.why.agePartner':
+          'Your age, from the date of birth you gave FitFlex.',
+      'privacy.shop.usesGenderAgePartner':
+          'Your age and gender, to show tagged products first (never used for under-18s)',
+      'privacy.shop.usesGenderPartner':
+          'Your gender, to show tagged products first (never used for under-18s)',
+      'privacy.shop.usesAgePartner':
+          'Your age, from the date of birth you gave FitFlex, to show tagged products first (never used for under-18s)',
+      'shop.partnerDob.hint':
+          'Add your date of birth to get suggestions for your age group. Until then, your age and gender are not used.',
+      'shop.partnerAbout.title': 'Date of birth, gender and the shop',
+      'shop.partnerAbout.askedTrainer':
+          'We ask for your date of birth. Your gender comes from your trainer profile.',
+      'shop.partnerAbout.askedOwner':
+          'We ask for your date of birth and, if you choose, your gender.',
+      'shop.partnerAbout.use':
+          'We use your date of birth to check you are 18 or over. In the shop, your age and gender only change the order of products, never hide them. Your date of birth is not shown on your profile.',
+      'shop.partnerAbout.useTrainer':
+          'Your gender is shown on your trainer profile.',
+      'shop.partnerAbout.memberDob':
+          "If you haven't given one here, we may use the date of birth in your FitFlex member profile.",
+      'shop.partnerAbout.noDob':
+          'With no date of birth at all, your age and gender are not used.',
+      'shop.partnerAbout.under18':
+          'If any date of birth on your account shows you are under 18, nothing is personalised.',
+      'shop.partnerAbout.switchOff':
+          'You can turn off “Personalised shop” at any time.',
+      'shop.partnerAbout.never':
+          'We never use your activity, health, training, company or verification (KYC) data for this.',
+      'partnerDob.whyLink': 'How we use it',
       'vendor.target.title': "Who it's for (optional)",
       'vendor.target.hint':
           'Helps FitFlex show it first to members it suits. Everyone can still find and buy it.',
@@ -8522,8 +8631,10 @@ class FFLocale extends ChangeNotifier {
       'pin.errInvalid': 'Namba ya simu, barua pepe au PIN si sahihi.',
       'pin.errTooMany':
           'Umekosea mara nyingi mno. Jaribu tena baada ya dakika {n}.',
+      'register.errTooManyNetwork':
+          'Usajili mwingi mno unatoka kwenye mtandao wako kwa sasa. Jaribu tena baada ya dakika {n}, au badilisha kati ya Wi-Fi na data ya simu.', // TODO(sw-review)
       'pin.errResetRequired':
-          'Umekosea mara nyingi mno. Weka PIN mpya ili uingie tena.',
+          'Unahitaji PIN mpya ili uingie. Tumia Umesahau PIN kuweka mpya.', // TODO(sw-review)
       'pin.errAlreadyRegistered':
           'Tayari kuna akaunti inayotumia namba hii ya simu au barua pepe.',
       'pin.errCurrentWrong': 'PIN yako ya sasa si sahihi.',
@@ -10746,6 +10857,9 @@ class FFLocale extends ChangeNotifier {
       'friendInvite.sentBy.both': 'Imetumwa na FitFlex kwa WhatsApp na SMS',
       'friendInvite.sentBy.smsInstead':
           'Hayupo WhatsApp, kwa hiyo FitFlex ilituma SMS',
+      'friendInvite.smsDelivery.delivered': 'SMS imefika',
+      'friendInvite.smsDelivery.undelivered':
+          'SMS haikufika, kwa hiyo tafadhali utume mwaliko mwenyewe',
       'friendInvite.notSentByFitflex':
           'FitFlex haikuweza kutuma mwaliko huu, tafadhali utume mwenyewe.',
       'friendInvite.reason.smsNotSetUp': 'SMS bado haijawekwa.',
@@ -11208,7 +11322,7 @@ class FFLocale extends ChangeNotifier {
       'onboarding.dob': 'Tarehe ya kuzaliwa',
       // Partner date of birth (fitflex-functions#253). Draft: needs native review.
       'partnerDob.help':
-          'Hutumika kupendekeza bidhaa za dukani zinazofaa kundi lako la umri. Haionyeshwi kwenye wasifu wako.',
+          'Hutumika kuthibitisha una miaka 18 au zaidi na kupendekeza bidhaa za dukani zinazofaa kundi lako la umri. Haionyeshwi kwenye wasifu wako.',
       'partnerDob.errRateLimited':
           'Mabadiliko mengi mno. Jaribu tena baada ya sekunde {seconds}.',
       'partnerDob.promptTitle': 'Ongeza tarehe yako ya kuzaliwa',
@@ -11218,7 +11332,8 @@ class FFLocale extends ChangeNotifier {
       'partnerDob.tapToChoose': 'Gusa kuchagua',
       'partnerDob.notNow': 'Si sasa',
       'partnerDob.tileTitle': 'Tarehe ya kuzaliwa na jinsia',
-      'partnerDob.tileSubtitle': 'Hutumika kwa mapendekezo ya dukani tu',
+      'partnerDob.tileSubtitle':
+          'Hutumika kuthibitisha una miaka 18+ na kwa mapendekezo ya dukani',
       'partnerDob.saved': 'Imehifadhiwa',
       'partnerGender.optional': 'Jinsia (si lazima)',
       'partnerGender.preferNot': 'Sipendi kusema',
@@ -11317,9 +11432,14 @@ class FFLocale extends ChangeNotifier {
       'ownerReg.phone': 'Namba ya simu',
       'ownerReg.email': 'Barua pepe',
       'ownerReg.trainersLabel': 'Ma-trainer',
-      'ownerReg.trainersHint': 'Chagua ma-trainer wa gym hii (si lazima).',
-      'ownerReg.searchTrainers': 'Tafuta ma-trainer...',
-      'ownerReg.noTrainersFound': 'Hakuna ma-trainer waliopatikana.',
+      'ownerReg.trainersJoinHint':
+          'Ma-trainer hujiunga na gym yako kwa kutuma ombi la kujiunga kupitia programu ya FitFlex. Unaidhinisha maombi kwenye ukurasa wa Ma-trainer.',
+      'ownerReg.trainersLinkedHint':
+          'Ma-trainer waliounganishwa na gym hii. Ondoa alama kwa trainer ili kumwondoa kwenye gym hii.',
+      'ownerReg.noLinkedTrainers':
+          'Bado hakuna trainer aliyeunganishwa na gym hii.',
+      'ownerReg.trainersLoadFailed':
+          'Imeshindikana kupakia ma-trainer wa gym hii. Kuhifadhi hakutawabadilisha.',
       'ownerReg.createTrainer': 'Ongeza trainer mpya',
       'ownerReg.trainerName': 'Jina la trainer',
       'ownerReg.trainerEmail': 'Barua pepe ya trainer',
@@ -11338,7 +11458,6 @@ class FFLocale extends ChangeNotifier {
       'ownerReg.trainerPassEnabled': 'Washa pasi ya trainer',
       'ownerReg.trainerPassFee': 'Ada ya pasi ya trainer (TSh)',
       'ownerReg.trainerPassPeriod': 'Muda wa pasi ya trainer',
-      'ownerReg.done': 'Tayari',
       'ownerScan.title': 'Skani QR ya Mwanachama',
       'ownerScan.hint': 'Elekeza kamera kwenye QR ya mwanachama',
       'ownerScan.camera.denied':
@@ -12147,6 +12266,56 @@ class FFLocale extends ChangeNotifier {
       'inbox.title': 'Ujumbe',
       'inbox.markAllRead': 'Zote zimesomwa',
       'inbox.loadFailed': 'Imeshindikana kupakia ujumbe wako',
+      'secAct.title': "Shughuli za usalama",
+      'secAct.tile.subtitle': "Kujiandikisha kupitia kivinjari",
+      'secAct.intro': "Hapa unaona kujiandikisha gym kupitia kivinjari kwa akaunti yako.",
+      'secAct.row.title': "Kuingia gym kupitia kivinjari", // TODO(sw-review)
+      'secAct.row.gymUnknown': "gym ya FitFlex",
+      'secAct.status.inbox': "Tahadhari ilitumwa",
+      'secAct.status.recorded': "Imerekodiwa",
+      'secAct.kind.other': "Tukio la usalama",
+      'secAct.empty.title': "Hakuna cha kukagua",
+      'secAct.empty.body': "Mtu akijiandikisha gym kupitia kivinjari kwa akaunti yako, utaliona hapa.",
+      'secAct.off.title': "Bado haipatikani",
+      'secAct.off.body': "Shughuli za usalama bado hazijawashwa.",
+      'secAct.loadMore': "Pakia zaidi",
+      'secAct.loadFailed': "Imeshindikana kupakia shughuli zako za usalama", // TODO(sw-review)
+      'secAct.review': "Kagua shughuli",
+      // Ripoti ya "Sikuwa mimi" (S4c). Swahili drafts for native review.
+      'secAct.report.action': "Sikuwa mimi", // TODO(sw-review)
+      'secAct.report.actionHint': "Ripoti kujiandikisha huku kwa timu ya msaada ya FitFlex", // TODO(sw-review)
+      'secAct.report.sheet.title': "Ripoti kujiandikisha huku", // TODO(sw-review)
+      'secAct.report.sheet.body': "Tutarekodi ripoti, na timu ya msaada ya FitFlex itaipitia.", // TODO(sw-review)
+      'secAct.report.sheet.notRemoved': "Ziara haiondolewi kiotomatiki.", // TODO(sw-review)
+      'secAct.report.sheet.secure': "Ripoti na linda akaunti yangu", // TODO(sw-review)
+      'secAct.report.sheet.secureHint': "Utatolewa kwenye kila kifaa. Kama unaingia kwa PIN, kisha utaweka PIN mpya kupitia Umesahau PIN.", // TODO(sw-review)
+      'secAct.report.sheet.only': "Ripoti tu", // TODO(sw-review)
+      'secAct.report.sheet.onlyHint': "Inatuma ripoti. Hakuna kingine kinachobadilika kwenye akaunti yako.", // TODO(sw-review)
+      'secAct.report.status.open': "Imeripotiwa", // TODO(sw-review)
+      'secAct.report.status.acknowledged': "Inapitiwa", // TODO(sw-review)
+      'secAct.report.status.resolved': "Imepitiwa", // TODO(sw-review)
+      'secAct.report.done': "Ripoti imetumwa. Timu ya msaada ya FitFlex itaipitia.", // TODO(sw-review)
+      'secAct.report.limited': "Ripoti imerekodiwa. Akaunti yako ililindwa hivi karibuni, kwa hiyo hakuna kingine kilichobadilishwa.", // TODO(sw-review)
+      'secAct.report.failed': "Ripoti imerekodiwa, lakini hatukuweza kulinda akaunti yako.", // TODO(sw-review)
+      'secAct.report.failedChangePin': "Ripoti imerekodiwa, lakini hatukuweza kulinda akaunti yako. Badilisha PIN yako sasa.", // TODO(sw-review)
+      'secAct.report.failedForgotPin': "Ripoti imerekodiwa, lakini hatukuweza kumaliza kulinda akaunti yako. PIN yako haifanyi kazi tena. Weka PIN mpya kupitia Umesahau PIN.", // TODO(sw-review)
+      'secAct.report.failedRetry': "Jaribu kulinda tena", // TODO(sw-review)
+      'secAct.report.failedSupport': "Ripoti imerekodiwa, lakini hatukuweza kulinda akaunti yako. Wasiliana na timu ya msaada ya FitFlex.", // TODO(sw-review)
+      'secAct.report.support': "Kujaribu tena hapa hakutalinda akaunti yako. Wasiliana na timu ya msaada ya FitFlex.", // TODO(sw-review)
+      'secAct.report.retryWait': "Subiri dakika moja kisha ujaribu tena.", // TODO(sw-review)
+      'secAct.report.signedOut.title': "Umetolewa kwenye akaunti", // TODO(sw-review)
+      'secAct.report.signedOut.pin': "Ripoti imerekodiwa na akaunti yako imelindwa. Umetolewa kwenye kila kifaa. Ili kuingia, tumia Umesahau PIN kisha weka PIN mpya.", // TODO(sw-review)
+      'secAct.report.signedOut.again': "Ripoti imerekodiwa na akaunti yako imelindwa. Umetolewa kwenye kila kifaa. Ingia tena ili kuendelea.", // TODO(sw-review)
+      'secAct.report.signedOut.action': "Ingia", // TODO(sw-review)
+      'secAct.report.err.limit': "Umefikia idadi ya ripoti zinazoruhusiwa kwa sasa. Jaribu tena baadaye.", // TODO(sw-review)
+      'secAct.report.err.limitMinute': "Umefikia idadi ya ripoti zinazoruhusiwa kwa sasa. Jaribu tena baada ya takriban dakika moja.", // TODO(sw-review)
+      'secAct.report.err.limitMinutes': "Umefikia idadi ya ripoti zinazoruhusiwa kwa sasa. Jaribu tena baada ya takriban dakika {n}.", // TODO(sw-review)
+      'secAct.report.err.limitHour': "Umefikia idadi ya ripoti zinazoruhusiwa kwa sasa. Jaribu tena baada ya takriban saa moja.", // TODO(sw-review)
+      'secAct.report.err.limitHours': "Umefikia idadi ya ripoti zinazoruhusiwa kwa sasa. Jaribu tena baada ya takriban saa {n}.", // TODO(sw-review)
+      'secAct.report.err.unavailable': "Kuripoti hakupatikani kwa kujiandikisha huku.", // TODO(sw-review)
+      'secAct.report.err.failed': "Hatukuweza kutuma ripoti yako. Jaribu tena.", // TODO(sw-review)
+      'secAct.report.err.retryFailed': "Hatukuweza kuwasiliana na FitFlex ili kulinda akaunti yako. Jaribu tena.", // TODO(sw-review)
+      'secAct.report.err.network': "Hakuna intaneti. Angalia intaneti yako kisha ujaribu tena.", // TODO(sw-review)
       'inbox.filter.all': 'Zote',
       'inbox.filter.membership': 'Uanachama',
       'inbox.filter.payments': 'Malipo',
@@ -12934,6 +13103,56 @@ class FFLocale extends ChangeNotifier {
       'privacy.shop.never':
           'Hatutumii kamwe data za shughuli, afya, mazoezi au kampuni yako.',
       'privacy.shop.draft': 'Maandishi haya ni rasimu na yanaweza kubadilika.',
+      // Partner DOB slices 4-5 [SW native review]. Rasimu: inasubiri
+      // mwanasheria wa Tanzania (review round 1, 2026-11-10).
+      'shop.why.switchHintPartnerGender':
+          'Tumia manunuzi yangu, umri wangu na jinsia yangu kupanga duka kwa ajili yangu.',
+      'shop.why.switchHintPartnerGenderArea':
+          'Tumia manunuzi yangu, umri wangu, jinsia yangu na eneo nililopo sasa kupanga duka kwa ajili yangu.',
+      'shop.why.switchHintPartnerGenderSpecialty':
+          'Tumia manunuzi yangu, umri wangu, jinsia yangu na utaalamu wangu wa trainer kupanga duka kwa ajili yangu.',
+      'shop.why.switchHintPartnerGenderSpecialtyArea':
+          'Tumia manunuzi yangu, umri wangu, jinsia yangu, utaalamu wangu wa trainer na eneo nililopo sasa kupanga duka kwa ajili yangu.',
+      'shop.why.switchHintPartnerAge':
+          'Tumia manunuzi yangu na umri wangu kupanga duka kwa ajili yangu.',
+      'shop.why.switchHintPartnerAgeArea':
+          'Tumia manunuzi yangu, umri wangu na eneo nililopo sasa kupanga duka kwa ajili yangu.',
+      'shop.why.switchHintPartnerAgeSpecialty':
+          'Tumia manunuzi yangu, umri wangu na utaalamu wangu wa trainer kupanga duka kwa ajili yangu.',
+      'shop.why.switchHintPartnerAgeSpecialtyArea':
+          'Tumia manunuzi yangu, umri wangu, utaalamu wangu wa trainer na eneo nililopo sasa kupanga duka kwa ajili yangu.',
+      'shop.why.genderTrainer': 'Jinsia iliyo kwenye wasifu wako wa trainer.',
+      'shop.why.genderOwner': 'Jinsia uliyoweka kwenye FitFlex.',
+      'shop.why.agePartner':
+          'Umri wako, kutoka tarehe ya kuzaliwa uliyoipa FitFlex.',
+      'privacy.shop.usesGenderAgePartner':
+          'Umri na jinsia yako, kuonyesha kwanza bidhaa zilizowekewa lebo (havitumiki kwa walio chini ya miaka 18)',
+      'privacy.shop.usesGenderPartner':
+          'Jinsia yako, kuonyesha kwanza bidhaa zilizowekewa lebo (haitumiki kwa walio chini ya miaka 18)',
+      'privacy.shop.usesAgePartner':
+          'Umri wako, kutoka tarehe ya kuzaliwa uliyoipa FitFlex, kuonyesha kwanza bidhaa zilizowekewa lebo (hautumiki kwa walio chini ya miaka 18)',
+      'shop.partnerDob.hint':
+          'Ongeza tarehe yako ya kuzaliwa upate mapendekezo ya dukani yanayofaa kundi lako la umri. Hadi utakapoiongeza, umri na jinsia yako havitumiki.',
+      'shop.partnerAbout.title': 'Tarehe ya kuzaliwa, jinsia na duka',
+      'shop.partnerAbout.askedTrainer':
+          'Tunakuomba tarehe yako ya kuzaliwa. Jinsia yako inatoka kwenye wasifu wako wa trainer.',
+      'shop.partnerAbout.askedOwner':
+          'Tunakuomba tarehe yako ya kuzaliwa na, ukipenda, jinsia yako.',
+      'shop.partnerAbout.use':
+          'Tunatumia tarehe yako ya kuzaliwa kuhakikisha una miaka 18 au zaidi. Dukani, umri na jinsia yako hubadilisha tu mpangilio wa bidhaa, kamwe si kuzificha. Tarehe yako ya kuzaliwa haionyeshwi kwenye wasifu wako.',
+      'shop.partnerAbout.useTrainer':
+          'Jinsia yako inaonyeshwa kwenye wasifu wako wa trainer.',
+      'shop.partnerAbout.memberDob':
+          'Ikiwa hujaitoa hapa, tunaweza kutumia tarehe ya kuzaliwa iliyo kwenye wasifu wako wa mwanachama wa FitFlex.',
+      'shop.partnerAbout.noDob':
+          'Bila tarehe yoyote ya kuzaliwa, umri na jinsia yako havitumiki.',
+      'shop.partnerAbout.under18':
+          'Ikiwa tarehe yoyote ya kuzaliwa kwenye akaunti yako inaonyesha uko chini ya miaka 18, duka halipangwi kwa ajili yako.',
+      'shop.partnerAbout.switchOff':
+          'Unaweza kuzima “Duka kwa ajili yako” wakati wowote.',
+      'shop.partnerAbout.never':
+          'Hatutumii kamwe data zako za shughuli, afya, mazoezi, kampuni au uthibitisho (KYC) kwa hili.',
+      'partnerDob.whyLink': 'Jinsi tunavyoitumia',
       'vendor.target.title': 'Ni kwa ajili ya nani (si lazima)',
       'vendor.target.hint':
           'Inasaidia FitFlex kuionyesha kwanza kwa wanachama ambao bidhaa hii inawafaa. Kila mtu bado anaweza kuipata na kuinunua.',

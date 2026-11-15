@@ -22,6 +22,7 @@ import 'shop_category_row.dart';
 import 'shop_product_card.dart';
 import 'shop_focus_ring.dart';
 import 'shop_near_you_ui.dart';
+import 'shop_partner_dob_hint.dart';
 import 'shop_personalisation.dart';
 import 'shop_product_rail.dart';
 
@@ -348,8 +349,18 @@ class ShopHomeViewState extends State<ShopHomeView> {
         'product',
         reason.params['productName'] ?? reason.params['product'],
       ),
-      'profile_gender' => context.tr('shop.why.gender'),
-      'profile_age' => context.tr('shop.why.age'),
+      // Partner DOB slice 4: in trainer and owner modes these come from the
+      // partner's own date of birth (and gender), not a member profile.
+      'profile_gender' => context.tr(switch (_mode(_data)) {
+        ShopHomeMode.trainer => 'shop.why.genderTrainer',
+        ShopHomeMode.owner => 'shop.why.genderOwner',
+        _ => 'shop.why.gender',
+      }),
+      'profile_age' => context.tr(
+        isPartnerShopMode(_mode(_data).wire)
+            ? 'shop.why.agePartner'
+            : 'shop.why.age',
+      ),
       'delivers_to_area' => context.tr('shop.why.deliversToArea'),
       'popular_in_area' => with_(
         'shop.why.popularInArea',
@@ -382,12 +393,77 @@ class ShopHomeViewState extends State<ShopHomeView> {
   /// after the switch changes what may be said).
   final ValueNotifier<ShopHomeData?> _live = ValueNotifier(null);
 
+  /// Partner DOB slice 4: GET /shop/preferences for the trainer or owner
+  /// mode, read when their Why sheet opens, so the switch hint follows
+  /// `uses` (gender/age only once the server lists them). Null until read,
+  /// or when the read failed (the purchases-only hint stays).
+  final ValueNotifier<ShopPreferences?> _partnerPrefs = ValueNotifier(null);
+
+  Future<void> _loadPartnerPrefs(ShopHomeMode mode) async {
+    try {
+      final prefs = ShopPreferences.fromJson(
+        await AppScope.of(context).api.shopPreferences(mode: mode.wire),
+      );
+      if (mounted) _partnerPrefs.value = prefs;
+    } catch (_) {
+      // Not known: the hint names purchases only.
+    }
+  }
+
+  /// The signals in play for this answer and preferences: the
+  /// preferences' `uses` plus any gender/age the home answer reports.
+  static Set<ShopSignal> _signalsOf(
+    ShopHomeData? data,
+    ShopPreferences? prefs,
+  ) {
+    final out = <ShopSignal>{...?prefs?.uses};
+    void add(String code) {
+      final s = ShopSignal.fromWire(code);
+      if (s == ShopSignal.gender || s == ShopSignal.age) out.add(s!);
+    }
+
+    for (final code in data?.signalsUsed ?? const <String>[]) {
+      add(code);
+    }
+    for (final s in data?.sections ?? const <ShopHomeSection>[]) {
+      for (final c in s.reasonCodes) {
+        add(c.code);
+      }
+    }
+    return out;
+  }
+
+  /// The trainer or owner shop's own "Personalised shop" sheet (what is
+  /// used, the date-of-birth hint and the slice 5 explanation).
+  Future<void> _openPartnerPrivacy(ShopHomeMode mode, bool enabled) async {
+    final initial =
+        _partnerPrefs.value ??
+        ShopPreferences(
+          personalised: enabled,
+          available: true,
+          mode: mode.wire,
+        );
+    await showShopSheet<void>(
+      context,
+      title: context.tr('privacy.shop.title'),
+      child: ShopPrivacySheet(
+        initial: initial,
+        mode: mode.wire,
+        onChanged: (prefs) {
+          _partnerPrefs.value = prefs;
+          if (mounted) reload();
+        },
+      ),
+    );
+  }
+
   @override
   void dispose() {
     ShopNearYouStore.changes.removeListener(_nearChanged);
     _saleTimer?.cancel();
     _refetchTimer?.cancel();
     _live.dispose();
+    _partnerPrefs.dispose();
     super.dispose();
   }
 
@@ -507,16 +583,28 @@ class ShopHomeViewState extends State<ShopHomeView> {
     final first = _data?.personalisation;
     final mode = _mode(_data);
     final showSwitch = first?.available == true;
+    final partner = isPartnerShopMode(mode.wire);
+    if (partner && showSwitch) {
+      _partnerPrefs.value = null;
+      unawaited(_loadPartnerPrefs(mode));
+    }
+    // The last signals naming gender/age while the sheet is open (kept when
+    // the switch goes off and `uses` empties, so the hint does not change
+    // under it).
+    Set<ShopSignal>? profileUses;
     final lang = FFLocaleScope.of(context).locale.languageCode;
     // The switch's value as the customer just set it (null: as loaded).
     bool? on;
     await showShopSheet<void>(
       context,
       title: context.tr('shop.why.title'),
-      child: ValueListenableBuilder<ShopHomeData?>(
-        valueListenable: _live,
-        builder: (sheet, data, _) => StatefulBuilder(
+      child: ListenableBuilder(
+        listenable: Listenable.merge([_live, _partnerPrefs]),
+        builder: (sheet, _) => StatefulBuilder(
           builder: (sheet, setSheet) {
+            final data = _live.value;
+            final signals = _signalsOf(data, _partnerPrefs.value);
+            if (usesProfileSignals(signals)) profileUses = signals;
             final theme = Theme.of(sheet);
             final p = data?.personalisation ?? first;
             final live = data?.sections
@@ -588,13 +676,16 @@ class ShopHomeViewState extends State<ShopHomeView> {
                     source: ShopPreferences.sourceWhySheet,
                     mode: mode.wire,
                     initial: first!.enabled,
-                    // Gender and age are used in member mode only.
                     partnerHint: mode != ShopHomeMode.member,
+                    // Slice 4: a trainer's or owner's own age/gender, once
+                    // the server lists them.
+                    partnerUses: partner ? profileUses : null,
                     // Phase 2 S3: near-you can be used, so the hint names
                     // the current area too.
                     // Not while off (QA #9).
                     areaHint: data?.nearYou?.available == true && enabled,
                     onChanged: (prefs) {
+                      if (partner) _partnerPrefs.value = prefs;
                       setSheet(() => on = prefs.personalised);
                       // The home reloads behind the sheet (§8.2).
                       if (mounted) reload();
@@ -608,6 +699,41 @@ class ShopHomeViewState extends State<ShopHomeView> {
                       key: ValueKey('near-${data?.nearYou?.areaId}'),
                       inHome: true,
                       serverArea: _serverArea(lang),
+                    ),
+                  ],
+                  if (partner) ...[
+                    // Slice 4: no date of birth → only purchases are used.
+                    ShopPartnerDobHint(
+                      mode: mode.wire,
+                      profileSignals:
+                          _partnerPrefs.value?.profileSignals ?? false,
+                      onSaved: () {
+                        if (!mounted) return;
+                        reload();
+                        unawaited(_loadPartnerPrefs(mode));
+                      },
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: FFTokens.spacingXs),
+                      child: Align(
+                        alignment: AlignmentDirectional.centerStart,
+                        child: ShopFocusRing(
+                          onPhoto: true,
+                          builder: (node) => FFButton(
+                            key: const Key('shop-why-partner-privacy'),
+                            focusNode: node,
+                            label: sheet.tr('shop.why.privacyLink'),
+                            variant: FFButtonVariant.ghost,
+                            visualDensity: VisualDensity.standard,
+                            onPressed: () {
+                              Navigator.of(sheet).pop();
+                              if (mounted) {
+                                _openPartnerPrivacy(mode, enabled);
+                              }
+                            },
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                   if (mode == ShopHomeMode.member)

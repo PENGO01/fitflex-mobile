@@ -19,6 +19,9 @@ import '../../i18n.dart';
 import '../../network/browser_online.dart';
 import '../../shop_home.dart';
 import '../../shop_near_you.dart';
+import '../../partner_details.dart' show PartnerRole;
+import '../partner_details_widgets.dart';
+import 'shop_partner_dob_hint.dart';
 import 'shop_near_you_ui.dart';
 import 'shop_focus_ring.dart';
 
@@ -58,6 +61,7 @@ class ShopPersonalisedSwitch extends StatefulWidget {
     this.mode,
     this.initial,
     this.partnerHint = false,
+    this.partnerUses,
     this.areaHint = false,
     this.onChanged,
     this.onUnavailable,
@@ -74,8 +78,13 @@ class ShopPersonalisedSwitch extends StatefulWidget {
   final String? mode;
   final bool? initial;
 
-  /// Trainer and owner modes never use gender or age: their own hint.
+  /// Not member mode: the partner hint (purchases).
   final bool partnerHint;
+
+  /// Partner DOB slice 4: with [partnerHint], the last `uses` that named
+  /// profile_gender / profile_age for this trainer or owner (their own date
+  /// of birth). The hint then names exactly those (and specialties).
+  final Set<ShopSignal>? partnerUses;
 
   /// Called with the server's answer after a successful save.
   final ValueChanged<ShopPreferences>? onChanged;
@@ -198,9 +207,13 @@ class _ShopPersonalisedSwitchState extends State<ShopPersonalisedSwitch> {
     if (_hidden) return const SizedBox.shrink();
     final theme = Theme.of(context);
     final title = context.tr('shop.why.switch');
+    final partnerKey = widget.partnerHint
+        ? partnerSwitchHintKey(widget.partnerUses, area: widget.areaHint)
+        : null;
     final hint = context.tr(
-      '${widget.partnerHint ? 'shop.why.switchHintPartner' : 'shop.why.switchHintMember'}'
-      '${widget.areaHint ? 'Area' : ''}',
+      partnerKey ??
+          '${widget.partnerHint ? 'shop.why.switchHintPartner' : 'shop.why.switchHintMember'}'
+              '${widget.areaHint ? 'Area' : ''}',
     );
     if (_loadFailed) {
       return Row(
@@ -453,6 +466,21 @@ class _ShopPrivacySheetState extends State<ShopPrivacySheet> {
   late ShopPreferences _prefs = widget.initial;
   bool _gone = false;
 
+  /// Partner DOB slice 4: trainer and owner modes use the partner's own
+  /// date of birth (and gender), worded as such.
+  bool get _partner => isPartnerShopMode(widget.mode ?? _prefs.mode);
+
+  /// The last `uses` naming gender or age while this sheet was open. Kept
+  /// when the switch goes off (`uses` is then empty), so the switch hint
+  /// does not change under the finger.
+  late Set<ShopSignal>? _profileUses = usesProfileSignals(widget.initial.uses)
+      ? widget.initial.uses
+      : null;
+
+  PartnerRole get _role => (widget.mode ?? _prefs.mode) == 'owner'
+      ? PartnerRole.owner
+      : PartnerRole.trainer;
+
   /// The server lists `location` in `uses` (SHOP_NEAR_YOU on and the
   /// switch on).
   bool get _location => _prefs.uses?.contains(ShopSignal.location) ?? false;
@@ -462,6 +490,7 @@ class _ShopPrivacySheetState extends State<ShopPrivacySheet> {
   List<String> _lines(BuildContext context) {
     final uses = _prefs.uses ?? const <ShopSignal>{};
     final months = _prefs.historyMonths ?? 12;
+    final p = _partner ? 'Partner' : '';
     return [
       if (uses.contains(ShopSignal.purchaseHistory))
         months == 1
@@ -470,11 +499,11 @@ class _ShopPrivacySheetState extends State<ShopPrivacySheet> {
                   .tr('privacy.shop.usesHistory')
                   .replaceAll('{months}', '$months'),
       if (uses.contains(ShopSignal.gender) && uses.contains(ShopSignal.age))
-        context.tr('privacy.shop.usesGenderAge')
+        context.tr('privacy.shop.usesGenderAge$p')
       else if (uses.contains(ShopSignal.gender))
-        context.tr('privacy.shop.usesGender')
+        context.tr('privacy.shop.usesGender$p')
       else if (uses.contains(ShopSignal.age))
-        context.tr('privacy.shop.usesAge'),
+        context.tr('privacy.shop.usesAge$p'),
       if (uses.contains(ShopSignal.location))
         context.tr('privacy.shop.usesLocation'),
       if (uses.contains(ShopSignal.goal)) context.tr('privacy.shop.usesGoal'),
@@ -519,8 +548,13 @@ class _ShopPrivacySheetState extends State<ShopPrivacySheet> {
           mode: widget.mode,
           initial: _prefs.personalised,
           areaHint: _location,
+          partnerHint: _partner,
+          partnerUses: _partner ? _profileUses : null,
           onChanged: (prefs) {
-            setState(() => _prefs = prefs);
+            setState(() {
+              _prefs = prefs;
+              if (usesProfileSignals(prefs.uses)) _profileUses = prefs.uses;
+            });
             widget.onChanged?.call(prefs);
           },
           onUnavailable: () {
@@ -573,13 +607,29 @@ class _ShopPrivacySheetState extends State<ShopPrivacySheet> {
             style: theme.textTheme.bodyMedium,
           ),
         ],
-        const SizedBox(height: FFTokens.spacingSm),
-        Text(
-          context.tr('privacy.shop.never'),
-          style: theme.textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w600,
+        if (_partner) ...[
+          // Slice 4: no date of birth → only purchases; offer to add one.
+          ShopPartnerDobHint(
+            mode: widget.mode ?? _prefs.mode,
+            profileSignals: _prefs.profileSignals,
           ),
-        ),
+          // Slice 5: how the partner's date of birth is used (its own
+          // "never" line names verification data too).
+          const SizedBox(height: FFTokens.spacingMd),
+          PartnerShopExplainer(
+            role: _role,
+            showTitle: true,
+            showDraft: false,
+          ),
+        ] else ...[
+          const SizedBox(height: FFTokens.spacingSm),
+          Text(
+            context.tr('privacy.shop.never'),
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
       ],
     );
   }

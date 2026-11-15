@@ -734,7 +734,14 @@ class _PeopleTabState extends State<PeopleTab> {
         : by.contains('whatsapp')
         ? 'friendInvite.sentBy.whatsapp'
         : 'friendInvite.sentBy.sms';
-    return '${t(key)}$when';
+    // What the SMS provider later reported; nothing until it has (or when the
+    // server does not track it).
+    final delivery = switch (i['smsDelivery']) {
+      'delivered' => ' · ${t('friendInvite.smsDelivery.delivered')}',
+      'undelivered' => ' · ${t('friendInvite.smsDelivery.undelivered')}',
+      _ => '',
+    };
+    return '${t(key)}$when$delivery';
   }
 
   Widget _sentRequestsSection() {

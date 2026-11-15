@@ -7,6 +7,7 @@ import 'package:fitflexmobile/shared/social.dart';
 import 'package:fitflexmobile/shared/wire_labels.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // Gym tiers, pass access, shop order/payment statuses and the vendor's
 // next-step button have their own helpers and tests on release-candidate
@@ -16,6 +17,9 @@ void main() {
   FFLocale en() => FFLocale();
   FFLocale sw() => FFLocale()..set(const Locale('sw'));
 
+  // FFLocale.set saves the choice without waiting; with no mock the plugin
+  // error surfaces later, in whichever test is running.
+  setUp(() => SharedPreferences.setMockInitialValues({}));
   tearDown(FFLocale.new);
 
   test('every key exists in both languages', () {
@@ -54,7 +58,10 @@ void main() {
 
   testWidgets('account and enquiry statuses get a label', (tester) async {
     var context = await contextIn(tester, en());
-    expect(statusLabel(context, 'pending_verification'), 'Pending verification');
+    expect(
+      statusLabel(context, 'pending_verification'),
+      'Pending verification',
+    );
     expect(statusLabel(context, 'resolved'), 'Resolved');
 
     context = await contextIn(tester, sw());

@@ -76,8 +76,23 @@ class _GymFormPageState extends State<GymFormPage> {
   /// Selected trainer ids
   final List<String> _trainerIds = [];
 
+  /// Trainers linked to this gym when the form opened; null until loaded (or
+  /// when loading failed). The PUT body sends `trainerIds` only when the owner
+  /// changed this set: the server treats the list as the gym's full set and
+  /// unlinks anyone missing from it.
+  Set<String>? _linkedTrainerIds;
+
+  /// Only trainers already linked to this gym. New trainers join through
+  /// their own join request, which the owner approves on the Trainers page.
   List<Map<String, dynamic>> _trainers = [];
   bool _loadingTrainers = false;
+  bool _trainersFailed = false;
+
+  String? get _gymId {
+    final id = widget.initial?['id']?.toString();
+    return (id == null || id.isEmpty) ? null : id;
+  }
+
   bool _busy = false;
 
   @override
@@ -136,21 +151,9 @@ class _GymFormPageState extends State<GymFormPage> {
     for (var i = 0; i < _images.length; i++) {
       _thumbnails.add(i < existingThumbs.length ? existingThumbs[i] : null);
     }
-    final tids = g['trainerIds'];
-    if (tids is List) {
-      _trainerIds.addAll(tids.whereType<String>());
-    } else {
-      // Fall back to derived list when backend returns hydrated trainers.
-      final tList = g['trainers'];
-      if (tList is List) {
-        for (final t in tList.whereType<Map>()) {
-          final id = t['id']?.toString();
-          if (id != null) _trainerIds.add(id);
-        }
-      }
+    if (_gymId != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _loadTrainers());
     }
-
-    WidgetsBinding.instance.addPostFrameCallback((_) => _loadTrainers());
   }
 
   String _numText(dynamic v) {
@@ -172,32 +175,51 @@ class _GymFormPageState extends State<GymFormPage> {
     super.dispose();
   }
 
+  /// Loads the trainers linked to this gym (gym rows carry no trainer list;
+  /// the link lives on the trainer) and selects them all.
   Future<void> _loadTrainers() async {
+    final gymId = _gymId!;
     setState(() => _loadingTrainers = true);
     final api = AppScope.of(context).api;
     try {
-      final result = await api.ownerTrainers();
+      final result = await api.ownerTrainers(gymId: gymId);
+      final linked = result
+          .whereType<Map>()
+          .map((t) => Map<String, dynamic>.from(t))
+          .where((t) {
+            // The server falls back to all the owner's gyms for an unknown id.
+            final ids = t['gymIds'];
+            return ids is! List || ids.contains(gymId);
+          })
+          .toList();
+      if (!mounted) return;
+      setState(() {
+        _trainers = linked;
+        _linkedTrainerIds = {
+          for (final t in linked)
+            if ((t['id']?.toString() ?? '').isNotEmpty) t['id'].toString(),
+        };
+        _trainerIds
+          ..clear()
+          ..addAll(_linkedTrainerIds!);
+        _loadingTrainers = false;
+      });
+    } catch (_) {
       if (mounted) {
         setState(() {
-          _trainers = result.cast<Map<String, dynamic>>();
           _loadingTrainers = false;
+          _trainersFailed = true;
         });
       }
-    } catch (_) {
-      // Owners that haven't created any gyms yet may get an error here; that's
-      // fine — fall back to platform-wide trainer list.
-      try {
-        final result = await api.listTrainers();
-        if (mounted) {
-          setState(() {
-            _trainers = result.cast<Map<String, dynamic>>();
-            _loadingTrainers = false;
-          });
-        }
-      } catch (_) {
-        if (mounted) setState(() => _loadingTrainers = false);
-      }
     }
+  }
+
+  /// True when the owner unticked (or re-ticked) a linked trainer.
+  bool get _trainersChanged {
+    final linked = _linkedTrainerIds;
+    if (linked == null) return false;
+    final selected = _trainerIds.toSet();
+    return selected.length != linked.length || !selected.containsAll(linked);
   }
 
   /// Room left under the server's cap (kGymMaxPhotos, too_many_images).
@@ -317,7 +339,9 @@ class _GymFormPageState extends State<GymFormPage> {
           'coordinates': {'lat': _lat, 'lng': _lng},
         'images': images,
         'thumbnails': thumbnails,
-        'trainerIds': List<String>.from(_trainerIds),
+        // Omitted unless changed, so an edit of hours or photos never
+        // unlinks the gym's trainers.
+        if (_trainersChanged) 'trainerIds': List<String>.from(_trainerIds),
         'classes': _classes,
         'trainerPass': {
           'enabled': _trainerPassEnabled,
@@ -452,6 +476,69 @@ class _GymFormPageState extends State<GymFormPage> {
     });
   }
 
+  List<Widget> _trainerSection(BuildContext context) {
+    final small = Theme.of(context).textTheme.bodySmall;
+    if (_gymId == null) {
+      return [
+        Text(
+          context.tr('ownerReg.trainersJoinHint'),
+          key: const Key('gym-trainers-join-hint'),
+          style: small,
+        ),
+      ];
+    }
+    if (_loadingTrainers) {
+      return const [
+        Padding(padding: EdgeInsets.all(8), child: LinearProgressIndicator()),
+      ];
+    }
+    if (_trainersFailed) {
+      return [
+        Text(
+          context.tr('ownerReg.trainersLoadFailed'),
+          key: const Key('gym-trainers-load-failed'),
+          style: small,
+        ),
+      ];
+    }
+    if (_trainers.isEmpty) {
+      return [
+        Text(
+          context.tr('ownerReg.noLinkedTrainers'),
+          key: const Key('gym-trainers-none'),
+          style: small,
+        ),
+        const SizedBox(height: FFTokens.spacingXs),
+        Text(context.tr('ownerReg.trainersJoinHint'), style: small),
+      ];
+    }
+    return [
+      Text(context.tr('ownerReg.trainersLinkedHint'), style: small),
+      const SizedBox(height: FFTokens.spacingXs),
+      Wrap(
+        spacing: 6,
+        runSpacing: 6,
+        children: _trainers.map((t) {
+          final id = t['id']?.toString() ?? '';
+          final name =
+              (t['displayName'] as String?) ?? (t['email'] as String?) ?? id;
+          return FilterChip(
+            key: Key('gym-trainer-chip-$id'),
+            label: Text(name),
+            selected: _trainerIds.contains(id),
+            onSelected: (v) => setState(() {
+              if (v) {
+                if (!_trainerIds.contains(id)) _trainerIds.add(id);
+              } else {
+                _trainerIds.remove(id);
+              }
+            }),
+          );
+        }).toList(),
+      ),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final isEdit = widget.initial != null;
@@ -519,35 +606,7 @@ class _GymFormPageState extends State<GymFormPage> {
               ),
               const SizedBox(height: FFTokens.spacingMd),
               FFFieldLabel(context.tr('ownerReg.trainersLabel')),
-              if (_loadingTrainers)
-                const Padding(
-                  padding: EdgeInsets.all(8),
-                  child: LinearProgressIndicator(),
-                )
-              else
-                Wrap(
-                  spacing: 6,
-                  runSpacing: 6,
-                  children: _trainers.map((t) {
-                    final id = t['id']?.toString() ?? '';
-                    final selected = _trainerIds.contains(id);
-                    final name =
-                        (t['displayName'] as String?) ??
-                        (t['email'] as String?) ??
-                        id;
-                    return FilterChip(
-                      label: Text(name),
-                      selected: selected,
-                      onSelected: (v) => setState(() {
-                        if (v) {
-                          if (!_trainerIds.contains(id)) _trainerIds.add(id);
-                        } else {
-                          _trainerIds.remove(id);
-                        }
-                      }),
-                    );
-                  }).toList(),
-                ),
+              ..._trainerSection(context),
               const SizedBox(height: FFTokens.spacingMd),
               FFFieldLabel(context.tr('ownerReg.classesLabel')),
               if (_classes.isEmpty)

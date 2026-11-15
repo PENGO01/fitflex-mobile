@@ -525,6 +525,42 @@ void main() {
   });
 
   testWidgets(
+    'a sent SMS shows what the provider later reported, if anything',
+    (tester) async {
+      _tall(tester);
+      Map<String, dynamic> sms(String id, String? delivery) => {
+        'id': id,
+        'status': 'pending',
+        'contactType': 'phone',
+        'contact': '+2556503872$id',
+        'sentBy': ['sms'],
+        'sentAt': '2026-10-17T08:00:00.000Z',
+        'smsDelivery': ?delivery,
+      };
+      final api = _Api()
+        ..outgoing = [
+          sms('11', 'delivered'),
+          sms('22', 'undelivered'),
+          sms('33', null),
+          sms('44', 'pending'),
+        ];
+      await tester.pumpWidget(
+        _app(api, const MemberCommunityPage(initialTab: 2)),
+      );
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(
+        find.byKey(const Key('sent-44')),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.textContaining('SMS delivered'), findsOneWidget);
+      expect(find.textContaining('SMS could not be delivered'), findsOneWidget);
+      // Not reported yet, or only pending: no claim either way.
+      expect(find.textContaining('Sent by FitFlex by SMS'), findsNWidgets(4));
+    },
+  );
+
+  testWidgets(
     'invite where FitFlex could not send: says why, then the share sheet',
     (tester) async {
       _tall(tester);
