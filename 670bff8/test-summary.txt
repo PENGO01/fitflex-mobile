@@ -1,0 +1,16 @@
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+[REST] error: TimeoutException: slow
+06:53 +4745 ~14: All tests passed!
+[REST] <-- 400 GET http://localhost:0/auth/options
+[REST] response: 
+06:53 +4744 ~14: /home/runner/work/fitflex-mobile/fitflex-mobile/test/pin_flows_test.dart: change PIN is hidden while FitFlex does not keep PINs
+[REST] --> GET http://localhost:0/auth/options
+[REST] headers: {content-type: application/json, x-fitflex-client: identity-v2}
+[REST] <-- 400 GET http://localhost:0/auth/options
+[REST] response: 
+06:53 +4745 ~14: All tests passed!

@@ -1,0 +1,4 @@
+commit=670bff83cabc983a537857ef173a59c50744f864
+analyze=success
+test=success
+shots=success
