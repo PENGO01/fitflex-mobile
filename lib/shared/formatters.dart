@@ -90,6 +90,17 @@ String formatDate(
   return '${d.day} ${months[d.month - 1]} ${d.year}';
 }
 
+/// "Sep 2026" (sw "Sep 2026"): a month and year, or [fallback].
+String formatMonthYear(
+  Object? value, {
+  String locale = 'en',
+  String fallback = '',
+}) {
+  final d = localDateTime(value);
+  if (d == null) return fallback;
+  return '${(locale == 'sw' ? _monthsSw : _monthsEn)[d.month - 1]} ${d.year}';
+}
+
 /// "19 Oct" (sw "19 Okt"): a day and month, no year.
 String formatDayMonth(DateTime d, {String locale = 'en'}) =>
     '${d.day} ${(locale == 'sw' ? _monthsSw : _monthsEn)[d.month - 1]}';

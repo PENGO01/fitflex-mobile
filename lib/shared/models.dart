@@ -504,6 +504,9 @@ class MemberSummary {
   final PaymentRequest? pendingPayment;
   final bool? onboardingCompleted;
 
+  /// When the account was made (ISO, from `/me`): "Member since Sep 2026".
+  final String? createdAt;
+
   MemberSummary({
     required this.id,
     this.email,
@@ -517,6 +520,7 @@ class MemberSummary {
     this.subscription,
     this.pendingPayment,
     this.onboardingCompleted,
+    this.createdAt,
   });
 
   factory MemberSummary.fromJson(Map<String, dynamic> json) => MemberSummary(
@@ -528,6 +532,7 @@ class MemberSummary {
     publicId: json['publicId'] as String? ?? json['userCode'] as String?,
     userType: json['userType'] as String? ?? 'member',
     accountStatus: json['accountStatus'] as String?,
+    createdAt: json['createdAt'] as String?,
     memberProfile: json['memberProfile'] is Map<String, dynamic>
         ? MemberProfile.fromJson(json['memberProfile'] as Map<String, dynamic>)
         : null,

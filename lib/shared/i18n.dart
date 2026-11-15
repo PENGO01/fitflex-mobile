@@ -710,6 +710,7 @@ class FFLocale extends ChangeNotifier {
       'member.prefs': 'Language and theme',
       // Bottom-bar label of the central check-in action.
       'member.checkInNav': 'Check in',
+      'member.since': 'Member since {date}',
       'vendor.today.toPack': 'open orders to pack',
       'qr.newCodeIn': 'New code in {n} s',
       'trainer.bookPill': 'Book',
@@ -9117,6 +9118,8 @@ class FFLocale extends ChangeNotifier {
       'member.profile': 'Wasifu',
       'member.prefs': 'Lugha na mwonekano',
       'member.checkInNav': 'Ingia',
+      // TODO(sw-review)
+      'member.since': 'Mwanachama tangu {date}',
       // TODO(sw-review)
       'vendor.today.toPack': 'oda za kufunga',
       // TODO(sw-review)

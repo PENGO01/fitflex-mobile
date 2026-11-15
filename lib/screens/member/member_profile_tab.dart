@@ -9,6 +9,7 @@ import '../../shared/api_error_message.dart';
 import '../../shared/components/components.dart';
 import '../../shared/design_tokens.dart';
 import '../../shared/firebase_auth_service.dart';
+import '../../shared/formatters.dart';
 import '../../shared/i18n.dart';
 import '../../shared/models.dart';
 import '../../shared/photo_footer_flag.dart';
@@ -314,10 +315,25 @@ class _MemberProfileTabState extends State<MemberProfileTab> {
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    if (me?.user.publicId case final id?) ...[
+                    // "Member since Sep 2026 · FM664" (DS v1.0 profile card).
+                    if ([
+                      if (me?.user.createdAt case final c?)
+                        context.tr('member.since').replaceAll(
+                          '{date}',
+                          formatMonthYear(
+                            c,
+                            locale: FFLocaleScope.of(
+                              context,
+                            ).locale.languageCode,
+                          ),
+                        ),
+                      ?me?.user.publicId,
+                    ].where((t) => t.isNotEmpty).join(' · ')
+                        case final line when line.isNotEmpty) ...[
                       const SizedBox(height: 2),
                       Text(
-                        id,
+                        line,
+                        key: const Key('profile-member-since'),
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ],
