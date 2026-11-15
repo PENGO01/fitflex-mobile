@@ -209,8 +209,8 @@ class _MemberSessionsPageState extends State<MemberSessionsPage> {
           ? (_error == null
                 ? const Center(child: FFSpinner())
                 : FFEmptyState(
-                    title: context.tr('inbox.loadFailed'),
-                    body: errorMessage(FFLocaleScope.of(context), _error!),
+                    title: context.tr('sessions.loadFailed'),
+                    body: context.tr('common.loadFailedBody'),
                     action: FFButton(
                       label: context.tr('comms.retry'),
                       onPressed: _load,

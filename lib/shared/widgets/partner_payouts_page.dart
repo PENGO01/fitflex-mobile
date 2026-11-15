@@ -11,7 +11,6 @@ import 'package:go_router/go_router.dart';
 import '../../app_scope.dart';
 import '../../router.dart';
 import '../api_client.dart';
-import '../api_error_message.dart';
 import '../components/components.dart';
 import '../design_tokens.dart';
 import '../formatters.dart';
@@ -100,8 +99,8 @@ class _PartnerPayoutsPageState extends State<PartnerPayoutsPage> {
           ? (_error == null
                 ? const Center(child: FFSpinner())
                 : FFEmptyState(
-                    title: context.tr('inbox.loadFailed'),
-                    body: errorMessage(FFLocaleScope.of(context), _error!),
+                    title: context.tr('payouts.loadFailed'),
+                    body: context.tr('common.loadFailedBody'),
                     action: FFButton(
                       label: context.tr('comms.retry'),
                       onPressed: _load,
@@ -318,8 +317,8 @@ class _PartnerPayoutDetailPageState extends State<PartnerPayoutDetailPage> {
           ? (_error == null
                 ? const Center(child: FFSpinner())
                 : FFEmptyState(
-                    title: context.tr('inbox.loadFailed'),
-                    body: errorMessage(FFLocaleScope.of(context), _error!),
+                    title: context.tr('payouts.loadFailed'),
+                    body: context.tr('common.loadFailedBody'),
                   ))
           : ListView(
               padding: const EdgeInsets.all(FFTokens.spacingLg),

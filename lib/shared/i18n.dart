@@ -96,6 +96,7 @@ class FFLocale extends ChangeNotifier {
       'common.errorTitle': 'Something went wrong',
       'common.errorBody':
           'We could not load this. Check your connection and try again.',
+      'common.loadFailedBody': 'Check your connection and try again.',
       'a11y.search': 'Search',
       'a11y.showPin': 'Show PIN',
       'a11y.hidePin': 'Hide PIN',
@@ -625,6 +626,7 @@ class FFLocale extends ChangeNotifier {
       'trainer.todaySessions': 'Today sessions',
       'trainer.earnings': 'Earnings',
       'payouts.title': 'My payouts',
+      'payouts.loadFailed': "Your payouts didn't load",
       'payouts.tile': 'Weekly statements of what FitFlex pays you',
       'payouts.intro':
           'FitFlex pays you each week for sessions you completed, and for paid sessions that took place. Each statement is checked and approved before it is paid.',
@@ -1495,6 +1497,7 @@ class FFLocale extends ChangeNotifier {
       'shop.cancelledRefund':
           'Order cancelled. Your refund is being processed (not sent yet); follow it under Sessions & refunds.',
       'sessions.title': 'Sessions & refunds',
+      'sessions.loadFailed': "Your sessions didn't load",
       'sessions.tile': 'Trainer sessions you booked, cancellations and refunds',
       'sessions.mine': 'My trainer sessions',
       'sessions.empty':
@@ -3930,6 +3933,7 @@ class FFLocale extends ChangeNotifier {
       'inbox.offersNote':
           'You can turn off offers in Privacy & data → Messages & offers.',
       'benefits.title': 'My wellness benefits',
+      'benefits.loadFailed': "Your benefits didn't load",
       'benefits.tile': 'From your employer, insurer or club',
       'benefits.intro':
           'Benefits are used automatically when you check in at a gym or finish a trainer session. When one runs out, your own pass is used.',
@@ -3983,6 +3987,7 @@ class FFLocale extends ChangeNotifier {
           'You pay {amount}; your sponsor pays the rest',
       'benefits.funding.none': 'Nothing to pay',
       'msgPrefs.title': 'Messages & offers',
+      'msgPrefs.loadFailed': "Your message settings didn't load",
       'msgPrefs.tile': 'Choose which offers you get from your gym and FitFlex',
       'msgPrefs.intro':
           'Your gym and FitFlex can send you offers and news. Choose how you want to get offers.',
@@ -8431,6 +8436,7 @@ class FFLocale extends ChangeNotifier {
       'common.errorTitle': 'Hitilafu imetokea',
       'common.errorBody':
           'Hatukuweza kupakia hili. Angalia mtandao wako kisha jaribu tena.',
+      'common.loadFailedBody': 'Angalia mtandao wako kisha ujaribu tena.', // TODO(sw-review)
       'a11y.search': 'Tafuta',
       'a11y.showPin': 'Onyesha PIN',
       'a11y.hidePin': 'Ficha PIN',
@@ -9034,6 +9040,7 @@ class FFLocale extends ChangeNotifier {
       'trainer.todaySessions': 'Vipindi vya leo',
       'trainer.earnings': 'Mapato',
       'payouts.title': 'Malipo yangu',
+      'payouts.loadFailed': 'Malipo yako hayakupakiwa', // TODO(sw-review)
       'payouts.tile': 'Taarifa za kila wiki za kile FitFlex inachokulipa',
       'payouts.intro':
           'FitFlex inakulipa kila wiki kwa vipindi ulivyokamilisha, na kwa vipindi vilivyolipiwa vilivyofanyika. Kila taarifa hukaguliwa na kuidhinishwa kabla ya kulipwa.',
@@ -9932,6 +9939,7 @@ class FFLocale extends ChangeNotifier {
       'shop.cancelledRefund':
           'Oda imeghairiwa. Marejesho yako yanashughulikiwa (bado hayajatumwa); fuatilia kwenye Vipindi na marejesho.',
       'sessions.title': 'Vipindi na marejesho',
+      'sessions.loadFailed': 'Vipindi vyako havikupakiwa', // TODO(sw-review)
       'sessions.tile':
           'Vipindi ulivyoweka na ma-trainer, kughairi na marejesho',
       'sessions.mine': 'Vipindi vyangu na ma-trainer',
@@ -12338,6 +12346,7 @@ class FFLocale extends ChangeNotifier {
       'inbox.offersNote':
           'Unaweza kuzima ofa kwenye Faragha na data → Ujumbe na ofa.',
       'benefits.title': 'Benefits zangu za afya',
+      'benefits.loadFailed': 'Benefits zako hazikupakiwa', // TODO(sw-review)
       'benefits.tile': 'Kutoka kwa mwajiri, bima au klabu yako',
       'benefits.intro':
           'Benefits hutumika moja kwa moja unapoingia gym au unapomaliza kipindi cha trainer. Zikiisha, pasi yako mwenyewe hutumika.',
@@ -12393,6 +12402,7 @@ class FFLocale extends ChangeNotifier {
           'Unalipa {amount}; mdhamini wako analipa kilichobaki',
       'benefits.funding.none': 'Hakuna cha kulipa',
       'msgPrefs.title': 'Ujumbe na ofa',
+      'msgPrefs.loadFailed': 'Mipangilio yako ya ujumbe haikupakiwa', // TODO(sw-review)
       'msgPrefs.tile': 'Chagua ofa unazopokea kutoka gym yako na FitFlex',
       'msgPrefs.intro':
           'Gym yako na FitFlex zinaweza kukutumia ofa na habari. Chagua jinsi unavyotaka kupokea ofa.',
