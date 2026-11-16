@@ -352,45 +352,62 @@ Both are private until Godliving shares them. Ask him for access if the links do
 
 ### Round 2 (16 Nov): answers from Godliving
 
-#### j. Any pass opens every gym [HIGH]
+#### j. Gym tiers: an access ladder [HIGH]
 
-Godliving's rule: **any pass opens every FitFlex gym.** There are no Pro vs Premium gym tiers.
+Godliving's decision (16 Nov, replaces the earlier "every pass opens every gym" note): passes open gyms on a ladder.
 
-The app does not match yet. It filters and labels gyms by tier:
+| Pass | Price / visits today (`/subscription-tiers`) | Opens |
+|---|---|---|
+| Basic | TSh 30,000 · 12 visits | Basic gyms |
+| Pro | TSh 60,000 · 30 visits | Pro + Basic gyms |
+| Premium | TSh 100,000 · 30 visits | Premium + Pro + Basic gyms |
+| Executive | TSh 200,000 · 30 visits | All gyms, plus Executive perks |
+
+**[HIGH] Access ladder: the server enforces, the client explains**
+
+What the code does today:
 
 | Where | What it does |
 |---|---|
-| `lib/shared/pass_gyms.dart:1-38` | `gymsForPass()` limits gyms by the pass's `gymAccess` (standard < midtier < premium < luxury_executive) |
-| `lib/shared/pass_gyms.dart:52` | `gymsAddedByUpgrade()` lists "gyms an upgrade adds" |
+| `lib/shared/pass_gyms.dart:1-38` | `gymsForPass()` already filters on a ladder from the pass's `gymAccess`: standard < midtier < premium < luxury_executive. A missing or unknown `gymAccess` opens every gym |
+| `lib/shared/pass_gyms.dart:52` | `gymsAddedByUpgrade()`: the gyms an upgrade adds |
 | `lib/shared/models.dart:847,867` | `PassTier.gymAccess` read from `/subscription-tiers` |
-| `lib/screens/member/member_passes_page.dart:585,874,922` | Passes page: upgrade gym list, per-pass gym list, "Standard + Mid-tier gyms" label |
-| `lib/screens/member/member_payment_page.dart:368` | Payment page shows only the gyms the pass "opens" |
+| `lib/screens/member/member_passes_page.dart:585,874,922` | Passes page: upgrade gym list, per-pass gym list, access label |
+| `lib/screens/member/member_payment_page.dart:368` | Payment page lists the gyms the pass opens |
 | `lib/screens/member/widgets/pass_gyms_sheet.dart:21,43,91` | Pass gyms sheet, grouped by gym tier |
-| `lib/shared/i18n.dart:2820-2824` (sw `11291-11295`) | `pass.gymAccess.*` strings ("Standard + Mid-tier + Premium gyms") |
-| `lib/screens/member/widgets/gym_card.dart:101,269`, `member_gym_detail_page.dart:169` | Tier badge on every gym card and gym detail |
-| `lib/screens/member/widgets/gym_filters.dart:19-20` | Gym filter by tier (standard / midtier / premium) |
-| `lib/shared/api_error_message.dart:292,298` | Server codes `gym_tier_not_covered` / `tier_not_covered` exist, so the **server also refuses check-in by tier** |
+| `lib/shared/api_error_message.dart:292,298` | Server check-in codes `gym_tier_not_covered` / `tier_not_covered` exist, so the server already refuses by tier |
 
-Suggestion
+What must change:
 
-- Server first: drop the tier check at check-in (or return every gym for every pass). The client must not be the only place this changes.
-- Make the client server-driven: if `gymAccess` is missing or `all`, `gymsForPass()` already returns every active gym. Send `all` (or nothing) and the current UI follows.
-- Remove the per-pass gym lists, `gymsAddedByUpgrade` and the "Standard + Mid-tier" labels. Passes then differ only by visits and price.
-- UI copy on every pass: "Works at every FitFlex gym" / "Inatumika kwenye gym zote za FitFlex".
-- Gym tier badge and filter: see the [MID] item below. Keep them for display only.
+- Server: check-in must refuse a gym above the pass (`tier_not_covered`), and `/subscription-tiers` must send the right `gymAccess` per pass (Basic `standard`, Pro `midtier`, Premium `premium`, Executive `luxury_executive`). The client never decides access on its own.
+- Client: keep `gymsForPass()` as the explainer only. On a gym above the pass: no lock icon, a quiet line "Opens with Premium" + text link "See Premium pass". On that gym's detail, Check in is disabled with "Your Pro pass doesn't open this gym".
+- Map the `tier_not_covered` error to that same sentence instead of "Gym tier not covered" (`lib/shared/i18n.dart:486`).
+- Executive: the code has a fourth gym tier, `luxury_executive` (`lib/shared/pass_gyms.dart:9-14`). The spec says Executive opens "all gyms" (Premium + Pro + Basic) plus perks. Decide whether `luxury_executive` gyms exist, or whether Executive is the Premium ladder plus perks.
 
-**Gym tiers stay visible, never gate access [MID]**
+**[MID] Display names match the pass names**
 
-Godliving's decision: gym tiers stay on screen for credibility and personal status, but every pass opens every gym.
+- Code tiers stay `standard` / `midtier` / `premium`. Display only: Standard → **Basic**, Mid-tier → **Pro**, Premium → **Premium**.
+- Change `tier.standard` / `tier.midtier` (`lib/shared/i18n.dart:3118-3121`, plus sw) and `pass.gymAccess.*` (`lib/shared/i18n.dart:2820-2824`, sw `11291-11295`): e.g. "Pro and Basic gyms".
+- Used by `gymTierLabel()` (`lib/screens/member/widgets/gym_filters.dart:67`) on gym cards, gym detail and filter chips.
 
-- Keep: the `Gym.tier` field (`lib/shared/models.dart:10`), the tier badge on gym cards and gym detail (`lib/screens/member/widgets/gym_card.dart:101,269`, `lib/screens/member/member_gym_detail_page.dart:169`), and the tier filter chips (`lib/screens/member/widgets/gym_filters.dart:19-20`).
-- Remove, or drive from the server, anything that hides or blocks gyms by tier:
-  - `gymsForPass()` filtering (`lib/shared/pass_gyms.dart:30-38`), used by `member_payment_page.dart:368`, `member_passes_page.dart:874` and `widgets/pass_gyms_sheet.dart:43`.
-  - "Gyms an upgrade adds": `gymsAddedByUpgrade()` (`lib/shared/pass_gyms.dart:52`), `member_passes_page.dart:585`, highlight in `widgets/pass_gyms_sheet.dart:26`. An upgrade can still sell more visits, never more gyms.
-  - Per-pass access labels `pass.gymAccess.*` (`lib/shared/i18n.dart:2820-2824`, sw `11291-11295`), shown at `member_passes_page.dart:922`. Replace with "Works at every FitFlex gym".
-  - Server check-in refusal by tier: `gym_tier_not_covered` / `tier_not_covered` (`lib/shared/api_error_message.dart:292,298`).
-- I found no "Upgrade" pill on gym cards or gym detail. The upgrade entry points (`member.upgradePlan`) are on the pass card (`widgets/pass_summary_card.dart:267`) and the passes page (`member_passes_page.dart:434`), and those are about the pass, not gyms.
-- Badge wording: a status word ("Premium gym"), never "Requires Premium" or a lock icon.
+**[MID] Tier badge icons**
+
+- Today the badge is a plain gray `FFBadge` with text only (`lib/screens/member/widgets/gym_card.dart:100-103,269`, `lib/screens/member/member_gym_detail_page.dart:168-171`). Gym detail puts a status `dot` next to it (`member_gym_detail_page.dart:165`).
+- Replace with a `TierBadge`: Lucide `star` (Basic), `gem` (Pro), `crown` (Premium). Pill, height 24, icon 14 px. Premium is forest with a lime icon. No rhombus or dots for tiers.
+- On photos the pill sits top-right, 10 px in, on its own solid fill.
+
+**[MID] "See [N] gyms" deep link from each plan card**
+
+- Each plan card gets a text button "See 12 gyms" with a chevron (aria-label "See the gyms the Pro pass opens").
+- Opens `/member/gyms?tier=<pass>` with chips prefiltered (Pro + Basic selected) and a strip "Gyms your Pro pass opens · Pro and Basic" + "Clear".
+- Today `/member/gyms` (`lib/router.dart:235`) takes no query, and the gyms tab filter holds one tier (`lib/screens/member/member_gyms_tab.dart:142-152`). It needs a multi-tier filter and a `tier` query param.
+- Needs a per-tier gym count: `gymsForPass(gymAccess, gyms).length` works on the client; a server count is better if the gym list is paged. Show "See gyms" when the count is unknown.
+
+**[MID] Premium and Executive need real differences**
+
+- Premium (TSh 100,000) and Executive (TSh 200,000) both get 30 visits. Pro also gets 30. Only gym access separates them, and Executive's "perks" are not in `/subscription-tiers`.
+- The old `/passes` response had `multiGymPerDay` and `trainerDiscountPct` (see `test/fixtures/regression.json:824-848`), but `PassTier` (`lib/shared/models.dart:842-868`) does not read them.
+- Suggestion: bring these back on `/subscription-tiers` (or add a `perks` list) and show them on the plan cards, so a member can see why Executive costs double.
 
 #### k. Zero visits left: never show the QR [HIGH]
 
@@ -429,6 +446,7 @@ bool get canCheckIn =>
 |---|---|
 | **[HIGH]** | Where should the new data live: weekly goal days, the Vibe preference, preferred language on `/me`, and a request id in error bodies for "Ref" codes? |
 | **[HIGH]** | Does the door/server accept a QR code for a grace window after it rotates (e.g. 60 to 120 s)? If yes, how long? Could a signed offline code work for poor-signal gyms? |
-| **[HIGH]** | Can the server drop the gym-tier check (`tier_not_covered`) so any pass opens every gym? |
+| **[HIGH]** | Does the access ladder (Basic → Basic gyms; Pro → Pro + Basic; Premium → all three; Executive → all + perks) match the business agreements with each gym? Does the server enforce it at check-in today? |
+| **[MID]** | Do `luxury_executive` gyms exist, or is Executive the Premium ladder plus perks? |
 | **[HIGH]** | Does `/me/qr` refuse a token when visits left is 0? |
 | **[MID]** | Should a "Funny" vibe exist at all, or only Coach / Calm / Off? |
