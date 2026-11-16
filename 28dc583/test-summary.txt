@@ -1,0 +1,16 @@
+[REST] error: TimeoutException: slow
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+[REST] error: TimeoutException after 0:02:30.000000: Future not completed
+07:59 +4745 ~19: All tests passed!
+07:58 +4738 ~19: /home/runner/work/fitflex-mobile/fitflex-mobile/test/latest_checkins_card_test.dart: shows the latest three, newest first, with time and plan
+07:58 +4739 ~19: /home/runner/work/fitflex-mobile/fitflex-mobile/test/latest_checkins_card_test.dart: empty gym explains where check-ins appear
+07:58 +4740 ~19: /home/runner/work/fitflex-mobile/fitflex-mobile/test/latest_checkins_card_test.dart: a failed load leaves no block behind
+07:58 +4741 ~19: /home/runner/work/fitflex-mobile/fitflex-mobile/test/latest_checkins_card_test.dart: See all calls back
+07:58 +4742 ~19: /home/runner/work/fitflex-mobile/fitflex-mobile/test/latest_checkins_card_test.dart: a name leads when the server sends one, public ID otherwise
+07:58 +4743 ~19: /home/runner/work/fitflex-mobile/fitflex-mobile/test/latest_checkins_card_test.dart: checkinVisitorLabel falls back through the identifiers
+07:58 +4744 ~19: /home/runner/work/fitflex-mobile/fitflex-mobile/test/latest_checkins_card_test.dart: the full list shows the name, then public ID, plan and time
+07:59 +4745 ~19: All tests passed!
