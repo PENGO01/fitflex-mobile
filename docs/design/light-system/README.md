@@ -206,3 +206,146 @@ Next steps, each its own pull request:
 Prepared without a local Flutter toolchain. `flutter analyze`, the full
 `flutter test` suite and the screenshots run in GitHub Actions on the fork
 (`design-check.yml`).
+
+## P.S. for Nassor: code suggestions from design review (16 Nov)
+
+These are suggestions from the design side. Nassor decides the implementation.
+
+Levels: **[HIGH]** fix before release, **[MID]** next pass, **[LOW]** when convenient.
+
+### What the data has today
+
+| Need | Today | Status |
+|---|---|---|
+| Gender | `MemberProfile.gender` (`/me` > `memberProfile.gender`, nullable) | Exists |
+| Preferred language | Not on `/me`. App locale lives in `FFLocale`; `locale` is only sent on auth/OTP calls | App-side only. NEW if it must follow the member across devices |
+| Weekly workout goal (days) | `fitnessGoal` / `fitnessGoals` are goal *types* (strings), not a day count. `preferredWorkoutTimes` is times | NEW |
+| Pass tier / plan | `Subscription.tier`, `Subscription.plan`, `Subscription.type` | Exists |
+| Member since | `MemberSummary.createdAt` | Exists |
+| Preferences object | None | NEW |
+| Sponsor / employer | `myWellnessBenefits()` (`GET /b2b/me/benefits`) has the data, but Home keeps only the `sponsoredGymAccess` boolean | Exists server-side, not kept |
+| Error code | `ApiException.code` (`body.error` or `body.failure`) | Exists |
+| Request id / reference | Nothing in `ApiException` or the client headers | NEW (server) |
+
+### a. Greeting engine [MID]
+
+Replace "Good morning, <name>" (`member.goodMorning`) with a small, warm greeting picker.
+
+- Inputs: language (`en` / `sw`), time of day, first name, gender (only if set), pass tier, streak.
+- Name: first word of `displayName` only. Never email, phone or publicId (see bug list).
+- Data: all existing, except a member "vibe" setting (NEW, see b).
+
+| Kiswahili | English |
+|---|---|
+| Mambo vipi, Amina? | Look who's back, Amina |
+| Niaje Amina, tayari kupiga tizi? | Morning, champ. Ready to move? |
+| Habari za asubuhi, Amina | Hey Amina, the gym missed you |
+| Vipi mkuu, leo tunapiga tizi? | Day 5 of your streak. Keep it rolling |
+| Siku ya 5 mfululizo, endelea hivyo! | Evening, Amina. One more for today? |
+| Jioni njema Amina, tumalizie kwa nguvu? | Pro mode on, Amina |
+
+Rules
+
+- Rotate from a pool keyed by language + time of day + context (streak, tier).
+- Never show the same line twice in a row (keep the last id in local storage).
+- No gendered words when gender is unknown. Use the neutral pool. Never infer gender from the name.
+- No age-based forms ("Shikamoo"): age respect can't be known safely.
+- Humour off in bad states: expired, suspended, payment failed, errors. Use the plain greeting.
+- Respect the member's vibe: Off gives "Habari za asubuhi, Amina" / "Good morning, Amina".
+
+```dart
+String greet(GreetCtx c) {
+  final pool = greetings[c.lang]!
+      .where((g) => g.fits(c))            // time, streak, tier, vibe
+      .where((g) => c.gender != null || g.neutral)
+      .where((g) => !c.badState || g.plain)
+      .where((g) => g.id != c.lastId)
+      .toList();
+  return pool[Random().nextInt(pool.length)].text(c.firstName);
+}
+```
+
+### b. Replace "Ready to train?" with a daily line [MID]
+
+A rotating one-liner: motivation, a life lesson or a short reminder. Original lines or public-domain methali only. No copyrighted quotes.
+
+| # | Kiswahili | English |
+|---|---|---|
+| 1 | Haba na haba hujaza kibaba. | Little by little fills the measure. |
+| 2 | Mtaka cha mvunguni sharti ainame. | Want what's under the bed? You have to bend. |
+| 3 | Bandu bandu huisha gogo. | Chip by chip, the log is done. |
+| 4 | Usipoziba ufa utajenga ukuta. | Fix the crack now, or rebuild the wall later. |
+| 5 | Dakika 20 leo ni bora kuliko saa mbili kesho. | 20 minutes today beats two hours someday. |
+| 6 | Kunywa maji kabla hujaanza. | Drink some water before you start. |
+| 7 | Mwili wako unakumbuka kila hatua. | Your body remembers every rep. |
+| 8 | Kupumzika nako ni mazoezi. | Rest is part of the plan too. |
+
+- Pick one per day (seeded by date) so it doesn't flicker on refresh.
+- NEW member preference **Vibe**: `coach` (push), `calm` (gentle), `funny`, `off`. Default `calm`. It filters both a and b.
+- Data: NEW `preferences.vibe` on `/me` (no preferences object exists today). Local storage is fine for a first version.
+
+### c. Active days goal [MID]
+
+- A weekly goal (days per week, 1 to 7) drives a small progress bar on Home's "This week" card: "3 of 4 days".
+- No goal set: a quiet "Set a goal" text button in the card. No nagging.
+- Data: NEW `memberProfile.weeklyGoalDays` (int, nullable). `fitnessGoals` are goal types, so don't reuse them.
+
+### d. Visits this month in local time [LOW]
+
+- Count visits with `m.at.toLocal()`, same as the week strip. Today it uses UTC, so visits after 21:00 EAT on the last day of a month land in the wrong month.
+
+```dart
+final now = DateTime.now();
+final visits = moments.where((m) {
+  final t = m.at.toLocal();
+  return t.year == now.year && t.month == now.month;
+}).length;
+```
+
+- Data: existing `checkInMoments`.
+
+### e. Nearest gyms carousel [MID]
+
+- Home shows 3 to 6 nearest gyms as a horizontal scroll of square cards (photo, name, area, distance).
+- Sort by `gymDisplayDistanceKm()`; drop gyms without coordinates to the end.
+- No location permission: show popular gyms, titled "Popular gyms", no distance.
+- Data: existing `listGyms()` + `Gym.latitude/longitude` + `coverThumbnail`. "Popular" needs a NEW sort (e.g. visit count) from the server; until then use backend order.
+
+### f. Payment pending refresh [HIGH]
+
+- Add "Check again" on the pending card (S6, S10) that re-checks the payment and shows "Last checked 9:40".
+- Endpoint exists: `refreshMobileMoney(paymentRequestId)` > `POST /me/payments/{id}/mobile-money/refresh`, `state`: `in_progress | completed | failed | held | none`. Then reload `/me` on `completed`.
+- Disable the button for ~10 s after a tap. Store the last-checked time locally.
+
+### g. Error friend [HIGH]
+
+Every error answers three things: what happened, what to do, where to check.
+
+| Level | When | Shows |
+|---|---|---|
+| Low | Nothing lost, retry works (list failed to load) | One line + Retry |
+| Mid | Action failed (check-in, booking) | What happened + what to do + link (Payments, Inbox) |
+| High | Money or access at stake (payment, suspended) | Mid + reference code + time: "Ref FX-7K2Q · 16 Nov 09:40" |
+
+- Data: `ApiException.code` exists for "what happened". A request id does not exist: NEW, ideally the server returns `requestId` in error bodies (or an `X-Request-Id` header) so support can find it. Until then, show code + time only.
+
+### h. Home bugs found in review
+
+| Level | Bug | Where / fix |
+|---|---|---|
+| **[HIGH]** | Pass card spins forever when the profile load fails (board layout) | `PassSummaryCard`: the error branch is gated on `photoHeroUi`. Show error + Retry on the board too |
+| **[HIGH]** | Check in and QR offered with 0 visits left | `lowVisits` keeps `canShowQr`. Block when `visitsLeft == 0` |
+| **[HIGH]** | Sponsored members told "No pass yet / Choose a pass" | Board ignores `sponsoredGymAccess`. Add the sponsored state (S13) |
+| **[MID]** | Suspended reads "Your pass ended -." | `passStateFor` sends any non-`inactive` status to ended. Add suspended/cancelled states and the missing `member.status_*` keys |
+| **[MID]** | Ending-soon thresholds differ between files | `pass_state` (≤3 days / ≤3 visits) vs `home_feed._passport` (≤1 visit / ≤5 days). One shared constant; scale for daily/weekly plans |
+| **[MID]** | Failed check-ins load looks like zero visits | `_refreshCheckins` swallows errors. Add a `checkinsFailed` flag and show "Couldn't load visits" |
+| **[LOW]** | Visits this month counted in UTC | See d |
+| **[LOW]** | Greeting can show an email or phone as the name | `knownName` falls back to email/phone/publicId. Greet without a name instead |
+| **[LOW]** | Unknown server codes are reworded for English readers only | `lib/shared/api_error_message.dart` `_humanize` runs only for `en`; Swahili gets the generic line. Map known codes, and log unknown ones |
+
+### i. Design canvases to review
+
+- Member Home: https://claude.ai/artifact/DQDTpqdT4hS5x84eubCA8T
+- Design system: https://claude.ai/artifact/KV5NWBb2RdVKMozBsg92v1
+
+Both are private until Godliving shares them. Ask him for access if the links don't open.
