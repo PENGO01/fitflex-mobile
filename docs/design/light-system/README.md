@@ -377,7 +377,20 @@ Suggestion
 - Make the client server-driven: if `gymAccess` is missing or `all`, `gymsForPass()` already returns every active gym. Send `all` (or nothing) and the current UI follows.
 - Remove the per-pass gym lists, `gymsAddedByUpgrade` and the "Standard + Mid-tier" labels. Passes then differ only by visits and price.
 - UI copy on every pass: "Works at every FitFlex gym" / "Inatumika kwenye gym zote za FitFlex".
-- Gym tier badge and filter: keep only if tier still means price/style for browsing. Otherwise remove, so members don't read it as a lock.
+- Gym tier badge and filter: see the [MID] item below. Keep them for display only.
+
+**Gym tiers stay visible, never gate access [MID]**
+
+Godliving's decision: gym tiers stay on screen for credibility and personal status, but every pass opens every gym.
+
+- Keep: the `Gym.tier` field (`lib/shared/models.dart:10`), the tier badge on gym cards and gym detail (`lib/screens/member/widgets/gym_card.dart:101,269`, `lib/screens/member/member_gym_detail_page.dart:169`), and the tier filter chips (`lib/screens/member/widgets/gym_filters.dart:19-20`).
+- Remove, or drive from the server, anything that hides or blocks gyms by tier:
+  - `gymsForPass()` filtering (`lib/shared/pass_gyms.dart:30-38`), used by `member_payment_page.dart:368`, `member_passes_page.dart:874` and `widgets/pass_gyms_sheet.dart:43`.
+  - "Gyms an upgrade adds": `gymsAddedByUpgrade()` (`lib/shared/pass_gyms.dart:52`), `member_passes_page.dart:585`, highlight in `widgets/pass_gyms_sheet.dart:26`. An upgrade can still sell more visits, never more gyms.
+  - Per-pass access labels `pass.gymAccess.*` (`lib/shared/i18n.dart:2820-2824`, sw `11291-11295`), shown at `member_passes_page.dart:922`. Replace with "Works at every FitFlex gym".
+  - Server check-in refusal by tier: `gym_tier_not_covered` / `tier_not_covered` (`lib/shared/api_error_message.dart:292,298`).
+- I found no "Upgrade" pill on gym cards or gym detail. The upgrade entry points (`member.upgradePlan`) are on the pass card (`widgets/pass_summary_card.dart:267`) and the passes page (`member_passes_page.dart:434`), and those are about the pass, not gyms.
+- Badge wording: a status word ("Premium gym"), never "Requires Premium" or a lock icon.
 
 #### k. Zero visits left: never show the QR [HIGH]
 
