@@ -349,3 +349,73 @@ Every error answers three things: what happened, what to do, where to check.
 - Design system: https://claude.ai/artifact/KV5NWBb2RdVKMozBsg92v1
 
 Both are private until Godliving shares them. Ask him for access if the links don't open.
+
+### Round 2 (16 Nov): answers from Godliving
+
+#### j. Any pass opens every gym [HIGH]
+
+Godliving's rule: **any pass opens every FitFlex gym.** There are no Pro vs Premium gym tiers.
+
+The app does not match yet. It filters and labels gyms by tier:
+
+| Where | What it does |
+|---|---|
+| `lib/shared/pass_gyms.dart:1-38` | `gymsForPass()` limits gyms by the pass's `gymAccess` (standard < midtier < premium < luxury_executive) |
+| `lib/shared/pass_gyms.dart:52` | `gymsAddedByUpgrade()` lists "gyms an upgrade adds" |
+| `lib/shared/models.dart:847,867` | `PassTier.gymAccess` read from `/subscription-tiers` |
+| `lib/screens/member/member_passes_page.dart:585,874,922` | Passes page: upgrade gym list, per-pass gym list, "Standard + Mid-tier gyms" label |
+| `lib/screens/member/member_payment_page.dart:368` | Payment page shows only the gyms the pass "opens" |
+| `lib/screens/member/widgets/pass_gyms_sheet.dart:21,43,91` | Pass gyms sheet, grouped by gym tier |
+| `lib/shared/i18n.dart:2820-2824` (sw `11291-11295`) | `pass.gymAccess.*` strings ("Standard + Mid-tier + Premium gyms") |
+| `lib/screens/member/widgets/gym_card.dart:101,269`, `member_gym_detail_page.dart:169` | Tier badge on every gym card and gym detail |
+| `lib/screens/member/widgets/gym_filters.dart:19-20` | Gym filter by tier (standard / midtier / premium) |
+| `lib/shared/api_error_message.dart:292,298` | Server codes `gym_tier_not_covered` / `tier_not_covered` exist, so the **server also refuses check-in by tier** |
+
+Suggestion
+
+- Server first: drop the tier check at check-in (or return every gym for every pass). The client must not be the only place this changes.
+- Make the client server-driven: if `gymAccess` is missing or `all`, `gymsForPass()` already returns every active gym. Send `all` (or nothing) and the current UI follows.
+- Remove the per-pass gym lists, `gymsAddedByUpgrade` and the "Standard + Mid-tier" labels. Passes then differ only by visits and price.
+- UI copy on every pass: "Works at every FitFlex gym" / "Inatumika kwenye gym zote za FitFlex".
+- Gym tier badge and filter: keep only if tier still means price/style for browsing. Otherwise remove, so members don't read it as a lock.
+
+#### k. Zero visits left: never show the QR [HIGH]
+
+Godliving's decision: with 0 visits left, the QR never shows.
+
+- Today: `canCheckIn => hasActivePass || sponsoredGymAccess` (`lib/screens/member/member_shell.dart:139`) only looks at pass dates. `hasActivePass` is `status == 'active'` (`lib/shared/models.dart:838`). The QR keeps refreshing every 30 s (`member_shell.dart:282-283`).
+- `PassState.lowVisits` covers 0 visits and still has `canShowQr` (`lib/screens/member/widgets/pass_state.dart:39-41`). The QR tab renders whenever `qrToken != null` (`lib/screens/member/member_qr_tab.dart:135`).
+- Change: add `PassState.noVisits` when `visitsLeft == 0`, with `canShowQr == false`. Make `canCheckIn` false too, so `_refreshQr` stops asking for a token.
+- Card and QR tab: "No visits left" + "Choose your next pass" (`pass.badge.noVisits`, `home.hero.nextPass`).
+- Server: keep refusing at 0 (`visits_exhausted` / `visit_cap_reached` already map to copy in `api_error_message.dart:293,299`). Please confirm `/me/qr` itself refuses a token at 0, so the client is not the only guard.
+
+```dart
+bool get canCheckIn =>
+    sponsoredGymAccess || (hasActivePass && (visitsLeft(me) ?? 1) > 0);
+```
+
+#### l. Offline at the door: keep the last QR [HIGH]
+
+- Today: `_refreshQr` (`lib/screens/member/member_shell.dart:671-678`) sets `qrToken = null` when a refresh fails. With the 30 s timer (`member_shell.dart:282`), a member who loses signal at the gym door loses the QR within 30 s.
+- Design: keep the last code on screen, paused and blurred, with "Try again".
+- If the server accepts a code for a short grace window after it rotates: keep the last code sharp, with its age ("Code from 09:41"), until the window ends. Then blur + Try again.
+- On failure, keep the old token and store when it was fetched:
+
+```dart
+} catch (_) {
+  _data.update((d) => d.qrFailedAt = DateTime.now()); // keep d.qrToken
+}
+```
+
+- Longer term: a signed offline code (time-boxed, bound to the device) for gyms with poor signal.
+- String mismatch: `home.qr.refreshes` says "every 60s" (`lib/shared/i18n.dart:1913`, sw `10361`) but the timer is 30 s. Make one follow the other, ideally from a shared constant.
+
+### Questions for Nassor
+
+| Level | Question |
+|---|---|
+| **[HIGH]** | Where should the new data live: weekly goal days, the Vibe preference, preferred language on `/me`, and a request id in error bodies for "Ref" codes? |
+| **[HIGH]** | Does the door/server accept a QR code for a grace window after it rotates (e.g. 60 to 120 s)? If yes, how long? Could a signed offline code work for poor-signal gyms? |
+| **[HIGH]** | Can the server drop the gym-tier check (`tier_not_covered`) so any pass opens every gym? |
+| **[HIGH]** | Does `/me/qr` refuse a token when visits left is 0? |
+| **[MID]** | Should a "Funny" vibe exist at all, or only Coach / Calm / Off? |
