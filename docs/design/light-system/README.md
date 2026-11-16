@@ -213,6 +213,20 @@ These are suggestions from the design side. Nassor decides the implementation.
 
 Levels: **[HIGH]** fix before release, **[MID]** next pass, **[LOW]** when convenient.
 
+### Design canvases (member app)
+
+All are private until Godliving shares them. Ask him for access if a link doesn't open.
+
+| Canvas | Link |
+|---|---|
+| Design system | https://claude.ai/artifact/KV5NWBb2RdVKMozBsg92v1 |
+| Member Start | https://claude.ai/artifact/BBRu4byqgEv6s36ffQW4bk |
+| Member Home | https://claude.ai/artifact/DQDTpqdT4hS5x84eubCA8T |
+| Check in & Activity | https://claude.ai/artifact/MTEwovMJCTMsHXWG7vpfDR |
+| Gyms, Shop & Profile | https://claude.ai/artifact/AuYRLWLU5HuG6VswEx4sTo |
+| Pass & Payment | https://claude.ai/artifact/FCLumfd8qrzCfzTyuTJwhx |
+| Trainers, Inbox & Help | https://claude.ai/artifact/LR8WzGj69Ya5mwdBzZU2Wa |
+
 ### What the data has today
 
 | Need | Today | Status |
@@ -345,10 +359,7 @@ Every error answers three things: what happened, what to do, where to check.
 
 ### i. Design canvases to review
 
-- Member Home: https://claude.ai/artifact/DQDTpqdT4hS5x84eubCA8T
-- Design system: https://claude.ai/artifact/KV5NWBb2RdVKMozBsg92v1
-
-Both are private until Godliving shares them. Ask him for access if the links don't open.
+See "Design canvases (member app)" at the top of this section.
 
 ### Round 2 (16 Nov): answers from Godliving
 
@@ -440,6 +451,74 @@ bool get canCheckIn =>
 - Longer term: a signed offline code (time-boxed, bound to the device) for gyms with poor signal.
 - String mismatch: `home.qr.refreshes` says "every 60s" (`lib/shared/i18n.dart:1913`, sw `10361`) but the timer is 30 s. Make one follow the other, ideally from a shared constant.
 
+#### m. Round 3: the rest of the member app (16 Nov)
+
+Checked against the code on this branch. Items already above (weekly goal, Vibe, sponsor names, error ref codes, Premium/Executive perks, per-tier counts, `?tier=` route) are not repeated.
+
+**Pass & Payment**
+
+| Level | Change | Where / data |
+|---|---|---|
+| **[HIGH]** | Add a member Payments page with receipts: amount, date, provider reference, merchant name, TIN | Only `member_sessions_page.dart:490` calls `myPayments()` (`api_client.dart:2221`). Receipt fields: NEW unless `/me/payments` already has them |
+| **[MID]** | Cancel a pending mobile-money request, and resend the prompt | No cancel endpoint for `/me/payments/{id}/mobile-money` (`api_client.dart:836-858`). NEW |
+| **[MID]** | Show the failure reason and, for `held`, how long the review takes | `refreshMobileMoney` returns `state` only. NEW `reason`, `reviewEta` |
+| **[MID]** | Price per visit on plan cards; "Most picked" badge | Per visit: client math. "Most picked": NEW purchase counts |
+| **[LOW]** | Pick the network from the number prefix; share/PDF receipt; refund wording | Client only, except refund ETA (NEW) |
+
+**Check in**
+
+| Level | Change | Where / data |
+|---|---|---|
+| **[HIGH]** | QR spinner never stops after a failed refresh | `member_qr_tab.dart:135-145` shows `FFSpinner` whenever `qrToken == null`; `_refreshQr` nulls it on failure (`member_shell.dart:671-678`). Fix with item l: last code blurred + Try again |
+| **[HIGH]** | Scan page has no camera-denied state | `member_scan_gym_page.dart:99` `MobileScanner` has no `errorBuilder`. Show "Allow camera" + Open settings + "Show my QR instead" |
+| **[MID]** | Success screen: live clock + member name, so reception can tell it's not a screenshot | Design only. Depends on the reception question below |
+
+**Activity**
+
+| Level | Change | Where / data |
+|---|---|---|
+| **[HIGH]** | Run on web shows a dead end | `member_record_run_page.dart:193-200`: `FFEmptyState` with no action. Add "Log a run by hand" > `member_log_activity_page.dart` |
+| **[MID]** | Two segmented controls stacked | `member_activity_tab.dart:195` and `widgets/activity_period_card.dart:132`. Keep one |
+| **[MID]** | Training setup is one long page; split into 3 steps. Sub-pages show a double header | `member_training_setup_page.dart` |
+| **[LOW]** | "Sample" badges on History rows | `widgets/activity_widgets.dart:180` (`isSample`). Confirm sample activities never reach real members |
+| **[LOW]** | Title case in Setup labels; check 19–25 Oct days vs the Home week grid | Copy / QA |
+
+**Profile, people and invitations**
+
+| Level | Change | Where / data |
+|---|---|---|
+| **[HIGH]** | Server wording on Messages, Benefits, Sessions, Inbox and Trainer errors | `apiErrorMessage` shows the server reason, reworded, to English readers (`api_error_message.dart:96-109`). Callers: `member_message_settings_page.dart:64`, `member_benefits_page.dart:88`, `member_sessions_page.dart:509,535`, `shared/inbox/inbox_pages.dart:206`, `member_trainer_detail_page.dart:100`. Raises bug h's last row to HIGH: map codes, never show raw reasons |
+| **[HIGH]** | Invitations empty is bare text | `shared/widgets/invitations.dart:232-238` (and `:864`). Use `FFEmptyState` + "Find a gym" |
+| **[MID]** | Invite code on profile; refund ETA | NEW fields |
+| **[LOW]** | Sharing switches at 44 px with `role=switch` semantics; Friends tabs as a segmented control | `member_community_page.dart:36` (`TabBar`), `:1350,1357` (`SwitchListTile`) |
+
+**Trainers, Inbox & Help**
+
+| Level | Change | Where / data |
+|---|---|---|
+| **[HIGH]** | Trainer detail's bottom bar collides with the shell's Check in button | `member_trainer_detail_page.dart:237` `bottomNavigationBar`, while the route sits inside the member shell (`router.dart:1819-1826`). Hide the shell nav on detail, or move the route out |
+| **[MID]** | Price reads "TZS 15000/session" | `member_trainer_detail_page.dart:368` skips `formatCurrency`. Use "TSh 15,000 / session" (card at `widgets/trainer_card.dart:390` is formatted) |
+| **[MID]** | Drop the lime Book pill on every row; the whole row opens the trainer | `widgets/trainer_card.dart:26,255` |
+| **[MID]** | Booking flow: trainer confirm/decline, pay-by deadline, free-times count, typical reply time | NEW fields on bookings / trainer |
+| **[MID]** | Help: FAQ + search, a support ticket endpoint, support phone and hours | NEW. No help route in code |
+
+**Start (sign in and setup)**
+
+| Level | Change | Where / data |
+|---|---|---|
+| **[HIGH]** | Wrong PIN: show attempts left and unlock time | `/auth/pin/login` (`api_client.dart:327`) errors map to `invalid_credentials` / `too_many_attempts` only (`api_error_message.dart:356,368`). Server: NEW `attemptsLeft`, `lockedUntil`. The pattern exists in `shared/widgets/verify_identifier.dart:21-26` |
+| **[HIGH]** | Onboarding error is a dialog that can lose typed data | `member_onboarding_page.dart:109-130` `_showErrorDialog`. Use an inline Mid alert and keep the form |
+| **[MID]** | Setup in 4 steps; height/weight move to Profile; save `weeklyGoalDays` + `vibe` with `updateProfile` (`api_client.dart:719`) | Fields NEW (see c and b) |
+| **[MID]** | Drop off-palette role colours on the role picker | Role picker; use DS tokens only |
+| **[LOW]** | Preselect the phone's language on first run | `FFLocale._locale` defaults to `en` (`i18n.dart:25`); `load()` only restores a saved choice (`:38-50`). Use the device locale when nothing is saved |
+| **[LOW]** | Role names "Trainer" / "Seller"; wordmark on the splash; email PIN reset not live yet | Copy / brand; email reset is server-side |
+
+Dropped from the design log, already handled:
+
+- Reused "Couldn't load your messages" titles: fixed in 42e177d.
+- Home "of 18 visits": the code reads the real `visitCap`; 18 appears only in comments (`widgets/pass_summary_card.dart:278,382`). The design canvas is being fixed to 30.
+- "Tiers are labels, not access": superseded by the access ladder (item j).
+
 ### Questions for Nassor
 
 | Level | Question |
@@ -450,3 +529,9 @@ bool get canCheckIn =>
 | **[MID]** | Do `luxury_executive` gyms exist, or is Executive the Premium ladder plus perks? |
 | **[HIGH]** | Does `/me/qr` refuse a token when visits left is 0? |
 | **[MID]** | Should a "Funny" vibe exist at all, or only Coach / Calm / Off? |
+| **[HIGH]** | Can a Pro member book a trainer at a Premium gym? If yes, does the session open the gym for that visit? |
+| **[HIGH]** | Pay after the trainer confirms: how long is the slot held before it's released? |
+| **[HIGH]** | Does reception look at the member's phone at check-in? If yes, the success screen gets a live clock + name |
+| **[MID]** | Support phone number and hours, for Help and the suspended-pass card |
+| **[MID]** | Ask for location in setup, or on the first Gyms visit? |
+| **[MID]** | Real date for the account recovery review (the Start canvas shows a placeholder) |
